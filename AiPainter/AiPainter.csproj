@@ -1,0 +1,72 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net6.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <UseWindowsForms>true</UseWindowsForms>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <StartupObject></StartupObject>
+    <ApplicationIcon>Images\edit-image.ico</ApplicationIcon>
+    <Platforms>AnyCPU;x64</Platforms>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <OutputPath>bin\any\Debug\</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <OutputPath>bin\any\Release\</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
+    <OutputPath>bin\x64\Debug\</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
+    <OutputPath>bin\x64\Release\</OutputPath>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Remove="release-x64\**" />
+    <Compile Remove="_controls\**" />
+    <EmbeddedResource Remove="release-x64\**" />
+    <EmbeddedResource Remove="_controls\**" />
+    <None Remove="release-x64\**" />
+    <None Remove="_controls\**" />
+  </ItemGroup>  
+  
+  <ItemGroup>
+    <None Remove=".editorconfig" />
+    <None Remove=".gitignore" />
+    <None Remove="AiPainter.sln.DotSettings" />
+    <None Remove="build-release-x64.cmd" />
+    <None Remove="SyImageEditor.sln.DotSettings" />
+    <None Remove="SyScreenshoter.sln.DotSettings" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Images\edit-image.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Properties\Resources.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition="'$(BuildingInsideVisualStudio)' == 'true'">
+    <Exec Command="if not exist $(OutDir)external mkdir $(OutDir)external&#xD;&#xA;if not exist $(OutDir)external\InvokeAi mklink /D $(OutDir)external\InvokeAi ..\..\..\..\..\..\_external\InvokeAi\dist&#xD;&#xA;if not exist $(OutDir)external\lama-cleaner mklink /D $(OutDir)external\lama-cleaner ..\..\..\..\..\..\_external\lama-cleaner\dist&#xD;&#xA;" />
+  </Target>
+
+  <ItemGroup>
+    <EditorConfigFiles Remove="C:\MyProg\ai-image-processing\AiPainter\.editorconfig" />
+  </ItemGroup>
+
+</Project>
