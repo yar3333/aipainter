@@ -6,4 +6,4 @@
 	url = git@github.com:invoke-ai/InvokeAI.git
 [submodule "_external/rembg/repo"]
 	path = _external/rembg/repo
-	url = git@github.com:danielgatis/rembg.git
+	url = git@github.com:yar3333/rembg.git
