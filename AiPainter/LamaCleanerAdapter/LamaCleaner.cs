@@ -94,6 +94,11 @@ static class LamaCleaner
         if (response.StatusCode != HttpStatusCode.OK)
             throw new Exception(await response.Content.ReadAsStringAsync());
         
-        return (Bitmap)Image.FromStream(await response.Content.ReadAsStreamAsync());
+        return BitmapTools.ResizeIfNeed
+        (
+            (Bitmap)Image.FromStream(await response.Content.ReadAsStreamAsync()),
+            image.Width,
+            image.Height
+        );
     }
 }

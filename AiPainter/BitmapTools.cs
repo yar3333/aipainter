@@ -131,4 +131,14 @@ public static class BitmapTools
 
         return dst;
     }
+
+    public static Bitmap ResizeIfNeed(Bitmap image, int width, int height)
+    {
+        if (image.Width == width && image.Height == height) return image;
+
+        var res = new Bitmap(width, height, PixelFormat.Format32bppArgb);
+        using var g = Graphics.FromImage(res);
+        g.DrawImage(image, 0, 0, res.Width, res.Height);
+        return res;
+    }
 }
