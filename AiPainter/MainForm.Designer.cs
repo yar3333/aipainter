@@ -71,6 +71,8 @@
             this.label3 = new System.Windows.Forms.Label();
             this.hPicScroll = new System.Windows.Forms.HScrollBar();
             this.toolTip = new System.Windows.Forms.ToolTip(this.components);
+            this.collapsablePanel3 = new AiPainter.CollapsablePanel();
+            this.btRemBgRemoveBackground = new System.Windows.Forms.Button();
             this.toolbar.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer)).BeginInit();
             this.splitContainer.Panel1.SuspendLayout();
@@ -83,6 +85,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.numInvokeAiImg2img)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numInvokeAiCfgScale)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numInvokeAiGfpGan)).BeginInit();
+            this.collapsablePanel3.SuspendLayout();
             this.SuspendLayout();
             // 
             // toolbar
@@ -264,7 +267,7 @@
             this.splitContainer.TabIndex = 2;
             this.splitContainer.SplitterMoved += new System.Windows.Forms.SplitterEventHandler(this.splitContainer_SplitterMoved);
             // 
-            // smartPictureBox1
+            // pictureBox
             // 
             this.pictureBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
@@ -288,7 +291,9 @@
             // 
             this.panel1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.panel1.AutoScroll = true;
             this.panel1.BackColor = System.Drawing.SystemColors.ControlDarkDark;
+            this.panel1.Controls.Add(this.collapsablePanel3);
             this.panel1.Controls.Add(this.collapsablePanel2);
             this.panel1.Controls.Add(this.collapsablePanel1);
             this.panel1.Location = new System.Drawing.Point(676, 0);
@@ -614,6 +619,32 @@
             this.hPicScroll.Size = new System.Drawing.Size(1010, 30);
             this.hPicScroll.TabIndex = 0;
             // 
+            // collapsablePanel3
+            // 
+            this.collapsablePanel3.BackColor = System.Drawing.SystemColors.ControlDark;
+            this.collapsablePanel3.Caption = "rembg";
+            this.collapsablePanel3.Controls.Add(this.btRemBgRemoveBackground);
+            this.collapsablePanel3.Dock = System.Windows.Forms.DockStyle.Top;
+            this.collapsablePanel3.IsCollapsed = false;
+            this.collapsablePanel3.Location = new System.Drawing.Point(0, 411);
+            this.collapsablePanel3.Name = "collapsablePanel3";
+            this.collapsablePanel3.Size = new System.Drawing.Size(334, 79);
+            this.collapsablePanel3.TabIndex = 5;
+            // 
+            // btRemBgRemoveBackground
+            // 
+            this.btRemBgRemoveBackground.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.btRemBgRemoveBackground.Font = new System.Drawing.Font("Segoe UI", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.btRemBgRemoveBackground.Location = new System.Drawing.Point(3, 26);
+            this.btRemBgRemoveBackground.Name = "btRemBgRemoveBackground";
+            this.btRemBgRemoveBackground.Size = new System.Drawing.Size(327, 39);
+            this.btRemBgRemoveBackground.TabIndex = 13;
+            this.btRemBgRemoveBackground.Text = "Remove background";
+            this.toolTip.SetToolTip(this.btRemBgRemoveBackground, "Start generation (StableDiffusion)");
+            this.btRemBgRemoveBackground.UseVisualStyleBackColor = true;
+            this.btRemBgRemoveBackground.Click += new System.EventHandler(this.btRemBgRemoveBackground_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
@@ -644,6 +675,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.numInvokeAiImg2img)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numInvokeAiCfgScale)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numInvokeAiGfpGan)).EndInit();
+            this.collapsablePanel3.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -691,5 +723,7 @@
         private Button btLamaCleanerInpaint;
         private CheckBox cbInvokeAiUseInitImage;
         private SmartPictureBox pictureBox;
+        private CollapsablePanel collapsablePanel3;
+        private Button btRemBgRemoveBackground;
     }
 }

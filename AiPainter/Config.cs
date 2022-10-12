@@ -11,6 +11,9 @@ class Config
     public bool UseExternalLamaCleaner { get; set; }
     public string ExternalLamaCleanerUrl { get; set; }
 
+    public bool UseExternalRemBg { get; set; }
+    public string ExternalRemBgUrl { get; set; }
+
     [JsonIgnore]
     public string InvokeAiUrl => !UseExternalInvokeAi ? "http://127.0.0.1:9090/" : ExternalInvokeAiUrl;
     
@@ -20,6 +23,9 @@ class Config
                                                   : ExternalInvokeAiOutputFolderPath;
     [JsonIgnore]
     public string LamaCleanerUrl => !UseExternalLamaCleaner ? "http://127.0.0.1:9595/" : ExternalLamaCleanerUrl;
+    
+    [JsonIgnore]
+    public string RemBgUrl => !UseExternalRemBg ? "http://127.0.0.1:9696/" : ExternalRemBgUrl;
 
     public Config()
     {
@@ -29,5 +35,8 @@ class Config
 
         UseExternalLamaCleaner = false;
         ExternalLamaCleanerUrl = "http://127.0.0.1:9595/";
+
+        UseExternalRemBg = false;
+        ExternalRemBgUrl = "http://127.0.0.1:9696/";
     }
 }

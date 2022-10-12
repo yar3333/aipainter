@@ -2,6 +2,7 @@ using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using AiPainter.InvokeAiAdapter;
 using AiPainter.LamaCleanerAdapter;
+using AiPainter.RemBgAdapter;
 
 #pragma warning disable CS8602
 
@@ -605,6 +606,25 @@ namespace AiPainter
                 Invoke(() =>
                 {
                     btLamaCleanerInpaint.Enabled = true;
+                    pictureBox.Image = result;
+                    primitives.Clear();
+                    redoPrimitiveBlocks.Clear();
+                    Refresh();
+                });
+            });
+        }
+
+        private void btRemBgRemoveBackground_Click(object sender, EventArgs e)
+        {
+            if (pictureBox.Image == null) return;
+
+            btRemBgRemoveBackground.Enabled = false;
+            Task.Run(() =>
+            {
+                var result = RemBg.RunAsync(getActiveImage()).Result;
+                Invoke(() =>
+                {
+                    btRemBgRemoveBackground.Enabled = true;
                     pictureBox.Image = result;
                     primitives.Clear();
                     redoPrimitiveBlocks.Clear();
