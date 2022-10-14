@@ -1,11 +1,9 @@
 using System.Drawing.Imaging;
 
-namespace AiPainter;
+namespace AiPainter.Helpers;
 
 public static class BitmapTools
 {
-    private static readonly Random rnd = new();
-
     public static Bitmap? Load(string filePath)
     {
         using var src = (Bitmap)Image.FromFile(filePath);
@@ -18,9 +16,9 @@ public static class BitmapTools
 
         var dst = new Bitmap(src.Width, src.Height, PixelFormat.Format32bppArgb);
 
-        var srcData = src.LockBits(new Rectangle(0, 0, src.Width, src.Height), ImageLockMode.ReadOnly,  PixelFormat.Format32bppArgb);
+        var srcData = src.LockBits(new Rectangle(0, 0, src.Width, src.Height), ImageLockMode.ReadOnly, PixelFormat.Format32bppArgb);
         var dstData = dst.LockBits(new Rectangle(0, 0, dst.Width, dst.Height), ImageLockMode.WriteOnly, PixelFormat.Format32bppArgb);
-            
+
         unsafe
         {
             var pSrc = (byte*)srcData.Scan0.ToPointer();
@@ -73,7 +71,7 @@ public static class BitmapTools
 
         bmp.UnlockBits(data);
     }
-    
+
     public static void DrawAlphaCirle(BitmapData data, int cx, int cy, int r)
     {
         unsafe
@@ -101,13 +99,13 @@ public static class BitmapTools
         if (src == null) return null;
 
         var dst = new Bitmap(width, height, PixelFormat.Format32bppArgb);
-        
-        var srcData = src.LockBits(new Rectangle(0, 0, src.Width, src.Height), ImageLockMode.ReadOnly,  PixelFormat.Format32bppArgb);
+
+        var srcData = src.LockBits(new Rectangle(0, 0, src.Width, src.Height), ImageLockMode.ReadOnly, PixelFormat.Format32bppArgb);
         var dstData = dst.LockBits(new Rectangle(0, 0, dst.Width, dst.Height), ImageLockMode.WriteOnly, PixelFormat.Format32bppArgb);
 
-        var rWidth  = Math.Min(width,  src.Width  - x);
+        var rWidth = Math.Min(width, src.Width - x);
         var rHeight = Math.Min(height, src.Height - y);
-            
+
         unsafe
         {
             var pOrgSrc = (byte*)srcData.Scan0.ToPointer();

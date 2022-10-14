@@ -1,4 +1,4 @@
-﻿namespace AiPainter.InvokeAiAdapter;
+﻿namespace AiPainter.Adapters.StuffForInvokeAi;
 
 class AiImageInfo
 {

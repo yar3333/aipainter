@@ -1,3 +1,5 @@
+using AiPainter.Helpers;
+
 namespace AiPainter;
 
 class StoredImage

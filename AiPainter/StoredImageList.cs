@@ -1,8 +1,8 @@
 ﻿namespace AiPainter;
 
-class ImageStorage
+class StoredImageList
 {
-    private readonly List<StoredImage> images = new();
+    private readonly List<StoredImageItem> images = new();
 
     public int Count => images.Count;
 
@@ -19,7 +19,7 @@ class ImageStorage
         }
         
         var newFiles = allFiles.Where(x => images.All(y => y.FilePath != x)).ToArray();
-        images.AddRange(newFiles.Select(x => new StoredImage(x)));
+        images.AddRange(newFiles.Select(x => new StoredImageItem(x)));
             
         if (removeCount > 0 || wasUpdate || newFiles.Length > 0)
         {
@@ -35,5 +35,5 @@ class ImageStorage
         images.RemoveAll(y => y.FilePath == filePath);
     }
 
-    public StoredImage GetAt(int index) => images[index];
+    public StoredImageItem GetAt(int index) => images[index];
 }
