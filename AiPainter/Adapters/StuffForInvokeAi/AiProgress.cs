@@ -1,4 +1,4 @@
-﻿namespace AiPainter.InvokeAiAdapter;
+﻿namespace AiPainter.Adapters.StuffForInvokeAi;
 
 #pragma warning disable CS8603
 

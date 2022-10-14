@@ -1,8 +1,8 @@
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
-using AiPainter.InvokeAiAdapter;
-using AiPainter.LamaCleanerAdapter;
-using AiPainter.RemBgAdapter;
+using AiPainter.Adapters;
+using AiPainter.Adapters.StuffForInvokeAi;
+using AiPainter.Helpers;
 
 #pragma warning disable CS8602
 
@@ -32,7 +32,7 @@ namespace AiPainter
 
         private Point? cursorPt;
 
-        private static readonly ImageStorage storage = new();
+        private static readonly StoredImageList storedImageList = new();
 
         public MainForm()
         {
@@ -60,9 +60,9 @@ namespace AiPainter
                     if (!generating)
                     {
                         bool changesDetected;
-                        lock (storage)
+                        lock (storedImageList)
                         {
-                            changesDetected = storage.Update();
+                            changesDetected = storedImageList.Update();
                         }
                         if (changesDetected)
                         {
@@ -93,13 +93,13 @@ namespace AiPainter
             var x = 0;
             var n = 0;
             
-            lock (storage)
+            lock (storedImageList)
             {
                 hPicScroll.LargeChange = Math.Max(1, splitContainer.Panel2.ClientSize.Width / (sz + 10) - 1);
-                hPicScroll.Maximum = Math.Max(0, storage.Count - 2);
+                hPicScroll.Maximum = Math.Max(0, storedImageList.Count - 2);
 
                 var j = hPicScrollValue ?? hPicScroll.Value;
-                while (x < splitContainer.Panel2.ClientSize.Width && j < storage.Count)
+                while (x < splitContainer.Panel2.ClientSize.Width && j < storedImageList.Count)
                 {
                     var pb = (PictureBox?)splitContainer.Panel2.Controls.Find("pic" + n, false).FirstOrDefault();
                     if (pb == null)
@@ -137,7 +137,7 @@ namespace AiPainter
                                             if (DateTime.Now - start > TimeSpan.FromSeconds(1))
                                             {
                                                 File.Delete(rightButtonPressed);
-                                                storage.Remove(rightButtonPressed);
+                                                storedImageList.Remove(rightButtonPressed);
                                                 Invoke(() => updateImages(null));
                                                 break;
                                             }
@@ -157,12 +157,12 @@ namespace AiPainter
                         };
                     }
 
-                    pb.Image = storage.GetAt(j).Bitmap;
+                    pb.Image = storedImageList.GetAt(j).Bitmap;
                     pb.Location = new Point(x, 0);
                     pb.Size = new Size(sz, sz);
-                    pb.Tag = storage.GetAt(j).FilePath;
+                    pb.Tag = storedImageList.GetAt(j).FilePath;
                     pb.Visible = true;
-                    pb.Text = storage.GetAt(j).FilePath;
+                    pb.Text = storedImageList.GetAt(j).FilePath;
 
                     x += sz + 10;
                     j++;

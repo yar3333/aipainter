@@ -1,6 +1,8 @@
+using AiPainter.Helpers;
+
 namespace AiPainter;
 
-class StoredImage
+class StoredImageItem
 {
     public readonly string FilePath;
     
@@ -27,7 +29,7 @@ class StoredImage
         }
     }
 
-    public StoredImage(string filePath)
+    public StoredImageItem(string filePath)
     {
         FilePath = filePath;
         changeTime = File.GetLastWriteTime(FilePath);

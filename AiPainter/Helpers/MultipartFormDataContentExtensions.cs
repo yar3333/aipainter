@@ -1,4 +1,4 @@
-﻿namespace AiPainter;
+﻿namespace AiPainter.Helpers;
 
 static class MultipartFormDataContentExtensions
 {
