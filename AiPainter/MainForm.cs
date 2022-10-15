@@ -1,4 +1,3 @@
-using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.Text.RegularExpressions;
 using AiPainter.Adapters;
@@ -11,64 +10,17 @@ namespace AiPainter
 {
     public partial class MainForm : Form
     {
-        private const int VIEWPORT_WIDTH = 512;
-        private const int VIEWPORT_HEIGHT = 512;
-        
-        private const int PEN_SIZE = 10;
-        private const int MOVE_SIZE = 64;
-        
-        private static readonly Primitive UNDO_DELIMITER = new() { Kind = PrimitiveKind.UndoDelimiter };
-
-        private List<Primitive> primitives = new();
-        private readonly List<Primitive[]> redoPrimitiveBlocks = new();
-
-        private Primitive? lastPrim => primitives.LastOrDefault();
-
-        private static readonly HatchBrush primBrush = new(HatchStyle.Percent75, Color.Red, Color.Transparent);
-        private static readonly Pen primPen = PenTools.CreateRoundPen(primBrush);
-        
-        private static readonly HatchBrush cursorBrush = new(HatchStyle.Percent75, Color.LightCoral, Color.Transparent);
+        private const int IMAGE_EXTEND_SIZE = 64;
         
         private string? filePath;
 
-        private Point? cursorPt;
-
         private static readonly StoredImageList storedImageList = new();
-
-        private static readonly float[] zoomLevels = { 1.0f/16, 1.0f/8, 1.0f/4, 1.0f/2, 1, 2, 4, 8, 16 };
-        private int _zoomIndex = 4;
-        private int zoomIndex
-        {
-            get => _zoomIndex;
-            set 
-            { 
-                _zoomIndex = value;
-                pictureBox.Zoom = zoom;
-            }
-        }
-
-        private float zoom => zoomLevels[zoomIndex];
 
         public MainForm()
         {
             InitializeComponent();
 
-            MouseWheel += MainForm_MouseWheel;
-
             btPen1_Click(null, null);
-        }
-
-        private void MainForm_MouseWheel(object? sender, MouseEventArgs e)
-        {
-            if (e.Delta < 0)
-            {
-                if (zoomIndex > 0) zoomIndex--;
-            }
-            else
-            {
-                if (zoomIndex < zoomLevels.Length - 1) zoomIndex++;
-
-            }
         }
 
         private void MainForm_Load(object sender, EventArgs e)
@@ -147,9 +99,7 @@ namespace AiPainter
                                 case MouseButtons.Left:
                                     filePath = (string)pb.Tag;
                                     pictureBox.Image = BitmapTools.Clone((Bitmap)pb.Image);
-                                    primitives.Clear();
-                                    redoPrimitiveBlocks.Clear();
-                                    pictureBox.Refresh();
+                                    pictureBox.Clear();
                                     break;
 
                                 case MouseButtons.Right:
@@ -211,122 +161,6 @@ namespace AiPainter
             splitContainer.Panel2.Refresh();
         }
 
-        private void pictureBox_Paint(object? sender, PaintEventArgs e)
-        {
-            e.Graphics.Transform = pictureBox.Transform;
-
-            MaskHelper.DrawPrimitives(pictureBox.ViewDelta, e.Graphics, primPen, primBrush, primitives);
-
-            if (cursorPt == null) return;
-
-            var penSize = getActivePenSize();
-            e.Graphics.FillEllipse
-            (
-                cursorBrush,
-                cursorPt.Value.X - penSize / 2,
-                cursorPt.Value.Y - penSize / 2,
-                penSize,
-                penSize
-            );
-        }
-
-        private void pictureBox_MouseDown(object? sender, MouseEventArgs e)
-        {
-            var loc = getTransformedMousePos(e.Location);
-
-            if (e.Button == MouseButtons.Left) mouseLeftDown(loc);
-            if (e.Button == MouseButtons.Right) mouseRightDown(loc);
-        }
-
-        private bool modeMaskDrawing;
-        private void mouseLeftDown(Point loc)
-        {
-            modeMaskDrawing = true;
-            pictureBox.Capture = true;
-
-            if (lastPrim != UNDO_DELIMITER) primitives.Add(UNDO_DELIMITER);
-
-            primitives.Add
-            (
-                new Primitive
-                {
-                    Kind = PrimitiveKind.Line,
-                    Pt0 = loc,
-                    Pt1 = loc,
-                    PenSize = getActivePenSize(),
-                }
-            );
-
-            pictureBox.Refresh();
-        }
-
-        private bool modeViewportMoving;
-        private Point viewportMovingStart;
-        private void mouseRightDown(Point loc)
-        {
-            modeViewportMoving = true;
-            viewportMovingStart = loc;
-        }
-
-        private void pictureBox_MouseMove(object? sender, MouseEventArgs e)
-        {
-            var loc = getTransformedMousePos(e.Location);
-
-            cursorPt = !modeMaskDrawing && !modeViewportMoving ? loc : null;
-
-            if (modeMaskDrawing) mouseLeftMove(loc);
-            if (modeViewportMoving) mouseRightMove(loc);
-
-            pictureBox.Refresh();
-        }
-
-        private Point getTransformedMousePos(Point point)
-        {
-            var transform = pictureBox.Transform;
-            transform.Invert();
-            //transform.Translate(pictureBox.ViewDeltaX / zoom, pictureBox.ViewDeltaY / zoom);
-            
-            var points = new[] { point };
-            transform.TransformPoints(points);
-            return points[0];
-        }
-
-        private void mouseLeftMove(Point loc)
-        {
-            switch (lastPrim.Kind)
-            {
-                case PrimitiveKind.Line:
-                    lastPrim.Pt1 = loc;
-                    primitives.Add
-                    (
-                        new Primitive
-                        {
-                            Kind = PrimitiveKind.Line,
-                            Pt0 = loc,
-                            Pt1 = loc,
-                            PenSize = getActivePenSize(),
-                        }
-                    );
-                    break;
-            }
-        }
-
-        private void mouseRightMove(Point loc)
-        {
-            pictureBox.ViewDeltaX += loc.X - viewportMovingStart.X;
-            pictureBox.ViewDeltaY += loc.Y - viewportMovingStart.Y;
-            viewportMovingStart = loc;
-            pictureBox.Refresh();
-        }
-
-        private void pictureBox_MouseUp(object? sender, MouseEventArgs e)
-        {
-            pictureBox.Capture = false;
-            modeViewportMoving = false;
-            modeMaskDrawing = false;
-            pictureBox.Refresh();
-        }
-
         private void MainForm_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.Modifiers == 0 && e.KeyCode == Keys.Escape)
@@ -336,24 +170,12 @@ namespace AiPainter
 
             if (e.Modifiers == Keys.Control && e.KeyCode == Keys.Z)
             {
-                if (!primitives.Any()) return;
-                
-                var i = primitives.FindLastIndex(x => x == UNDO_DELIMITER);
-                redoPrimitiveBlocks.Add(primitives.GetRange(i, primitives.Count - i).ToArray());
-                primitives = primitives.GetRange(0, i);
-
-                pictureBox.Refresh();
+                pictureBox.Undo();
             }
 
             if (e.Modifiers == Keys.Control && e.KeyCode == Keys.Y || e.Modifiers == (Keys.Control|Keys.Shift) && e.KeyCode == Keys.Z)
             {
-                if (!redoPrimitiveBlocks.Any()) return;
-
-                var redoBlock = redoPrimitiveBlocks.Last();
-                redoPrimitiveBlocks.RemoveAt(redoPrimitiveBlocks.Count - 1);
-                primitives.AddRange(redoBlock);
-
-                pictureBox.Refresh();
+                pictureBox.Redo();
             }
 
             if (e.Modifiers == Keys.Control && e.KeyCode == Keys.S)
@@ -362,23 +184,9 @@ namespace AiPainter
             }
         }
 
-        private Bitmap? getActiveImage()
-        {
-            if (pictureBox.Image == null) return null;
-
-            var bmp = BitmapTools.Clone(pictureBox.Image)!;
-
-            var cenX = VIEWPORT_WIDTH  / 2 - pictureBox.ViewDeltaX;
-            var cenY = VIEWPORT_HEIGHT / 2 - pictureBox.ViewDeltaY;
-
-            MaskHelper.DrawAlpha(new Point(cenX, cenY), bmp, primitives);
-
-            return bmp;
-        }
-
         private void save(ImageFormat? format)
         {
-            var image = getActiveImage();
+            var image = pictureBox.GetImageWithMaskToTransparent();
             if (image == null) return;
 
             format ??= BitmapTools.HasAlpha(image) || Path.GetExtension(filePath).ToLowerInvariant() == ".png"
@@ -423,9 +231,7 @@ namespace AiPainter
             {
                 filePath = openFileDialog.FileName;
                 pictureBox.Image = BitmapTools.Load(filePath);
-                primitives.Clear();
-                redoPrimitiveBlocks.Clear();
-                pictureBox.Refresh();
+                pictureBox.Clear();
             }
         }
 
@@ -433,30 +239,16 @@ namespace AiPainter
         {
             btPen1.Checked = true;
             btPen2.Checked = false;
+            pictureBox.PenSizeIndex = 0;
         }
 
         private void btPen2_Click(object sender, EventArgs e)
         {
             btPen1.Checked = false;
             btPen2.Checked = true;
+            pictureBox.PenSizeIndex = 1;
         }
 
-        private int getActivePenSize()
-        {
-            return btPen1.Checked ? PEN_SIZE : PEN_SIZE * 4;
-        }
-
-        private void pictureBox_MouseEnter(object? sender, EventArgs e)
-        {
-            Cursor.Hide();
-        }
-
-        private void pictureBox_MouseLeave(object? sender, EventArgs e)
-        {
-            cursorPt = null;
-            pictureBox.Refresh();
-            Cursor.Show();
-        }
 
         private void splitContainer_SplitterMoved(object sender, SplitterEventArgs e)
         {
@@ -485,17 +277,12 @@ namespace AiPainter
             var dx = pictureBox.ViewDeltaX;
             var dy = pictureBox.ViewDeltaY;
 
-            var activeImage = cbInvokeAiUseInitImage.Checked ? getActiveImage() : null;
-            var croppedImage = activeImage is { Width: <= VIEWPORT_WIDTH, Height: <= VIEWPORT_HEIGHT }
-                                         ? activeImage
-                                         : BitmapTools.GetCropped
-                                         (
-                                             activeImage, 
-                                             -dx, 
-                                             -dy,
-                                             VIEWPORT_WIDTH, 
-                                             VIEWPORT_HEIGHT
-                                         );
+            var wasCropped = false;
+
+            var activeImage = cbInvokeAiUseInitImage.Checked ? pictureBox.GetImageWithMaskToTransparent() : null;
+            var croppedImage = activeImage != null
+                                   ? pictureBox.GetImageWithMaskToTransparentCroppedToViewport(out wasCropped)
+                                   : null;
 
             var sdImage = new AiImageInfo
             {
@@ -546,7 +333,7 @@ namespace AiPainter
                                     while (!File.Exists(fPath)) await Task.Delay(500);
                                     await Task.Delay(1000);
                                     var bmp = BitmapTools.Load(fPath)!;
-                                    if (activeImage != null && activeImage != croppedImage)
+                                    if (wasCropped)
                                     {
                                         using var g = Graphics.FromImage(activeImage);
                                         g.DrawImageUnscaled(bmp, -dx, -dy);
@@ -588,11 +375,11 @@ namespace AiPainter
         {
             if (pictureBox.Image == null) return;
 
-            var bmp = new Bitmap(pictureBox.Image.Width + MOVE_SIZE, pictureBox.Image.Height, PixelFormat.Format32bppArgb);
+            var bmp = new Bitmap(pictureBox.Image.Width + IMAGE_EXTEND_SIZE, pictureBox.Image.Height, PixelFormat.Format32bppArgb);
             using (var g = Graphics.FromImage(bmp))
             {
-                g.FillRectangle(Brushes.Transparent, 0, 0, MOVE_SIZE, bmp.Height);
-                g.DrawImageUnscaled(pictureBox.Image, MOVE_SIZE, 0);
+                g.FillRectangle(Brushes.Transparent, 0, 0, IMAGE_EXTEND_SIZE, bmp.Height);
+                g.DrawImageUnscaled(pictureBox.Image, IMAGE_EXTEND_SIZE, 0);
             }
 
             pictureBox.Image = bmp;
@@ -604,10 +391,10 @@ namespace AiPainter
         {
             if (pictureBox.Image == null) return;
             
-            var bmp = new Bitmap(pictureBox.Image.Width + MOVE_SIZE, pictureBox.Image.Height, PixelFormat.Format32bppArgb);
+            var bmp = new Bitmap(pictureBox.Image.Width + IMAGE_EXTEND_SIZE, pictureBox.Image.Height, PixelFormat.Format32bppArgb);
             using (var g = Graphics.FromImage(bmp))
             {
-                g.FillRectangle(Brushes.Transparent, bmp.Width - MOVE_SIZE, 0, MOVE_SIZE, bmp.Height);
+                g.FillRectangle(Brushes.Transparent, bmp.Width - IMAGE_EXTEND_SIZE, 0, IMAGE_EXTEND_SIZE, bmp.Height);
                 g.DrawImageUnscaled(pictureBox.Image, 0, 0);
             }
 
@@ -618,11 +405,11 @@ namespace AiPainter
 
         private void btUp_Click(object sender, EventArgs e)
         {
-            var bmp = new Bitmap(pictureBox.Image.Width, pictureBox.Image.Height + MOVE_SIZE, PixelFormat.Format32bppArgb);
+            var bmp = new Bitmap(pictureBox.Image.Width, pictureBox.Image.Height + IMAGE_EXTEND_SIZE, PixelFormat.Format32bppArgb);
             using (var g = Graphics.FromImage(bmp))
             {
-                g.FillRectangle(Brushes.Transparent, 0, 0, bmp.Width, MOVE_SIZE);
-                g.DrawImageUnscaled(pictureBox.Image, 0, MOVE_SIZE);
+                g.FillRectangle(Brushes.Transparent, 0, 0, bmp.Width, IMAGE_EXTEND_SIZE);
+                g.DrawImageUnscaled(pictureBox.Image, 0, IMAGE_EXTEND_SIZE);
             }
 
             pictureBox.Image = bmp;
@@ -634,10 +421,10 @@ namespace AiPainter
         {
             if (pictureBox.Image == null) return;
             
-            var bmp = new Bitmap(pictureBox.Image.Width, pictureBox.Image.Height + MOVE_SIZE, PixelFormat.Format32bppArgb);
+            var bmp = new Bitmap(pictureBox.Image.Width, pictureBox.Image.Height + IMAGE_EXTEND_SIZE, PixelFormat.Format32bppArgb);
             using (var g = Graphics.FromImage(bmp))
             {
-                g.FillRectangle(Brushes.Transparent, 0, bmp.Height - MOVE_SIZE, bmp.Width, MOVE_SIZE);
+                g.FillRectangle(Brushes.Transparent, 0, bmp.Height - IMAGE_EXTEND_SIZE, bmp.Width, IMAGE_EXTEND_SIZE);
                 g.DrawImageUnscaled(pictureBox.Image, 0, 0);
             }
 
@@ -648,17 +435,13 @@ namespace AiPainter
 
         private void btResetMask_Click(object sender, EventArgs e)
         {
-            primitives.Clear();
-            redoPrimitiveBlocks.Clear();
-            pictureBox.Refresh();
+            pictureBox.Clear();
         }
 
         private void btApplyAlphaMask_Click(object sender, EventArgs e)
         {
-            pictureBox.Image = getActiveImage();
-            primitives.Clear();
-            redoPrimitiveBlocks.Clear();
-            Refresh();
+            pictureBox.Image = pictureBox.GetImageWithMaskToTransparent();
+            pictureBox.Clear();
         }
 
         private void btLamaCleanerInpaint_Click(object sender, EventArgs e)
@@ -668,14 +451,12 @@ namespace AiPainter
             btLamaCleanerInpaint.Enabled = false;
             Task.Run(() =>
             {
-                var result = LamaCleaner.RunAsync(getActiveImage()).Result;
+                var result = LamaCleaner.RunAsync(pictureBox.GetImageWithMaskToTransparent()).Result;
                 Invoke(() =>
                 {
                     btLamaCleanerInpaint.Enabled = true;
                     pictureBox.Image = result;
-                    primitives.Clear();
-                    redoPrimitiveBlocks.Clear();
-                    Refresh();
+                    pictureBox.Clear();
                 });
             });
         }
@@ -687,14 +468,12 @@ namespace AiPainter
             btRemBgRemoveBackground.Enabled = false;
             Task.Run(() =>
             {
-                var result = RemBg.RunAsync(getActiveImage()).Result;
+                var result = RemBg.RunAsync(pictureBox.GetImageWithMaskToTransparent()).Result;
                 Invoke(() =>
                 {
                     btRemBgRemoveBackground.Enabled = true;
                     pictureBox.Image = result;
-                    primitives.Clear();
-                    redoPrimitiveBlocks.Clear();
-                    Refresh();
+                    pictureBox.Clear();
                 });
             });
         }

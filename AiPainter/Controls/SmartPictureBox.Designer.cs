@@ -37,6 +37,11 @@
             this.DoubleBuffered = true;
             this.Name = "SmartPictureBox";
             this.Paint += new System.Windows.Forms.PaintEventHandler(this.SmartPictureBox_Paint);
+            this.MouseDown += new System.Windows.Forms.MouseEventHandler(this.SmartPictureBox_MouseDown);
+            this.MouseEnter += new System.EventHandler(this.SmartPictureBox_MouseEnter);
+            this.MouseLeave += new System.EventHandler(this.SmartPictureBox_MouseLeave);
+            this.MouseMove += new System.Windows.Forms.MouseEventHandler(this.SmartPictureBox_MouseMove);
+            this.MouseUp += new System.Windows.Forms.MouseEventHandler(this.SmartPictureBox_MouseUp);
             this.ResumeLayout(false);
 
         }
