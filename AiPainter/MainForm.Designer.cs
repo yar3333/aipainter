@@ -38,8 +38,6 @@ namespace AiPainter
             this.btSavePng = new System.Windows.Forms.ToolStripButton();
             this.btSaveJpeg = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
-            this.btPen1 = new System.Windows.Forms.ToolStripButton();
-            this.btPen2 = new System.Windows.Forms.ToolStripButton();
             this.btResetMask = new System.Windows.Forms.ToolStripButton();
             this.btApplyAlphaMask = new System.Windows.Forms.ToolStripButton();
             this.btDeAlpha = new System.Windows.Forms.ToolStripButton();
@@ -101,8 +99,6 @@ namespace AiPainter
             this.btSavePng,
             this.btSaveJpeg,
             this.toolStripSeparator2,
-            this.btPen1,
-            this.btPen2,
             this.btResetMask,
             this.btApplyAlphaMask,
             this.btDeAlpha,
@@ -162,26 +158,6 @@ namespace AiPainter
             // 
             this.toolStripSeparator2.Name = "toolStripSeparator2";
             this.toolStripSeparator2.Size = new System.Drawing.Size(6, 40);
-            // 
-            // btPen1
-            // 
-            this.btPen1.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.btPen1.Image = ((System.Drawing.Image)(resources.GetObject("btPen1.Image")));
-            this.btPen1.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.btPen1.Name = "btPen1";
-            this.btPen1.Size = new System.Drawing.Size(38, 37);
-            this.btPen1.Text = "Pen for masking (small)";
-            this.btPen1.Click += new System.EventHandler(this.btPen1_Click);
-            // 
-            // btPen2
-            // 
-            this.btPen2.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.btPen2.Image = ((System.Drawing.Image)(resources.GetObject("btPen2.Image")));
-            this.btPen2.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.btPen2.Name = "btPen2";
-            this.btPen2.Size = new System.Drawing.Size(38, 37);
-            this.btPen2.Text = "Pen for masking (big)";
-            this.btPen2.Click += new System.EventHandler(this.btPen2_Click);
             // 
             // btResetMask
             // 
@@ -695,8 +671,6 @@ namespace AiPainter
         private ToolStripButton btDeAlpha;
         private ToolStripButton btLoad;
         private ToolStripSeparator toolStripSeparator2;
-        private ToolStripButton btPen1;
-        private ToolStripButton btPen2;
         private ToolStripSeparator toolStripSeparator1;
         private SplitContainer splitContainer;
         private HScrollBar hPicScroll;

@@ -1,15 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing.Imaging;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
+﻿using System.Drawing.Imaging;
 namespace AiPainter.Helpers;
 
 static class MaskHelper
 {
-    public static void DrawPrimitives(Point cen, Graphics g, Pen pen, Brush brush, List<Primitive> primitives)
+    public static void DrawPrimitives(int cenX, int cenY, Graphics g, Pen pen, Brush brush, List<Primitive> primitives)
     {
         foreach (var p in primitives)
         {
@@ -19,15 +13,15 @@ static class MaskHelper
                     if (p.Pt0 != p.Pt1)
                     {
                         pen.Width = p.PenSize;
-                        g.DrawLine(pen, cen.X + p.Pt0.X, cen.Y + p.Pt0.Y, cen.X + p.Pt1.X, cen.Y + p.Pt1.Y);
+                        g.DrawLine(pen, cenX + p.Pt0.X, cenY + p.Pt0.Y, cenX + p.Pt1.X, cenY + p.Pt1.Y);
                     }
                     else
                     {
                         g.FillEllipse
                         (
                             brush,
-                            cen.X + p.Pt0.X - p.PenSize / 2,
-                            cen.Y + p.Pt0.Y - p.PenSize / 2,
+                            cenX + p.Pt0.X - p.PenSize / 2,
+                            cenY + p.Pt0.Y - p.PenSize / 2,
                             p.PenSize,
                             p.PenSize
                         );
@@ -37,7 +31,7 @@ static class MaskHelper
         }
     }
 
-    public static void DrawAlpha(Point cen, Bitmap bmp, List<Primitive> primitives)
+    public static void DrawAlpha(int cenX, int cenY, Bitmap bmp, List<Primitive> primitives)
     {
         var data = bmp.LockBits(new Rectangle(0, 0, bmp.Width, bmp.Height), ImageLockMode.ReadWrite, PixelFormat.Format32bppArgb);
 
@@ -47,8 +41,8 @@ static class MaskHelper
             {
                 case PrimitiveKind.Line:
                     var r = p.PenSize / 2;
-                    double x = cen.X + p.Pt0.X;
-                    double y = cen.Y + p.Pt0.Y;
+                    double x = cenX + p.Pt0.X;
+                    double y = cenY + p.Pt0.Y;
                     double dx = p.Pt1.X - p.Pt0.X;
                     double dy = p.Pt1.Y - p.Pt0.Y;
                     var len = Math.Sqrt(dx * dx + dy * dy);

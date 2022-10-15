@@ -39,6 +39,9 @@ static class LamaCleaner
 
     private static async Task<Bitmap> runInnerAsync(Bitmap image, Bitmap mask)
     {
+        image.Save("d:\\1.png", ImageFormat.Png);
+        mask.Save("d:\\2.png", ImageFormat.Png);
+
         var httpClient = new HttpClient
         {
             BaseAddress = new Uri(Program.Config.LamaCleanerUrl),

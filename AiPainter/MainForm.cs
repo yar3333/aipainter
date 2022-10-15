@@ -15,12 +15,12 @@ namespace AiPainter
         private string? filePath;
 
         private static readonly StoredImageList storedImageList = new();
+        
+        private string? rightButtonPressed;
 
         public MainForm()
         {
             InitializeComponent();
-
-            btPen1_Click(null, null);
         }
 
         private void MainForm_Load(object sender, EventArgs e)
@@ -66,8 +66,6 @@ namespace AiPainter
                 }
             }
         }
-
-        private string? rightButtonPressed;
         
         private void updateImages(int? hPicScrollValue)
         {
@@ -234,21 +232,6 @@ namespace AiPainter
                 pictureBox.Clear();
             }
         }
-
-        private void btPen1_Click(object sender, EventArgs e)
-        {
-            btPen1.Checked = true;
-            btPen2.Checked = false;
-            pictureBox.PenSizeIndex = 0;
-        }
-
-        private void btPen2_Click(object sender, EventArgs e)
-        {
-            btPen1.Checked = false;
-            btPen2.Checked = true;
-            pictureBox.PenSizeIndex = 1;
-        }
-
 
         private void splitContainer_SplitterMoved(object sender, SplitterEventArgs e)
         {

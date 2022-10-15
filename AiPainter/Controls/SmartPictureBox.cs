@@ -9,8 +9,9 @@ namespace AiPainter.Controls
         private const int VIEWPORT_WIDTH  = 512;
         private const int VIEWPORT_HEIGHT = 512;
         
+        private const int PEN_SIZE = 48;
+        
         private static readonly float[] zoomLevels = { 1.0f/16, 1.0f/8, 1.0f/4, 1.0f/2, 1, 2, 4, 8, 16 };
-        private static readonly int[] penSizes = { 8, 32 };
         
         private static readonly Primitive UNDO_DELIMITER = new() { Kind = PrimitiveKind.UndoDelimiter };
 
@@ -29,28 +30,31 @@ namespace AiPainter.Controls
         private int zoomIndex = 4;
         private float zoom => zoomLevels[zoomIndex];
 
-        public Bitmap? Image { get; set; }
-        
-        public int ViewDeltaX { get; set; }
-        public int ViewDeltaY { get; set; }
-
-        public Point ViewDelta => new(ViewDeltaX, ViewDeltaY);
-
         private readonly HatchBrush gridBrush = new(HatchStyle.LargeCheckerBoard, Color.DarkGray, Color.White);
         private readonly Pen borderPen = new(Color.Red, 3);
-
-        public int PenSizeIndex = 0;
 
         private bool modeMaskDrawing;
         private bool modeViewportMoving;
         private Point viewportMovingStart;
+
+        public Bitmap? Image { get; set; }
+
+        public int ViewDeltaX;
+        public int ViewDeltaY;
+
+        public SmartPictureBox()
+        {
+            InitializeComponent();
+
+            MouseWheel += MainForm_MouseWheel;
+        }
         
         private int getActivePenSize()
         {
-            return penSizes[PenSizeIndex];
+            return (int)Math.Round(PEN_SIZE / zoom);
         }
 
-        public Matrix Transform
+        private Matrix Transform
         {
             get
             {
@@ -67,13 +71,6 @@ namespace AiPainter.Controls
                 );
                 return m;
             }
-        }
-
-        public SmartPictureBox()
-        {
-            InitializeComponent();
-
-            MouseWheel += MainForm_MouseWheel;
         }
 
         public Bitmap? GetImageWithMaskToTransparent()
@@ -94,10 +91,10 @@ namespace AiPainter.Controls
 
             var bmp = BitmapTools.Clone(Image)!;
 
-            var cenX = VIEWPORT_WIDTH  / 2 - ViewDeltaX;
-            var cenY = VIEWPORT_HEIGHT / 2 - ViewDeltaY;
+            var cenX = 0;//VIEWPORT_WIDTH  / 2 - ViewDeltaX;
+            var cenY = 0;//VIEWPORT_HEIGHT / 2 - ViewDeltaY;
 
-            MaskHelper.DrawAlpha(new Point(cenX, cenY), bmp, primitives);
+            MaskHelper.DrawAlpha(cenX, cenY, bmp, primitives);
 
             if (!cropToViewport || (Width <= VIEWPORT_WIDTH && Height <= VIEWPORT_HEIGHT)) return bmp;
             
@@ -150,42 +147,34 @@ namespace AiPainter.Controls
             else
             {
                 if (zoomIndex < zoomLevels.Length - 1) zoomIndex++;
-
             }
+            Refresh();
         }
 
         private void SmartPictureBox_Paint(object sender, PaintEventArgs e)
         {
-            if (Image == null) return;
-
             e.Graphics.Transform = Transform;
 
-            e.Graphics.FillRectangle
-            (
-                gridBrush, 
-                0, 
-                0, 
-                VIEWPORT_WIDTH, 
-                VIEWPORT_HEIGHT
-            );
-            
-            e.Graphics.FillRectangle
-            (
-                gridBrush, 
-                ViewDeltaX, 
-                ViewDeltaY, 
-                Image.Width, 
-                Image.Height
-            );
+            if (Image != null)
+            {
+                e.Graphics.FillRectangle
+                (
+                    gridBrush, 
+                    ViewDeltaX, 
+                    ViewDeltaY, 
+                    Image.Width, 
+                    Image.Height
+                );
 
-            e.Graphics.DrawImage
-            (
-                Image, 
-                ViewDeltaX, 
-                ViewDeltaY,
-                Image.Width,
-                Image.Height
-            );
+                e.Graphics.DrawImage
+                (
+                    Image, 
+                    ViewDeltaX, 
+                    ViewDeltaY,
+                    Image.Width,
+                    Image.Height
+                );
+            }
             
             e.Graphics.DrawRectangle
             (
@@ -196,12 +185,17 @@ namespace AiPainter.Controls
                 VIEWPORT_HEIGHT + 3
             );
 
-            MaskHelper.DrawPrimitives(ViewDelta, e.Graphics, primPen, primBrush, primitives);
+            MaskHelper.DrawPrimitives(ViewDeltaX, ViewDeltaY, e.Graphics, primPen, primBrush, primitives);
 
+            drawCursor(e.Graphics);
+        }
+
+        private void drawCursor(Graphics g)
+        {
             if (cursorPt == null) return;
 
             var penSize = getActivePenSize();
-            e.Graphics.FillEllipse
+            g.FillEllipse
             (
                 cursorBrush,
                 cursorPt.Value.X - penSize / 2,
@@ -221,6 +215,8 @@ namespace AiPainter.Controls
 
         private void mouseLeftDown(Point loc)
         {
+            loc = new Point(loc.X - ViewDeltaX, loc.Y - ViewDeltaY);
+            
             modeMaskDrawing = true;
             Capture = true;
 
@@ -280,6 +276,8 @@ namespace AiPainter.Controls
 
         private void mouseLeftMove(Point loc)
         {
+            loc = new Point(loc.X - ViewDeltaX, loc.Y - ViewDeltaY);
+
             switch (lastPrim.Kind)
             {
                 case PrimitiveKind.Line:
@@ -305,7 +303,6 @@ namespace AiPainter.Controls
             viewportMovingStart = loc;
             Refresh();
         }
-
 
         private Point getTransformedMousePos(Point point)
         {
