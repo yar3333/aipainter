@@ -1,4 +1,5 @@
 ﻿using System.Drawing.Drawing2D;
+using System.Numerics;
 
 namespace AiPainter.Controls
 {
@@ -12,11 +13,32 @@ namespace AiPainter.Controls
         public int ViewDeltaX { get; set; }
         public int ViewDeltaY { get; set; }
 
+        public Point ViewDelta => new(ViewDeltaX, ViewDeltaY);
+
         private readonly HatchBrush gridBrush = new(HatchStyle.LargeCheckerBoard, Color.DarkGray, Color.White);
         private readonly Pen borderPen = new(Color.Red, 3);
 
-        private double zoom = 1.0;
-        public double Zoom
+        public Matrix Transform
+        {
+            get
+            {
+                var m = new Matrix(Matrix3x2.Identity);
+                m.Translate( ClientSize.Width / 2,  ClientSize.Height / 2);
+                m.Scale(zoom, zoom);
+                m.Translate(-ClientSize.Width / 2, -ClientSize.Height / 2);
+                m.Translate
+                (
+                    // ReSharper disable once PossibleLossOfFraction
+                    (ClientSize.Width - VIEWPORT_WIDTH) / 2,
+                    // ReSharper disable once PossibleLossOfFraction
+                    (ClientSize.Height - VIEWPORT_HEIGHT) / 2
+                );
+                return m;
+            }
+        }
+
+        private float zoom = 1.0f;
+        public float Zoom
         {
             get => zoom;
             set
@@ -35,48 +57,43 @@ namespace AiPainter.Controls
         {
             if (Image == null) return;
 
-            var cen = new Point(ClientSize / 2);
+            e.Graphics.Transform = Transform;
 
-            var vX = cen.X - zoomed(VIEWPORT_WIDTH)  / 2;
-            var vY = cen.Y - zoomed(VIEWPORT_HEIGHT) / 2;
-            
             e.Graphics.FillRectangle
             (
                 gridBrush, 
-                vX, 
-                vY, 
-                zoomed(VIEWPORT_WIDTH), 
-                zoomed(VIEWPORT_HEIGHT)
+                0, 
+                0, 
+                VIEWPORT_WIDTH, 
+                VIEWPORT_HEIGHT
             );
             
             e.Graphics.FillRectangle
             (
                 gridBrush, 
-                vX + zoomed(ViewDeltaX), 
-                vY + zoomed(ViewDeltaY), 
-                zoomed(Image.Width), 
-                zoomed(Image.Height)
+                ViewDeltaX, 
+                ViewDeltaY, 
+                Image.Width, 
+                Image.Height
             );
 
             e.Graphics.DrawImage
             (
                 Image, 
-                vX + zoomed(ViewDeltaX), 
-                vY + zoomed(ViewDeltaY),
-                zoomed(Image.Width),
-                zoomed(Image.Height)
+                ViewDeltaX, 
+                ViewDeltaY,
+                Image.Width,
+                Image.Height
             );
             
             e.Graphics.DrawRectangle
             (
                 borderPen,
-                vX - 2, 
-                vY - 2, 
-                zoomed(VIEWPORT_WIDTH)  + 3, 
-                zoomed(VIEWPORT_HEIGHT) + 3
+                -2, 
+                -2, 
+                VIEWPORT_WIDTH  + 3, 
+                VIEWPORT_HEIGHT + 3
             );
         }
-
-        private int zoomed(int a) => (int)Math.Round(a  * zoom);
     }
 }

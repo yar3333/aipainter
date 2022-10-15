@@ -35,7 +35,7 @@ namespace AiPainter
 
         private static readonly StoredImageList storedImageList = new();
 
-        private static readonly double[] zoomLevels = { 1.0/16, 1.0/8, 1.0/4, 1.0/2, 1, 2, 4, 8, 16 };
+        private static readonly float[] zoomLevels = { 1.0f/16, 1.0f/8, 1.0f/4, 1.0f/2, 1, 2, 4, 8, 16 };
         private int _zoomIndex = 4;
         private int zoomIndex
         {
@@ -47,7 +47,7 @@ namespace AiPainter
             }
         }
 
-        private double zoom => zoomLevels[zoomIndex];
+        private float zoom => zoomLevels[zoomIndex];
 
         public MainForm()
         {
@@ -213,9 +213,9 @@ namespace AiPainter
 
         private void pictureBox_Paint(object? sender, PaintEventArgs e)
         {
-            var cen = new Point(pictureBox.ClientSize.Width / 2, pictureBox.ClientSize.Height / 2);
-            
-            MaskHelper.DrawPrimitives(cen, e.Graphics, primPen, primBrush, primitives);
+            e.Graphics.Transform = pictureBox.Transform;
+
+            MaskHelper.DrawPrimitives(pictureBox.ViewDelta, e.Graphics, primPen, primBrush, primitives);
 
             if (cursorPt == null) return;
 
@@ -223,8 +223,8 @@ namespace AiPainter
             e.Graphics.FillEllipse
             (
                 cursorBrush,
-                cen.X + cursorPt.Value.X - penSize / 2,
-                cen.Y + cursorPt.Value.Y - penSize / 2,
+                cursorPt.Value.X - penSize / 2,
+                cursorPt.Value.Y - penSize / 2,
                 penSize,
                 penSize
             );
@@ -232,60 +232,99 @@ namespace AiPainter
 
         private void pictureBox_MouseDown(object? sender, MouseEventArgs e)
         {
+            var loc = getTransformedMousePos(e.Location);
+
+            if (e.Button == MouseButtons.Left) mouseLeftDown(loc);
+            if (e.Button == MouseButtons.Right) mouseRightDown(loc);
+        }
+
+        private bool modeMaskDrawing;
+        private void mouseLeftDown(Point loc)
+        {
+            modeMaskDrawing = true;
             pictureBox.Capture = true;
 
-            var loc = e.Location;
-            loc.X -= pictureBox.ClientSize.Width / 2;
-            loc.Y -= pictureBox.ClientSize.Height / 2;
-        
             if (lastPrim != UNDO_DELIMITER) primitives.Add(UNDO_DELIMITER);
 
-            primitives.Add(new Primitive
-            {
-                Kind = PrimitiveKind.Line,
-                Pt0 = loc,
-                Pt1 = loc,
-                PenSize = getActivePenSize(),
-            });
+            primitives.Add
+            (
+                new Primitive
+                {
+                    Kind = PrimitiveKind.Line,
+                    Pt0 = loc,
+                    Pt1 = loc,
+                    PenSize = getActivePenSize(),
+                }
+            );
 
             pictureBox.Refresh();
         }
 
+        private bool modeViewportMoving;
+        private Point viewportMovingStart;
+        private void mouseRightDown(Point loc)
+        {
+            modeViewportMoving = true;
+            viewportMovingStart = loc;
+        }
+
         private void pictureBox_MouseMove(object? sender, MouseEventArgs e)
         {
-            var loc = e.Location;
-            loc.X -= pictureBox.ClientSize.Width / 2;
-            loc.Y -= pictureBox.ClientSize.Height / 2;
+            var loc = getTransformedMousePos(e.Location);
 
-            if (pictureBox.Capture)
+            cursorPt = !modeMaskDrawing && !modeViewportMoving ? loc : null;
+
+            if (modeMaskDrawing) mouseLeftMove(loc);
+            if (modeViewportMoving) mouseRightMove(loc);
+
+            pictureBox.Refresh();
+        }
+
+        private Point getTransformedMousePos(Point point)
+        {
+            var transform = pictureBox.Transform;
+            transform.Invert();
+            //transform.Translate(pictureBox.ViewDeltaX / zoom, pictureBox.ViewDeltaY / zoom);
+            
+            var points = new[] { point };
+            transform.TransformPoints(points);
+            return points[0];
+        }
+
+        private void mouseLeftMove(Point loc)
+        {
+            switch (lastPrim.Kind)
             {
-                cursorPt = null;
-                
-                switch (lastPrim.Kind)
-                {
-                    case PrimitiveKind.Line:
-                        lastPrim.Pt1 = loc;
-                        primitives.Add(new Primitive
+                case PrimitiveKind.Line:
+                    lastPrim.Pt1 = loc;
+                    primitives.Add
+                    (
+                        new Primitive
                         {
                             Kind = PrimitiveKind.Line,
                             Pt0 = loc,
                             Pt1 = loc,
                             PenSize = getActivePenSize(),
-                        });
-                        break;
-                }
+                        }
+                    );
+                    break;
             }
-            else
-            {
-                cursorPt = loc;
-            }
-           
+        }
+
+        private void mouseRightMove(Point loc)
+        {
+            pictureBox.ViewDeltaX += loc.X - viewportMovingStart.X;
+            pictureBox.ViewDeltaY += loc.Y - viewportMovingStart.Y;
+            viewportMovingStart = loc;
             pictureBox.Refresh();
         }
 
         private void pictureBox_MouseUp(object? sender, MouseEventArgs e)
         {
             pictureBox.Capture = false;
+            modeViewportMoving = false;
+            modeMaskDrawing = false;
+            pictureBox.Refresh();
         }
 
         private void MainForm_KeyDown(object sender, KeyEventArgs e)
@@ -548,19 +587,15 @@ namespace AiPainter
         private void btLeft_Click(object sender, EventArgs e)
         {
             if (pictureBox.Image == null) return;
-            
-            if (pictureBox.ViewDeltaX < 0) pictureBox.ViewDeltaX += MOVE_SIZE;
-            else
-            {
-                var bmp = new Bitmap(pictureBox.Image.Width + MOVE_SIZE, pictureBox.Image.Height, PixelFormat.Format32bppArgb);
-                using (var g = Graphics.FromImage(bmp))
-                {
-                    g.FillRectangle(Brushes.Transparent, 0, 0, MOVE_SIZE, bmp.Height);
-                    g.DrawImageUnscaled(pictureBox.Image, MOVE_SIZE, 0);
-                }
 
-                pictureBox.Image = bmp;
+            var bmp = new Bitmap(pictureBox.Image.Width + MOVE_SIZE, pictureBox.Image.Height, PixelFormat.Format32bppArgb);
+            using (var g = Graphics.FromImage(bmp))
+            {
+                g.FillRectangle(Brushes.Transparent, 0, 0, MOVE_SIZE, bmp.Height);
+                g.DrawImageUnscaled(pictureBox.Image, MOVE_SIZE, 0);
             }
+
+            pictureBox.Image = bmp;
 
             pictureBox.Refresh();
         }
@@ -569,42 +604,28 @@ namespace AiPainter
         {
             if (pictureBox.Image == null) return;
             
-            pictureBox.ViewDeltaX -= MOVE_SIZE;
-
-            if (pictureBox.ViewDeltaX + pictureBox.Image.Width < VIEWPORT_WIDTH)
+            var bmp = new Bitmap(pictureBox.Image.Width + MOVE_SIZE, pictureBox.Image.Height, PixelFormat.Format32bppArgb);
+            using (var g = Graphics.FromImage(bmp))
             {
-                var sz = VIEWPORT_WIDTH - (pictureBox.ViewDeltaX + pictureBox.Image.Width);
-
-                var bmp = new Bitmap(pictureBox.Image.Width + sz, pictureBox.Image.Height, PixelFormat.Format32bppArgb);
-                using (var g = Graphics.FromImage(bmp))
-                {
-                    g.FillRectangle(Brushes.Transparent, bmp.Width - sz, 0, sz, bmp.Height);
-                    g.DrawImageUnscaled(pictureBox.Image, 0, 0);
-                }
-
-                pictureBox.Image = bmp;
-                
+                g.FillRectangle(Brushes.Transparent, bmp.Width - MOVE_SIZE, 0, MOVE_SIZE, bmp.Height);
+                g.DrawImageUnscaled(pictureBox.Image, 0, 0);
             }
-            
+
+            pictureBox.Image = bmp;
+                
             pictureBox.Refresh();
         }
 
         private void btUp_Click(object sender, EventArgs e)
         {
-            if (pictureBox.Image == null) return;
-            
-            if (pictureBox.ViewDeltaY < 0) pictureBox.ViewDeltaY += MOVE_SIZE;
-            else
+            var bmp = new Bitmap(pictureBox.Image.Width, pictureBox.Image.Height + MOVE_SIZE, PixelFormat.Format32bppArgb);
+            using (var g = Graphics.FromImage(bmp))
             {
-                var bmp = new Bitmap(pictureBox.Image.Width, pictureBox.Image.Height + MOVE_SIZE, PixelFormat.Format32bppArgb);
-                using (var g = Graphics.FromImage(bmp))
-                {
-                    g.FillRectangle(Brushes.Transparent, 0, 0, bmp.Width, MOVE_SIZE);
-                    g.DrawImageUnscaled(pictureBox.Image, 0, MOVE_SIZE);
-                }
-
-                pictureBox.Image = bmp;
+                g.FillRectangle(Brushes.Transparent, 0, 0, bmp.Width, MOVE_SIZE);
+                g.DrawImageUnscaled(pictureBox.Image, 0, MOVE_SIZE);
             }
+
+            pictureBox.Image = bmp;
 
             pictureBox.Refresh();
         }
@@ -613,23 +634,15 @@ namespace AiPainter
         {
             if (pictureBox.Image == null) return;
             
-            pictureBox.ViewDeltaY -= MOVE_SIZE;
-
-            if (pictureBox.ViewDeltaY + pictureBox.Image.Height < VIEWPORT_HEIGHT)
+            var bmp = new Bitmap(pictureBox.Image.Width, pictureBox.Image.Height + MOVE_SIZE, PixelFormat.Format32bppArgb);
+            using (var g = Graphics.FromImage(bmp))
             {
-                var sz = VIEWPORT_HEIGHT - (pictureBox.ViewDeltaY + pictureBox.Image.Height);
-
-                var bmp = new Bitmap(pictureBox.Image.Width, pictureBox.Image.Height + sz, PixelFormat.Format32bppArgb);
-                using (var g = Graphics.FromImage(bmp))
-                {
-                    g.FillRectangle(Brushes.Transparent, 0, bmp.Height - sz, bmp.Width, sz);
-                    g.DrawImageUnscaled(pictureBox.Image, 0, 0);
-                }
-
-                pictureBox.Image = bmp;
-                
+                g.FillRectangle(Brushes.Transparent, 0, bmp.Height - MOVE_SIZE, bmp.Width, MOVE_SIZE);
+                g.DrawImageUnscaled(pictureBox.Image, 0, 0);
             }
-            
+
+            pictureBox.Image = bmp;
+                
             pictureBox.Refresh();
         }
 

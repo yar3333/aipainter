@@ -36,6 +36,7 @@ namespace AiPainter
             this.btClearActiveImage = new System.Windows.Forms.ToolStripButton();
             this.btLoad = new System.Windows.Forms.ToolStripButton();
             this.btSavePng = new System.Windows.Forms.ToolStripButton();
+            this.btSaveJpeg = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.btPen1 = new System.Windows.Forms.ToolStripButton();
             this.btPen2 = new System.Windows.Forms.ToolStripButton();
@@ -49,13 +50,13 @@ namespace AiPainter
             this.btRight = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.splitContainer = new System.Windows.Forms.SplitContainer();
-            this.pictureBox = new SmartPictureBox();
+            this.pictureBox = new AiPainter.Controls.SmartPictureBox();
             this.panel1 = new System.Windows.Forms.Panel();
-            this.collapsablePanel3 = new CollapsablePanel();
+            this.collapsablePanel3 = new AiPainter.Controls.CollapsablePanel();
             this.btRemBgRemoveBackground = new System.Windows.Forms.Button();
-            this.collapsablePanel2 = new CollapsablePanel();
+            this.collapsablePanel2 = new AiPainter.Controls.CollapsablePanel();
             this.btLamaCleanerInpaint = new System.Windows.Forms.Button();
-            this.collapsablePanel1 = new CollapsablePanel();
+            this.collapsablePanel1 = new AiPainter.Controls.CollapsablePanel();
             this.cbInvokeAiUseInitImage = new System.Windows.Forms.CheckBox();
             this.btInvokeAiReset = new System.Windows.Forms.Button();
             this.pbInvokeAiSteps = new System.Windows.Forms.ProgressBar();
@@ -75,7 +76,6 @@ namespace AiPainter
             this.label3 = new System.Windows.Forms.Label();
             this.hPicScroll = new System.Windows.Forms.HScrollBar();
             this.toolTip = new System.Windows.Forms.ToolTip(this.components);
-            this.btSaveJpeg = new System.Windows.Forms.ToolStripButton();
             this.toolbar.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer)).BeginInit();
             this.splitContainer.Panel1.SuspendLayout();
@@ -148,6 +148,16 @@ namespace AiPainter
             this.btSavePng.Text = "Save image";
             this.btSavePng.Click += new System.EventHandler(this.btSavePng_Click);
             // 
+            // btSaveJpeg
+            // 
+            this.btSaveJpeg.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.btSaveJpeg.Image = ((System.Drawing.Image)(resources.GetObject("btSaveJpeg.Image")));
+            this.btSaveJpeg.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btSaveJpeg.Name = "btSaveJpeg";
+            this.btSaveJpeg.Size = new System.Drawing.Size(38, 37);
+            this.btSaveJpeg.Text = "toolStripButton1";
+            this.btSaveJpeg.Click += new System.EventHandler(this.btSaveJpeg_Click);
+            // 
             // toolStripSeparator2
             // 
             this.toolStripSeparator2.Name = "toolStripSeparator2";
@@ -215,7 +225,7 @@ namespace AiPainter
             this.btLeft.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btLeft.Name = "btLeft";
             this.btLeft.Size = new System.Drawing.Size(38, 37);
-            this.btLeft.Text = "Move view left";
+            this.btLeft.Text = "Extend canvas";
             this.btLeft.Click += new System.EventHandler(this.btLeft_Click);
             // 
             // btDown
@@ -225,7 +235,7 @@ namespace AiPainter
             this.btDown.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btDown.Name = "btDown";
             this.btDown.Size = new System.Drawing.Size(38, 37);
-            this.btDown.Text = "Move view down";
+            this.btDown.Text = "Extend canvas";
             this.btDown.Click += new System.EventHandler(this.btDown_Click);
             // 
             // btUp
@@ -235,7 +245,7 @@ namespace AiPainter
             this.btUp.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btUp.Name = "btUp";
             this.btUp.Size = new System.Drawing.Size(38, 37);
-            this.btUp.Text = "Move view up";
+            this.btUp.Text = "Extend canvas";
             this.btUp.Click += new System.EventHandler(this.btUp_Click);
             // 
             // btRight
@@ -245,7 +255,7 @@ namespace AiPainter
             this.btRight.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btRight.Name = "btRight";
             this.btRight.Size = new System.Drawing.Size(38, 37);
-            this.btRight.Text = "Move view right";
+            this.btRight.Text = "Extend canvas";
             this.btRight.Click += new System.EventHandler(this.btRight_Click);
             // 
             // toolStripSeparator3
@@ -284,6 +294,7 @@ namespace AiPainter
             this.pictureBox.TabIndex = 3;
             this.pictureBox.ViewDeltaX = 0;
             this.pictureBox.ViewDeltaY = 0;
+            this.pictureBox.Zoom = 1F;
             this.pictureBox.Paint += new System.Windows.Forms.PaintEventHandler(this.pictureBox_Paint);
             this.pictureBox.MouseDown += new System.Windows.Forms.MouseEventHandler(this.pictureBox_MouseDown);
             this.pictureBox.MouseEnter += new System.EventHandler(this.pictureBox_MouseEnter);
@@ -648,16 +659,6 @@ namespace AiPainter
             this.hPicScroll.Name = "hPicScroll";
             this.hPicScroll.Size = new System.Drawing.Size(1010, 30);
             this.hPicScroll.TabIndex = 0;
-            // 
-            // btSaveJpeg
-            // 
-            this.btSaveJpeg.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.btSaveJpeg.Image = ((System.Drawing.Image)(resources.GetObject("btSaveJpeg.Image")));
-            this.btSaveJpeg.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.btSaveJpeg.Name = "btSaveJpeg";
-            this.btSaveJpeg.Size = new System.Drawing.Size(38, 37);
-            this.btSaveJpeg.Text = "toolStripButton1";
-            this.btSaveJpeg.Click += new System.EventHandler(this.btSaveJpeg_Click);
             // 
             // MainForm
             // 
