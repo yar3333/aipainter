@@ -1,4 +1,4 @@
-﻿namespace AiPainter
+﻿namespace AiPainter.Controls
 {
     partial class SmartPictureBox
     {
@@ -34,6 +34,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.DoubleBuffered = true;
             this.Name = "SmartPictureBox";
             this.Paint += new System.Windows.Forms.PaintEventHandler(this.SmartPictureBox_Paint);
             this.ResumeLayout(false);

@@ -3,7 +3,7 @@
 using System.ComponentModel;
 using System.Windows.Forms.Design;
 
-namespace AiPainter
+namespace AiPainter.Controls
 {
     [Designer(typeof(ParentControlDesigner))]
     public partial class CollapsablePanel : UserControl
@@ -29,7 +29,7 @@ namespace AiPainter
                     Height = height;
                 }
 
-                updateHeader();
+                Caption = caption;
             }
         }
 
@@ -42,31 +42,26 @@ namespace AiPainter
             set
             {
                 caption = value;
-                updateHeader();
+
+                if (isCollapsed)
+                {
+                    btHeader.Text = "> " + Caption;
+                }
+                else
+                {
+                    btHeader.Text = "v " + Caption;
+                }
             }
         }
 
         public CollapsablePanel()
         {
             InitializeComponent();
-            updateHeader();
         }
 
         private void btHeader_Click(object sender, EventArgs e)
         {
             IsCollapsed = !IsCollapsed;
-        }
-
-        private void updateHeader()
-        {
-            if (isCollapsed)
-            {
-                btHeader.Text = "> " + Caption;
-            }
-            else
-            {
-                btHeader.Text = "v " + Caption;
-            }
         }
     }
 }

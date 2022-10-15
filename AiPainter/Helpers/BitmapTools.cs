@@ -139,4 +139,32 @@ public static class BitmapTools
         g.DrawImage(image, 0, 0, res.Width, res.Height);
         return res;
     }
+
+    public static bool HasAlpha(Bitmap bmp)
+    {
+        var data = bmp.LockBits(new Rectangle(0, 0, bmp.Width, bmp.Height), ImageLockMode.ReadOnly, PixelFormat.Format32bppArgb);
+
+        unsafe
+        {
+            var scan0 = (byte*)data.Scan0.ToPointer();
+
+            for (var y = 0; y < bmp.Height; y++)
+            {
+                var p = scan0 + y * data.Stride + 3;
+                var end = p + bmp.Width * 4;
+                while (p < end)
+                {
+                    if (*p != 255)
+                    {
+                        bmp.UnlockBits(data);
+                        return true;
+                    }
+                    p += 4;
+                }
+            }
+        }
+
+        bmp.UnlockBits(data);
+        return false;
+    }
 }

@@ -1,4 +1,6 @@
-﻿namespace AiPainter
+﻿using AiPainter.Controls;
+
+namespace AiPainter
 {
     partial class MainForm
     {
@@ -33,7 +35,7 @@
             this.toolbar = new System.Windows.Forms.ToolStrip();
             this.btClearActiveImage = new System.Windows.Forms.ToolStripButton();
             this.btLoad = new System.Windows.Forms.ToolStripButton();
-            this.btSave = new System.Windows.Forms.ToolStripButton();
+            this.btSavePng = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.btPen1 = new System.Windows.Forms.ToolStripButton();
             this.btPen2 = new System.Windows.Forms.ToolStripButton();
@@ -47,11 +49,13 @@
             this.btRight = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.splitContainer = new System.Windows.Forms.SplitContainer();
-            this.pictureBox = new AiPainter.SmartPictureBox();
+            this.pictureBox = new SmartPictureBox();
             this.panel1 = new System.Windows.Forms.Panel();
-            this.collapsablePanel2 = new AiPainter.CollapsablePanel();
+            this.collapsablePanel3 = new CollapsablePanel();
+            this.btRemBgRemoveBackground = new System.Windows.Forms.Button();
+            this.collapsablePanel2 = new CollapsablePanel();
             this.btLamaCleanerInpaint = new System.Windows.Forms.Button();
-            this.collapsablePanel1 = new AiPainter.CollapsablePanel();
+            this.collapsablePanel1 = new CollapsablePanel();
             this.cbInvokeAiUseInitImage = new System.Windows.Forms.CheckBox();
             this.btInvokeAiReset = new System.Windows.Forms.Button();
             this.pbInvokeAiSteps = new System.Windows.Forms.ProgressBar();
@@ -71,13 +75,13 @@
             this.label3 = new System.Windows.Forms.Label();
             this.hPicScroll = new System.Windows.Forms.HScrollBar();
             this.toolTip = new System.Windows.Forms.ToolTip(this.components);
-            this.collapsablePanel3 = new AiPainter.CollapsablePanel();
-            this.btRemBgRemoveBackground = new System.Windows.Forms.Button();
+            this.btSaveJpeg = new System.Windows.Forms.ToolStripButton();
             this.toolbar.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer)).BeginInit();
             this.splitContainer.Panel1.SuspendLayout();
             this.splitContainer.SuspendLayout();
             this.panel1.SuspendLayout();
+            this.collapsablePanel3.SuspendLayout();
             this.collapsablePanel2.SuspendLayout();
             this.collapsablePanel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numInvokeAiIterations)).BeginInit();
@@ -85,7 +89,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.numInvokeAiImg2img)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numInvokeAiCfgScale)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numInvokeAiGfpGan)).BeginInit();
-            this.collapsablePanel3.SuspendLayout();
             this.SuspendLayout();
             // 
             // toolbar
@@ -95,7 +98,8 @@
             this.toolbar.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.btClearActiveImage,
             this.btLoad,
-            this.btSave,
+            this.btSavePng,
+            this.btSaveJpeg,
             this.toolStripSeparator2,
             this.btPen1,
             this.btPen2,
@@ -134,15 +138,15 @@
             this.btLoad.Text = "Load image";
             this.btLoad.Click += new System.EventHandler(this.btLoad_Click);
             // 
-            // btSave
+            // btSavePng
             // 
-            this.btSave.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.btSave.Image = ((System.Drawing.Image)(resources.GetObject("btSave.Image")));
-            this.btSave.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.btSave.Name = "btSave";
-            this.btSave.Size = new System.Drawing.Size(38, 37);
-            this.btSave.Text = "Save image";
-            this.btSave.Click += new System.EventHandler(this.btSave_Click);
+            this.btSavePng.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.btSavePng.Image = ((System.Drawing.Image)(resources.GetObject("btSavePng.Image")));
+            this.btSavePng.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btSavePng.Name = "btSavePng";
+            this.btSavePng.Size = new System.Drawing.Size(38, 37);
+            this.btSavePng.Text = "Save image";
+            this.btSavePng.Click += new System.EventHandler(this.btSavePng_Click);
             // 
             // toolStripSeparator2
             // 
@@ -278,8 +282,8 @@
             this.pictureBox.Name = "pictureBox";
             this.pictureBox.Size = new System.Drawing.Size(674, 523);
             this.pictureBox.TabIndex = 3;
-            this.pictureBox.ViewportDeltaX = 0;
-            this.pictureBox.ViewportDeltaY = 0;
+            this.pictureBox.ViewDeltaX = 0;
+            this.pictureBox.ViewDeltaY = 0;
             this.pictureBox.Paint += new System.Windows.Forms.PaintEventHandler(this.pictureBox_Paint);
             this.pictureBox.MouseDown += new System.Windows.Forms.MouseEventHandler(this.pictureBox_MouseDown);
             this.pictureBox.MouseEnter += new System.EventHandler(this.pictureBox_MouseEnter);
@@ -300,6 +304,32 @@
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(334, 523);
             this.panel1.TabIndex = 2;
+            // 
+            // collapsablePanel3
+            // 
+            this.collapsablePanel3.BackColor = System.Drawing.SystemColors.ControlDark;
+            this.collapsablePanel3.Caption = "rembg";
+            this.collapsablePanel3.Controls.Add(this.btRemBgRemoveBackground);
+            this.collapsablePanel3.Dock = System.Windows.Forms.DockStyle.Top;
+            this.collapsablePanel3.IsCollapsed = false;
+            this.collapsablePanel3.Location = new System.Drawing.Point(0, 411);
+            this.collapsablePanel3.Name = "collapsablePanel3";
+            this.collapsablePanel3.Size = new System.Drawing.Size(334, 79);
+            this.collapsablePanel3.TabIndex = 5;
+            // 
+            // btRemBgRemoveBackground
+            // 
+            this.btRemBgRemoveBackground.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.btRemBgRemoveBackground.Font = new System.Drawing.Font("Segoe UI", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.btRemBgRemoveBackground.Location = new System.Drawing.Point(3, 26);
+            this.btRemBgRemoveBackground.Name = "btRemBgRemoveBackground";
+            this.btRemBgRemoveBackground.Size = new System.Drawing.Size(327, 39);
+            this.btRemBgRemoveBackground.TabIndex = 13;
+            this.btRemBgRemoveBackground.Text = "Remove background";
+            this.toolTip.SetToolTip(this.btRemBgRemoveBackground, "Start generation (StableDiffusion)");
+            this.btRemBgRemoveBackground.UseVisualStyleBackColor = true;
+            this.btRemBgRemoveBackground.Click += new System.EventHandler(this.btRemBgRemoveBackground_Click);
             // 
             // collapsablePanel2
             // 
@@ -619,31 +649,15 @@
             this.hPicScroll.Size = new System.Drawing.Size(1010, 30);
             this.hPicScroll.TabIndex = 0;
             // 
-            // collapsablePanel3
+            // btSaveJpeg
             // 
-            this.collapsablePanel3.BackColor = System.Drawing.SystemColors.ControlDark;
-            this.collapsablePanel3.Caption = "rembg";
-            this.collapsablePanel3.Controls.Add(this.btRemBgRemoveBackground);
-            this.collapsablePanel3.Dock = System.Windows.Forms.DockStyle.Top;
-            this.collapsablePanel3.IsCollapsed = false;
-            this.collapsablePanel3.Location = new System.Drawing.Point(0, 411);
-            this.collapsablePanel3.Name = "collapsablePanel3";
-            this.collapsablePanel3.Size = new System.Drawing.Size(334, 79);
-            this.collapsablePanel3.TabIndex = 5;
-            // 
-            // btRemBgRemoveBackground
-            // 
-            this.btRemBgRemoveBackground.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.btRemBgRemoveBackground.Font = new System.Drawing.Font("Segoe UI", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.btRemBgRemoveBackground.Location = new System.Drawing.Point(3, 26);
-            this.btRemBgRemoveBackground.Name = "btRemBgRemoveBackground";
-            this.btRemBgRemoveBackground.Size = new System.Drawing.Size(327, 39);
-            this.btRemBgRemoveBackground.TabIndex = 13;
-            this.btRemBgRemoveBackground.Text = "Remove background";
-            this.toolTip.SetToolTip(this.btRemBgRemoveBackground, "Start generation (StableDiffusion)");
-            this.btRemBgRemoveBackground.UseVisualStyleBackColor = true;
-            this.btRemBgRemoveBackground.Click += new System.EventHandler(this.btRemBgRemoveBackground_Click);
+            this.btSaveJpeg.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.btSaveJpeg.Image = ((System.Drawing.Image)(resources.GetObject("btSaveJpeg.Image")));
+            this.btSaveJpeg.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btSaveJpeg.Name = "btSaveJpeg";
+            this.btSaveJpeg.Size = new System.Drawing.Size(38, 37);
+            this.btSaveJpeg.Text = "toolStripButton1";
+            this.btSaveJpeg.Click += new System.EventHandler(this.btSaveJpeg_Click);
             // 
             // MainForm
             // 
@@ -667,6 +681,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer)).EndInit();
             this.splitContainer.ResumeLayout(false);
             this.panel1.ResumeLayout(false);
+            this.collapsablePanel3.ResumeLayout(false);
             this.collapsablePanel2.ResumeLayout(false);
             this.collapsablePanel1.ResumeLayout(false);
             this.collapsablePanel1.PerformLayout();
@@ -675,7 +690,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.numInvokeAiImg2img)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numInvokeAiCfgScale)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numInvokeAiGfpGan)).EndInit();
-            this.collapsablePanel3.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -683,7 +697,7 @@
         #endregion
 
         private ToolStrip toolbar;
-        private ToolStripButton btSave;
+        private ToolStripButton btSavePng;
         private ToolStripButton btDeAlpha;
         private ToolStripButton btLoad;
         private ToolStripSeparator toolStripSeparator2;
@@ -725,5 +739,6 @@
         private SmartPictureBox pictureBox;
         private CollapsablePanel collapsablePanel3;
         private Button btRemBgRemoveBackground;
+        private ToolStripButton btSaveJpeg;
     }
 }

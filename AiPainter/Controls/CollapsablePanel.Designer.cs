@@ -1,6 +1,4 @@
-﻿using System.ComponentModel;
-
-namespace AiPainter
+﻿namespace AiPainter.Controls
 {
     partial class CollapsablePanel
     {

@@ -1,5 +1,6 @@
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
+using System.Text.RegularExpressions;
 using AiPainter.Adapters;
 using AiPainter.Adapters.StuffForInvokeAi;
 using AiPainter.Helpers;
@@ -34,11 +35,40 @@ namespace AiPainter
 
         private static readonly StoredImageList storedImageList = new();
 
+        private static readonly double[] zoomLevels = { 1.0/16, 1.0/8, 1.0/4, 1.0/2, 1, 2, 4, 8, 16 };
+        private int _zoomIndex = 4;
+        private int zoomIndex
+        {
+            get => _zoomIndex;
+            set 
+            { 
+                _zoomIndex = value;
+                pictureBox.Zoom = zoom;
+            }
+        }
+
+        private double zoom => zoomLevels[zoomIndex];
+
         public MainForm()
         {
             InitializeComponent();
 
+            MouseWheel += MainForm_MouseWheel;
+
             btPen1_Click(null, null);
+        }
+
+        private void MainForm_MouseWheel(object? sender, MouseEventArgs e)
+        {
+            if (e.Delta < 0)
+            {
+                if (zoomIndex > 0) zoomIndex--;
+            }
+            else
+            {
+                if (zoomIndex < zoomLevels.Length - 1) zoomIndex++;
+
+            }
         }
 
         private void MainForm_Load(object sender, EventArgs e)
@@ -289,7 +319,7 @@ namespace AiPainter
 
             if (e.Modifiers == Keys.Control && e.KeyCode == Keys.S)
             {
-                btSave_Click(null, null);
+                save(null);
             }
         }
 
@@ -299,21 +329,44 @@ namespace AiPainter
 
             var bmp = BitmapTools.Clone(pictureBox.Image)!;
 
-            var cenX = VIEWPORT_WIDTH  / 2 - pictureBox.ViewportDeltaX;
-            var cenY = VIEWPORT_HEIGHT / 2 - pictureBox.ViewportDeltaY;
+            var cenX = VIEWPORT_WIDTH  / 2 - pictureBox.ViewDeltaX;
+            var cenY = VIEWPORT_HEIGHT / 2 - pictureBox.ViewDeltaY;
 
             MaskHelper.DrawAlpha(new Point(cenX, cenY), bmp, primitives);
 
             return bmp;
         }
 
-        private void btSave_Click(object sender, EventArgs e)
+        private void save(ImageFormat? format)
         {
-            var destPath = filePath.EndsWith("-transparent.png") 
-                               ? filePath
-                               : Path.Combine(Path.GetDirectoryName(filePath)!, Path.GetFileNameWithoutExtension(filePath)) + "-transparent.png";
+            var image = getActiveImage();
+            if (image == null) return;
+
+            format ??= BitmapTools.HasAlpha(image) || Path.GetExtension(filePath).ToLowerInvariant() == ".png"
+                           ? ImageFormat.Png
+                           : ImageFormat.Jpeg;
+
+            var baseFileName = Path.GetFileNameWithoutExtension(filePath)!;
+            var match = Regex.Match(baseFileName, @"(.+)-aip_(\d+)$");
+            var n = match.Success ? int.Parse(match.Groups[1].Value) + 1 : 1;
+            if (match.Success) baseFileName = match.Groups[0].Value;
+            baseFileName += "-aip_";
             
-            getActiveImage().Save(destPath, ImageFormat.Png);
+            var baseDir = Path.GetDirectoryName(filePath)!;
+  
+            while (Directory.GetFiles(baseDir, baseFileName + n.ToString("D3") + ".*").Any()) n++;
+            
+            image.Save(Path.Join(baseDir, baseFileName) + (Equals(format, ImageFormat.Png) ? ".png" : ".jpg"), format);
+        }
+
+        private void btSavePng_Click(object sender, EventArgs e)
+        {
+            save(ImageFormat.Png);
+        }
+
+        private void btSaveJpeg_Click(object sender, EventArgs e)
+        {
+            save(ImageFormat.Jpeg);
         }
 
         private void btDeAlpha_Click(object sender, EventArgs e)
@@ -390,8 +443,8 @@ namespace AiPainter
 
             generating = true;
 
-            var dx = pictureBox.ViewportDeltaX;
-            var dy = pictureBox.ViewportDeltaY;
+            var dx = pictureBox.ViewDeltaX;
+            var dy = pictureBox.ViewDeltaY;
 
             var activeImage = cbInvokeAiUseInitImage.Checked ? getActiveImage() : null;
             var croppedImage = activeImage is { Width: <= VIEWPORT_WIDTH, Height: <= VIEWPORT_HEIGHT }
@@ -496,7 +549,7 @@ namespace AiPainter
         {
             if (pictureBox.Image == null) return;
             
-            if (pictureBox.ViewportDeltaX < 0) pictureBox.ViewportDeltaX += MOVE_SIZE;
+            if (pictureBox.ViewDeltaX < 0) pictureBox.ViewDeltaX += MOVE_SIZE;
             else
             {
                 var bmp = new Bitmap(pictureBox.Image.Width + MOVE_SIZE, pictureBox.Image.Height, PixelFormat.Format32bppArgb);
@@ -516,11 +569,11 @@ namespace AiPainter
         {
             if (pictureBox.Image == null) return;
             
-            pictureBox.ViewportDeltaX -= MOVE_SIZE;
+            pictureBox.ViewDeltaX -= MOVE_SIZE;
 
-            if (pictureBox.ViewportDeltaX + pictureBox.Image.Width < VIEWPORT_WIDTH)
+            if (pictureBox.ViewDeltaX + pictureBox.Image.Width < VIEWPORT_WIDTH)
             {
-                var sz = VIEWPORT_WIDTH - (pictureBox.ViewportDeltaX + pictureBox.Image.Width);
+                var sz = VIEWPORT_WIDTH - (pictureBox.ViewDeltaX + pictureBox.Image.Width);
 
                 var bmp = new Bitmap(pictureBox.Image.Width + sz, pictureBox.Image.Height, PixelFormat.Format32bppArgb);
                 using (var g = Graphics.FromImage(bmp))
@@ -540,7 +593,7 @@ namespace AiPainter
         {
             if (pictureBox.Image == null) return;
             
-            if (pictureBox.ViewportDeltaY < 0) pictureBox.ViewportDeltaY += MOVE_SIZE;
+            if (pictureBox.ViewDeltaY < 0) pictureBox.ViewDeltaY += MOVE_SIZE;
             else
             {
                 var bmp = new Bitmap(pictureBox.Image.Width, pictureBox.Image.Height + MOVE_SIZE, PixelFormat.Format32bppArgb);
@@ -560,11 +613,11 @@ namespace AiPainter
         {
             if (pictureBox.Image == null) return;
             
-            pictureBox.ViewportDeltaY -= MOVE_SIZE;
+            pictureBox.ViewDeltaY -= MOVE_SIZE;
 
-            if (pictureBox.ViewportDeltaY + pictureBox.Image.Height < VIEWPORT_HEIGHT)
+            if (pictureBox.ViewDeltaY + pictureBox.Image.Height < VIEWPORT_HEIGHT)
             {
-                var sz = VIEWPORT_HEIGHT - (pictureBox.ViewportDeltaY + pictureBox.Image.Height);
+                var sz = VIEWPORT_HEIGHT - (pictureBox.ViewDeltaY + pictureBox.Image.Height);
 
                 var bmp = new Bitmap(pictureBox.Image.Width, pictureBox.Image.Height + sz, PixelFormat.Format32bppArgb);
                 using (var g = Graphics.FromImage(bmp))
