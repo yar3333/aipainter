@@ -19,7 +19,7 @@ class Config
     
     [JsonIgnore]
     public string InvokeAiOutputFolderPath => !UseExternalInvokeAi 
-                                                  ? Path.Combine(Application.StartupPath, "external", "InvokeAi", "outputs", "img-samples")
+                                                  ? Path.Combine(Application.StartupPath, "external", "InvokeAI", "outputs", "img-samples")
                                                   : ExternalInvokeAiOutputFolderPath;
     [JsonIgnore]
     public string LamaCleanerUrl => !UseExternalLamaCleaner ? "http://127.0.0.1:9595/" : ExternalLamaCleanerUrl;

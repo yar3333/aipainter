@@ -340,7 +340,7 @@ namespace AiPainter
             // collapsablePanel1
             // 
             this.collapsablePanel1.BackColor = System.Drawing.SystemColors.ControlDark;
-            this.collapsablePanel1.Caption = "InvokeAi (StableDiffusion)";
+            this.collapsablePanel1.Caption = "InvokeAI (StableDiffusion)";
             this.collapsablePanel1.Controls.Add(this.cbInvokeAiUseInitImage);
             this.collapsablePanel1.Controls.Add(this.btInvokeAiReset);
             this.collapsablePanel1.Controls.Add(this.pbInvokeAiSteps);

@@ -7,6 +7,8 @@ namespace AiPainter.Adapters;
 
 static class LamaCleaner
 {
+    public static readonly Log Log = new("lama-cleaner");
+
     public static async Task<Bitmap?> RunAsync(Bitmap? image)
     {
         if (image == null) return null;
@@ -42,7 +44,7 @@ static class LamaCleaner
         image.Save("d:\\1.png", ImageFormat.Png);
         mask.Save("d:\\2.png", ImageFormat.Png);
 
-        var httpClient = new HttpClient
+        var httpClient = new HttpClient(new LoggerHttpClientHandler(Log))
         {
             BaseAddress = new Uri(Program.Config.LamaCleanerUrl),
         };

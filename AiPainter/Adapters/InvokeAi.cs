@@ -10,6 +10,8 @@ namespace AiPainter.Adapters;
 
 static class InvokeAi
 {
+    public static readonly Log Log = new("InvokeAI");
+
     public static async Task<AiImageInfo[]> GetImageList()
     {
         return await requestGet<AiImageInfo[]>("run_log.json");
@@ -59,7 +61,11 @@ static class InvokeAi
 
     private static HttpContent requestPost(string subUrl, object dataObj)
     {
-        var httpClient = new HttpClient { BaseAddress = new Uri(Program.Config.InvokeAiUrl), MaxResponseContentBufferSize = 1 };
+        var httpClient = new HttpClient(new LoggerHttpClientHandler(Log))
+        {
+            BaseAddress = new Uri(Program.Config.InvokeAiUrl), 
+            MaxResponseContentBufferSize = 1 // TODO: is this need?
+        };
 
         var data = JsonSerializer.Serialize(dataObj, new JsonSerializerOptions { PropertyNamingPolicy = null });
         var content = new StringContent(data, Encoding.UTF8, "application/json");

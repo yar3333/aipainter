@@ -6,13 +6,15 @@ namespace AiPainter.Adapters;
 
 static class RemBg
 {
+    public static readonly Log Log = new("rembg");
+
     public static async Task<Bitmap?> RunAsync(Bitmap? image)
     {
         if (image == null) return null;
 
-        var httpClient = new HttpClient
+        var httpClient = new HttpClient(new LoggerHttpClientHandler(Log))
         {
-            BaseAddress = new Uri(Program.Config.RemBgUrl),
+            BaseAddress = new Uri(Program.Config.RemBgUrl)
         };
 
         using var memBufferImage = new MemoryStream();
