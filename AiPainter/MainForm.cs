@@ -12,7 +12,17 @@ namespace AiPainter
     {
         private const int IMAGE_EXTEND_SIZE = 64;
         
-        private string? filePath;
+        private string? _filePath;
+
+        private string? filePath
+        {
+            get => _filePath;
+            set
+            {
+                _filePath = value;
+                Text = "AiPainter" + (string.IsNullOrEmpty(value) ? "" : " - " + value);
+            }
+        }
 
         private static readonly StoredImageList storedImageList = new();
         
@@ -97,7 +107,8 @@ namespace AiPainter
                                 case MouseButtons.Left:
                                     filePath = (string)pb.Tag;
                                     pictureBox.Image = BitmapTools.Clone((Bitmap)pb.Image);
-                                    pictureBox.Clear();
+                                    pictureBox.ResetMask();
+                                    pictureBox.ResetView();
                                     break;
 
                                 case MouseButtons.Right:
@@ -229,7 +240,8 @@ namespace AiPainter
             {
                 filePath = openFileDialog.FileName;
                 pictureBox.Image = BitmapTools.Load(filePath);
-                pictureBox.Clear();
+                pictureBox.ResetMask();
+                pictureBox.ResetView();
             }
         }
 
@@ -418,13 +430,13 @@ namespace AiPainter
 
         private void btResetMask_Click(object sender, EventArgs e)
         {
-            pictureBox.Clear();
+            pictureBox.ResetMask();
         }
 
         private void btApplyAlphaMask_Click(object sender, EventArgs e)
         {
             pictureBox.Image = pictureBox.GetImageWithMaskToTransparent();
-            pictureBox.Clear();
+            pictureBox.ResetMask();
         }
 
         private void btLamaCleanerInpaint_Click(object sender, EventArgs e)
@@ -439,7 +451,7 @@ namespace AiPainter
                 {
                     btLamaCleanerInpaint.Enabled = true;
                     pictureBox.Image = result;
-                    pictureBox.Clear();
+                    pictureBox.ResetMask();
                 });
             });
         }
@@ -456,9 +468,14 @@ namespace AiPainter
                 {
                     btRemBgRemoveBackground.Enabled = true;
                     pictureBox.Image = result;
-                    pictureBox.Clear();
+                    pictureBox.ResetMask();
                 });
             });
+        }
+
+        private void controlsStateUpdater_DoWork(object sender, System.ComponentModel.DoWorkEventArgs e)
+        {
+
         }
     }
 }

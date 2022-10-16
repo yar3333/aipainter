@@ -131,11 +131,19 @@ namespace AiPainter.Controls
             Refresh();
         }
 
-        public void Clear()
+        public void ResetMask()
         {
             primitives.Clear();
             redoPrimitiveBlocks.Clear();
-            Refresh();
+            Invalidate();
+        }
+
+        public void ResetView()
+        {
+            ViewDeltaX = 0;
+            ViewDeltaY = 0;
+            zoomIndex = Array.IndexOf(zoomLevels, 1.0f);
+            Invalidate();
         }
 
         private void MainForm_MouseWheel(object? sender, MouseEventArgs e)

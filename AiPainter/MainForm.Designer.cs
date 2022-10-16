@@ -46,7 +46,6 @@ namespace AiPainter
             this.btDown = new System.Windows.Forms.ToolStripButton();
             this.btUp = new System.Windows.Forms.ToolStripButton();
             this.btRight = new System.Windows.Forms.ToolStripButton();
-            this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.splitContainer = new System.Windows.Forms.SplitContainer();
             this.pictureBox = new AiPainter.Controls.SmartPictureBox();
             this.panel1 = new System.Windows.Forms.Panel();
@@ -74,6 +73,9 @@ namespace AiPainter
             this.label3 = new System.Windows.Forms.Label();
             this.hPicScroll = new System.Windows.Forms.HScrollBar();
             this.toolTip = new System.Windows.Forms.ToolTip(this.components);
+            this.controlsStateUpdater = new System.ComponentModel.BackgroundWorker();
+            this.labInvokeAiSteps = new System.Windows.Forms.Label();
+            this.labInvokeAiIterations = new System.Windows.Forms.Label();
             this.toolbar.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer)).BeginInit();
             this.splitContainer.Panel1.SuspendLayout();
@@ -106,8 +108,7 @@ namespace AiPainter
             this.btLeft,
             this.btDown,
             this.btUp,
-            this.btRight,
-            this.toolStripSeparator3});
+            this.btRight});
             this.toolbar.Location = new System.Drawing.Point(0, 0);
             this.toolbar.Name = "toolbar";
             this.toolbar.Size = new System.Drawing.Size(1010, 40);
@@ -234,11 +235,6 @@ namespace AiPainter
             this.btRight.Text = "Extend canvas";
             this.btRight.Click += new System.EventHandler(this.btRight_Click);
             // 
-            // toolStripSeparator3
-            // 
-            this.toolStripSeparator3.Name = "toolStripSeparator3";
-            this.toolStripSeparator3.Size = new System.Drawing.Size(6, 40);
-            // 
             // splitContainer
             // 
             this.splitContainer.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
@@ -268,8 +264,6 @@ namespace AiPainter
             this.pictureBox.Name = "pictureBox";
             this.pictureBox.Size = new System.Drawing.Size(674, 523);
             this.pictureBox.TabIndex = 3;
-            this.pictureBox.ViewDeltaX = 0;
-            this.pictureBox.ViewDeltaY = 0;
             // 
             // panel1
             // 
@@ -332,7 +326,7 @@ namespace AiPainter
             this.btLamaCleanerInpaint.Name = "btLamaCleanerInpaint";
             this.btLamaCleanerInpaint.Size = new System.Drawing.Size(327, 39);
             this.btLamaCleanerInpaint.TabIndex = 12;
-            this.btLamaCleanerInpaint.Text = "Inpaint";
+            this.btLamaCleanerInpaint.Text = "Clean masked area";
             this.toolTip.SetToolTip(this.btLamaCleanerInpaint, "Start generation (StableDiffusion)");
             this.btLamaCleanerInpaint.UseVisualStyleBackColor = true;
             this.btLamaCleanerInpaint.Click += new System.EventHandler(this.btLamaCleanerInpaint_Click);
@@ -341,6 +335,8 @@ namespace AiPainter
             // 
             this.collapsablePanel1.BackColor = System.Drawing.SystemColors.ControlDark;
             this.collapsablePanel1.Caption = "InvokeAI (StableDiffusion)";
+            this.collapsablePanel1.Controls.Add(this.labInvokeAiIterations);
+            this.collapsablePanel1.Controls.Add(this.labInvokeAiSteps);
             this.collapsablePanel1.Controls.Add(this.cbInvokeAiUseInitImage);
             this.collapsablePanel1.Controls.Add(this.btInvokeAiReset);
             this.collapsablePanel1.Controls.Add(this.pbInvokeAiSteps);
@@ -368,7 +364,7 @@ namespace AiPainter
             // cbInvokeAiUseInitImage
             // 
             this.cbInvokeAiUseInitImage.AutoSize = true;
-            this.cbInvokeAiUseInitImage.Location = new System.Drawing.Point(4, 101);
+            this.cbInvokeAiUseInitImage.Location = new System.Drawing.Point(8, 101);
             this.cbInvokeAiUseInitImage.Name = "cbInvokeAiUseInitImage";
             this.cbInvokeAiUseInitImage.Size = new System.Drawing.Size(186, 19);
             this.cbInvokeAiUseInitImage.TabIndex = 12;
@@ -423,7 +419,7 @@ namespace AiPainter
             // numInvokeAiIterations
             // 
             this.numInvokeAiIterations.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.numInvokeAiIterations.Location = new System.Drawing.Point(64, 127);
+            this.numInvokeAiIterations.Location = new System.Drawing.Point(48, 127);
             this.numInvokeAiIterations.Maximum = new decimal(new int[] {
             10000,
             0,
@@ -437,7 +433,7 @@ namespace AiPainter
             this.numInvokeAiIterations.Name = "numInvokeAiIterations";
             this.numInvokeAiIterations.Size = new System.Drawing.Size(90, 27);
             this.numInvokeAiIterations.TabIndex = 1;
-            this.toolTip.SetToolTip(this.numInvokeAiIterations, "Count of images to generate");
+            this.toolTip.SetToolTip(this.numInvokeAiIterations, "Count of images to generate (original name: iterations)");
             this.numInvokeAiIterations.Value = new decimal(new int[] {
             1,
             0,
@@ -466,7 +462,7 @@ namespace AiPainter
             0,
             0,
             0});
-            this.numInvokeAiSteps.Location = new System.Drawing.Point(258, 127);
+            this.numInvokeAiSteps.Location = new System.Drawing.Point(260, 127);
             this.numInvokeAiSteps.Maximum = new decimal(new int[] {
             200,
             0,
@@ -480,7 +476,7 @@ namespace AiPainter
             this.numInvokeAiSteps.Name = "numInvokeAiSteps";
             this.numInvokeAiSteps.Size = new System.Drawing.Size(62, 27);
             this.numInvokeAiSteps.TabIndex = 1;
-            this.toolTip.SetToolTip(this.numInvokeAiSteps, "Quality (1..200)");
+            this.toolTip.SetToolTip(this.numInvokeAiSteps, "Quality (1..200) (original name: steps)");
             this.numInvokeAiSteps.Value = new decimal(new int[] {
             50,
             0,
@@ -501,27 +497,28 @@ namespace AiPainter
             this.label1.AutoSize = true;
             this.label1.Location = new System.Drawing.Point(2, 133);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(56, 15);
+            this.label1.Size = new System.Drawing.Size(40, 15);
             this.label1.TabIndex = 2;
-            this.label1.Text = "Iterations";
+            this.label1.Text = "Count";
             // 
             // label5
             // 
             this.label5.AutoSize = true;
             this.label5.Location = new System.Drawing.Point(3, 171);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(55, 15);
+            this.label5.Size = new System.Drawing.Size(53, 15);
             this.label5.TabIndex = 6;
-            this.label5.Text = "img2img";
+            this.label5.Text = "Changes";
             // 
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(217, 133);
+            this.label2.Location = new System.Drawing.Point(190, 133);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(35, 15);
+            this.label2.Size = new System.Drawing.Size(64, 15);
             this.label2.TabIndex = 2;
-            this.label2.Text = "Steps";
+            this.label2.Text = "Detail level";
+            this.label2.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
             // numInvokeAiImg2img
             // 
@@ -541,7 +538,7 @@ namespace AiPainter
             this.numInvokeAiImg2img.Name = "numInvokeAiImg2img";
             this.numInvokeAiImg2img.Size = new System.Drawing.Size(62, 27);
             this.numInvokeAiImg2img.TabIndex = 5;
-            this.toolTip.SetToolTip(this.numInvokeAiImg2img, "Changes strength for case with initial image");
+            this.toolTip.SetToolTip(this.numInvokeAiImg2img, "Changes strength for case with initial image (original name: img2img)");
             this.numInvokeAiImg2img.Value = new decimal(new int[] {
             75,
             0,
@@ -557,7 +554,7 @@ namespace AiPainter
             0,
             0,
             65536});
-            this.numInvokeAiCfgScale.Location = new System.Drawing.Point(258, 165);
+            this.numInvokeAiCfgScale.Location = new System.Drawing.Point(260, 165);
             this.numInvokeAiCfgScale.Maximum = new decimal(new int[] {
             50,
             0,
@@ -571,7 +568,7 @@ namespace AiPainter
             this.numInvokeAiCfgScale.Name = "numInvokeAiCfgScale";
             this.numInvokeAiCfgScale.Size = new System.Drawing.Size(62, 27);
             this.numInvokeAiCfgScale.TabIndex = 3;
-            this.toolTip.SetToolTip(this.numInvokeAiCfgScale, "How hard to follow the text prompt");
+            this.toolTip.SetToolTip(this.numInvokeAiCfgScale, "How hard to follow the text prompt (original name: cfg scale)");
             this.numInvokeAiCfgScale.Value = new decimal(new int[] {
             75,
             0,
@@ -583,9 +580,10 @@ namespace AiPainter
             this.label4.AutoSize = true;
             this.label4.Location = new System.Drawing.Point(207, 210);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(45, 15);
+            this.label4.Size = new System.Drawing.Size(47, 15);
             this.label4.TabIndex = 4;
-            this.label4.Text = "gfpgan";
+            this.label4.Text = "Face fix";
+            this.label4.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
             // numInvokeAiGfpGan
             // 
@@ -596,7 +594,7 @@ namespace AiPainter
             0,
             0,
             65536});
-            this.numInvokeAiGfpGan.Location = new System.Drawing.Point(258, 204);
+            this.numInvokeAiGfpGan.Location = new System.Drawing.Point(260, 204);
             this.numInvokeAiGfpGan.Maximum = new decimal(new int[] {
             1,
             0,
@@ -605,7 +603,7 @@ namespace AiPainter
             this.numInvokeAiGfpGan.Name = "numInvokeAiGfpGan";
             this.numInvokeAiGfpGan.Size = new System.Drawing.Size(62, 27);
             this.numInvokeAiGfpGan.TabIndex = 3;
-            this.toolTip.SetToolTip(this.numInvokeAiGfpGan, "Face fix strength");
+            this.toolTip.SetToolTip(this.numInvokeAiGfpGan, "Face fix strength (original name: gfpgan)");
             this.numInvokeAiGfpGan.Value = new decimal(new int[] {
             8,
             0,
@@ -615,11 +613,12 @@ namespace AiPainter
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(196, 171);
+            this.label3.Location = new System.Drawing.Point(137, 171);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(56, 15);
+            this.label3.Size = new System.Drawing.Size(117, 15);
             this.label3.TabIndex = 4;
-            this.label3.Text = "Cfg Scale";
+            this.label3.Text = "Relevance to prompt";
+            this.label3.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
             // hPicScroll
             // 
@@ -628,6 +627,34 @@ namespace AiPainter
             this.hPicScroll.Name = "hPicScroll";
             this.hPicScroll.Size = new System.Drawing.Size(1010, 30);
             this.hPicScroll.TabIndex = 0;
+            // 
+            // controlsStateUpdater
+            // 
+            this.controlsStateUpdater.DoWork += new System.ComponentModel.DoWorkEventHandler(this.controlsStateUpdater_DoWork);
+            // 
+            // labInvokeAiSteps
+            // 
+            this.labInvokeAiSteps.AutoSize = true;
+            this.labInvokeAiSteps.BackColor = System.Drawing.Color.Transparent;
+            this.labInvokeAiSteps.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.labInvokeAiSteps.Location = new System.Drawing.Point(120, 284);
+            this.labInvokeAiSteps.Name = "labInvokeAiSteps";
+            this.labInvokeAiSteps.Size = new System.Drawing.Size(95, 13);
+            this.labInvokeAiSteps.TabIndex = 13;
+            this.labInvokeAiSteps.Text = "labInvokeAiSteps";
+            this.labInvokeAiSteps.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // labInvokeAiIterations
+            // 
+            this.labInvokeAiIterations.AutoSize = true;
+            this.labInvokeAiIterations.BackColor = System.Drawing.Color.Transparent;
+            this.labInvokeAiIterations.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.labInvokeAiIterations.Location = new System.Drawing.Point(110, 303);
+            this.labInvokeAiIterations.Name = "labInvokeAiIterations";
+            this.labInvokeAiIterations.Size = new System.Drawing.Size(116, 13);
+            this.labInvokeAiIterations.TabIndex = 14;
+            this.labInvokeAiIterations.Text = "labInvokeAiIterations";
+            this.labInvokeAiIterations.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // MainForm
             // 
@@ -641,7 +668,7 @@ namespace AiPainter
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.KeyPreview = true;
             this.Name = "MainForm";
-            this.Text = "SyImageEditor";
+            this.Text = "AiPainter";
             this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
             this.Load += new System.EventHandler(this.MainForm_Load);
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.MainForm_KeyDown);
@@ -696,7 +723,6 @@ namespace AiPainter
         private ToolStripButton btDown;
         private ToolStripButton btUp;
         private ToolStripButton btRight;
-        private ToolStripSeparator toolStripSeparator3;
         private ToolStripButton btResetMask;
         private ToolTip toolTip;
         private ToolStripButton btApplyAlphaMask;
@@ -708,5 +734,8 @@ namespace AiPainter
         private CollapsablePanel collapsablePanel3;
         private Button btRemBgRemoveBackground;
         private ToolStripButton btSaveJpeg;
+        private System.ComponentModel.BackgroundWorker controlsStateUpdater;
+        private Label labInvokeAiIterations;
+        private Label labInvokeAiSteps;
     }
 }
