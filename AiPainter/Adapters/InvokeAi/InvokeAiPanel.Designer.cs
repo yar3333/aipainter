@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.collapsablePanel = new AiPainter.Controls.CollapsablePanel();
             this.pbIterations = new AiPainter.Controls.CustomProgressBar();
             this.pbSteps = new AiPainter.Controls.CustomProgressBar();
@@ -46,6 +47,7 @@
             this.label4 = new System.Windows.Forms.Label();
             this.numGfpGan = new System.Windows.Forms.NumericUpDown();
             this.label3 = new System.Windows.Forms.Label();
+            this.toolTip = new System.Windows.Forms.ToolTip(this.components);
             this.collapsablePanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numIterations)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numSteps)).BeginInit();
@@ -84,21 +86,25 @@
             // 
             // pbIterations
             // 
-            this.pbIterations.CustomText = null;
+            this.pbIterations.BackColor = System.Drawing.Color.AliceBlue;
+            this.pbIterations.CustomText = "";
             this.pbIterations.Location = new System.Drawing.Point(5, 309);
             this.pbIterations.Name = "pbIterations";
             this.pbIterations.Size = new System.Drawing.Size(324, 23);
             this.pbIterations.TabIndex = 16;
             this.pbIterations.TextColor = System.Drawing.Color.Black;
+            this.toolTip.SetToolTip(this.pbIterations, "Generated images count (iterations)");
             // 
             // pbSteps
             // 
-            this.pbSteps.CustomText = null;
+            this.pbSteps.BackColor = System.Drawing.Color.AliceBlue;
+            this.pbSteps.CustomText = "";
             this.pbSteps.Location = new System.Drawing.Point(5, 282);
             this.pbSteps.Name = "pbSteps";
             this.pbSteps.Size = new System.Drawing.Size(324, 23);
             this.pbSteps.TabIndex = 15;
             this.pbSteps.TextColor = System.Drawing.Color.Black;
+            this.toolTip.SetToolTip(this.pbSteps, "Detail level for current image (steps)");
             // 
             // cbUseInitImage
             // 
@@ -120,6 +126,7 @@
             this.btReset.Size = new System.Drawing.Size(90, 39);
             this.btReset.TabIndex = 11;
             this.btReset.Text = "Reset";
+            this.toolTip.SetToolTip(this.btReset, "Reset values to defaut state");
             this.btReset.UseVisualStyleBackColor = true;
             this.btReset.Click += new System.EventHandler(this.btReset_Click);
             // 
@@ -152,6 +159,7 @@
             this.numIterations.Name = "numIterations";
             this.numIterations.Size = new System.Drawing.Size(90, 27);
             this.numIterations.TabIndex = 1;
+            this.toolTip.SetToolTip(this.numIterations, "Count of images to generate (original name: iterations)");
             this.numIterations.Value = new decimal(new int[] {
             1,
             0,
@@ -193,6 +201,7 @@
             this.numSteps.Name = "numSteps";
             this.numSteps.Size = new System.Drawing.Size(62, 27);
             this.numSteps.TabIndex = 1;
+            this.toolTip.SetToolTip(this.numSteps, "1..200 (original name: steps)");
             this.numSteps.Value = new decimal(new int[] {
             50,
             0,
@@ -207,6 +216,7 @@
             this.tbSeed.PlaceholderText = "Seed...";
             this.tbSeed.Size = new System.Drawing.Size(326, 27);
             this.tbSeed.TabIndex = 7;
+            this.toolTip.SetToolTip(this.tbSeed, "Random seed (positive integer)");
             // 
             // label1
             // 
@@ -254,6 +264,7 @@
             this.numImg2img.Name = "numImg2img";
             this.numImg2img.Size = new System.Drawing.Size(62, 27);
             this.numImg2img.TabIndex = 5;
+            this.toolTip.SetToolTip(this.numImg2img, "Changes strength for case with initial image (original name: img2img)");
             this.numImg2img.Value = new decimal(new int[] {
             75,
             0,
@@ -283,6 +294,7 @@
             this.numCfgScale.Name = "numCfgScale";
             this.numCfgScale.Size = new System.Drawing.Size(62, 27);
             this.numCfgScale.TabIndex = 3;
+            this.toolTip.SetToolTip(this.numCfgScale, "How hard to follow the text prompt (original name: cfg scale)");
             this.numCfgScale.Value = new decimal(new int[] {
             75,
             0,
@@ -317,6 +329,7 @@
             this.numGfpGan.Name = "numGfpGan";
             this.numGfpGan.Size = new System.Drawing.Size(62, 27);
             this.numGfpGan.TabIndex = 3;
+            this.toolTip.SetToolTip(this.numGfpGan, "Face fix strength (original name: gfpgan)");
             this.numGfpGan.Value = new decimal(new int[] {
             8,
             0,
@@ -371,5 +384,6 @@
         private Label label3;
         private Controls.CustomProgressBar pbIterations;
         private Controls.CustomProgressBar pbSteps;
+        private ToolTip toolTip;
     }
 }

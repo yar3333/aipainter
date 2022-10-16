@@ -1,6 +1,5 @@
 using System.Drawing.Imaging;
 using System.Text.RegularExpressions;
-using AiPainter.Adapters.RemBg;
 using AiPainter.Helpers;
 
 #pragma warning disable CS8602
@@ -330,17 +329,11 @@ namespace AiPainter
             pictureBox.ResetMask();
         }
 
-        private void btRemBgRemoveBackground_Click(object sender, EventArgs e)
-        {
-            if (pictureBox.Image == null) return;
-
-            
-        }
-
         private void controlsStateUpdater_Tick(object sender, EventArgs e)
         {
             panInvokeAi.UpdateState(pictureBox);
             panLamaCleaner.UpdateState(pictureBox);
+            panRemBg.UpdateState(pictureBox);
         }
     }
 }

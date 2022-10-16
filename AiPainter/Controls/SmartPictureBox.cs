@@ -150,6 +150,8 @@ namespace AiPainter.Controls
 
         private void MainForm_MouseWheel(object? sender, MouseEventArgs e)
         {
+            if (Image == null) return;
+
             if (e.Delta < 0)
             {
                 if (zoomIndex > 0) zoomIndex--;
@@ -202,7 +204,7 @@ namespace AiPainter.Controls
 
         private void drawCursor(Graphics g)
         {
-            if (cursorPt == null) return;
+            if (cursorPt == null || Image == null) return;
 
             var penSize = getActivePenSize();
             g.FillEllipse
@@ -217,6 +219,8 @@ namespace AiPainter.Controls
 
         private void SmartPictureBox_MouseDown(object sender, MouseEventArgs e)
         {
+            if (Image == null) return;
+
             var loc = getTransformedMousePos(e.Location);
 
             if (e.Button == MouseButtons.Left) mouseLeftDown(loc);
@@ -254,18 +258,20 @@ namespace AiPainter.Controls
 
         private void SmartPictureBox_MouseEnter(object sender, EventArgs e)
         {
-            Cursor.Hide();
+            if (Image != null) Cursor.Hide();
         }
 
         private void SmartPictureBox_MouseLeave(object sender, EventArgs e)
         {
             cursorPt = null;
             Refresh();
-            Cursor.Show();
+            if (Image != null) Cursor.Show();
         }
 
         private void SmartPictureBox_MouseMove(object sender, MouseEventArgs e)
         {
+            if (Image == null) return;
+
             var loc = getTransformedMousePos(e.Location);
 
             cursorPt = !modeMaskDrawing && !modeViewportMoving ? loc : null;
@@ -278,6 +284,8 @@ namespace AiPainter.Controls
 
         private void SmartPictureBox_MouseUp(object sender, MouseEventArgs e)
         {
+            if (Image == null) return;
+
             Capture = false;
             modeViewportMoving = false;
             modeMaskDrawing = false;

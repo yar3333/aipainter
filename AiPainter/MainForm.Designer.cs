@@ -155,7 +155,7 @@ namespace AiPainter
             this.btApplyAlphaMask.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btApplyAlphaMask.Name = "btApplyAlphaMask";
             this.btApplyAlphaMask.Size = new System.Drawing.Size(38, 37);
-            this.btApplyAlphaMask.Text = "Apply mask (add alpha)";
+            this.btApplyAlphaMask.Text = "Apply mask (make transparent)";
             this.btApplyAlphaMask.Click += new System.EventHandler(this.btApplyAlphaMask_Click);
             // 
             // btDeAlpha
@@ -165,7 +165,7 @@ namespace AiPainter
             this.btDeAlpha.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btDeAlpha.Name = "btDeAlpha";
             this.btDeAlpha.Size = new System.Drawing.Size(38, 37);
-            this.btDeAlpha.Text = "Alpha to opaque";
+            this.btDeAlpha.Text = "Transparent to opaque";
             this.btDeAlpha.Click += new System.EventHandler(this.btDeAlpha_Click);
             // 
             // toolStripSeparator1

@@ -17,18 +17,9 @@ namespace AiPainter.Adapters.InvokeAi
 
         private void btGenerate_Click(object sender, EventArgs e)
         {
-            if (InProcess)
-            {
-                btGenerate.Enabled = false;
-                InvokeAiClient.Cancel();
-                return;
-            }
+            if (InProcess) { InvokeAiClient.Cancel(); return; }
 
-            if (tbPrompt.Text.Trim() == "")
-            {
-                tbPrompt.Focus();
-                return;
-            }
+            if (tbPrompt.Text.Trim() == "") { tbPrompt.Focus(); return; }
 
             InProcess = true;
 
@@ -54,15 +45,13 @@ namespace AiPainter.Adapters.InvokeAi
                 initimg = BitmapTools.GetBase64String(croppedImage),
             };
 
-            var oldGenerateText = btGenerate.Text;
-            btGenerate.Text = "CANCEL";
-            tbPrompt.Enabled = false;
-            
             pbIterations.Maximum = sdImage.iterations;
             pbIterations.Value = 0;
+            pbIterations.CustomText = "0 / " + sdImage.iterations;
 
             pbSteps.Value = 0;
             pbSteps.Maximum = sdImage.steps;
+            pbSteps.CustomText = "0 / " + sdImage.steps;
 
             InvokeAiClient.Generate(sdImage, progress =>
             {
@@ -72,17 +61,16 @@ namespace AiPainter.Adapters.InvokeAi
                     {
                         case "step":
                             pbSteps.Value = progress.step ?? 0;
+                            pbSteps.CustomText = pbSteps.Value + " / " + sdImage.steps;
                             break;                    
                     
                         case "result":
                             pbSteps.Value = 0;
                             pbIterations.Value++;
+                            pbIterations.CustomText = pbIterations.Value + " / " + sdImage.iterations;
+                            
                             if (pbIterations.Value == pbIterations.Maximum)
                             {
-                                btGenerate.Text = oldGenerateText;
-                                btGenerate.Enabled = true;
-                                tbPrompt.Enabled = true;
-
                                 var fName = progress.url.Split('/', '\\').Last();
                                 var fPath = Path.Combine(Program.Config.InvokeAiOutputFolderPath, fName);
 
@@ -104,9 +92,7 @@ namespace AiPainter.Adapters.InvokeAi
 
                         case "canceled":
                             pbSteps.Value = 0;
-                            btGenerate.Text = oldGenerateText;
-                            btGenerate.Enabled = true;
-                            tbPrompt.Enabled = true;
+                            pbSteps.CustomText = "";
                             InProcess = false;
                             break;
                     }
@@ -145,6 +131,9 @@ namespace AiPainter.Adapters.InvokeAi
                 cbUseInitImage.Enabled = true;
                 numImg2img.Enabled = true;
             }
+
+            btGenerate.Text = InProcess ? "CANCEL" : "Generate";
+            tbPrompt.Enabled = !InProcess;
         }
     }
 }

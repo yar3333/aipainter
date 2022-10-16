@@ -16,13 +16,24 @@ class CustomProgressBar : ProgressBar
         );
     }
 
+    protected override void OnPaintBackground(PaintEventArgs pevent)
+    {
+        using var brush = new SolidBrush(BackColor);
+        pevent.Graphics.FillRectangle(brush, ClientRectangle);
+    }
+
     protected override void OnPaint(PaintEventArgs e)
     {
         var rect = ClientRectangle;
         var g = e.Graphics;
 
         ProgressBarRenderer.DrawHorizontalBar(g, rect);
-        rect.Inflate(-3, -3);
+
+        rect.Inflate(-1, -1);
+        using var backBrush = new SolidBrush(BackColor);
+        g.FillRectangle(backBrush, rect);
+
+        rect.Inflate(-2, -2);
         if (Value > 0)
         {
             var clip = rect with { Width = (int)Math.Round((float)Value / Maximum * rect.Width) };
