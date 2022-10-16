@@ -77,7 +77,6 @@
             this.collapsablePanel.Controls.Add(this.label4);
             this.collapsablePanel.Controls.Add(this.numGfpGan);
             this.collapsablePanel.Controls.Add(this.label3);
-            this.collapsablePanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.collapsablePanel.IsCollapsed = false;
             this.collapsablePanel.Location = new System.Drawing.Point(0, 0);
             this.collapsablePanel.Name = "collapsablePanel";
@@ -350,9 +349,11 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.AutoSize = true;
+            this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.Controls.Add(this.collapsablePanel);
             this.Name = "InvokeAiPanel";
-            this.Size = new System.Drawing.Size(334, 349);
+            this.Size = new System.Drawing.Size(337, 352);
             this.collapsablePanel.ResumeLayout(false);
             this.collapsablePanel.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numIterations)).EndInit();

@@ -35,10 +35,11 @@
             // 
             // collapsablePanel
             // 
+            this.collapsablePanel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.collapsablePanel.BackColor = System.Drawing.SystemColors.Control;
             this.collapsablePanel.Caption = "lama-cleaner";
             this.collapsablePanel.Controls.Add(this.btInpaint);
-            this.collapsablePanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.collapsablePanel.IsCollapsed = false;
             this.collapsablePanel.Location = new System.Drawing.Point(0, 0);
             this.collapsablePanel.Name = "collapsablePanel";
@@ -62,9 +63,11 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.AutoSize = true;
+            this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.Controls.Add(this.collapsablePanel);
             this.Name = "LamaCleanerPanel";
-            this.Size = new System.Drawing.Size(289, 77);
+            this.Size = new System.Drawing.Size(292, 80);
             this.collapsablePanel.ResumeLayout(false);
             this.ResumeLayout(false);
 
