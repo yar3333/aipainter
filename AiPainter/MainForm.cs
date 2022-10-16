@@ -1,7 +1,6 @@
 using System.Drawing.Imaging;
 using System.Text.RegularExpressions;
-using AiPainter.Adapters;
-using AiPainter.Adapters.StuffForInvokeAi;
+using AiPainter.Adapters.RemBg;
 using AiPainter.Helpers;
 
 #pragma warning disable CS8602
@@ -252,118 +251,10 @@ namespace AiPainter
 
         private bool generating;
 
-        private void btInvokeAiGenerate_Click(object sender, EventArgs e)
-        {
-            if (generating)
-            {
-                btInvokeAiGenerate.Enabled = false;
-                InvokeAi.Cancel();
-                return;
-            }
-
-            if (tbPrompt.Text.Trim() == "")
-            {
-                tbPrompt.Focus();
-                return;
-            }
-
-            generating = true;
-
-            var dx = pictureBox.ViewDeltaX;
-            var dy = pictureBox.ViewDeltaY;
-
-            var wasCropped = false;
-
-            var activeImage = cbInvokeAiUseInitImage.Checked ? pictureBox.GetImageWithMaskToTransparent() : null;
-            var croppedImage = activeImage != null
-                                   ? pictureBox.GetImageWithMaskToTransparentCroppedToViewport(out wasCropped)
-                                   : null;
-
-            var sdImage = new AiImageInfo
-            {
-                prompt = tbPrompt.Text.Trim() != "" ? tbPrompt.Text.Trim() : null,
-                cfg_scale = numInvokeAiCfgScale.Value,
-                gfpgan_strength = numInvokeAiGfpGan.Value,
-                iterations = (int)numInvokeAiIterations.Value,
-                seed = tbInvokeAiSeed.Text.Trim() == "" ? -1 : long.Parse(tbInvokeAiSeed.Text.Trim()),
-                steps = (int)numInvokeAiSteps.Value,
-                strength = numInvokeAiImg2img.Value,
-                initimg = BitmapTools.GetBase64String(croppedImage),
-            };
-
-            var oldGenerateText = btInvokeAiGenerate.Text;
-            btInvokeAiGenerate.Text = "CANCEL";
-            tbPrompt.Enabled = false;
-            
-            pbInvokeAiIterations.Maximum = sdImage.iterations;
-            pbInvokeAiIterations.Value = 0;
-
-            pbInvokeAiSteps.Value = 0;
-            pbInvokeAiSteps.Maximum = sdImage.steps;
-
-            InvokeAi.Generate(sdImage, progress =>
-            {
-                Invoke(() =>
-                {
-                    switch (progress.@event)
-                    {
-                        case "step":
-                            pbInvokeAiSteps.Value = progress.step ?? 0;
-                            break;                    
-                    
-                        case "result":
-                            pbInvokeAiSteps.Value = 0;
-                            pbInvokeAiIterations.Value++;
-                            if (pbInvokeAiIterations.Value == pbInvokeAiIterations.Maximum)
-                            {
-                                btInvokeAiGenerate.Text = oldGenerateText;
-                                btInvokeAiGenerate.Enabled = true;
-                                tbPrompt.Enabled = true;
-
-                                var fName = progress.url.Split('/', '\\').Last();
-                                var fPath = Path.Combine(Program.Config.InvokeAiOutputFolderPath, fName);
-
-                                _ = Task.Run(async () =>
-                                {
-                                    while (!File.Exists(fPath)) await Task.Delay(500);
-                                    await Task.Delay(1000);
-                                    var bmp = BitmapTools.Load(fPath)!;
-                                    if (wasCropped)
-                                    {
-                                        using var g = Graphics.FromImage(activeImage);
-                                        g.DrawImageUnscaled(bmp, -dx, -dy);
-                                        activeImage.Save(fPath, ImageFormat.Png);
-                                    }
-                                    generating = false;
-                                });
-                            }
-                            break;
-
-                        case "canceled":
-                            pbInvokeAiSteps.Value = 0;
-                            btInvokeAiGenerate.Text = oldGenerateText;
-                            btInvokeAiGenerate.Enabled = true;
-                            tbPrompt.Enabled = true;
-                            generating = false;
-                            break;
-                    }
-                });
-            });
-        }
-
         private void btClearActiveImage_Click(object sender, EventArgs e)
         {
             filePath = null;
             pictureBox.Image = null;
-        }
-
-        private void btInvokeAiReset_Click(object sender, EventArgs e)
-        {
-            var sdImage = new AiImageInfo();
-            numInvokeAiImg2img.Value = sdImage.strength;
-            numInvokeAiCfgScale.Value = sdImage.cfg_scale;
-            numInvokeAiGfpGan.Value = sdImage.gfpgan_strength;
-            numInvokeAiSteps.Value = sdImage.steps;
         }
 
         private void btLeft_Click(object sender, EventArgs e)
@@ -439,43 +330,17 @@ namespace AiPainter
             pictureBox.ResetMask();
         }
 
-        private void btLamaCleanerInpaint_Click(object sender, EventArgs e)
-        {
-            if (pictureBox.Image == null) return;
-
-            btLamaCleanerInpaint.Enabled = false;
-            Task.Run(() =>
-            {
-                var result = LamaCleaner.RunAsync(pictureBox.GetImageWithMaskToTransparent()).Result;
-                Invoke(() =>
-                {
-                    btLamaCleanerInpaint.Enabled = true;
-                    pictureBox.Image = result;
-                    pictureBox.ResetMask();
-                });
-            });
-        }
-
         private void btRemBgRemoveBackground_Click(object sender, EventArgs e)
         {
             if (pictureBox.Image == null) return;
 
-            btRemBgRemoveBackground.Enabled = false;
-            Task.Run(() =>
-            {
-                var result = RemBg.RunAsync(pictureBox.GetImageWithMaskToTransparent()).Result;
-                Invoke(() =>
-                {
-                    btRemBgRemoveBackground.Enabled = true;
-                    pictureBox.Image = result;
-                    pictureBox.ResetMask();
-                });
-            });
+            
         }
 
-        private void controlsStateUpdater_DoWork(object sender, System.ComponentModel.DoWorkEventArgs e)
+        private void controlsStateUpdater_Tick(object sender, EventArgs e)
         {
-
+            panInvokeAi.UpdateState(pictureBox);
+            panLamaCleaner.UpdateState(pictureBox);
         }
     }
 }

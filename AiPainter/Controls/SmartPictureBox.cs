@@ -42,6 +42,8 @@ namespace AiPainter.Controls
         public int ViewDeltaX;
         public int ViewDeltaY;
 
+        public bool HasMask => primitives.Any();
+
         public SmartPictureBox()
         {
             InitializeComponent();

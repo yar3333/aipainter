@@ -1,12 +1,12 @@
 using System.Diagnostics;
 
-namespace AiPainter.Adapters;
+namespace AiPainter.Adapters.InvokeAi;
 
 static class InvokeAiProcess
 {
     public static Process? Start()
     {
-        var log = InvokeAi.Log;
+        var log = InvokeAiClient.Log;
 
         if (Program.Config.UseExternalInvokeAi) return null;
 
@@ -22,7 +22,7 @@ static class InvokeAiProcess
             (
                 "https://developer.nvidia.com/cuda-11-4-0-download-archive?target_os=Windows&target_arch=x86_64&target_version=10&target_type=exe_network"
             );
-            
+
             if (MessageBox.Show
                 (
                     "Please, install `CUDA Toolkit 11.4`. Open browser for NVIDIA site?",
@@ -49,7 +49,7 @@ static class InvokeAiProcess
             log.WriteLine($"Can't find {stableDiffusionModelPath}.");
             log.WriteLine("Please, download StableDiffusion model `sd-v1-4.ckpt` from HuggingFace site and save to that path.");
             log.WriteLine("https://huggingface.co/CompVis/stable-diffusion-v-1-4-original");
-            
+
             if (MessageBox.Show
                 (
                     $"Please, download StableDiffusion model `sd-v1-4.ckpt` from HuggingFace site and save to {stableDiffusionModelPath}. Open browser for HuggingFace site?",

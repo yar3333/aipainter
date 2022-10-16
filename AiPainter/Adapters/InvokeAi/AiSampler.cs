@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace AiPainter.Adapters.StuffForInvokeAi;
+namespace AiPainter.Adapters.InvokeAi;
 
 [JsonConverter(typeof(JsonStringEnumConverter))]
 enum AiSampler

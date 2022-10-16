@@ -1,12 +1,12 @@
 using System.Diagnostics;
 
-namespace AiPainter.Adapters;
+namespace AiPainter.Adapters.LamaCleaner;
 
 static class LamaCleanerProcess
 {
     public static Process? Start()
     {
-        var log = LamaCleaner.Log;
+        var log = LamaCleanerClient.Log;
 
         if (Program.Config.UseExternalLamaCleaner) return null;
 

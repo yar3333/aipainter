@@ -1,5 +1,7 @@
 using System.Text.Json;
-using AiPainter.Adapters;
+using AiPainter.Adapters.InvokeAi;
+using AiPainter.Adapters.LamaCleaner;
+using AiPainter.Adapters.RemBg;
 
 namespace AiPainter;
 

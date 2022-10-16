@@ -1,12 +1,12 @@
 using System.Diagnostics;
 
-namespace AiPainter.Adapters;
+namespace AiPainter.Adapters.RemBg;
 
 static class RemBgProcess
 {
     public static Process? Start()
     {
-        var log = RemBg.Log;
+        var log = RemBgClient.Log;
 
         if (Program.Config.UseExternalRemBg) return null;
 
