@@ -28,7 +28,14 @@ namespace AiPainter.Adapters.LamaCleaner
                         pictureBox.ResetMask();
                     });
                 }
-                finally { InProcess = false; }
+                catch (Exception ee)
+                {
+                    LamaCleanerClient.Log.WriteLine(ee.ToString());
+                }
+                finally
+                {
+                    InProcess = false;
+                }
                 
             });
         }

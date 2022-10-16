@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using AiPainter.Helpers;
 
 namespace AiPainter.Adapters.RemBg;
 
@@ -12,9 +13,9 @@ static class RemBgProcess
 
         var baseDir = Path.Join(Application.StartupPath, "external", "rembg");
 
-        return ProcessRunner.RunInBackground
+        return ProcessHelper.RunInBackground
         (
-            Path.Join("main", "main.exe"),
+            Path.Join("aipainter_rembg", "aipainter_rembg.exe"),
             "s --port=" + new Uri(Program.Config.RemBgUrl).Port,
             directory: baseDir,
             env: new Dictionary<string, string>

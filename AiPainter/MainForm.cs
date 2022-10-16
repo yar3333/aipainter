@@ -254,6 +254,7 @@ namespace AiPainter
         {
             filePath = null;
             pictureBox.Image = null;
+            pictureBox.Refresh();
         }
 
         private void btLeft_Click(object sender, EventArgs e)
@@ -321,12 +322,14 @@ namespace AiPainter
         private void btResetMask_Click(object sender, EventArgs e)
         {
             pictureBox.ResetMask();
+            pictureBox.Refresh();
         }
 
         private void btApplyAlphaMask_Click(object sender, EventArgs e)
         {
             pictureBox.Image = pictureBox.GetImageWithMaskToTransparent();
             pictureBox.ResetMask();
+            pictureBox.Refresh();
         }
 
         private void controlsStateUpdater_Tick(object sender, EventArgs e)

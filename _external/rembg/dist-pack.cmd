@@ -2,6 +2,8 @@
 
 @rmdir /s /q ..\dist
 
+echo F | xcopy /y rembg.py aipainter_rembg.py
+
 call conda run -n rembg --no-capture-output pyinstaller ^
 	--distpath ..\dist ^
 	--additional-hooks-dir ..\extra-hooks ^
@@ -14,12 +16,17 @@ call conda run -n rembg --no-capture-output pyinstaller ^
 	--collect-submodules uvicorn.protocols.http ^
 	--collect-submodules anyio ^
 	--paths="c:\WinProg\anaconda3\envs\rembg\Lib\site-packages\cv2" ^
-	main.py
+	aipainter_rembg.py
 
 @if ERRORLEVEL 1 (
+	del aipainter_rembg.py
+	del aipainter_rembg.spec
 	popd
 	exit/b 1
 )
+
+del aipainter_rembg.py
+del aipainter_rembg.spec
 
 xcopy ..\zlibwapi.dll ..\dist\
 mklink /D ..\dist\cudnn-windows-x86_64-8.4.1.50_cuda11.6 ..\cudnn-windows-x86_64-8.4.1.50_cuda11.6

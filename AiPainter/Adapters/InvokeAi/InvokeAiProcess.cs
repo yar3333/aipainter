@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using AiPainter.Helpers;
 
 namespace AiPainter.Adapters.InvokeAi;
 
@@ -30,14 +31,7 @@ static class InvokeAiProcess
                     MessageBoxButtons.YesNo
                 ) == DialogResult.Yes)
             {
-                Process.Start
-                (
-                    new ProcessStartInfo
-                    {
-                        FileName = "https://developer.nvidia.com/cuda-11-4-0-download-archive?target_os=Windows&target_arch=x86_64&target_version=10&target_type=exe_network",
-                        UseShellExecute = true
-                    }
-                );
+                ProcessHelper.OpenUrlInBrowser("https://developer.nvidia.com/cuda-11-4-0-download-archive?target_os=Windows&target_arch=x86_64&target_version=10&target_type=exe_network");
             }
 
             return null;
@@ -57,14 +51,7 @@ static class InvokeAiProcess
                     MessageBoxButtons.YesNo
                 ) == DialogResult.Yes)
             {
-                Process.Start
-                (
-                    new ProcessStartInfo
-                    {
-                        FileName = "https://huggingface.co/CompVis/stable-diffusion-v-1-4-original",
-                        UseShellExecute = true
-                    }
-                );
+                ProcessHelper.OpenUrlInBrowser("https://huggingface.co/CompVis/stable-diffusion-v-1-4-original");
             }
 
             return null;
@@ -79,12 +66,12 @@ static class InvokeAiProcess
         --gui - Start InvokeAI GUI - This is the "desktop mode" version of the web app. It uses Flask to create a desktop app experience of the webserver.            
         */
 
-        return ProcessRunner.RunInBackground
+        return ProcessHelper.RunInBackground
         (
             Path.Join("dream", "dream.exe"),
             "--web"
-          + " --host=" + new Uri(Program.Config.InvokeAiUrl).Host
-          + " --port=" + new Uri(Program.Config.InvokeAiUrl).Port,
+                + " --host=" + new Uri(Program.Config.InvokeAiUrl).Host
+                + " --port=" + new Uri(Program.Config.InvokeAiUrl).Port,
             directory: Path.Join(Application.StartupPath, "external", "InvokeAI"),
             env: new Dictionary<string, string>
             {

@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using AiPainter.Helpers;
 
 namespace AiPainter.Adapters.LamaCleaner;
 
@@ -10,7 +11,7 @@ static class LamaCleanerProcess
 
         if (Program.Config.UseExternalLamaCleaner) return null;
 
-        return ProcessRunner.RunInBackground
+        return ProcessHelper.RunInBackground
         (
             Path.Join("main", "main.exe"),
             "--model=lama"

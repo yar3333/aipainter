@@ -115,7 +115,8 @@ namespace AiPainter.Controls
             var bmp = new Bitmap(Image.Width, Image.Height, Image.PixelFormat);
             using var g = Graphics.FromImage(bmp);
             g.FillRectangle(Brushes.Black, 0, 0, bmp.Width, bmp.Height);
-            MaskHelper.DrawPrimitives(0, 0, g, Pens.White, Brushes.White, primitives);
+            using var pen = new Pen(Color.White);
+            MaskHelper.DrawPrimitives(0, 0, g, pen, Brushes.White, primitives);
             return bmp;
         }
 
