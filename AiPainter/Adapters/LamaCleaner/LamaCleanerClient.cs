@@ -9,41 +9,8 @@ static class LamaCleanerClient
 {
     public static readonly Log Log = new("lama-cleaner");
 
-    public static async Task<Bitmap?> RunAsync(Bitmap? image)
+    public static async Task<Bitmap?> RunAsync(Bitmap image, Bitmap mask)
     {
-        if (image == null) return null;
-
-        var src = BitmapTools.Clone(image)!;
-        var dst = new Bitmap(src.Width, src.Height, PixelFormat.Format32bppArgb);
-
-        var srcData = src.LockBits(new Rectangle(0, 0, src.Width, src.Height), ImageLockMode.ReadWrite, PixelFormat.Format32bppArgb);
-        var dstData = dst.LockBits(new Rectangle(0, 0, dst.Width, dst.Height), ImageLockMode.WriteOnly, PixelFormat.Format32bppArgb);
-
-        unsafe
-        {
-            var pSrc = (uint*)srcData.Scan0.ToPointer();
-            var pDst = (uint*)dstData.Scan0.ToPointer();
-            var pSrcEnd = pSrc + srcData.Height * (srcData.Stride >> 2);
-            while (pSrc < pSrcEnd)
-            {
-                *pDst = (*pSrc & 0xFF000000) == 0 ? 0xFFFFFFFF : 0xFF000000;
-                *pSrc = *pSrc | 0xFF000000;
-                pSrc++;
-                pDst++;
-            }
-        }
-
-        dst.UnlockBits(dstData);
-        src.UnlockBits(srcData);
-
-        return await runInnerAsync(src, dst);
-    }
-
-    private static async Task<Bitmap> runInnerAsync(Bitmap image, Bitmap mask)
-    {
-        image.Save("d:\\1.png", ImageFormat.Png);
-        mask.Save("d:\\2.png", ImageFormat.Png);
-
         var httpClient = new HttpClient(new LoggerHttpClientHandler(Log))
         {
             BaseAddress = new Uri(Program.Config.LamaCleanerUrl),
@@ -100,11 +67,11 @@ static class LamaCleanerClient
         if (response.StatusCode != HttpStatusCode.OK)
             throw new Exception(await response.Content.ReadAsStringAsync());
 
-        return BitmapTools.ResizeIfNeed
+        return BitmapTools.RestoreAlpha(image, BitmapTools.ResizeIfNeed
         (
             (Bitmap)Image.FromStream(await response.Content.ReadAsStreamAsync()),
             image.Width,
             image.Height
-        );
+        ));
     }
 }

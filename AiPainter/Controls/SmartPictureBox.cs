@@ -93,10 +93,7 @@ namespace AiPainter.Controls
 
             var bmp = BitmapTools.Clone(Image)!;
 
-            var cenX = 0;//VIEWPORT_WIDTH  / 2 - ViewDeltaX;
-            var cenY = 0;//VIEWPORT_HEIGHT / 2 - ViewDeltaY;
-
-            MaskHelper.DrawAlpha(cenX, cenY, bmp, primitives);
+            MaskHelper.DrawAlpha(bmp, primitives);
 
             if (!cropToViewport || (Width <= VIEWPORT_WIDTH && Height <= VIEWPORT_HEIGHT)) return bmp;
             
@@ -109,6 +106,17 @@ namespace AiPainter.Controls
                 VIEWPORT_WIDTH, 
                 VIEWPORT_HEIGHT
             );
+        }
+
+        public Bitmap? GetMaskAsWhiteOnBlack()
+        {
+            if (Image == null) return null;
+
+            var bmp = new Bitmap(Image.Width, Image.Height, Image.PixelFormat);
+            using var g = Graphics.FromImage(bmp);
+            g.FillRectangle(Brushes.Black, 0, 0, bmp.Width, bmp.Height);
+            MaskHelper.DrawPrimitives(0, 0, g, Pens.White, Brushes.White, primitives);
+            return bmp;
         }
 
         public void Undo()

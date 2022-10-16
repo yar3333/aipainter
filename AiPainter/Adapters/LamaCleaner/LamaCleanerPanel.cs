@@ -15,18 +15,21 @@ namespace AiPainter.Adapters.LamaCleaner
 
         private void btInpaint_Click(object sender, EventArgs e)
         {
-            if (pictureBox.Image == null) return;
-
-            btInpaint.Enabled = false;
+            InProcess = true;
+            
             Task.Run(() =>
             {
-                var result = LamaCleanerClient.RunAsync(pictureBox.GetImageWithMaskToTransparent()).Result;
-                Invoke(() =>
+                try
                 {
-                    btInpaint.Enabled = true;
-                    pictureBox.Image = result;
-                    pictureBox.ResetMask();
-                });
+                    var result = LamaCleanerClient.RunAsync(pictureBox!.Image!, pictureBox!.GetMaskAsWhiteOnBlack()!).Result;
+                    Invoke(() =>
+                    {
+                        pictureBox.Image = result;
+                        pictureBox.ResetMask();
+                    });
+                }
+                finally { InProcess = false; }
+                
             });
         }
 
@@ -34,7 +37,7 @@ namespace AiPainter.Adapters.LamaCleaner
         {
             pictureBox = pb;
 
-            btInpaint.Enabled = pb.Image != null && pb.HasMask;
+            btInpaint.Enabled = !InProcess && pb.Image != null && pb.HasMask;
         }
     }
 }

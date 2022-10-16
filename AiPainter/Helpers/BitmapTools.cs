@@ -167,4 +167,35 @@ public static class BitmapTools
         bmp.UnlockBits(data);
         return false;
     }
+
+    public static Bitmap RestoreAlpha(Bitmap src, Bitmap dst)
+    {
+        var srcData = src.LockBits(new Rectangle(0, 0, src.Width, src.Height), ImageLockMode.ReadOnly,  PixelFormat.Format32bppArgb);
+        var dstData = dst.LockBits(new Rectangle(0, 0, dst.Width, dst.Height), ImageLockMode.WriteOnly, PixelFormat.Format32bppArgb);
+
+        unsafe
+        {
+            var srcScan0 = (byte*)srcData.Scan0.ToPointer();
+            var dstScan0 = (byte*)dstData.Scan0.ToPointer();
+
+            for (var y = 0; y < src.Height; y++)
+            {
+                var pSrc = srcScan0 + y * srcData.Stride + 3;
+                var pDst = dstScan0 + y * dstData.Stride + 3;
+                var pSrcEnd = pSrc + srcData.Stride;
+                while (pSrc < pSrcEnd)
+                {
+                    *pDst = *pSrc;
+                    pSrc+=4;
+                    pDst+=4;
+                }
+            }
+
+        }
+
+        dst.UnlockBits(dstData);
+        src.UnlockBits(srcData);
+
+        return dst;
+    }
 }
