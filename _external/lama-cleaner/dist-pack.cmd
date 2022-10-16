@@ -22,6 +22,8 @@ call conda run -n lama --no-capture-output pyinstaller ^
 	exit/b 1
 )
 
+ren ..\dist\main\main.exe aipainter_lamacleaner.exe 
+
 @popd
 
 call dist-run.cmd

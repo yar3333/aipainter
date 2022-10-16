@@ -1,5 +1,5 @@
 @pushd dist
 
-main\main.exe --model=lama --device=cpu --port=9595
+main\aipainter_lamacleaner.exe --model=lama --device=cpu --port=9595
 
 @popd
