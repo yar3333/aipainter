@@ -140,6 +140,14 @@ public static class BitmapTools
         return res;
     }
 
+    public static Bitmap ShrinkIfNeed(Bitmap image, int maxWidth, int maxHeight)
+    {
+        if (image.Width <= maxWidth && image.Height <= maxHeight) return image;
+
+        var k = Math.Min((double)maxWidth / image.Width, (double)maxHeight / image.Height);
+        return ResizeIfNeed(image, (int)Math.Round(image.Width * k), (int)Math.Round(image.Height * k));
+    }
+
     public static bool HasAlpha(Bitmap bmp)
     {
         var data = bmp.LockBits(new Rectangle(0, 0, bmp.Width, bmp.Height), ImageLockMode.ReadOnly, PixelFormat.Format32bppArgb);

@@ -10,17 +10,7 @@ namespace AiPainter
     {
         private const int IMAGE_EXTEND_SIZE = 64;
         
-        private string? _filePath;
-
-        private string? filePath
-        {
-            get => _filePath;
-            set
-            {
-                _filePath = value;
-                Text = "AiPainter" + (string.IsNullOrEmpty(value) ? "" : " - " + value);
-            }
-        }
+        private string? filePath;
 
         private static readonly StoredImageList storedImageList = new();
         
@@ -47,17 +37,14 @@ namespace AiPainter
             {
                 while (Visible)
                 {
-                    if (!generating)
+                    bool changesDetected;
+                    lock (storedImageList)
                     {
-                        bool changesDetected;
-                        lock (storedImageList)
-                        {
-                            changesDetected = storedImageList.Update();
-                        }
-                        if (changesDetected)
-                        {
-                            Invoke(() => updateImages(null));
-                        }
+                        changesDetected = storedImageList.Update();
+                    }
+                    if (changesDetected)
+                    {
+                        Invoke(() => updateImages(null));
                     }
 
                     for (var i = 0; i < 10 && Visible; i++) await Task.Delay(100);
@@ -237,7 +224,13 @@ namespace AiPainter
             if (openFileDialog.ShowDialog() == DialogResult.OK)
             {
                 filePath = openFileDialog.FileName;
-                pictureBox.Image = BitmapTools.Load(filePath);
+
+                pictureBox.Image = BitmapTools.ShrinkIfNeed
+                (
+                    BitmapTools.Load(filePath)!,
+                    Program.Config.ShrinkImageOnOpenMaxWidth,
+                    Program.Config.ShrinkImageOnOpenMaxHeight
+                );
                 pictureBox.ResetMask();
                 pictureBox.ResetView();
             }
@@ -247,8 +240,6 @@ namespace AiPainter
         {
             updateImages(null);
         }
-
-        private bool generating;
 
         private void btClearActiveImage_Click(object sender, EventArgs e)
         {
@@ -301,6 +292,7 @@ namespace AiPainter
             pictureBox.Image = bmp;
 
             pictureBox.Refresh();
+            
         }
 
         private void btDown_Click(object sender, EventArgs e)
@@ -337,6 +329,12 @@ namespace AiPainter
             panInvokeAi.UpdateState(pictureBox);
             panLamaCleaner.UpdateState(pictureBox);
             panRemBg.UpdateState(pictureBox);
+
+            pictureBox.Enabled = !panLamaCleaner.InProcess && !panRemBg.InProcess;
+
+            Text = (string.IsNullOrEmpty(filePath) ? "AiPainter" : Path.GetFileName(filePath))
+                 + (pictureBox.Image == null ? "" : " (" + pictureBox.Image.Width + " x " + pictureBox.Image.Height + ")")
+                 + (string.IsNullOrEmpty(filePath) ? "" : " | " + Path.GetDirectoryName(filePath));
         }
     }
 }

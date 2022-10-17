@@ -238,6 +238,8 @@ namespace AiPainter.Controls
 
         private void mouseLeftDown(Point loc)
         {
+            if (!Enabled) return;
+
             loc = new Point(loc.X - ViewDeltaX, loc.Y - ViewDeltaY);
             
             modeMaskDrawing = true;
@@ -267,14 +269,14 @@ namespace AiPainter.Controls
 
         private void SmartPictureBox_MouseEnter(object sender, EventArgs e)
         {
-            if (Image != null) Cursor.Hide();
+            if (Enabled && Image != null && cursorPt == null) Cursor.Hide();
         }
 
         private void SmartPictureBox_MouseLeave(object sender, EventArgs e)
         {
+            if (Enabled && Image != null && cursorPt != null) Cursor.Show();
             cursorPt = null;
             Refresh();
-            if (Image != null) Cursor.Show();
         }
 
         private void SmartPictureBox_MouseMove(object sender, MouseEventArgs e)
@@ -303,6 +305,8 @@ namespace AiPainter.Controls
 
         private void mouseLeftMove(Point loc)
         {
+            if (!Enabled) return;
+
             loc = new Point(loc.X - ViewDeltaX, loc.Y - ViewDeltaY);
 
             switch (lastPrim.Kind)

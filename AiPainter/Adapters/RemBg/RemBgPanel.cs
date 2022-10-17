@@ -1,4 +1,5 @@
 ﻿using AiPainter.Controls;
+using AiPainter.Helpers;
 
 namespace AiPainter.Adapters.RemBg
 {
@@ -17,16 +18,22 @@ namespace AiPainter.Adapters.RemBg
         {
             InProcess = true;
 
+            var image = BitmapTools.Clone(pictureBox!.Image)!;
+
             Task.Run(() =>
             {
                 try
                 {
-                    var result = RemBgClient.RunAsync(pictureBox.GetImageWithMaskToTransparent()).Result;
+                    var result = RemBgClient.RunAsync(image).Result;
                     Invoke(() =>
                     {
                         pictureBox.Image = result;
                         pictureBox.ResetMask();
                     });
+                }
+                catch (Exception ee)
+                {
+                    RemBgClient.Log.WriteLine(ee.ToString());
                 }
                 finally
                 {
@@ -39,7 +46,7 @@ namespace AiPainter.Adapters.RemBg
         {
             pictureBox = pb;
 
-            btRemoveBackground.Enabled = pb.Image != null && !pb.HasMask;
+            btRemoveBackground.Enabled = !InProcess && pb.Image != null && !pb.HasMask;
         }
     }
 }

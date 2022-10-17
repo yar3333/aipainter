@@ -1,4 +1,5 @@
 ﻿using AiPainter.Controls;
+using AiPainter.Helpers;
 
 namespace AiPainter.Adapters.LamaCleaner
 {
@@ -16,12 +17,15 @@ namespace AiPainter.Adapters.LamaCleaner
         private void btInpaint_Click(object sender, EventArgs e)
         {
             InProcess = true;
+
+            var image = BitmapTools.Clone(pictureBox!.Image)!;
+            var mask = pictureBox!.GetMaskAsWhiteOnBlack()!;
             
             Task.Run(() =>
             {
                 try
                 {
-                    var result = LamaCleanerClient.RunAsync(pictureBox!.Image!, pictureBox!.GetMaskAsWhiteOnBlack()!).Result;
+                    var result = LamaCleanerClient.RunAsync(image, mask).Result;
                     Invoke(() =>
                     {
                         pictureBox.Image = result;

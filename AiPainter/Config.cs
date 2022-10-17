@@ -14,6 +14,9 @@ class Config
     public bool UseExternalRemBg { get; set; }
     public string ExternalRemBgUrl { get; set; }
 
+    public int ShrinkImageOnOpenMaxWidth { get; set; }
+    public int ShrinkImageOnOpenMaxHeight { get; set; }
+
     [JsonIgnore]
     public string InvokeAiUrl => !UseExternalInvokeAi ? "http://127.0.0.1:9090/" : ExternalInvokeAiUrl;
     
@@ -38,5 +41,8 @@ class Config
 
         UseExternalRemBg = false;
         ExternalRemBgUrl = "http://127.0.0.1:9696/";
+
+        ShrinkImageOnOpenMaxWidth = 2048;
+        ShrinkImageOnOpenMaxHeight = 2048;
     }
 }
