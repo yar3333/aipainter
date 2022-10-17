@@ -28,10 +28,9 @@ call conda run -n rembg --no-capture-output pyinstaller ^
 del aipainter_rembg.py
 del aipainter_rembg.spec
 
-xcopy ..\zlibwapi.dll ..\dist\aipainter_rembg\
-mklink /D ..\dist\cudnn-windows-x86_64-8.4.1.50_cuda11.6 ..\cudnn-windows-x86_64-8.4.1.50_cuda11.6
-mklink /D ..\dist\TensorRT-8.4.2.4 ..\TensorRT-8.4.2.4
-
 @popd
+
+xcopy stuff\zlibwapi.dll dist\aipainter_rembg\
+mklink /D dist\stuff ..\stuff
 
 call dist-run.cmd

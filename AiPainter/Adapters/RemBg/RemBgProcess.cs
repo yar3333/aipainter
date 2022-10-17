@@ -22,10 +22,13 @@ static class RemBgProcess
             {
                 {
                     "PATH",
-                    Path.Join(baseDir, @"cudnn-windows-x86_64-8.4.1.50_cuda11.6\bin") + ";"
-                      + Path.Join(baseDir, @"TensorRT-8.4.2.4\lib") + ";"
+                    Path.Join(baseDir, @"stuff\cudnn-windows-x86_64-8.4.1.50_cuda11.6\bin") + ";"
+                      + Path.Join(baseDir, @"stuff\TensorRT-8.4.2.4\lib") + ";"
                       + Environment.GetEnvironmentVariable("PATH")
-                }
+                },
+                {
+                    "U2NET_HOME", Path.Join(baseDir, @"stuff\.u2net")
+                },
             },
             logFunc: s => log.WriteLine("[process] " + s),
             onExit: code => log.WriteLine("[process] Exit " + code)
