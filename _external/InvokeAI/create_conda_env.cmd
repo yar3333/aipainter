@@ -1,6 +1,3 @@
-@pushd repo
-
-call conda env create -f environment.yaml
-call conda run -n ldm --no-capture-output pip install -r requirements-win.txt
-
-@popd
+call conda env create -f repo\environment.yml
+call conda install -n invokeai scipy -y
+call conda install -n invokeai -y pyinstaller

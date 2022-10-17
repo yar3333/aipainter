@@ -1,8 +1,6 @@
-@pushd repo
+@rmdir /s /q dist
 
-@rmdir /s /q ..\dist
-
-call conda run -n lama --no-capture-output pyinstaller ^
+call conda run -n lama --cwd repo --no-capture-output pyinstaller ^
 	--distpath ..\dist ^
 	--hidden-import=pytorch --collect-data torch --copy-metadata torch ^
 	--collect-submodules pydantic ^
@@ -18,12 +16,9 @@ call conda run -n lama --no-capture-output pyinstaller ^
 	main.py
 
 @if ERRORLEVEL 1 (
-	popd
 	exit/b 1
 )
 
-ren ..\dist\main\main.exe aipainter_lamacleaner.exe 
-
-@popd
+ren dist\main\main.exe aipainter_lamacleaner.exe 
 
 call dist-run.cmd

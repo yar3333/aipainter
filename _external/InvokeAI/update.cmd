@@ -1,6 +1,6 @@
 @pushd repo
 
 git pull
-call conda env update --name ldm -f environment.yaml --prune
+call conda update --name invokeai -f environment.yml --prune
 
 @popd

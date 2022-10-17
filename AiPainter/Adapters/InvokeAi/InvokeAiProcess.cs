@@ -66,19 +66,21 @@ static class InvokeAiProcess
         --gui - Start InvokeAI GUI - This is the "desktop mode" version of the web app. It uses Flask to create a desktop app experience of the webserver.            
         */
 
+        var baseDir = Path.Join(Application.StartupPath, "external", "InvokeAI");
+
         return ProcessHelper.RunInBackground
         (
-            Path.Join("dream", "dream.exe"),
+            Path.Join("legacy_api", "aipainter_invokeai.exe"),
             "--web"
                 + " --host=" + new Uri(Program.Config.InvokeAiUrl).Host
                 + " --port=" + new Uri(Program.Config.InvokeAiUrl).Port,
-            directory: Path.Join(Application.StartupPath, "external", "InvokeAI"),
+            directory: baseDir,
             env: new Dictionary<string, string>
             {
                 {
                     "PATH",
-                    @"c:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v11.4\bin;"
-                  + Environment.GetEnvironmentVariable("PATH")
+                    Path.Join(baseDir, "stuff", "NVIDIA GPU Computing Toolkit_CUDA_v11.4", "bin") + ";" 
+                        + Environment.GetEnvironmentVariable("PATH")
                 }
             },
             logFunc: s => log.WriteLine("[process] " + s),

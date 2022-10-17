@@ -1,10 +1,8 @@
-@pushd repo
+@rmdir /s /q dist
 
-@rmdir /s /q ..\dist
+echo F | xcopy /y repo\rembg.py repo\aipainter_rembg.py
 
-echo F | xcopy /y rembg.py aipainter_rembg.py
-
-call conda run -n rembg --no-capture-output pyinstaller ^
+call conda run -n rembg --cwd repo --no-capture-output pyinstaller ^
 	--distpath ..\dist ^
 	--additional-hooks-dir ..\extra-hooks ^
 	--collect-data torch --copy-metadata torch ^
@@ -21,14 +19,11 @@ call conda run -n rembg --no-capture-output pyinstaller ^
 @if ERRORLEVEL 1 (
 	del aipainter_rembg.py
 	del aipainter_rembg.spec
-	popd
 	exit/b 1
 )
 
-del aipainter_rembg.py
-del aipainter_rembg.spec
-
-@popd
+del repo\aipainter_rembg.py
+del repo\aipainter_rembg.spec
 
 xcopy stuff\zlibwapi.dll dist\aipainter_rembg\
 mklink /D dist\stuff ..\stuff
