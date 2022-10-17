@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.Net.Sockets;
 
 namespace AiPainter.Helpers;
 
@@ -52,5 +53,21 @@ static class ProcessHelper
                 UseShellExecute = true
             }
         );
+    }
+
+    public static bool IsPortOpen(string url)
+    {
+        var uri = new Uri(url);
+        
+        using var tcpClient = new TcpClient();
+        
+        try {
+            tcpClient.Connect(uri.Host, uri.Port);
+            return true;
+        }
+        catch
+        {
+            return false;
+        }
     }
 }

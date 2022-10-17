@@ -11,6 +11,12 @@ static class LamaCleanerProcess
 
         if (Program.Config.UseExternalLamaCleaner) return null;
 
+        if (ProcessHelper.IsPortOpen(Program.Config.LamaCleanerUrl))
+        {
+            log.WriteLine("Port are busy: " + Program.Config.LamaCleanerUrl);
+            return null;
+        }
+        
         return ProcessHelper.RunInBackground
         (
             Path.Join("main", "aipainter_lamacleaner.exe"),

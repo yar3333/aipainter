@@ -48,10 +48,12 @@ namespace AiPainter.Adapters.InvokeAi
             pbIterations.Maximum = sdImage.iterations;
             pbIterations.Value = 0;
             pbIterations.CustomText = "0 / " + sdImage.iterations;
+            pbIterations.Refresh();
 
             pbSteps.Value = 0;
             pbSteps.Maximum = sdImage.steps;
             pbSteps.CustomText = "0 / " + sdImage.steps;
+            pbSteps.Refresh();
 
             InvokeAiClient.Generate(sdImage, progress =>
             {
@@ -62,12 +64,15 @@ namespace AiPainter.Adapters.InvokeAi
                         case "step":
                             pbSteps.Value = progress.step ?? 0;
                             pbSteps.CustomText = pbSteps.Value + " / " + sdImage.steps;
+                            pbSteps.Refresh();
                             break;                    
                     
                         case "result":
                             pbSteps.Value = 0;
+                            pbSteps.Refresh();
                             pbIterations.Value++;
                             pbIterations.CustomText = pbIterations.Value + " / " + sdImage.iterations;
+                            pbIterations.Refresh();
                             
                             if (pbIterations.Value == pbIterations.Maximum)
                             {
@@ -110,7 +115,7 @@ namespace AiPainter.Adapters.InvokeAi
             numSteps.Value = sdImage.steps;
         }
 
-        public void UpdateState(SmartPictureBox pb)
+        public void UpdateState(SmartPictureBox pb, bool isPortOpen)
         {
             pictureBox = pb;
 
@@ -134,6 +139,8 @@ namespace AiPainter.Adapters.InvokeAi
 
             btGenerate.Text = InProcess ? "CANCEL" : "Generate";
             tbPrompt.Enabled = !InProcess;
+
+            btGenerate.Enabled = isPortOpen;
         }
     }
 }

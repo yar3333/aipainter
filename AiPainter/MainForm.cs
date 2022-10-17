@@ -1,4 +1,5 @@
 using System.Drawing.Imaging;
+using System.Net.Sockets;
 using System.Text.RegularExpressions;
 using AiPainter.Helpers;
 
@@ -16,9 +17,15 @@ namespace AiPainter
         
         private string? rightButtonPressed;
 
+        private bool invokeaiIsPortOpen;
+        private bool lamaCleanerIsPortOpen;
+        private bool remBgIsPortOpen;
+        
         public MainForm()
         {
             InitializeComponent();
+
+            checkPortsWorker.RunWorkerAsync();
         }
 
         private void MainForm_Load(object sender, EventArgs e)
@@ -326,15 +333,26 @@ namespace AiPainter
 
         private void controlsStateUpdater_Tick(object sender, EventArgs e)
         {
-            panInvokeAi.UpdateState(pictureBox);
-            panLamaCleaner.UpdateState(pictureBox);
-            panRemBg.UpdateState(pictureBox);
+            panInvokeAi.UpdateState(pictureBox, invokeaiIsPortOpen);
+            panLamaCleaner.UpdateState(pictureBox, lamaCleanerIsPortOpen);
+            panRemBg.UpdateState(pictureBox, remBgIsPortOpen);
 
             pictureBox.Enabled = !panLamaCleaner.InProcess && !panRemBg.InProcess;
 
             Text = (string.IsNullOrEmpty(filePath) ? "AiPainter" : Path.GetFileName(filePath))
                  + (pictureBox.Image == null ? "" : " (" + pictureBox.Image.Width + " x " + pictureBox.Image.Height + ")")
                  + (string.IsNullOrEmpty(filePath) ? "" : " | " + Path.GetDirectoryName(filePath));
+        }
+
+        private void checkPortsWorker_DoWork(object sender, System.ComponentModel.DoWorkEventArgs e)
+        {
+            while (true)
+            {
+                invokeaiIsPortOpen = ProcessHelper.IsPortOpen(Program.Config.InvokeAiUrl);
+                lamaCleanerIsPortOpen = ProcessHelper.IsPortOpen(Program.Config.LamaCleanerUrl);
+                remBgIsPortOpen = ProcessHelper.IsPortOpen(Program.Config.RemBgUrl);
+                Thread.Sleep(200);
+            }
         }
     }
 }

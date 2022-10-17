@@ -11,6 +11,12 @@ static class InvokeAiProcess
 
         if (Program.Config.UseExternalInvokeAi) return null;
 
+        if (ProcessHelper.IsPortOpen(Program.Config.InvokeAiUrl))
+        {
+            log.WriteLine("Port are busy: " + Program.Config.InvokeAiUrl);
+            return null;
+        }
+
         var nvidiaDir = @"c:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v11.4\bin";
         if (!Directory.Exists(nvidiaDir))
         {

@@ -33,6 +33,7 @@ namespace AiPainter
             this.components = new System.ComponentModel.Container();
             System.Windows.Forms.Timer controlsStateUpdater;
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
+            this.checkPortsWorker = new System.ComponentModel.BackgroundWorker();
             this.toolbar = new System.Windows.Forms.ToolStrip();
             this.btClearActiveImage = new System.Windows.Forms.ToolStripButton();
             this.btLoad = new System.Windows.Forms.ToolStripButton();
@@ -68,6 +69,10 @@ namespace AiPainter
             controlsStateUpdater.Enabled = true;
             controlsStateUpdater.Interval = 200;
             controlsStateUpdater.Tick += new System.EventHandler(this.controlsStateUpdater_Tick);
+            // 
+            // checkPortsWorker
+            // 
+            this.checkPortsWorker.DoWork += new System.ComponentModel.DoWorkEventHandler(this.checkPortsWorker_DoWork);
             // 
             // toolbar
             // 
@@ -259,26 +264,32 @@ namespace AiPainter
             // 
             // panRemBg
             // 
+            this.panRemBg.AutoSize = true;
+            this.panRemBg.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.panRemBg.Dock = System.Windows.Forms.DockStyle.Top;
-            this.panRemBg.Location = new System.Drawing.Point(0, 409);
+            this.panRemBg.Location = new System.Drawing.Point(0, 432);
             this.panRemBg.Name = "panRemBg";
-            this.panRemBg.Size = new System.Drawing.Size(334, 77);
+            this.panRemBg.Size = new System.Drawing.Size(334, 80);
             this.panRemBg.TabIndex = 8;
             // 
             // panLamaCleaner
             // 
+            this.panLamaCleaner.AutoSize = true;
+            this.panLamaCleaner.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.panLamaCleaner.Dock = System.Windows.Forms.DockStyle.Top;
-            this.panLamaCleaner.Location = new System.Drawing.Point(0, 332);
+            this.panLamaCleaner.Location = new System.Drawing.Point(0, 352);
             this.panLamaCleaner.Name = "panLamaCleaner";
-            this.panLamaCleaner.Size = new System.Drawing.Size(334, 77);
+            this.panLamaCleaner.Size = new System.Drawing.Size(334, 80);
             this.panLamaCleaner.TabIndex = 7;
             // 
             // panInvokeAi
             // 
+            this.panInvokeAi.AutoSize = true;
+            this.panInvokeAi.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.panInvokeAi.Dock = System.Windows.Forms.DockStyle.Top;
             this.panInvokeAi.Location = new System.Drawing.Point(0, 0);
             this.panInvokeAi.Name = "panInvokeAi";
-            this.panInvokeAi.Size = new System.Drawing.Size(334, 332);
+            this.panInvokeAi.Size = new System.Drawing.Size(334, 352);
             this.panInvokeAi.TabIndex = 6;
             // 
             // hPicScroll
@@ -311,6 +322,7 @@ namespace AiPainter
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer)).EndInit();
             this.splitContainer.ResumeLayout(false);
             this.panel1.ResumeLayout(false);
+            this.panel1.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -339,5 +351,6 @@ namespace AiPainter
         private Adapters.InvokeAi.InvokeAiPanel panInvokeAi;
         private Adapters.LamaCleaner.LamaCleanerPanel panLamaCleaner;
         private Adapters.RemBg.RemBgPanel panRemBg;
+        private System.ComponentModel.BackgroundWorker checkPortsWorker;
     }
 }

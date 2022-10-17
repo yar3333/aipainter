@@ -44,11 +44,11 @@ namespace AiPainter.Adapters.LamaCleaner
             });
         }
 
-        public void UpdateState(SmartPictureBox pb)
+        public void UpdateState(SmartPictureBox pb, bool isPortOpen)
         {
             pictureBox = pb;
 
-            btInpaint.Enabled = !InProcess && pb.Image != null && pb.HasMask;
+            btInpaint.Enabled = !InProcess && pb.Image != null && pb.HasMask && isPortOpen;
         }
     }
 }

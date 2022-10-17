@@ -11,6 +11,12 @@ static class RemBgProcess
 
         if (Program.Config.UseExternalRemBg) return null;
 
+        if (ProcessHelper.IsPortOpen(Program.Config.RemBgUrl))
+        {
+            log.WriteLine("Port are busy: " + Program.Config.RemBgUrl);
+            return null;
+        }
+        
         var baseDir = Path.Join(Application.StartupPath, "external", "rembg");
 
         return ProcessHelper.RunInBackground

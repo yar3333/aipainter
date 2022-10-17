@@ -20,23 +20,31 @@ static class InvokeAiClient
     {
         var thread = new Thread(() =>
         {
-            var stream = requestPost("", imageInfo).ReadAsStream();
-
-            var buf = new List<byte>();
-            int b;
-            while ((b = stream.ReadByte()) >= 0)
+            try
             {
-                if (b == '\n')
+                var stream = requestPost("", imageInfo).ReadAsStream();
+
+                var buf = new List<byte>();
+                int b;
+                while ((b = stream.ReadByte()) >= 0)
                 {
-                    onEvent(JsonSerializer.Deserialize<AiProgress>(Encoding.UTF8.GetString(buf.ToArray())));
-                    buf.Clear();
+                    if (b == '\n')
+                    {
+                        onEvent(JsonSerializer.Deserialize<AiProgress>(Encoding.UTF8.GetString(buf.ToArray())));
+                        buf.Clear();
+                    }
+                    else
+                    {
+                        buf.Add((byte)b);
+                    }
                 }
-                else
-                {
-                    buf.Add((byte)b);
-                }
+
+                if (buf.Any()) onEvent(JsonSerializer.Deserialize<AiProgress>(Encoding.UTF8.GetString(buf.ToArray())));
             }
-            if (buf.Any()) onEvent(JsonSerializer.Deserialize<AiProgress>(Encoding.UTF8.GetString(buf.ToArray())));
+            catch (HttpRequestException)
+            {
+                onEvent(new AiProgress { @event = "canceled" });
+            }
         });
         thread.Start();
     }

@@ -42,11 +42,11 @@ namespace AiPainter.Adapters.RemBg
             });
         }
 
-        public void UpdateState(SmartPictureBox pb)
+        public void UpdateState(SmartPictureBox pb, bool isPortOpen)
         {
             pictureBox = pb;
 
-            btRemoveBackground.Enabled = !InProcess && pb.Image != null && !pb.HasMask;
+            btRemoveBackground.Enabled = !InProcess && pb.Image != null && !pb.HasMask && isPortOpen;
         }
     }
 }
