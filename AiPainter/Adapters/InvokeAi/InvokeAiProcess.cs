@@ -17,32 +17,6 @@ static class InvokeAiProcess
             return null;
         }
 
-        var nvidiaDir = @"c:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v11.4\bin";
-        if (!Directory.Exists(nvidiaDir))
-        {
-            log.WriteLine
-            (
-                @"Can't find `c:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v11.4\bin`. Install `CUDA Toolkit 11.4`."
-            );
-            log.WriteLine("Install `CUDA Toolkit 11.4`.");
-            log.WriteLine
-            (
-                "https://developer.nvidia.com/cuda-11-4-0-download-archive?target_os=Windows&target_arch=x86_64&target_version=10&target_type=exe_network"
-            );
-
-            if (MessageBox.Show
-                (
-                    "Please, install `CUDA Toolkit 11.4`. Open browser for NVIDIA site?",
-                    "Error",
-                    MessageBoxButtons.YesNo
-                ) == DialogResult.Yes)
-            {
-                ProcessHelper.OpenUrlInBrowser("https://developer.nvidia.com/cuda-11-4-0-download-archive?target_os=Windows&target_arch=x86_64&target_version=10&target_type=exe_network");
-            }
-
-            return null;
-        }
-
         var stableDiffusionModelPath = Path.Combine(Application.StartupPath, @"external\InvokeAI\models\ldm\stable-diffusion-v1\model.ckpt");
         if (!File.Exists(stableDiffusionModelPath))
         {
