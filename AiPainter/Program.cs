@@ -30,15 +30,19 @@ static class Program
     {
         var pathToConfig = Path.Join(Application.StartupPath, "Config.json");
 
+        var oldText = "";
+        
         if (File.Exists(pathToConfig))
         {
-            Config = JsonSerializer.Deserialize<Config>(File.ReadAllText(pathToConfig))!;
+            oldText = File.ReadAllText(pathToConfig);
+            Config = JsonSerializer.Deserialize<Config>(oldText) ?? new Config();
         }
-        
-        File.WriteAllText
-        (
-            pathToConfig,
-            JsonSerializer.Serialize(Config, new JsonSerializerOptions { PropertyNamingPolicy = null, WriteIndented = true })
-        );
+
+        var newText = JsonSerializer.Serialize(Config, new JsonSerializerOptions { PropertyNamingPolicy = null, WriteIndented = true });
+
+        if (newText != oldText)
+        {
+            File.WriteAllText(pathToConfig, newText);
+        }
     }
 }
