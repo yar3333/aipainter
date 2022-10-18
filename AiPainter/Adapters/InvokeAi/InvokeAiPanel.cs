@@ -134,7 +134,7 @@ namespace AiPainter.Adapters.InvokeAi
             else
             {
                 cbUseInitImage.Enabled = true;
-                numImg2img.Enabled = true;
+                numImg2img.Enabled = cbUseInitImage.Checked;
             }
 
             btGenerate.Text = InProcess ? "CANCEL" : "Generate";
