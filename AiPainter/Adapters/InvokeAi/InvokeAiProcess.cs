@@ -9,7 +9,7 @@ static class InvokeAiProcess
     {
         var log = InvokeAiClient.Log;
 
-        if (Program.Config.UseExternalInvokeAi) return null;
+        if (!Program.Config.UseEmbeddedInvokeAi) return null;
 
         if (ProcessHelper.IsPortOpen(Program.Config.InvokeAiUrl))
         {

@@ -9,7 +9,7 @@ static class RemBgProcess
     {
         var log = RemBgClient.Log;
 
-        if (Program.Config.UseExternalRemBg) return null;
+        if (!Program.Config.UseEmbeddedRemBg) return null;
 
         if (ProcessHelper.IsPortOpen(Program.Config.RemBgUrl))
         {

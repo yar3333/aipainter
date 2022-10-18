@@ -29,16 +29,16 @@ static class Program
     static void readConfig()
     {
         var pathToConfig = Path.Join(Application.StartupPath, "Config.json");
-        
-        if (File.Exists(pathToConfig)) Config = JsonSerializer.Deserialize<Config>(File.ReadAllText(pathToConfig))!;
-        else
+
+        if (File.Exists(pathToConfig))
         {
-            File.WriteAllText
-            (
-                pathToConfig,
-                JsonSerializer.Serialize
-                    (Config, new JsonSerializerOptions { PropertyNamingPolicy = null, WriteIndented = true })
-            );
+            Config = JsonSerializer.Deserialize<Config>(File.ReadAllText(pathToConfig))!;
         }
+        
+        File.WriteAllText
+        (
+            pathToConfig,
+            JsonSerializer.Serialize(Config, new JsonSerializerOptions { PropertyNamingPolicy = null, WriteIndented = true })
+        );
     }
 }

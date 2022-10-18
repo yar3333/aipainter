@@ -144,6 +144,7 @@ namespace AiPainter
                     pb.Tag = storedImageList.GetAt(j).FilePath;
                     pb.Visible = true;
                     pb.Text = storedImageList.GetAt(j).FilePath;
+                    toolTip.SetToolTip(pb, Path.GetFileName(pb.Text) + " (" + Path.GetDirectoryName(pb.Text) + ")\n\nHold right mouse button to remove file from disk.");
 
                     x += sz + 10;
                     j++;

@@ -4,45 +4,21 @@ namespace AiPainter;
 
 class Config
 {
-    public bool UseExternalInvokeAi { get; set; }
-    public string ExternalInvokeAiUrl { get; set; }
-    public string ExternalInvokeAiOutputFolderPath { get; set; }
-    
-    public bool UseExternalLamaCleaner { get; set; }
-    public string ExternalLamaCleanerUrl { get; set; }
+    public bool UseEmbeddedInvokeAi { get; set; } = true;
+    public string InvokeAiUrl { get; set; } = "http://127.0.0.1:9090/";
+    public string ExternalInvokeAiOutputFolderPath { get; set; } = "";
 
-    public bool UseExternalRemBg { get; set; }
-    public string ExternalRemBgUrl { get; set; }
+    public bool UseEmbeddedLamaCleaner { get; set; } = true;
+    public string LamaCleanerUrl { get; set; } = "http://127.0.0.1:9595/";
 
-    public int ShrinkImageOnOpenMaxWidth { get; set; }
-    public int ShrinkImageOnOpenMaxHeight { get; set; }
+    public bool UseEmbeddedRemBg { get; set; } = true;
+    public string RemBgUrl { get; set; } = "http://127.0.0.1:9696/";
+
+    public int ShrinkImageOnOpenMaxWidth { get; set; } = 2048;
+    public int ShrinkImageOnOpenMaxHeight { get; set; } = 2048;
 
     [JsonIgnore]
-    public string InvokeAiUrl => !UseExternalInvokeAi ? "http://127.0.0.1:9090/" : ExternalInvokeAiUrl;
-    
-    [JsonIgnore]
-    public string InvokeAiOutputFolderPath => !UseExternalInvokeAi 
+    public string InvokeAiOutputFolderPath => UseEmbeddedInvokeAi 
                                                   ? Path.Combine(Application.StartupPath, "external", "InvokeAI", "outputs", "img-samples")
                                                   : ExternalInvokeAiOutputFolderPath;
-    [JsonIgnore]
-    public string LamaCleanerUrl => !UseExternalLamaCleaner ? "http://127.0.0.1:9595/" : ExternalLamaCleanerUrl;
-    
-    [JsonIgnore]
-    public string RemBgUrl => !UseExternalRemBg ? "http://127.0.0.1:9696/" : ExternalRemBgUrl;
-
-    public Config()
-    {
-        UseExternalInvokeAi = false;
-        ExternalInvokeAiUrl = "http://127.0.0.1:9090/";
-        ExternalInvokeAiOutputFolderPath = "";
-
-        UseExternalLamaCleaner = false;
-        ExternalLamaCleanerUrl = "http://127.0.0.1:9595/";
-
-        UseExternalRemBg = false;
-        ExternalRemBgUrl = "http://127.0.0.1:9696/";
-
-        ShrinkImageOnOpenMaxWidth = 2048;
-        ShrinkImageOnOpenMaxHeight = 2048;
-    }
 }

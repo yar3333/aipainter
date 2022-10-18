@@ -9,7 +9,7 @@ static class LamaCleanerProcess
     {
         var log = LamaCleanerClient.Log;
 
-        if (Program.Config.UseExternalLamaCleaner) return null;
+        if (!Program.Config.UseEmbeddedLamaCleaner) return null;
 
         if (ProcessHelper.IsPortOpen(Program.Config.LamaCleanerUrl))
         {
