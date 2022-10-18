@@ -15,10 +15,9 @@ call conda run -n lama --cwd repo --no-capture-output pyinstaller ^
 	--paths="c:\WinProg\anaconda3\envs\lama\Lib\site-packages\cv2" ^
 	main.py
 
-@if ERRORLEVEL 1 (
-	exit/b 1
-)
+@if ERRORLEVEL 1 exit/b 1
 
 ren dist\main\main.exe aipainter_lamacleaner.exe 
+mklink /D dist\stuff ..\stuff
 
 call dist-run.cmd

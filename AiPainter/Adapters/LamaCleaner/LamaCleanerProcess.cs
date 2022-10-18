@@ -16,6 +16,8 @@ static class LamaCleanerProcess
             log.WriteLine("Port are busy: " + Program.Config.LamaCleanerUrl);
             return null;
         }
+
+        var baseDir = Path.Join(Application.StartupPath, "external", "lama-cleaner");
         
         return ProcessHelper.RunInBackground
         (
@@ -23,7 +25,11 @@ static class LamaCleanerProcess
             "--model=lama"
                 + " --device=cpu"
                 + " --port=" + +new Uri(Program.Config.LamaCleanerUrl).Port,
-            directory: Path.Join(Application.StartupPath, "external", "lama-cleaner"),
+            directory: baseDir,
+            env: new Dictionary<string, string>
+            {
+                { "TORCH_HOME", Path.Join(baseDir, "stuff", "models") }
+            },
             logFunc: s => log.WriteLine("[process] " + s),
             onExit: code => log.WriteLine("[process] Exit " + code)
         );
