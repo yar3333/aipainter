@@ -58,10 +58,12 @@ static class InvokeAiProcess
             env: new Dictionary<string, string>
             {
                 {
-                    "PATH",
-                    Path.Join(baseDir, "stuff", "NVIDIA GPU Computing Toolkit_CUDA_v11.4", "bin") + ";" 
-                        + Environment.GetEnvironmentVariable("PATH")
-                }
+                    "PATH", Path.Join(baseDir, "stuff", "NVIDIA GPU Computing Toolkit_CUDA_v11.4", "bin") + ";" 
+                                + Environment.GetEnvironmentVariable("PATH")
+                },
+                { "TORCH_HOME", Path.Join(baseDir, "stuff", "models") },
+                { "XDG_CACHE_HOME", Path.Join(baseDir, "stuff", "models") },
+
             },
             logFunc: s => log.WriteLine("[process] " + s),
             onExit: code => log.WriteLine("[process] Exit " + code)

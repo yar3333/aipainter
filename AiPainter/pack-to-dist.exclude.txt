@@ -1,0 +1,12 @@
+AiPainter\external\InvokeAI\models\ldm\stable-diffusion-v1\model.ckpt
+AiPainter\external\rembg\stuff\cudnn-windows-x86_64-8.4.1.50_cuda11.6\include
+AiPainter\external\rembg\stuff\cudnn-windows-x86_64-8.4.1.50_cuda11.6\lib 
+AiPainter\external\rembg\stuff\TensorRT-8.4.2.4\bin
+AiPainter\external\rembg\stuff\TensorRT-8.4.2.4\data
+AiPainter\external\rembg\stuff\TensorRT-8.4.2.4\doc
+AiPainter\external\rembg\stuff\TensorRT-8.4.2.4\graphsurgeon
+AiPainter\external\rembg\stuff\TensorRT-8.4.2.4\include
+AiPainter\external\rembg\stuff\TensorRT-8.4.2.4\onnx_graphsurgeon
+AiPainter\external\rembg\stuff\TensorRT-8.4.2.4\python
+AiPainter\external\rembg\stuff\TensorRT-8.4.2.4\samples
+AiPainter\external\rembg\stuff\TensorRT-8.4.2.4\uff

@@ -1,7 +1,9 @@
 @pushd dist
 
 @setlocal
-set PATH=c:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v11.4\bin;%PATH%
+set PATH=%~dp0\stuff\NVIDIA GPU Computing Toolkit_CUDA_v11.4\bin;%PATH%
+set TORCH_HOME=%~dp0dist\stuff\models
+set XDG_CACHE_HOME=%~dp0dist\stuff\models
 legacy_api\aipainter_invokeai.exe --web %*
 @endlocal
 

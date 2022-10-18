@@ -3,3 +3,4 @@ obj/
 *.user
 bin/
 release-x64/
+dist/
