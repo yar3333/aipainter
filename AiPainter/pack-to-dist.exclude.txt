@@ -1,6 +1,10 @@
 AiPainter\external\InvokeAI\models\ldm\stable-diffusion-v1\model.ckpt
+AiPainter\external\InvokeAI\stuff\models\readme.txt
+
 AiPainter\external\rembg\stuff\cudnn-windows-x86_64-8.4.1.50_cuda11.6\include
 AiPainter\external\rembg\stuff\cudnn-windows-x86_64-8.4.1.50_cuda11.6\lib 
+AiPainter\external\rembg\stuff\cudnn-windows-x86_64-8.4.1.50_cuda11.6\readme.txt 
+
 AiPainter\external\rembg\stuff\TensorRT-8.4.2.4\bin
 AiPainter\external\rembg\stuff\TensorRT-8.4.2.4\data
 AiPainter\external\rembg\stuff\TensorRT-8.4.2.4\doc
@@ -10,3 +14,19 @@ AiPainter\external\rembg\stuff\TensorRT-8.4.2.4\onnx_graphsurgeon
 AiPainter\external\rembg\stuff\TensorRT-8.4.2.4\python
 AiPainter\external\rembg\stuff\TensorRT-8.4.2.4\samples
 AiPainter\external\rembg\stuff\TensorRT-8.4.2.4\uff
+AiPainter\external\rembg\stuff\TensorRT-8.4.2.4\readme.txt
+
+AiPainter\external\InvokeAI\stuff\NVIDIA GPU Computing Toolkit_CUDA_v11.4\compute-sanitizer\
+AiPainter\external\InvokeAI\stuff\NVIDIA GPU Computing Toolkit_CUDA_v11.4\extras\
+AiPainter\external\InvokeAI\stuff\NVIDIA GPU Computing Toolkit_CUDA_v11.4\include\
+AiPainter\external\InvokeAI\stuff\NVIDIA GPU Computing Toolkit_CUDA_v11.4\lib\
+AiPainter\external\InvokeAI\stuff\NVIDIA GPU Computing Toolkit_CUDA_v11.4\libnvvp\
+AiPainter\external\InvokeAI\stuff\NVIDIA GPU Computing Toolkit_CUDA_v11.4\nvml\
+AiPainter\external\InvokeAI\stuff\NVIDIA GPU Computing Toolkit_CUDA_v11.4\nvvm\
+AiPainter\external\InvokeAI\stuff\NVIDIA GPU Computing Toolkit_CUDA_v11.4\nvvm-prev\
+AiPainter\external\InvokeAI\stuff\NVIDIA GPU Computing Toolkit_CUDA_v11.4\src\
+AiPainter\external\InvokeAI\stuff\NVIDIA GPU Computing Toolkit_CUDA_v11.4\tools\
+AiPainter\external\InvokeAI\stuff\NVIDIA GPU Computing Toolkit_CUDA_v11.4\DOCS
+AiPainter\external\InvokeAI\stuff\NVIDIA GPU Computing Toolkit_CUDA_v11.4\README
+AiPainter\external\InvokeAI\stuff\NVIDIA GPU Computing Toolkit_CUDA_v11.4\readme.txt
+AiPainter\external\InvokeAI\stuff\NVIDIA GPU Computing Toolkit_CUDA_v11.4\version.json
