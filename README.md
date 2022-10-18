@@ -11,3 +11,5 @@ Digital painter. Features:
  * regenerate specifed areas of image (inpaint via [InvokeAI / StableDiffusion](https://github.com/invoke-ai/InvokeAI));
  * remove specifed objects from pictures (inpaint via [lama-cleaner](https://github.com/Sanster/lama-cleaner));
  * remove background from pictures (via [rembg](https://github.com/danielgatis/rembg)).
+
+![screenshot](screenshot.png)
