@@ -1,11 +1,6 @@
-# ai-image-processing
-
-A meta-repo for "AiPainter" application. Contains AiPainter source codes (C# / Forms) and related external subrepos (python).
-
-
 ## AiPainter
 
-Digital painter. Features:
+Digital AI painter. Features:
  
  * generate pictures by text description (generate via [InvokeAI / StableDiffusion](https://github.com/invoke-ai/InvokeAI));
  * regenerate specifed areas of image (inpaint via [InvokeAI / StableDiffusion](https://github.com/invoke-ai/InvokeAI));
@@ -26,7 +21,7 @@ Tested on NVIDIA 3060.
 
 ## Using
 
- * download [precompiled AiPainter](), unpack;
+ * download [precompiled AiPainter](https://mega.nz/file/5plESYoa#54BX0znDghIIYkd8zePA-xqJyFyoIUVKi7gsVoEHO_c), unpack;
  * download StableDuffision network weights (file `sd-v1-4.ckpt`) from [HuggingFace](https://huggingface.co/CompVis/stable-diffusion-v-1-4-original);
  * save `sd-v1-4.ckpt` as `external\InvokeAI\models\ldm\stable-diffusion-v1\model.ckpt` (path from application's folder).
 
@@ -40,7 +35,7 @@ Tested on NVIDIA 3060.
  * install [Anaconda](https://docs.anaconda.com/anaconda/install/windows/);
  * install MS Visual Studio Community 2022;
  * `git clone git@github.com:yar3333/ai-image-processing.git --recurse-submodules`;
- * look into subfolders in `_external` - fix paths in *.cmd helpers to conda `envs` directory;
+ * look into subfolders in `_external` and fix paths in `*.cmd` helpers to conda `envs` directory;
  * run `create_conda_env.cmd` helpers to prepare conda environments;
  * now you can use `run.cmd` helpers to run python projects;
  * open `AiPainter.sln` in Visdual Studio and build it.
