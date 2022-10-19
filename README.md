@@ -1,11 +1,6 @@
-# ai-image-processing
-
-A meta-repo for "AiPainter" application. Contains AiPainter source codes (C# / Forms) and related external subrepos (python).
-
-
 ## AiPainter
 
-Digital painter. Features:
+Digital AI painter. Features:
  
  * generate pictures by text description (generate via [InvokeAI / StableDiffusion](https://github.com/invoke-ai/InvokeAI));
  * regenerate specifed areas of image (inpaint via [InvokeAI / StableDiffusion](https://github.com/invoke-ai/InvokeAI));
