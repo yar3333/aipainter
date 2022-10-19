@@ -25,10 +25,13 @@
     <OutputPath>bin\x64\Release\</OutputPath>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Remove="dist\**" />
     <Compile Remove="release-x64\**" />
     <Compile Remove="_controls\**" />
+    <EmbeddedResource Remove="dist\**" />
     <EmbeddedResource Remove="release-x64\**" />
     <EmbeddedResource Remove="_controls\**" />
+    <None Remove="dist\**" />
     <None Remove="release-x64\**" />
     <None Remove="_controls\**" />
   </ItemGroup>  
@@ -38,6 +41,8 @@
     <None Remove=".gitignore" />
     <None Remove="AiPainter.sln.DotSettings" />
     <None Remove="build-release-x64.cmd" />
+    <None Remove="pack-to-dist.cmd" />
+    <None Remove="pack-to-dist.exclude.txt" />
     <None Remove="SyImageEditor.sln.DotSettings" />
     <None Remove="SyScreenshoter.sln.DotSettings" />
   </ItemGroup>
