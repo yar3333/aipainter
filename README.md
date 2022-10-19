@@ -17,6 +17,7 @@ Digital painter. Features:
 
 ## Requirements
 
+ * Windows 10+ (x64);
  * NVIDIA video card (>4GB RAM);
  * video card must support CUDA 11.4.
 
@@ -25,6 +26,18 @@ Tested on NVIDIA 3060.
 
 ## Using
 
- * download zip, unpack;
+ * download [precompiled AiPainter](), unpack;
  * download StableDuffision network weights (file `sd-v1-4.ckpt`) from [HuggingFace](https://huggingface.co/CompVis/stable-diffusion-v-1-4-original);
  * save `sd-v1-4.ckpt` as `external\InvokeAI\models\ldm\stable-diffusion-v1\model.ckpt` (path from application's folder).
+
+
+## Contribution
+
+ * install [Anaconda](https://docs.anaconda.com/anaconda/install/windows/);
+ * install MS Visual Studio Community 2022;
+ * `git clone git@github.com:yar3333/ai-image-processing.git --recurse-submodules`;
+ * look into subfolders in `_external` - fix paths in *.cmd helpers to conda `envs` directory;
+ * run `create_conda_env.cmd` helpers to prepare conda environments;
+ * now you can use `run.cmd` helpers to run python projects;
+ * open `AiPainter.sln` in Visdual Studio and build it.
+ 
