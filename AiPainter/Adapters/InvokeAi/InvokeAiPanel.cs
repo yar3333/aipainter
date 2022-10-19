@@ -73,26 +73,11 @@ namespace AiPainter.Adapters.InvokeAi
                             pbIterations.Value++;
                             pbIterations.CustomText = pbIterations.Value + " / " + sdImage.iterations;
                             pbIterations.Refresh();
-                            
-                            if (pbIterations.Value == pbIterations.Maximum)
-                            {
-                                var fName = progress.url.Split('/', '\\').Last();
-                                var fPath = Path.Combine(Program.Config.InvokeAiOutputFolderPath, fName);
 
-                                _ = Task.Run(async () =>
-                                {
-                                    while (!File.Exists(fPath)) await Task.Delay(500);
-                                    await Task.Delay(1000);
-                                    var bmp = BitmapTools.Load(fPath)!;
-                                    if (wasCropped)
-                                    {
-                                        using var g = Graphics.FromImage(activeImage);
-                                        g.DrawImageUnscaled(bmp, -dx, -dy);
-                                        activeImage.Save(fPath, ImageFormat.Png);
-                                    }
-                                    InProcess = false;
-                                });
-                            }
+                            fixResultImage(wasCropped, progress.url!, activeImage!, dx, dy, () =>
+                            {
+                                InProcess = pbIterations.Value < pbIterations.Maximum;
+                            });
                             break;
 
                         case "canceled":
@@ -141,6 +126,33 @@ namespace AiPainter.Adapters.InvokeAi
             tbPrompt.Enabled = !InProcess;
 
             btGenerate.Enabled = isPortOpen;
+        }
+
+        private void fixResultImage(bool wasCropped, string url, Bitmap activeImage, int dx, int dy, Action onFinish)
+        {
+            if (wasCropped)
+            {
+                var fName = url.Split('/', '\\').Last();
+                var fPath = Path.Combine(Program.Config.InvokeAiOutputFolderPath, fName);
+
+                _ = Task.Run(async () =>
+                {
+                    while (!File.Exists(fPath)) await Task.Delay(500);
+                    await Task.Delay(1000);
+                    using var bmp = BitmapTools.Load(fPath)!;
+
+                    using var image = BitmapTools.Clone(activeImage)!;
+                    using var g = Graphics.FromImage(image);
+                    g.DrawImageUnscaled(bmp, -dx, -dy);
+                    image.Save(fPath, ImageFormat.Png);
+
+                    onFinish();
+                });
+            }
+            else
+            {
+                onFinish();
+            }
         }
     }
 }
