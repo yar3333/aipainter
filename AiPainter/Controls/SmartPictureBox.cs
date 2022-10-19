@@ -332,6 +332,8 @@ namespace AiPainter.Controls
             Capture = false;
             modeViewportMoving = false;
             modeMaskDrawing = false;
+            ViewDeltaX = (int)Math.Round(ViewDeltaX / 16.0) * 16;
+            ViewDeltaY = (int)Math.Round(ViewDeltaY / 16.0) * 16;
             Refresh();
         }
 
