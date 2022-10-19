@@ -21,7 +21,7 @@ Tested on NVIDIA 3060.
 
 ## Using
 
- * download [precompiled AiPainter](https://mega.nz/file/5plESYoa#54BX0znDghIIYkd8zePA-xqJyFyoIUVKi7gsVoEHO_c), unpack;
+ * download [precompiled AiPainter](https://mega.nz/file/F4t3RZrA#k2R2cQF1KC-94W-clyJBH5ib0OZ_4WL1qCpW3GCpj1M), unpack;
  * download StableDuffision network weights (file `sd-v1-4.ckpt`) from [HuggingFace](https://huggingface.co/CompVis/stable-diffusion-v-1-4-original);
  * save `sd-v1-4.ckpt` as `external\InvokeAI\models\ldm\stable-diffusion-v1\model.ckpt` (path from application's folder).
 
