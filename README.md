@@ -30,6 +30,10 @@ Tested on NVIDIA 3060.
  * download StableDuffision network weights (file `sd-v1-4.ckpt`) from [HuggingFace](https://huggingface.co/CompVis/stable-diffusion-v-1-4-original);
  * save `sd-v1-4.ckpt` as `external\InvokeAI\models\ldm\stable-diffusion-v1\model.ckpt` (path from application's folder).
 
+## Troubleshooting
+
+ * look into `logs` folder;
+ * check `Config.json`.
 
 ## Contribution
 
@@ -41,3 +45,6 @@ Tested on NVIDIA 3060.
  * now you can use `run.cmd` helpers to run python projects;
  * open `AiPainter.sln` in Visdual Studio and build it.
  
+## Donuts
+
+ This project fully free and open-source. You can help the project by sending a [small donut via Tinkoff](https://www.tinkoff.ru/cf/1P754cLgSiB).
