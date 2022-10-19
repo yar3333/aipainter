@@ -40,7 +40,7 @@ Tested on NVIDIA 3060.
  * install [Anaconda](https://docs.anaconda.com/anaconda/install/windows/);
  * install MS Visual Studio Community 2022;
  * `git clone git@github.com:yar3333/ai-image-processing.git --recurse-submodules`;
- * look into subfolders in `_external` - fix paths in *.cmd helpers to conda `envs` directory;
+ * look into subfolders in `_external` and fix paths in `*.cmd` helpers to conda `envs` directory;
  * run `create_conda_env.cmd` helpers to prepare conda environments;
  * now you can use `run.cmd` helpers to run python projects;
  * open `AiPainter.sln` in Visdual Studio and build it.
