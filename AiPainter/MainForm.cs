@@ -51,7 +51,10 @@ namespace AiPainter
                     }
                     if (changesDetected)
                     {
-                        Invoke(() => updateImages(null));
+                        Invoke(() =>
+                        {
+                            updateImages(null);
+                        });
                     }
 
                     for (var i = 0; i < 10 && Visible; i++) await Task.Delay(100);
@@ -118,7 +121,10 @@ namespace AiPainter
                                             if (DateTime.Now - start > TimeSpan.FromSeconds(1))
                                             {
                                                 File.Delete(rightButtonPressed);
-                                                storedImageList.Remove(rightButtonPressed);
+                                                lock (storedImageList)
+                                                {
+                                                    storedImageList.Remove(rightButtonPressed);
+                                                }
                                                 Invoke(() => updateImages(null));
                                                 break;
                                             }
@@ -197,15 +203,15 @@ namespace AiPainter
 
             var baseFileName = Path.GetFileNameWithoutExtension(filePath)!;
             var match = Regex.Match(baseFileName, @"(.+)-aip_(\d+)$");
-            var n = match.Success ? int.Parse(match.Groups[1].Value) + 1 : 1;
-            if (match.Success) baseFileName = match.Groups[0].Value;
+            var n = match.Success ? int.Parse(match.Groups[2].Value) + 1 : 1;
+            if (match.Success) baseFileName = match.Groups[1].Value;
             baseFileName += "-aip_";
             
             var baseDir = Path.GetDirectoryName(filePath)!;
   
             while (Directory.GetFiles(baseDir, baseFileName + n.ToString("D3") + ".*").Any()) n++;
             
-            image.Save(Path.Join(baseDir, baseFileName) + (Equals(format, ImageFormat.Png) ? ".png" : ".jpg"), format);
+            image.Save(Path.Join(baseDir, baseFileName) + n.ToString("D3") + (Equals(format, ImageFormat.Png) ? ".png" : ".jpg"), format);
         }
 
         private void btSavePng_Click(object sender, EventArgs e)
