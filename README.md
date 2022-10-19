@@ -38,7 +38,7 @@ Tested on NVIDIA 3060.
  * look into subfolders in `_external` and fix paths in `*.cmd` helpers to conda `envs` directory;
  * run `create_conda_env.cmd` helpers to prepare conda environments;
  * now you can use `run.cmd` helpers to run python projects;
- * open `AiPainter.sln` in Visdual Studio and build it.
+ * open `AiPainter.sln` in Visual Studio and build it.
  
 ## Donuts
 
