@@ -1,6 +1,6 @@
 using System.Drawing.Imaging;
-using System.Net.Sockets;
 using System.Text.RegularExpressions;
+using System.Windows.Forms;
 using AiPainter.Helpers;
 
 #pragma warning disable CS8602
@@ -188,7 +188,7 @@ namespace AiPainter
 
         private void save(ImageFormat? format)
         {
-            var image = pictureBox.GetImageWithMaskToTransparent();
+            var image = pictureBox.Image;
             if (image == null) return;
 
             format ??= BitmapTools.HasAlpha(image) || Path.GetExtension(filePath).ToLowerInvariant() == ".png"
@@ -268,6 +268,8 @@ namespace AiPainter
             }
 
             pictureBox.Image = bmp;
+            pictureBox.ShiftMask(IMAGE_EXTEND_SIZE, 0);
+            pictureBox.AddBoxToMask(0, 0, IMAGE_EXTEND_SIZE, pictureBox.Image.Height);
 
             pictureBox.Refresh();
         }
@@ -284,6 +286,7 @@ namespace AiPainter
             }
 
             pictureBox.Image = bmp;
+            pictureBox.AddBoxToMask(bmp.Width - IMAGE_EXTEND_SIZE, 0 , IMAGE_EXTEND_SIZE, pictureBox.Image.Height);
                 
             pictureBox.Refresh();
         }
@@ -298,6 +301,8 @@ namespace AiPainter
             }
 
             pictureBox.Image = bmp;
+            pictureBox.ShiftMask(0, IMAGE_EXTEND_SIZE);
+            pictureBox.AddBoxToMask(0, 0, pictureBox.Image.Width, IMAGE_EXTEND_SIZE);
 
             pictureBox.Refresh();
             
@@ -315,6 +320,7 @@ namespace AiPainter
             }
 
             pictureBox.Image = bmp;
+            pictureBox.AddBoxToMask(0, bmp.Height - IMAGE_EXTEND_SIZE, pictureBox.Image.Width, IMAGE_EXTEND_SIZE);
                 
             pictureBox.Refresh();
         }
@@ -327,7 +333,7 @@ namespace AiPainter
 
         private void btApplyAlphaMask_Click(object sender, EventArgs e)
         {
-            pictureBox.Image = pictureBox.GetImageWithMaskToTransparent();
+            pictureBox.Image = pictureBox.GetMaskedImage(0);
             pictureBox.ResetMask();
             pictureBox.Refresh();
         }
@@ -354,6 +360,11 @@ namespace AiPainter
                 remBgIsPortOpen = ProcessHelper.IsPortOpen(Program.Config.RemBgUrl);
                 Thread.Sleep(200);
             }
+        }
+
+        private void btRestorePrevMask_Click(object sender, EventArgs e)
+        {
+            pictureBox.RestorePreviousMask();
         }
     }
 }

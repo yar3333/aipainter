@@ -20,8 +20,7 @@ namespace AiPainter.Controls
 
         private Primitive? lastPrim => primitives.LastOrDefault();
 
-        private static readonly HatchBrush primBrush = new(HatchStyle.Percent75, Color.Red, Color.Transparent);
-        private static readonly Pen primPen = PenTools.CreateRoundPen(primBrush);
+        private static readonly HatchBrush primBrush = new(HatchStyle.Percent50, Color.Red, Color.Transparent);
         
         private static readonly HatchBrush cursorBrush = new(HatchStyle.Percent75, Color.LightCoral, Color.Transparent);
 
@@ -44,6 +43,10 @@ namespace AiPainter.Controls
 
         public bool HasMask => primitives.Any();
 
+        private bool isCursorVisible = true;
+
+        private Primitive[] oldPrimitives = {};
+        
         public SmartPictureBox()
         {
             InitializeComponent();
@@ -75,17 +78,37 @@ namespace AiPainter.Controls
             }
         }
 
-        public Bitmap? GetImageWithMaskToTransparent()
+        public void ShiftMask(int dx, int dy)
         {
-            return getImageWithMaskToTransparent(false, out _);
-        }
-        
-        public Bitmap? GetImageWithMaskToTransparentCroppedToViewport(out bool wasCropped)
-        {
-            return getImageWithMaskToTransparent(true, out wasCropped);
+            foreach (var p in primitives)
+            {
+                p.Pt0 = new Point(p.Pt0.X + dx, p.Pt0.Y + dy);
+                p.Pt1 = new Point(p.Pt1.X + dx, p.Pt1.Y + dy);
+            }
         }
 
-        private Bitmap? getImageWithMaskToTransparent(bool cropToViewport, out bool wasCropped)
+        public void AddBoxToMask(int x, int y, int width, int height)
+        {
+            if (lastPrim != UNDO_DELIMITER) primitives.Add(UNDO_DELIMITER);
+            primitives.Add(new Primitive
+            {
+                Kind = PrimitiveKind.Box,
+                Pt0 = new Point(x, y),
+                Pt1 = new Point(x + width, y + height)
+            });
+        }
+
+        public Bitmap? GetMaskedImage(byte alpha)
+        {
+            return getMaskedImage(alpha, false, out _);
+        }
+        
+        public Bitmap? GetMaskedImageCroppedToViewport(byte alpha, out bool wasCropped)
+        {
+            return getMaskedImage(alpha, true, out wasCropped);
+        }
+
+        private Bitmap? getMaskedImage(byte alpha, bool cropToViewport, out bool wasCropped)
         {
             wasCropped = false;
             
@@ -93,7 +116,7 @@ namespace AiPainter.Controls
 
             var bmp = BitmapTools.Clone(Image)!;
 
-            MaskHelper.DrawAlpha(bmp, primitives);
+            MaskHelper.DrawAlpha(bmp, primitives, alpha);
 
             if (!cropToViewport || (Width <= VIEWPORT_WIDTH && Height <= VIEWPORT_HEIGHT)) return bmp;
             
@@ -101,10 +124,11 @@ namespace AiPainter.Controls
             return BitmapTools.GetCropped
             (
                 bmp, 
-                -ViewDeltaX, 
-                -ViewDeltaY,
-                VIEWPORT_WIDTH, 
-                VIEWPORT_HEIGHT
+                -Math.Min(0, ViewDeltaX), 
+                -Math.Min(0, ViewDeltaY),
+                VIEWPORT_WIDTH,
+                VIEWPORT_HEIGHT,
+                Color.Transparent
             );
         }
 
@@ -115,9 +139,16 @@ namespace AiPainter.Controls
             var bmp = new Bitmap(Image.Width, Image.Height, Image.PixelFormat);
             using var g = Graphics.FromImage(bmp);
             g.FillRectangle(Brushes.Black, 0, 0, bmp.Width, bmp.Height);
-            using var pen = new Pen(Color.White);
-            MaskHelper.DrawPrimitives(0, 0, g, pen, Brushes.White, primitives);
+            MaskHelper.DrawPrimitives(0, 0, g, Brushes.White, primitives);
             return bmp;
+        }
+
+        public void RestorePreviousMask()
+        {
+            var t = primitives;
+            primitives = oldPrimitives.ToList();
+            oldPrimitives = t.ToArray();
+            Refresh();
         }
 
         public void Undo()
@@ -144,6 +175,7 @@ namespace AiPainter.Controls
 
         public void ResetMask()
         {
+            oldPrimitives = primitives.ToArray();
             primitives.Clear();
             redoPrimitiveBlocks.Clear();
             Invalidate();
@@ -206,7 +238,7 @@ namespace AiPainter.Controls
                 VIEWPORT_HEIGHT + 3
             );
 
-            MaskHelper.DrawPrimitives(ViewDeltaX, ViewDeltaY, e.Graphics, primPen, primBrush, primitives);
+            MaskHelper.DrawPrimitives(ViewDeltaX, ViewDeltaY, e.Graphics, primBrush, primitives);
 
             drawCursor(e.Graphics);
         }
@@ -269,12 +301,12 @@ namespace AiPainter.Controls
 
         private void SmartPictureBox_MouseEnter(object sender, EventArgs e)
         {
-            if (Enabled && Image != null && cursorPt == null) Cursor.Hide();
+            if (Enabled && Image != null && cursorPt == null) cursorHide();
         }
 
         private void SmartPictureBox_MouseLeave(object sender, EventArgs e)
         {
-            if (Enabled && Image != null && cursorPt != null) Cursor.Show();
+            if (Enabled && Image != null && cursorPt != null) cursorShow();
             cursorPt = null;
             Refresh();
         }
@@ -309,7 +341,7 @@ namespace AiPainter.Controls
 
             loc = new Point(loc.X - ViewDeltaX, loc.Y - ViewDeltaY);
 
-            switch (lastPrim.Kind)
+            switch (lastPrim!.Kind)
             {
                 case PrimitiveKind.Line:
                     lastPrim.Pt1 = loc;
@@ -343,6 +375,20 @@ namespace AiPainter.Controls
             var points = new[] { point };
             transform.TransformPoints(points);
             return points[0];
+        }
+
+        private void cursorHide()
+        {
+            if (!isCursorVisible) return;
+            Cursor.Hide();
+            isCursorVisible = false;
+        }
+
+        private void cursorShow()
+        {
+            if (isCursorVisible) return;
+            Cursor.Show();
+            isCursorVisible = true;
         }
     }
 }

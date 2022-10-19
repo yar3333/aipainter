@@ -23,14 +23,14 @@ namespace AiPainter.Adapters.InvokeAi
 
             InProcess = true;
 
-            var dx = pictureBox.ViewDeltaX;
-            var dy = pictureBox.ViewDeltaY;
+            var dx = Math.Min(0, pictureBox!.ViewDeltaX);
+            var dy = Math.Min(0, pictureBox!.ViewDeltaY);
 
             var wasCropped = false;
 
-            var activeImage = cbUseInitImage.Checked ? pictureBox.GetImageWithMaskToTransparent() : null;
+            var activeImage = cbUseInitImage.Checked ? pictureBox.GetMaskedImage(0) : null;
             var croppedImage = activeImage != null
-                                   ? pictureBox.GetImageWithMaskToTransparentCroppedToViewport(out wasCropped)
+                                   ? pictureBox.GetMaskedImageCroppedToViewport(0, out wasCropped)
                                    : null;
 
             var sdImage = new AiImageInfo

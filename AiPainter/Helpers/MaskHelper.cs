@@ -3,8 +3,10 @@ namespace AiPainter.Helpers;
 
 static class MaskHelper
 {
-    public static void DrawPrimitives(int cenX, int cenY, Graphics g, Pen pen, Brush brush, List<Primitive> primitives)
+    public static void DrawPrimitives(int cenX, int cenY, Graphics g, Brush brush, List<Primitive> primitives)
     {
+        using var pen = PenTools.CreateRoundPen(brush);
+
         foreach (var p in primitives)
         {
             switch (p.Kind)
@@ -27,11 +29,22 @@ static class MaskHelper
                         );
                     }
                     break;
+
+                case PrimitiveKind.Box:
+                    g.FillRectangle
+                    (
+                        brush,
+                        cenX + Math.Min(p.Pt0.X, p.Pt1.X),
+                        cenY + Math.Min(p.Pt0.Y, p.Pt1.Y),
+                        Math.Abs(p.Pt1.X - p.Pt0.X),
+                        Math.Abs(p.Pt1.Y - p.Pt0.Y)
+                    );
+                    break;
             }
         }
     }
 
-    public static void DrawAlpha(Bitmap bmp, List<Primitive> primitives)
+    public static void DrawAlpha(Bitmap bmp, List<Primitive> primitives, byte alpha)
     {
         var data = bmp.LockBits(new Rectangle(0, 0, bmp.Width, bmp.Height), ImageLockMode.ReadWrite, PixelFormat.Format32bppArgb);
 
@@ -51,10 +64,23 @@ static class MaskHelper
                     dy /= steps;
                     for (var i = 0; i < steps; i++)
                     {
-                        BitmapTools.DrawAlphaCirle(data, (int)x, (int)y, r);
+                        BitmapTools.DrawAlphaCirle(data, (int)x, (int)y, r, alpha);
                         x += dx;
                         y += dy;
                     }
+                    break;
+
+                case PrimitiveKind.Box:
+
+                    BitmapTools.DrawAlphaBox
+                    (
+                        data,
+                        Math.Min(p.Pt0.X, p.Pt1.X),
+                        Math.Min(p.Pt0.Y, p.Pt1.Y),
+                        Math.Abs(p.Pt1.X - p.Pt0.X),
+                        Math.Abs(p.Pt1.Y - p.Pt0.Y),
+                        alpha
+                    );
                     break;
             }
         }

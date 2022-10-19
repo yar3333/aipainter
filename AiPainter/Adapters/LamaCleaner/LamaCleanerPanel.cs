@@ -18,7 +18,7 @@ namespace AiPainter.Adapters.LamaCleaner
         {
             InProcess = true;
 
-            var image = BitmapTools.Clone(pictureBox!.Image)!;
+            var image = pictureBox!.GetMaskedImage(255)!;
             var mask = pictureBox!.GetMaskAsWhiteOnBlack()!;
             
             Task.Run(() =>
@@ -49,6 +49,7 @@ namespace AiPainter.Adapters.LamaCleaner
             pictureBox = pb;
 
             btInpaint.Enabled = !InProcess && pb.Image != null && pb.HasMask && isPortOpen;
+            btInpaint.Text = !InProcess ? "Clean masked area" : "PROCESSING";
         }
     }
 }

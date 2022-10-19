@@ -56,6 +56,7 @@ namespace AiPainter
             this.panInvokeAi = new AiPainter.Adapters.InvokeAi.InvokeAiPanel();
             this.hPicScroll = new System.Windows.Forms.HScrollBar();
             this.toolTip = new System.Windows.Forms.ToolTip(this.components);
+            this.btRestorePrevMask = new System.Windows.Forms.ToolStripButton();
             controlsStateUpdater = new System.Windows.Forms.Timer(this.components);
             this.toolbar.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer)).BeginInit();
@@ -87,6 +88,7 @@ namespace AiPainter
             this.btResetMask,
             this.btApplyAlphaMask,
             this.btDeAlpha,
+            this.btRestorePrevMask,
             this.toolStripSeparator1,
             this.btLeft,
             this.btDown,
@@ -301,6 +303,16 @@ namespace AiPainter
             this.hPicScroll.Size = new System.Drawing.Size(924, 30);
             this.hPicScroll.TabIndex = 0;
             // 
+            // btRestorePrevMask
+            // 
+            this.btRestorePrevMask.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.btRestorePrevMask.Image = ((System.Drawing.Image)(resources.GetObject("btRestorePrevMask.Image")));
+            this.btRestorePrevMask.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btRestorePrevMask.Name = "btRestorePrevMask";
+            this.btRestorePrevMask.Size = new System.Drawing.Size(38, 37);
+            this.btRestorePrevMask.Text = "Restore previous mask";
+            this.btRestorePrevMask.Click += new System.EventHandler(this.btRestorePrevMask_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
@@ -353,5 +365,6 @@ namespace AiPainter
         private Adapters.LamaCleaner.LamaCleanerPanel panLamaCleaner;
         private Adapters.RemBg.RemBgPanel panRemBg;
         private System.ComponentModel.BackgroundWorker checkPortsWorker;
+        private ToolStripButton btRestorePrevMask;
     }
 }

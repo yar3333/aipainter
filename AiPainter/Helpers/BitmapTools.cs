@@ -1,4 +1,5 @@
 using System.Drawing.Imaging;
+using System.Xml.Linq;
 
 namespace AiPainter.Helpers;
 
@@ -72,7 +73,7 @@ public static class BitmapTools
         bmp.UnlockBits(data);
     }
 
-    public static void DrawAlphaCirle(BitmapData data, int cx, int cy, int r)
+    public static void DrawAlphaCirle(BitmapData data, int cx, int cy, int r, byte alpha)
     {
         unsafe
         {
@@ -88,34 +89,92 @@ public static class BitmapTools
                     var ry = cy + y;
                     if (rx < 0 || ry < 0 || rx >= data.Width || ry >= data.Height) continue;
                     var p = scan0 + ry * data.Stride + rx * 4 + 3;
-                    *p = 0;
+                    *p = alpha;
                 }
             }
         }
     }
 
-    public static Bitmap? GetCropped(Bitmap? src, int x, int y, int width, int height)
+    public static void DrawAlphaBox(BitmapData data, int x1, int y1, int width, int height, byte alpha)
+    {
+        var x2 = Math.Min(x1 + width,  data.Width);
+        var y2 = Math.Min(y1 + height, data.Height);
+        
+        unsafe
+        {
+            var scan0 = (byte*)data.Scan0.ToPointer();
+
+            for (var y = y1; y < y2; y++)
+            {
+                var p = scan0 + y * data.Stride + x1 * 4 + 3;
+                for (var x = x1; x < x2; x++)
+                {
+                    *p = alpha;
+                    p += 4;
+                }
+            }
+        }
+    }
+
+    public static Bitmap? GetCropped(Bitmap? src, int x, int y, int width, int height, Color backColor)
     {
         if (src == null) return null;
 
         var dst = new Bitmap(width, height, PixelFormat.Format32bppArgb);
+        FillBox(dst, 0, 0, dst.Width, dst.Height, backColor);
+        DrawBitmapAtPos(src, dst, -x, -y);
+
+        return dst;
+    }
+
+    public static void FillBox(Bitmap dst, int x0, int y0, int w, int h, Color color)
+    {
+        var dstData = dst.LockBits(new Rectangle(0, 0, dst.Width, dst.Height), ImageLockMode.WriteOnly, PixelFormat.Format32bppArgb);
+        unsafe
+        {
+            var pOrgDst = (byte*)dstData.Scan0.ToPointer();
+
+            for (var y = 0; y < h; y++)
+            {
+                var pDst = pOrgDst + dstData.Stride * (y0 + y) + x0 * 4;
+                for (var x = 0; x < w; x++)
+                {
+                    pDst[0] = color.A;
+                    pDst[1] = color.R;
+                    pDst[2] = color.G;
+                    pDst[3] = color.B;
+                    pDst+=4;
+                }
+            }
+        }
+
+        dst.UnlockBits(dstData);
+    }
+
+    public static void DrawBitmapAtPos(Bitmap src, Bitmap dst, int dstX, int dstY)
+    {
+        var srcX = dstX >= 0 ? 0 : -dstX;
+        var srcY = dstY >= 0 ? 0 : -dstY;
+
+        dstX = Math.Max(0, dstX);
+        dstY = Math.Max(0, dstY);
 
         var srcData = src.LockBits(new Rectangle(0, 0, src.Width, src.Height), ImageLockMode.ReadOnly, PixelFormat.Format32bppArgb);
         var dstData = dst.LockBits(new Rectangle(0, 0, dst.Width, dst.Height), ImageLockMode.WriteOnly, PixelFormat.Format32bppArgb);
 
-        var rWidth = Math.Min(width, src.Width - x);
-        var rHeight = Math.Min(height, src.Height - y);
+        var w = Math.Min(dst.Width  - dstX, src.Width  - srcX);
+        var h = Math.Min(dst.Height - dstY, src.Height - srcY);
 
         unsafe
         {
             var pOrgSrc = (byte*)srcData.Scan0.ToPointer();
             var pOrgDst = (byte*)dstData.Scan0.ToPointer();
 
-            for (var h = 0; h < rHeight; h++)
+            for (var y = 0; y < h; y++)
             {
-                var pSrc = pOrgSrc + srcData.Stride * (y + h) + x * 4;
-                var pDst = pOrgDst + dstData.Stride * (y + h);
-                for (var w = 0; w < rWidth * 4; w++)
+                var pSrc = pOrgSrc + srcData.Stride * (srcY + y) + srcX * 4;
+                var pDst = pOrgDst + dstData.Stride * (dstY + y) + dstX * 4;
+                for (var x = 0; x < w * 4; x++)
                 {
                     *pDst = *pSrc;
                     pSrc++;
@@ -126,8 +185,6 @@ public static class BitmapTools
 
         dst.UnlockBits(dstData);
         src.UnlockBits(srcData);
-
-        return dst;
     }
 
     public static Bitmap ResizeIfNeed(Bitmap image, int width, int height)

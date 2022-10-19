@@ -47,6 +47,7 @@ namespace AiPainter.Adapters.RemBg
             pictureBox = pb;
 
             btRemoveBackground.Enabled = !InProcess && pb.Image != null && !pb.HasMask && isPortOpen;
+            btRemoveBackground.Text = !InProcess ? "Remove background" : "PROCESSING";
         }
     }
 }
