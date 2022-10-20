@@ -9,6 +9,8 @@ Digital AI painter. Features:
 
 ![screenshot](screenshot.png)
 
+![outpainting](outpainting.gif)
+
 
 ## Requirements
 
