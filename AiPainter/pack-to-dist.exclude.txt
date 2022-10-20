@@ -1,3 +1,5 @@
+AiPainter\images
+
 AiPainter\external\InvokeAI\models\ldm\stable-diffusion-v1\model.ckpt
 AiPainter\external\InvokeAI\stuff\models\readme.txt
 
