@@ -372,5 +372,24 @@ namespace AiPainter
         {
             pictureBox.RestorePreviousMask();
         }
+
+        private void btAbout_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show
+            (
+                this,
+                "Left mouse button: draw a mask."
+              + "\nRight mouse button: move picture."
+              + "\nMouse wheel: zooming."
+              + "\nRed box is area for InvokeAI to (re)generate pictures."
+              + "\n"
+              + "\nThis program is free and open-source."
+              + "\nApplication use third-party code projects for AI processing."
+              + "\n"
+              + "\nhttps://github.com/yar3333/aipainter",
+                "AiPainter v1.0.3",
+                MessageBoxButtons.OK
+            );
+        }
     }
 }

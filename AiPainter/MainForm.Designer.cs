@@ -43,6 +43,7 @@ namespace AiPainter
             this.btResetMask = new System.Windows.Forms.ToolStripButton();
             this.btApplyAlphaMask = new System.Windows.Forms.ToolStripButton();
             this.btDeAlpha = new System.Windows.Forms.ToolStripButton();
+            this.btRestorePrevMask = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.btLeft = new System.Windows.Forms.ToolStripButton();
             this.btDown = new System.Windows.Forms.ToolStripButton();
@@ -56,7 +57,7 @@ namespace AiPainter
             this.panInvokeAi = new AiPainter.Adapters.InvokeAi.InvokeAiPanel();
             this.hPicScroll = new System.Windows.Forms.HScrollBar();
             this.toolTip = new System.Windows.Forms.ToolTip(this.components);
-            this.btRestorePrevMask = new System.Windows.Forms.ToolStripButton();
+            this.btAbout = new System.Windows.Forms.ToolStripButton();
             controlsStateUpdater = new System.Windows.Forms.Timer(this.components);
             this.toolbar.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer)).BeginInit();
@@ -93,7 +94,8 @@ namespace AiPainter
             this.btLeft,
             this.btDown,
             this.btUp,
-            this.btRight});
+            this.btRight,
+            this.btAbout});
             this.toolbar.Location = new System.Drawing.Point(0, 0);
             this.toolbar.Name = "toolbar";
             this.toolbar.Size = new System.Drawing.Size(924, 40);
@@ -175,6 +177,16 @@ namespace AiPainter
             this.btDeAlpha.Size = new System.Drawing.Size(38, 37);
             this.btDeAlpha.Text = "Transparent to opaque";
             this.btDeAlpha.Click += new System.EventHandler(this.btDeAlpha_Click);
+            // 
+            // btRestorePrevMask
+            // 
+            this.btRestorePrevMask.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.btRestorePrevMask.Image = ((System.Drawing.Image)(resources.GetObject("btRestorePrevMask.Image")));
+            this.btRestorePrevMask.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btRestorePrevMask.Name = "btRestorePrevMask";
+            this.btRestorePrevMask.Size = new System.Drawing.Size(38, 37);
+            this.btRestorePrevMask.Text = "Restore previous mask";
+            this.btRestorePrevMask.Click += new System.EventHandler(this.btRestorePrevMask_Click);
             // 
             // toolStripSeparator1
             // 
@@ -303,15 +315,16 @@ namespace AiPainter
             this.hPicScroll.Size = new System.Drawing.Size(924, 30);
             this.hPicScroll.TabIndex = 0;
             // 
-            // btRestorePrevMask
+            // btAbout
             // 
-            this.btRestorePrevMask.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.btRestorePrevMask.Image = ((System.Drawing.Image)(resources.GetObject("btRestorePrevMask.Image")));
-            this.btRestorePrevMask.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.btRestorePrevMask.Name = "btRestorePrevMask";
-            this.btRestorePrevMask.Size = new System.Drawing.Size(38, 37);
-            this.btRestorePrevMask.Text = "Restore previous mask";
-            this.btRestorePrevMask.Click += new System.EventHandler(this.btRestorePrevMask_Click);
+            this.btAbout.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+            this.btAbout.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.btAbout.Image = ((System.Drawing.Image)(resources.GetObject("btAbout.Image")));
+            this.btAbout.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btAbout.Name = "btAbout";
+            this.btAbout.Size = new System.Drawing.Size(38, 37);
+            this.btAbout.Text = "About...";
+            this.btAbout.Click += new System.EventHandler(this.btAbout_Click);
             // 
             // MainForm
             // 
@@ -366,5 +379,6 @@ namespace AiPainter
         private Adapters.RemBg.RemBgPanel panRemBg;
         private System.ComponentModel.BackgroundWorker checkPortsWorker;
         private ToolStripButton btRestorePrevMask;
+        private ToolStripButton btAbout;
     }
 }
