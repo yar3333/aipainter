@@ -4,7 +4,7 @@ Digital AI painter. Features:
  
  * generate pictures by text description (generate via [InvokeAI / StableDiffusion](https://github.com/invoke-ai/InvokeAI));
  * regenerate specified areas of image (inpaint via [InvokeAI / StableDiffusion](https://github.com/invoke-ai/InvokeAI));
- * remove specifed objects from pictures (inpaint via [lama-cleaner](https://github.com/Sanster/lama-cleaner));
+ * remove specified objects from pictures (inpaint via [lama-cleaner](https://github.com/Sanster/lama-cleaner));
  * remove background from pictures (via [rembg](https://github.com/danielgatis/rembg)).
 
 ![screenshot](screenshot.png)
