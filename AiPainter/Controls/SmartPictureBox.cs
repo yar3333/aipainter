@@ -166,7 +166,7 @@ namespace AiPainter.Controls
 
         public void ResetMask()
         {
-            oldPrimitives = primitives.ToArray();
+            if (primitives.Any()) oldPrimitives = primitives.ToArray();
             primitives.Clear();
             redoPrimitiveBlocks.Clear();
             Invalidate();
