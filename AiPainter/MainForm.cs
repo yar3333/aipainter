@@ -1,6 +1,5 @@
 using System.Drawing.Imaging;
 using System.Text.RegularExpressions;
-using System.Windows.Forms;
 using AiPainter.Helpers;
 
 #pragma warning disable CS8602
@@ -379,7 +378,8 @@ namespace AiPainter
             (
                 this,
                 "Left mouse button: draw a mask."
-              + "\nRight mouse button: move picture."
+              + "\nRight mouse button: move picture related to red box."
+              + "\nMiddle mouse button: move view."
               + "\nMouse wheel: zooming."
               + "\nRed box is area for InvokeAI to (re)generate pictures."
               + "\n"
@@ -387,7 +387,7 @@ namespace AiPainter
               + "\nApplication use third-party code projects for AI processing."
               + "\n"
               + "\nhttps://github.com/yar3333/aipainter",
-                "AiPainter v1.0.3",
+                "AiPainter v1.1.0",
                 MessageBoxButtons.OK
             );
         }

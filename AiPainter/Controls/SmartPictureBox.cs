@@ -57,7 +57,7 @@ namespace AiPainter.Controls
 
         private Primitive[] oldPrimitives = {};
 
-        private bool mouseInPictureBox = false;
+        private bool mouseInPictureBox;
         
         public SmartPictureBox()
         {
