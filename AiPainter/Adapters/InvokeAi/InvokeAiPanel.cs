@@ -23,16 +23,56 @@ namespace AiPainter.Adapters.InvokeAi
 
             InProcess = true;
 
-            var dx = Math.Min(0, pictureBox!.RedBoxDx);
-            var dy = Math.Min(0, pictureBox!.RedBoxDy);
+            pbIterations.Maximum = (int)numIterations.Value;
+            pbIterations.Value = 0;
+            pbIterations.CustomText = "0 / " + (int)numIterations.Value;
+            pbIterations.Refresh();
 
-            var wasCropped = false;
+            pbSteps.Value = 0;
+            pbSteps.Maximum = (int)numSteps.Value;
+            pbSteps.CustomText = "0 / " + (int)numSteps.Value;
+            pbSteps.Refresh();
 
-            var activeImage = cbUseInitImage.Checked ? pictureBox.GetMaskedImage(0) : null;
-            var croppedImage = activeImage != null
-                                   ? pictureBox.GetMaskedImageCroppedToViewport(0, out wasCropped)
-                                   : null;
+            var redBoxX = pictureBox!.RedBoxX;
+            var redBoxY = pictureBox!.RedBoxY;
+            var redBoxW = pictureBox!.RedBoxW;
+            var redBoxH = pictureBox!.RedBoxH;
 
+            var originalImage = pictureBox.Image!;
+
+            if (!cbUseInitImage.Checked)
+            {
+                generate(null, _ => InProcess = pbIterations.Value < pbIterations.Maximum);
+            }
+            else if (redBoxX == 0 && redBoxY == 0 && redBoxW == originalImage.Width && redBoxH == originalImage.Height)
+            {
+                generate(pictureBox.GetMaskedImage(0), _ => InProcess = pbIterations.Value < pbIterations.Maximum);
+            }
+            else
+            {
+                originalImage = BitmapTools.Clone(originalImage)!;
+                var fullMaskedImage = pictureBox.GetMaskedImage(0)!;
+
+                var croppedMaskedImage = BitmapTools.GetCropped(fullMaskedImage, redBoxX, redBoxY, redBoxW, redBoxH, Color.Transparent);
+                generate(croppedMaskedImage, url =>
+                {
+                    var resultFilePath = Path.Combine(Program.Config.InvokeAiOutputFolderPath, url.Split('/', '\\').Last());
+                    waitForFile(resultFilePath, () =>
+                    {
+                        using var bmp = BitmapTools.Load(resultFilePath)!;
+                        using var g = Graphics.FromImage(originalImage);
+                        g.DrawImageUnscaled(bmp, -redBoxX, -redBoxY);
+                        originalImage.Save(resultFilePath, ImageFormat.Png);
+                        originalImage.Dispose();
+
+                        InProcess = pbIterations.Value < pbIterations.Maximum;
+                    });
+                });
+            }
+        }
+
+        private void generate(Bitmap? image, Action<string> onGenerated)
+        {
             var sdImage = new AiImageInfo
             {
                 prompt = tbPrompt.Text.Trim() != "" ? tbPrompt.Text.Trim() : null,
@@ -42,18 +82,8 @@ namespace AiPainter.Adapters.InvokeAi
                 seed = tbSeed.Text.Trim() == "" ? -1 : long.Parse(tbSeed.Text.Trim()),
                 steps = (int)numSteps.Value,
                 strength = numImg2img.Value,
-                initimg = BitmapTools.GetBase64String(croppedImage),
+                initimg = BitmapTools.GetBase64String(image),
             };
-
-            pbIterations.Maximum = sdImage.iterations;
-            pbIterations.Value = 0;
-            pbIterations.CustomText = "0 / " + sdImage.iterations;
-            pbIterations.Refresh();
-
-            pbSteps.Value = 0;
-            pbSteps.Maximum = sdImage.steps;
-            pbSteps.CustomText = "0 / " + sdImage.steps;
-            pbSteps.Refresh();
 
             InvokeAiClient.Generate(sdImage, progress =>
             {
@@ -73,11 +103,7 @@ namespace AiPainter.Adapters.InvokeAi
                             pbIterations.Value++;
                             pbIterations.CustomText = pbIterations.Value + " / " + sdImage.iterations;
                             pbIterations.Refresh();
-
-                            fixResultImage(wasCropped, progress.url!, activeImage!, dx, dy, () =>
-                            {
-                                InProcess = pbIterations.Value < pbIterations.Maximum;
-                            });
+                            onGenerated(progress.url!);
                             break;
 
                         case "canceled":
@@ -88,7 +114,6 @@ namespace AiPainter.Adapters.InvokeAi
                     }
                 });
             });
-
         }
 
         private void btReset_Click(object sender, EventArgs e)
@@ -131,31 +156,14 @@ namespace AiPainter.Adapters.InvokeAi
             btGenerate.Enabled = isPortOpen;
         }
 
-        private void fixResultImage(bool wasCropped, string url, Bitmap activeImage, int dx, int dy, Action onFinish)
+        private void waitForFile(string filePath, Action onResult)
         {
-            if (wasCropped)
+            _ = Task.Run(async () =>
             {
-                var fName = url.Split('/', '\\').Last();
-                var fPath = Path.Combine(Program.Config.InvokeAiOutputFolderPath, fName);
-
-                _ = Task.Run(async () =>
-                {
-                    while (!File.Exists(fPath)) await Task.Delay(500);
-                    await Task.Delay(1000);
-                    using var bmp = BitmapTools.Load(fPath)!;
-
-                    using var image = BitmapTools.Clone(activeImage)!;
-                    using var g = Graphics.FromImage(image);
-                    g.DrawImageUnscaled(bmp, -dx, -dy);
-                    image.Save(fPath, ImageFormat.Png);
-
-                    onFinish();
-                });
-            }
-            else
-            {
-                onFinish();
-            }
+                while (!File.Exists(filePath)) await Task.Delay(500);
+                await Task.Delay(1000);
+                onResult();
+            });
         }
     }
 }

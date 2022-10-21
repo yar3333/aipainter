@@ -14,9 +14,6 @@ namespace AiPainter.Controls
             GLOBAL_MOVING,
         }
 
-        private const int VIEWPORT_WIDTH  = 512;
-        private const int VIEWPORT_HEIGHT = 512;
-        
         private const int PEN_SIZE = 48;
         
         private static readonly float[] zoomLevels = { 1.0f/16, 1.0f/8, 1.0f/4, 1.0f/2, 1, 2, 4, 8, 16 };
@@ -45,11 +42,13 @@ namespace AiPainter.Controls
 
         public Bitmap? Image { get; set; }
 
-        private int globalDx;
-        private int globalDy;
+        private int globalX;
+        private int globalY;
         
-        public int RedBoxDx;
-        public int RedBoxDy;
+        public int RedBoxX;
+        public int RedBoxY;
+        public int RedBoxW = 512;
+        public int RedBoxH = 512;
 
         public bool HasMask => primitives.Any();
 
@@ -77,7 +76,7 @@ namespace AiPainter.Controls
             {
                 var m = new Matrix(Matrix3x2.Identity);
 
-                m.Translate(globalDx, globalDy);
+                m.Translate(globalX, globalY);
 
                 m.Translate( ClientSize.Width / 2,  ClientSize.Height / 2);
                 m.Scale(zoom, zoom);
@@ -85,9 +84,9 @@ namespace AiPainter.Controls
                 m.Translate
                 (
                     // ReSharper disable once PossibleLossOfFraction
-                    (ClientSize.Width - VIEWPORT_WIDTH) / 2,
+                    (ClientSize.Width - RedBoxW) / 2,
                     // ReSharper disable once PossibleLossOfFraction
-                    (ClientSize.Height - VIEWPORT_HEIGHT) / 2
+                    (ClientSize.Height - RedBoxH) / 2
                 );
                 return m;
             }
@@ -115,36 +114,11 @@ namespace AiPainter.Controls
 
         public Bitmap? GetMaskedImage(byte alpha)
         {
-            return getMaskedImage(alpha, false, out _);
-        }
-        
-        public Bitmap? GetMaskedImageCroppedToViewport(byte alpha, out bool wasCropped)
-        {
-            return getMaskedImage(alpha, true, out wasCropped);
-        }
-
-        private Bitmap? getMaskedImage(byte alpha, bool cropToViewport, out bool wasCropped)
-        {
-            wasCropped = false;
-            
             if (Image == null) return null;
 
             var bmp = BitmapTools.Clone(Image)!;
-
             MaskHelper.DrawAlpha(bmp, primitives, alpha);
-
-            if (!cropToViewport || (Width <= VIEWPORT_WIDTH && Height <= VIEWPORT_HEIGHT)) return bmp;
-            
-            wasCropped = true;
-            return BitmapTools.GetCropped
-            (
-                bmp, 
-                -Math.Min(0, RedBoxDx), 
-                -Math.Min(0, RedBoxDy),
-                VIEWPORT_WIDTH,
-                VIEWPORT_HEIGHT,
-                Color.Transparent
-            );
+            return bmp;
         }
 
         public Bitmap? GetMaskAsWhiteOnBlack()
@@ -198,8 +172,8 @@ namespace AiPainter.Controls
 
         public void ResetView()
         {
-            RedBoxDx = 0;
-            RedBoxDy = 0;
+            RedBoxX = 0;
+            RedBoxY = 0;
             zoomIndex = Array.IndexOf(zoomLevels, 1.0f);
             Invalidate();
         }
@@ -257,8 +231,8 @@ namespace AiPainter.Controls
                 e.Graphics.FillRectangle
                 (
                     gridBrush, 
-                    RedBoxDx, 
-                    RedBoxDy, 
+                    RedBoxX, 
+                    RedBoxY, 
                     Image.Width, 
                     Image.Height
                 );
@@ -266,8 +240,8 @@ namespace AiPainter.Controls
                 e.Graphics.DrawImage
                 (
                     Image, 
-                    RedBoxDx, 
-                    RedBoxDy,
+                    RedBoxX, 
+                    RedBoxY,
                     Image.Width,
                     Image.Height
                 );
@@ -278,11 +252,11 @@ namespace AiPainter.Controls
                 borderPen,
                 -2, 
                 -2, 
-                VIEWPORT_WIDTH  + 3, 
-                VIEWPORT_HEIGHT + 3
+                RedBoxW  + 3, 
+                RedBoxH + 3
             );
 
-            MaskHelper.DrawPrimitives(RedBoxDx, RedBoxDy, e.Graphics, primBrush, primitives);
+            MaskHelper.DrawPrimitives(RedBoxX, RedBoxY, e.Graphics, primBrush, primitives);
 
             drawCursor(e.Graphics);
         }
@@ -344,8 +318,8 @@ namespace AiPainter.Controls
             if (Image == null) return;
 
             mode = Mode.NOTHING;
-            RedBoxDx = (int)Math.Round(RedBoxDx / 16.0) * 16;
-            RedBoxDy = (int)Math.Round(RedBoxDy / 16.0) * 16;
+            RedBoxX = (int)Math.Round(RedBoxX / 16.0) * 16;
+            RedBoxY = (int)Math.Round(RedBoxY / 16.0) * 16;
             Refresh();
         }
 
@@ -354,8 +328,8 @@ namespace AiPainter.Controls
             if (!Enabled) return;
 
             var pt = getTransformedMousePos(loc);
-            pt.X -= RedBoxDx;
-            pt.Y -= RedBoxDy;
+            pt.X -= RedBoxX;
+            pt.Y -= RedBoxY;
             
             mode = Mode.MASKING;
 
@@ -380,8 +354,8 @@ namespace AiPainter.Controls
             if (!Enabled) return;
 
             var pt = getTransformedMousePos(loc);
-            pt.X -= RedBoxDx;
-            pt.Y -= RedBoxDy;
+            pt.X -= RedBoxX;
+            pt.Y -= RedBoxY;
 
             switch (lastPrim!.Kind)
             {
@@ -414,8 +388,8 @@ namespace AiPainter.Controls
         {
             loc = getTransformedMousePos(loc);
 
-            RedBoxDx += loc.X - movingStartPoint.X;
-            RedBoxDy += loc.Y - movingStartPoint.Y;
+            RedBoxX += loc.X - movingStartPoint.X;
+            RedBoxY += loc.Y - movingStartPoint.Y;
             movingStartPoint = loc;
             Refresh();
         }
@@ -429,8 +403,8 @@ namespace AiPainter.Controls
 
         private void globalMovingMouseMove(Point loc)
         {
-            globalDx += loc.X - movingStartPoint.X;
-            globalDy += loc.Y - movingStartPoint.Y;
+            globalX += loc.X - movingStartPoint.X;
+            globalY += loc.Y - movingStartPoint.Y;
             movingStartPoint = loc;
             Refresh();
         }
