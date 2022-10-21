@@ -72,6 +72,6 @@ static class LamaCleanerClient
             (Bitmap)Image.FromStream(await response.Content.ReadAsStreamAsync()),
             image.Width,
             image.Height
-        ));
+        )!);
     }
 }

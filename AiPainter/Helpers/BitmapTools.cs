@@ -186,8 +186,9 @@ public static class BitmapTools
         src.UnlockBits(srcData);
     }
 
-    public static Bitmap ResizeIfNeed(Bitmap image, int width, int height)
+    public static Bitmap? ResizeIfNeed(Bitmap? image, int width, int height)
     {
+        if (image == null) return null;
         if (image.Width == width && image.Height == height) return image;
         return Resize(image, width, height);
     }
@@ -324,5 +325,8 @@ public static class BitmapTools
                 }
             }
         }
+
+        dst.UnlockBits(dstData);
+        src.UnlockBits(srcData);
     }
 }

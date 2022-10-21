@@ -17,7 +17,12 @@ namespace AiPainter.Adapters.InvokeAi
 
         private void btGenerate_Click(object sender, EventArgs e)
         {
-            if (InProcess) { InvokeAiClient.Cancel(); return; }
+            if (InProcess)
+            {
+                InvokeAiClient.Cancel();
+                InProcess = false;
+                return;
+            }
 
             if (tbPrompt.Text.Trim() == "") { tbPrompt.Focus(); return; }
 
@@ -53,17 +58,25 @@ namespace AiPainter.Adapters.InvokeAi
                 originalImage = BitmapTools.Clone(originalImage)!;
                 var fullMaskedImage = pictureBox.GetMaskedImage(0)!;
 
-                var croppedMaskedImage = BitmapTools.GetCropped(fullMaskedImage, -redBoxX, -redBoxY, redBoxW, redBoxH, Color.Transparent);
+                var croppedMaskedImage = BitmapTools.GetCropped(fullMaskedImage, -redBoxX, -redBoxY, redBoxW, redBoxH, Color.Transparent)!;
                 generate(croppedMaskedImage, url =>
                 {
                     var resultFilePath = Path.Combine(Program.Config.InvokeAiOutputFolderPath, url.Split('/', '\\').Last());
                     waitForFile(resultFilePath, () =>
                     {
-                        using var bmp = BitmapTools.Load(resultFilePath)!;
-                        using var g = Graphics.FromImage(originalImage);
-                        g.DrawImageUnscaled(bmp, -redBoxX, -redBoxY);
-                        originalImage.Save(resultFilePath, ImageFormat.Png);
-                        originalImage.Dispose();
+                        try
+                        {
+                            var bmp = BitmapTools.Load(resultFilePath)!;
+                            bmp = BitmapTools.ResizeIfNeed(bmp, croppedMaskedImage.Width, croppedMaskedImage.Height)!;
+                            using var g = Graphics.FromImage(originalImage);
+                            g.DrawImageUnscaled(bmp, -redBoxX, -redBoxY);
+                            originalImage.Save(resultFilePath, ImageFormat.Png);
+                            originalImage.Dispose();
+                        }
+                        catch (Exception e)
+                        {
+
+                        }
 
                         InProcess = pbIterations.Value < pbIterations.Maximum;
                     });
@@ -82,7 +95,7 @@ namespace AiPainter.Adapters.InvokeAi
                 seed = tbSeed.Text.Trim() == "" ? -1 : long.Parse(tbSeed.Text.Trim()),
                 steps = (int)numSteps.Value,
                 strength = numImg2img.Value,
-                initimg = BitmapTools.GetBase64String(image),
+                initimg = BitmapTools.GetBase64String(BitmapTools.ResizeIfNeed(image, 512, 512)),
             };
 
             InvokeAiClient.Generate(sdImage, progress =>
@@ -160,7 +173,11 @@ namespace AiPainter.Adapters.InvokeAi
         {
             _ = Task.Run(async () =>
             {
-                while (!File.Exists(filePath)) await Task.Delay(500);
+                while (!File.Exists(filePath))
+                {
+                    if (!InProcess) return;
+                    await Task.Delay(500);
+                }
                 await Task.Delay(1000);
                 onResult();
             });
