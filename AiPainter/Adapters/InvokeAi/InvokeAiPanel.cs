@@ -23,8 +23,8 @@ namespace AiPainter.Adapters.InvokeAi
 
             InProcess = true;
 
-            var dx = Math.Min(0, pictureBox!.ViewDeltaX);
-            var dy = Math.Min(0, pictureBox!.ViewDeltaY);
+            var dx = Math.Min(0, pictureBox!.RedBoxDX);
+            var dy = Math.Min(0, pictureBox!.RedBoxDY);
 
             var wasCropped = false;
 

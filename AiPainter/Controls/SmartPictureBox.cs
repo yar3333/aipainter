@@ -6,6 +6,13 @@ namespace AiPainter.Controls
 {
     public partial class SmartPictureBox : UserControl
     {
+        enum Mode
+        {
+            NOTHING,
+            MASKING,
+            RED_BOX_MOVING
+        }
+
         private const int VIEWPORT_WIDTH  = 512;
         private const int VIEWPORT_HEIGHT = 512;
         
@@ -32,14 +39,13 @@ namespace AiPainter.Controls
         private readonly HatchBrush gridBrush = new(HatchStyle.LargeCheckerBoard, Color.DarkGray, Color.White);
         private readonly Pen borderPen = new(Color.Red, 3);
 
-        private bool modeMaskDrawing;
-        private bool modeViewportMoving;
+        private Mode mode = Mode.NOTHING;
         private Point viewportMovingStart;
 
         public Bitmap? Image { get; set; }
-
-        public int ViewDeltaX;
-        public int ViewDeltaY;
+        
+        public int RedBoxDx;
+        public int RedBoxDy;
 
         public bool HasMask => primitives.Any();
 
@@ -124,8 +130,8 @@ namespace AiPainter.Controls
             return BitmapTools.GetCropped
             (
                 bmp, 
-                -Math.Min(0, ViewDeltaX), 
-                -Math.Min(0, ViewDeltaY),
+                -Math.Min(0, RedBoxDx), 
+                -Math.Min(0, RedBoxDy),
                 VIEWPORT_WIDTH,
                 VIEWPORT_HEIGHT,
                 Color.Transparent
@@ -183,8 +189,8 @@ namespace AiPainter.Controls
 
         public void ResetView()
         {
-            ViewDeltaX = 0;
-            ViewDeltaY = 0;
+            RedBoxDx = 0;
+            RedBoxDy = 0;
             zoomIndex = Array.IndexOf(zoomLevels, 1.0f);
             Invalidate();
         }
@@ -213,8 +219,8 @@ namespace AiPainter.Controls
                 e.Graphics.FillRectangle
                 (
                     gridBrush, 
-                    ViewDeltaX, 
-                    ViewDeltaY, 
+                    RedBoxDx, 
+                    RedBoxDy, 
                     Image.Width, 
                     Image.Height
                 );
@@ -222,8 +228,8 @@ namespace AiPainter.Controls
                 e.Graphics.DrawImage
                 (
                     Image, 
-                    ViewDeltaX, 
-                    ViewDeltaY,
+                    RedBoxDx, 
+                    RedBoxDy,
                     Image.Width,
                     Image.Height
                 );
@@ -238,7 +244,7 @@ namespace AiPainter.Controls
                 VIEWPORT_HEIGHT + 3
             );
 
-            MaskHelper.DrawPrimitives(ViewDeltaX, ViewDeltaY, e.Graphics, primBrush, primitives);
+            MaskHelper.DrawPrimitives(RedBoxDx, RedBoxDy, e.Graphics, primBrush, primitives);
 
             drawCursor(e.Graphics);
         }
@@ -272,9 +278,9 @@ namespace AiPainter.Controls
         {
             if (!Enabled) return;
 
-            loc = new Point(loc.X - ViewDeltaX, loc.Y - ViewDeltaY);
+            loc = new Point(loc.X - RedBoxDx, loc.Y - RedBoxDy);
             
-            modeMaskDrawing = true;
+            mode = Mode.MASKING;
             Capture = true;
 
             if (lastPrim != UNDO_DELIMITER) primitives.Add(UNDO_DELIMITER);
@@ -295,7 +301,7 @@ namespace AiPainter.Controls
 
         private void mouseRightDown(Point loc)
         {
-            modeViewportMoving = true;
+            mode = Mode.RED_BOX_MOVING;
             viewportMovingStart = loc;
         }
 
@@ -317,12 +323,18 @@ namespace AiPainter.Controls
 
             var loc = getTransformedMousePos(e.Location);
 
-            cursorPt = !modeMaskDrawing && !modeViewportMoving ? loc : null;
+            cursorPt = mode == Mode.NOTHING ? loc : null;
 
-            if (modeMaskDrawing) mouseLeftMove(loc);
-            if (modeViewportMoving) mouseRightMove(loc);
+            switch (mode)
+            {
+                case Mode.MASKING:
+                    mouseLeftMove(loc);
+                    break;
 
-            Refresh();
+                case Mode.RED_BOX_MOVING:
+                    mouseRightMove(loc);
+                    break;
+            }
         }
 
         private void SmartPictureBox_MouseUp(object sender, MouseEventArgs e)
@@ -330,10 +342,9 @@ namespace AiPainter.Controls
             if (Image == null) return;
 
             Capture = false;
-            modeViewportMoving = false;
-            modeMaskDrawing = false;
-            ViewDeltaX = (int)Math.Round(ViewDeltaX / 16.0) * 16;
-            ViewDeltaY = (int)Math.Round(ViewDeltaY / 16.0) * 16;
+            mode = Mode.NOTHING;
+            RedBoxDx = (int)Math.Round(RedBoxDx / 16.0) * 16;
+            RedBoxDy = (int)Math.Round(RedBoxDy / 16.0) * 16;
             Refresh();
         }
 
@@ -341,7 +352,7 @@ namespace AiPainter.Controls
         {
             if (!Enabled) return;
 
-            loc = new Point(loc.X - ViewDeltaX, loc.Y - ViewDeltaY);
+            loc = new Point(loc.X - RedBoxDx, loc.Y - RedBoxDy);
 
             switch (lastPrim!.Kind)
             {
@@ -359,12 +370,14 @@ namespace AiPainter.Controls
                     );
                     break;
             }
+
+            Refresh();
         }
 
         private void mouseRightMove(Point loc)
         {
-            ViewDeltaX += loc.X - viewportMovingStart.X;
-            ViewDeltaY += loc.Y - viewportMovingStart.Y;
+            RedBoxDx += loc.X - viewportMovingStart.X;
+            RedBoxDy += loc.Y - viewportMovingStart.Y;
             viewportMovingStart = loc;
             Refresh();
         }
