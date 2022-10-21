@@ -1,5 +1,4 @@
 using System.Drawing.Imaging;
-using System.Xml.Linq;
 
 namespace AiPainter.Helpers;
 

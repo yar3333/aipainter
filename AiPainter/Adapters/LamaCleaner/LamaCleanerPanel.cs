@@ -1,5 +1,4 @@
 ﻿using AiPainter.Controls;
-using AiPainter.Helpers;
 
 namespace AiPainter.Adapters.LamaCleaner
 {
