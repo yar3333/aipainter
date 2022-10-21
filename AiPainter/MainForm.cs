@@ -34,9 +34,9 @@ namespace AiPainter
             hPicScroll.Scroll += (_, ee) => updateImages(ee.NewValue);
 
             splitContainer.Panel2.MouseWheel += (_, ee) =>
-            {
-                hPicScroll.Value = Math.Max(hPicScroll.Minimum, Math.Min(hPicScroll.Maximum, hPicScroll.Value + (ee.Delta > 0 ? -1 : 1)));
-                updateImages(null);
+                {
+                    hPicScroll.Value = Math.Max(hPicScroll.Minimum, Math.Min(hPicScroll.Maximum, hPicScroll.Value + (ee.Delta > 0 ? -1 : 1)));
+                    updateImages(null);
             };
 
             Task.Run(async () =>
@@ -379,8 +379,10 @@ namespace AiPainter
                 this,
                 "Left mouse button: draw a mask."
               + "\nRight mouse button: move picture related to red box."
+              + "\nRight mouse button + wheel: red box size."
               + "\nMiddle mouse button: move view."
               + "\nMouse wheel: zooming."
+              + "\n"
               + "\nRed box is area for InvokeAI to (re)generate pictures."
               + "\n"
               + "\nThis program is free and open-source."

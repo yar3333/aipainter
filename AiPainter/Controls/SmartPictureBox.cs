@@ -14,6 +14,8 @@ namespace AiPainter.Controls
             GLOBAL_MOVING,
         }
 
+        private const int RED_BOX_EXTEND_SIZE = 16;
+        
         private const int PEN_SIZE = 48;
         
         private static readonly float[] zoomLevels = { 1.0f/16, 1.0f/8, 1.0f/4, 1.0f/2, 1, 2, 4, 8, 16 };
@@ -34,8 +36,8 @@ namespace AiPainter.Controls
         private int zoomIndex = 4;
         private float zoom => zoomLevels[zoomIndex];
 
-        private readonly HatchBrush gridBrush = new(HatchStyle.LargeCheckerBoard, Color.DarkGray, Color.White);
-        private readonly Pen borderPen = new(Color.Red, 3);
+        private readonly HatchBrush whiteGrayCheckesBrush = new(HatchStyle.LargeCheckerBoard, Color.DarkGray, Color.White);
+        private readonly Pen redBoxPen = new(Color.Red, 3);
 
         private Mode mode = Mode.NOTHING;
         private Point movingStartPoint;
@@ -62,7 +64,7 @@ namespace AiPainter.Controls
         {
             InitializeComponent();
 
-            MouseWheel += MainForm_MouseWheel;
+            MouseWheel += SmartPictureBox_MouseWheel;
         }
         
         private int getActivePenSize()
@@ -207,18 +209,34 @@ namespace AiPainter.Controls
             }
         }
 
-        private void MainForm_MouseWheel(object? sender, MouseEventArgs e)
+        private void SmartPictureBox_MouseWheel(object? sender, MouseEventArgs e)
         {
             if (Image == null) return;
 
-            if (e.Delta < 0)
+            switch (mode)
             {
-                if (zoomIndex > 0) zoomIndex--;
+                case Mode.NOTHING:
+                    zoomIndex = Math.Clamp(zoomIndex + Math.Sign(e.Delta), 0, zoomLevels.Length - 1);
+                    break;
+
+                case Mode.RED_BOX_MOVING:
+                    var newRedBoxW = Math.Max(RED_BOX_EXTEND_SIZE, RedBoxW + Math.Sign(e.Delta) * RED_BOX_EXTEND_SIZE);
+                    var newRedBoxH = Math.Max(RED_BOX_EXTEND_SIZE, RedBoxH + Math.Sign(e.Delta) * RED_BOX_EXTEND_SIZE);
+
+                    var dx = newRedBoxW - RedBoxW;
+                    var dy = newRedBoxH - RedBoxH;
+
+                    RedBoxW += dx;
+                    RedBoxH += dy;
+
+                    RedBoxX += dx >> 1;
+                    RedBoxY += dy >> 1;
+
+                    movingStartPoint = getTransformedMousePos(e.Location);
+
+                    break;
             }
-            else
-            {
-                if (zoomIndex < zoomLevels.Length - 1) zoomIndex++;
-            }
+
             Refresh();
         }
 
@@ -230,7 +248,7 @@ namespace AiPainter.Controls
             {
                 e.Graphics.FillRectangle
                 (
-                    gridBrush, 
+                    whiteGrayCheckesBrush, 
                     RedBoxX, 
                     RedBoxY, 
                     Image.Width, 
@@ -246,14 +264,15 @@ namespace AiPainter.Controls
                     Image.Height
                 );
             }
-            
+
+            redBoxPen.Width = 3 / zoom;
             e.Graphics.DrawRectangle
             (
-                borderPen,
-                -2, 
-                -2, 
-                RedBoxW  + 3, 
-                RedBoxH + 3
+                redBoxPen,
+                -2 / zoom, 
+                -2 / zoom, 
+                RedBoxW + 3 / zoom, 
+                RedBoxH + 3 / zoom
             );
 
             MaskHelper.DrawPrimitives(RedBoxX, RedBoxY, e.Graphics, primBrush, primitives);
