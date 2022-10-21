@@ -195,6 +195,26 @@ namespace AiPainter.Controls
             Invalidate();
         }
 
+        private void SmartPictureBox_MouseEnter(object sender, EventArgs e)
+        {
+            if (Enabled && Image != null && cursorPt == null && isCursorVisible)
+            {
+                Cursor.Hide();
+                isCursorVisible = false;
+            }
+        }
+
+        private void SmartPictureBox_MouseLeave(object sender, EventArgs e)
+        {
+            if (Enabled && Image != null && cursorPt != null && !isCursorVisible)
+            {
+                Cursor.Show();
+                isCursorVisible = true;
+            }
+            cursorPt = null;
+            Refresh();
+        }
+
         private void MainForm_MouseWheel(object? sender, MouseEventArgs e)
         {
             if (Image == null) return;
@@ -270,11 +290,42 @@ namespace AiPainter.Controls
 
             var loc = getTransformedMousePos(e.Location);
 
-            if (e.Button == MouseButtons.Left) mouseLeftDown(loc);
-            if (e.Button == MouseButtons.Right) mouseRightDown(loc);
+            if (e.Button == MouseButtons.Left) maskingMouseDown(loc);
+            if (e.Button == MouseButtons.Right) redBoxMovingMouseDown(loc);
         }
 
-        private void mouseLeftDown(Point loc)
+        private void SmartPictureBox_MouseMove(object sender, MouseEventArgs e)
+        {
+            if (Image == null) return;
+
+            var loc = getTransformedMousePos(e.Location);
+
+            cursorPt = mode == Mode.NOTHING ? loc : null;
+
+            switch (mode)
+            {
+                case Mode.MASKING:
+                    maskingMouseMove(loc);
+                    break;
+
+                case Mode.RED_BOX_MOVING:
+                    redBoxMovingMouseMove(loc);
+                    break;
+            }
+        }
+
+        private void SmartPictureBox_MouseUp(object sender, MouseEventArgs e)
+        {
+            if (Image == null) return;
+
+            Capture = false;
+            mode = Mode.NOTHING;
+            RedBoxDx = (int)Math.Round(RedBoxDx / 16.0) * 16;
+            RedBoxDy = (int)Math.Round(RedBoxDy / 16.0) * 16;
+            Refresh();
+        }
+
+        private void maskingMouseDown(Point loc)
         {
             if (!Enabled) return;
 
@@ -299,56 +350,7 @@ namespace AiPainter.Controls
             Refresh();
         }
 
-        private void mouseRightDown(Point loc)
-        {
-            mode = Mode.RED_BOX_MOVING;
-            viewportMovingStart = loc;
-        }
-
-        private void SmartPictureBox_MouseEnter(object sender, EventArgs e)
-        {
-            if (Enabled && Image != null && cursorPt == null) cursorHide();
-        }
-
-        private void SmartPictureBox_MouseLeave(object sender, EventArgs e)
-        {
-            if (Enabled && Image != null && cursorPt != null) cursorShow();
-            cursorPt = null;
-            Refresh();
-        }
-
-        private void SmartPictureBox_MouseMove(object sender, MouseEventArgs e)
-        {
-            if (Image == null) return;
-
-            var loc = getTransformedMousePos(e.Location);
-
-            cursorPt = mode == Mode.NOTHING ? loc : null;
-
-            switch (mode)
-            {
-                case Mode.MASKING:
-                    mouseLeftMove(loc);
-                    break;
-
-                case Mode.RED_BOX_MOVING:
-                    mouseRightMove(loc);
-                    break;
-            }
-        }
-
-        private void SmartPictureBox_MouseUp(object sender, MouseEventArgs e)
-        {
-            if (Image == null) return;
-
-            Capture = false;
-            mode = Mode.NOTHING;
-            RedBoxDx = (int)Math.Round(RedBoxDx / 16.0) * 16;
-            RedBoxDy = (int)Math.Round(RedBoxDy / 16.0) * 16;
-            Refresh();
-        }
-
-        private void mouseLeftMove(Point loc)
+        private void maskingMouseMove(Point loc)
         {
             if (!Enabled) return;
 
@@ -374,7 +376,13 @@ namespace AiPainter.Controls
             Refresh();
         }
 
-        private void mouseRightMove(Point loc)
+        private void redBoxMovingMouseDown(Point loc)
+        {
+            mode = Mode.RED_BOX_MOVING;
+            viewportMovingStart = loc;
+        }
+
+        private void redBoxMovingMouseMove(Point loc)
         {
             RedBoxDx += loc.X - viewportMovingStart.X;
             RedBoxDy += loc.Y - viewportMovingStart.Y;
@@ -390,20 +398,6 @@ namespace AiPainter.Controls
             var points = new[] { point };
             transform.TransformPoints(points);
             return points[0];
-        }
-
-        private void cursorHide()
-        {
-            if (!isCursorVisible) return;
-            Cursor.Hide();
-            isCursorVisible = false;
-        }
-
-        private void cursorShow()
-        {
-            if (isCursorVisible) return;
-            Cursor.Show();
-            isCursorVisible = true;
         }
     }
 }
