@@ -122,7 +122,10 @@ namespace AiPainter.Adapters.InvokeAi
                 numImg2img.Enabled = cbUseInitImage.Checked;
             }
 
-            btGenerate.Text = InProcess ? "CANCEL" : "Generate";
+            btGenerate.Text =               InProcess ? "CANCEL" 
+                                         : isPortOpen ? "Generate" 
+                            : InvokeAiProcess.Loading ? "LOADING..." 
+                                                      : "ERROR";
             tbPrompt.Enabled = !InProcess;
 
             btGenerate.Enabled = isPortOpen;

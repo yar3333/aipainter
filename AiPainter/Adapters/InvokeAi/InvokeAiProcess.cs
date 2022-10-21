@@ -5,6 +5,8 @@ namespace AiPainter.Adapters.InvokeAi;
 
 static class InvokeAiProcess
 {
+    public static bool Loading { get; private set; }
+
     public static Process? Start()
     {
         var log = InvokeAiClient.Log;
@@ -51,6 +53,7 @@ static class InvokeAiProcess
 
         var baseDir = Path.Join(Application.StartupPath, "external", "InvokeAI");
 
+        Loading = true;
         return ProcessHelper.RunInBackground
         (
             Path.Join("legacy_api", "aipainter_invokeai.exe"),
@@ -70,7 +73,11 @@ static class InvokeAiProcess
 
             },
             logFunc: s => log.WriteLine("[process] " + s),
-            onExit: code => log.WriteLine("[process] Exit " + code)
+            onExit: code =>
+            {
+                Loading = false;
+                log.WriteLine("[process] Exit " + code);
+            }
         );
     }
 }
