@@ -53,7 +53,7 @@ namespace AiPainter.Adapters.InvokeAi
                 originalImage = BitmapTools.Clone(originalImage)!;
                 var fullMaskedImage = pictureBox.GetMaskedImage(0)!;
 
-                var croppedMaskedImage = BitmapTools.GetCropped(fullMaskedImage, redBoxX, redBoxY, redBoxW, redBoxH, Color.Transparent);
+                var croppedMaskedImage = BitmapTools.GetCropped(fullMaskedImage, -redBoxX, -redBoxY, redBoxW, redBoxH, Color.Transparent);
                 generate(croppedMaskedImage, url =>
                 {
                     var resultFilePath = Path.Combine(Program.Config.InvokeAiOutputFolderPath, url.Split('/', '\\').Last());

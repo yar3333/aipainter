@@ -189,11 +189,7 @@ public static class BitmapTools
     public static Bitmap ResizeIfNeed(Bitmap image, int width, int height)
     {
         if (image.Width == width && image.Height == height) return image;
-
-        var res = new Bitmap(width, height, PixelFormat.Format32bppArgb);
-        using var g = Graphics.FromImage(res);
-        g.DrawImage(image, 0, 0, res.Width, res.Height);
-        return res;
+        return Resize(image, width, height);
     }
 
     public static Bitmap ShrinkIfNeed(Bitmap image, int maxWidth, int maxHeight)
@@ -201,7 +197,7 @@ public static class BitmapTools
         if (image.Width <= maxWidth && image.Height <= maxHeight) return image;
 
         var k = Math.Min((double)maxWidth / image.Width, (double)maxHeight / image.Height);
-        return ResizeIfNeed(image, (int)Math.Round(image.Width * k), (int)Math.Round(image.Height * k));
+        return Resize(image, (int)Math.Round(image.Width * k), (int)Math.Round(image.Height * k));
     }
 
     public static bool HasAlpha(Bitmap bmp)
@@ -261,5 +257,72 @@ public static class BitmapTools
         src.UnlockBits(srcData);
 
         return dst;
+    }
+
+    public static Bitmap Resize(Bitmap image, int width, int height)
+    {
+        var dst = new Bitmap(width, height, PixelFormat.Format32bppArgb);
+        drawImageResizedInner(image, dst, new Rectangle(0, 0, width, height), 128);
+        return dst;
+    }
+
+    private static void drawImageResizedInner(Bitmap src, Bitmap dst, Rectangle dstRect, int alphaLimit = -1)
+    {
+        var srcData = src.LockBits(new Rectangle(0, 0, src.Width, src.Height), ImageLockMode.ReadOnly,  PixelFormat.Format32bppArgb);
+        //var dstData = dst.LockBits(dstRect, ImageLockMode.WriteOnly, PixelFormat.Format32bppArgb);
+        var dstData = dst.LockBits(new Rectangle(0, 0, dst.Width, dst.Height), ImageLockMode.WriteOnly, PixelFormat.Format32bppArgb);
+
+        var srcStride = srcData.Stride >> 2;
+        var dstStride = dstData.Stride >> 2;
+
+        unsafe
+        {
+            var srcScan0 = (uint*)srcData.Scan0.ToPointer();
+            var dstScan0 = (uint*)dstData.Scan0.ToPointer();
+            
+            var xRatio = (double)(src.Width - 1) / dstRect.Width;
+            var yRatio = (double)(src.Height - 1) / dstRect.Height;
+
+            for (var i = 0; i < dstRect.Height; i++)
+            {
+                var pDst = dstScan0 + (dstRect.Y + i) * dstStride + dstRect.X;
+                for (var j = 0; j < dstRect.Width; j++)
+                {
+                    var x = (int)(xRatio * j);
+                    var y = (int)(yRatio * i);
+                    var xDiff = xRatio * j - x;
+                    var yDiff = yRatio * i - y;
+                    var pSrc = srcScan0 + y * srcStride + x;              
+                    var a = pSrc[0];
+                    var b = pSrc[1];
+                    var c = pSrc[srcStride];
+                    var d = pSrc[srcStride + 1];
+
+                    var blue = (a & 0xff) * (1 - xDiff) * (1 - yDiff) + (b & 0xff) * xDiff * (1 - yDiff) +
+                               (c & 0xff) * yDiff * (1 - xDiff) + (d & 0xff) * (xDiff * yDiff);
+
+                    var green = ((a >> 8) & 0xff) * (1 - xDiff) * (1 - yDiff) + ((b >> 8) & 0xff) * xDiff * (1 - yDiff) +
+                                ((c >> 8) & 0xff) * yDiff * (1 - xDiff) + ((d >> 8) & 0xff) * (xDiff * yDiff);
+
+                    var red = ((a >> 16) & 0xff) * (1 - xDiff) * (1 - yDiff) + ((b >> 16) & 0xff) * xDiff * (1 - yDiff) +
+                              ((c >> 16) & 0xff) * yDiff * (1 - xDiff) + ((d >> 16) & 0xff) * (xDiff * yDiff);
+
+                    var alpha = ((a >> 24) & 0xff) * (1 - xDiff) * (1 - yDiff) + ((b >> 24) & 0xff) * xDiff * (1 - yDiff) +
+                                ((c >> 24) & 0xff) * yDiff * (1 - xDiff) + ((d >> 24) & 0xff) * (xDiff * yDiff);
+
+                    if (alphaLimit >= 0)
+                    {
+                        alpha = alpha < alphaLimit ? 0 : 255;
+                    }
+
+                    *pDst = (((uint)alpha << 24) & 0xff000000)
+                          | (((uint)red << 16) & 0xff0000) 
+                          | (((uint)green << 8) & 0xff00) 
+                          | (uint)blue;
+
+                    pDst++;
+                }
+            }
+        }
     }
 }
