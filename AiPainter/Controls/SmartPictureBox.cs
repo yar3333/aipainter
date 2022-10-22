@@ -47,10 +47,7 @@ namespace AiPainter.Controls
         private int globalX;
         private int globalY;
         
-        public int ActiveBoxX;
-        public int ActiveBoxY;
-        public int ActiveBoxW = 512;
-        public int ActiveBoxH = 512;
+        public Rectangle ActiveBox = new(0, 0, 512, 512);
 
         public bool HasMask => primitives.Any();
 
@@ -86,9 +83,9 @@ namespace AiPainter.Controls
                 m.Translate
                 (
                     // ReSharper disable once PossibleLossOfFraction
-                    (ClientSize.Width - ActiveBoxW) / 2,
+                    (ClientSize.Width - ActiveBox.Width) / 2,
                     // ReSharper disable once PossibleLossOfFraction
-                    (ClientSize.Height - ActiveBoxH) / 2
+                    (ClientSize.Height - ActiveBox.Height) / 2
                 );
                 return m;
             }
@@ -123,14 +120,16 @@ namespace AiPainter.Controls
             return bmp;
         }
 
-        public Bitmap? GetMaskAsWhiteOnBlack()
+        public Bitmap? GetMaskCropped(int x,int y, int w, int h, Color backColor, Color maskColor)
         {
             if (Image == null) return null;
 
-            var bmp = new Bitmap(Image.Width, Image.Height, Image.PixelFormat);
+            var bmp = new Bitmap(w, h, Image.PixelFormat);
             using var g = Graphics.FromImage(bmp);
-            g.FillRectangle(Brushes.Black, 0, 0, bmp.Width, bmp.Height);
-            MaskHelper.DrawPrimitives(0, 0, g, Brushes.White, primitives);
+            using var backBrush = new SolidBrush(backColor);
+            using var maskBrush = new SolidBrush(maskColor);
+            g.FillRectangle(backBrush, 0, 0, bmp.Width, bmp.Height);
+            MaskHelper.DrawPrimitives(-x, -y, g, maskBrush, primitives);
             return bmp;
         }
 
@@ -174,8 +173,8 @@ namespace AiPainter.Controls
 
         public void ResetView()
         {
-            ActiveBoxX = 0;
-            ActiveBoxY = 0;
+            ActiveBox.X = 0;
+            ActiveBox.Y = 0;
             zoomIndex = Array.IndexOf(zoomLevels, 1.0f);
             Invalidate();
         }
@@ -220,17 +219,17 @@ namespace AiPainter.Controls
                     break;
 
                 case Mode.ACTIVE_BOX_MOVING:
-                    var newActiveBoxW = Math.Max(ACTIVE_BOX_EXTEND_SIZE, ActiveBoxW + Math.Sign(e.Delta) * ACTIVE_BOX_EXTEND_SIZE);
-                    var newActiveBoxH = Math.Max(ACTIVE_BOX_EXTEND_SIZE, ActiveBoxH + Math.Sign(e.Delta) * ACTIVE_BOX_EXTEND_SIZE);
+                    var newActiveBoxW = Math.Max(ACTIVE_BOX_EXTEND_SIZE, ActiveBox.Width + Math.Sign(e.Delta) * ACTIVE_BOX_EXTEND_SIZE);
+                    var newActiveBoxH = Math.Max(ACTIVE_BOX_EXTEND_SIZE, ActiveBox.Height + Math.Sign(e.Delta) * ACTIVE_BOX_EXTEND_SIZE);
 
-                    var dx = newActiveBoxW - ActiveBoxW;
-                    var dy = newActiveBoxH - ActiveBoxH;
+                    var dx = newActiveBoxW - ActiveBox.Width;
+                    var dy = newActiveBoxH - ActiveBox.Height;
 
-                    ActiveBoxW += dx;
-                    ActiveBoxH += dy;
+                    ActiveBox.Width += dx;
+                    ActiveBox.Height += dy;
 
-                    ActiveBoxX += dx >> 1;
-                    ActiveBoxY += dy >> 1;
+                    ActiveBox.X += dx >> 1;
+                    ActiveBox.Y += dy >> 1;
 
                     movingStartPoint = getTransformedMousePos(e.Location);
 
@@ -249,8 +248,8 @@ namespace AiPainter.Controls
                 e.Graphics.FillRectangle
                 (
                     whiteGrayCheckesBrush, 
-                    ActiveBoxX, 
-                    ActiveBoxY, 
+                    ActiveBox.X, 
+                    ActiveBox.Y, 
                     Image.Width, 
                     Image.Height
                 );
@@ -258,8 +257,8 @@ namespace AiPainter.Controls
                 e.Graphics.DrawImage
                 (
                     Image, 
-                    ActiveBoxX, 
-                    ActiveBoxY,
+                    ActiveBox.X, 
+                    ActiveBox.Y,
                     Image.Width,
                     Image.Height
                 );
@@ -271,11 +270,11 @@ namespace AiPainter.Controls
                 activeBoxPen,
                 -2 / zoom, 
                 -2 / zoom, 
-                ActiveBoxW + 3 / zoom, 
-                ActiveBoxH + 3 / zoom
+                ActiveBox.Width + 3 / zoom, 
+                ActiveBox.Height + 3 / zoom
             );
 
-            MaskHelper.DrawPrimitives(ActiveBoxX, ActiveBoxY, e.Graphics, primBrush, primitives);
+            MaskHelper.DrawPrimitives(ActiveBox.X, ActiveBox.Y, e.Graphics, primBrush, primitives);
 
             drawCursor(e.Graphics);
         }
@@ -337,8 +336,8 @@ namespace AiPainter.Controls
             if (Image == null) return;
 
             mode = Mode.NOTHING;
-            ActiveBoxX = (int)Math.Round(ActiveBoxX / 16.0) * 16;
-            ActiveBoxY = (int)Math.Round(ActiveBoxY / 16.0) * 16;
+            ActiveBox.X = (int)Math.Round(ActiveBox.X / 16.0) * 16;
+            ActiveBox.Y = (int)Math.Round(ActiveBox.Y / 16.0) * 16;
             Refresh();
         }
 
@@ -347,8 +346,8 @@ namespace AiPainter.Controls
             if (!Enabled) return;
 
             var pt = getTransformedMousePos(loc);
-            pt.X -= ActiveBoxX;
-            pt.Y -= ActiveBoxY;
+            pt.X -= ActiveBox.X;
+            pt.Y -= ActiveBox.Y;
             
             mode = Mode.MASKING;
 
@@ -373,8 +372,8 @@ namespace AiPainter.Controls
             if (!Enabled) return;
 
             var pt = getTransformedMousePos(loc);
-            pt.X -= ActiveBoxX;
-            pt.Y -= ActiveBoxY;
+            pt.X -= ActiveBox.X;
+            pt.Y -= ActiveBox.Y;
 
             switch (lastPrim!.Kind)
             {
@@ -407,8 +406,8 @@ namespace AiPainter.Controls
         {
             loc = getTransformedMousePos(loc);
 
-            ActiveBoxX += loc.X - movingStartPoint.X;
-            ActiveBoxY += loc.Y - movingStartPoint.Y;
+            ActiveBox.X += loc.X - movingStartPoint.X;
+            ActiveBox.Y += loc.Y - movingStartPoint.Y;
             movingStartPoint = loc;
             Refresh();
         }

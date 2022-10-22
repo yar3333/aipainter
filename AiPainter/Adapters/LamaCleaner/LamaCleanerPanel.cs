@@ -18,16 +18,11 @@ namespace AiPainter.Adapters.LamaCleaner
         {
             InProcess = true;
 
-            var activeBoxX = pictureBox!.ActiveBoxX;
-            var activeBoxY = pictureBox!.ActiveBoxY;
-            var activeBoxW = pictureBox!.ActiveBoxW;
-            var activeBoxH = pictureBox!.ActiveBoxH;
+            var activeBox = pictureBox!.ActiveBox;
 
             var fullImage = pictureBox!.Image!;
-            var fullMask = pictureBox!.GetMaskAsWhiteOnBlack()!;
-
-            var croppedImage = BitmapTools.GetCropped(fullImage, -activeBoxX, -activeBoxY, activeBoxW, activeBoxH, Color.Black)!;
-            var croppedMask  = BitmapTools.GetCropped(fullMask,  -activeBoxX, -activeBoxY, activeBoxW, activeBoxH, Color.Black)!;
+            var croppedImage = BitmapTools.GetCropped(fullImage, -activeBox.X, -activeBox.Y, activeBox.Width, activeBox.Height, Color.Black)!;
+            var croppedMask = pictureBox!.GetMaskCropped(-activeBox.X, -activeBox.Y, activeBox.Width, activeBox.Height, Color.Black, Color.White)!;
             
             Task.Run(() =>
             {
@@ -38,8 +33,7 @@ namespace AiPainter.Adapters.LamaCleaner
                     {
                         Invoke(() =>
                         {
-                            BitmapTools.DrawBitmapAtPos(resultImage, fullImage, -activeBoxX, -activeBoxY);
-                            //pictureBox.Image = resultImage;
+                            BitmapTools.DrawBitmapAtPos(resultImage, fullImage, -activeBox.X, -activeBox.Y);
                             pictureBox.ResetMask();
                             pictureBox.Refresh();
                         });

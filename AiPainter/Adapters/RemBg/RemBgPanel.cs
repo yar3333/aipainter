@@ -18,18 +18,25 @@ namespace AiPainter.Adapters.RemBg
         {
             InProcess = true;
 
-            var image = BitmapTools.Clone(pictureBox!.Image)!;
+            var activeBox = pictureBox!.ActiveBox;
+
+            var fullImage = pictureBox!.Image!;
+            var croppedImage = BitmapTools.GetCropped(fullImage, -activeBox.X, -activeBox.Y, activeBox.Width, activeBox.Height, Color.Black)!;
 
             Task.Run(() =>
             {
                 try
                 {
-                    var result = RemBgClient.RunAsync(image).Result;
-                    Invoke(() =>
+                    var resultImage = RemBgClient.RunAsync(croppedImage).Result;
+                    if (resultImage != null)
                     {
-                        pictureBox.Image = result;
-                        pictureBox.ResetMask();
-                    });
+                        Invoke(() =>
+                        {
+                            BitmapTools.DrawBitmapAtPos(resultImage, fullImage, -activeBox.X, -activeBox.Y);
+                            pictureBox.ResetMask();
+                            pictureBox.Refresh();
+                        });
+                    }
                 }
                 catch (Exception ee)
                 {
