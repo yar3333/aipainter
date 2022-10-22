@@ -38,10 +38,10 @@ namespace AiPainter.Adapters.InvokeAi
             pbSteps.CustomText = "0 / " + (int)numSteps.Value;
             pbSteps.Refresh();
 
-            var redBoxX = pictureBox!.RedBoxX;
-            var redBoxY = pictureBox!.RedBoxY;
-            var redBoxW = pictureBox!.RedBoxW;
-            var redBoxH = pictureBox!.RedBoxH;
+            var activeBoxX = pictureBox!.ActiveBoxX;
+            var activeBoxY = pictureBox!.ActiveBoxY;
+            var activeBoxW = pictureBox!.ActiveBoxW;
+            var activeBoxH = pictureBox!.ActiveBoxH;
 
             var originalImage = pictureBox.Image!;
 
@@ -49,7 +49,7 @@ namespace AiPainter.Adapters.InvokeAi
             {
                 generate(null, _ => InProcess = pbIterations.Value < pbIterations.Maximum);
             }
-            else if (redBoxX == 0 && redBoxY == 0 && redBoxW == originalImage.Width && redBoxH == originalImage.Height)
+            else if (activeBoxX == 0 && activeBoxY == 0 && activeBoxW == originalImage.Width && activeBoxH == originalImage.Height)
             {
                 generate(pictureBox.GetMaskedImage(0), _ => InProcess = pbIterations.Value < pbIterations.Maximum);
             }
@@ -58,7 +58,7 @@ namespace AiPainter.Adapters.InvokeAi
                 originalImage = BitmapTools.Clone(originalImage)!;
                 var fullMaskedImage = pictureBox.GetMaskedImage(0)!;
 
-                var croppedMaskedImage = BitmapTools.GetCropped(fullMaskedImage, -redBoxX, -redBoxY, redBoxW, redBoxH, Color.Transparent)!;
+                var croppedMaskedImage = BitmapTools.GetCropped(fullMaskedImage, -activeBoxX, -activeBoxY, activeBoxW, activeBoxH, Color.Transparent)!;
                 generate(croppedMaskedImage, url =>
                 {
                     var resultFilePath = Path.Combine(Program.Config.InvokeAiOutputFolderPath, url.Split('/', '\\').Last());
@@ -69,7 +69,7 @@ namespace AiPainter.Adapters.InvokeAi
                             var bmp = BitmapTools.Load(resultFilePath)!;
                             bmp = BitmapTools.ResizeIfNeed(bmp, croppedMaskedImage.Width, croppedMaskedImage.Height)!;
                             using var g = Graphics.FromImage(originalImage);
-                            g.DrawImageUnscaled(bmp, -redBoxX, -redBoxY);
+                            g.DrawImageUnscaled(bmp, -activeBoxX, -activeBoxY);
                             originalImage.Save(resultFilePath, ImageFormat.Png);
                             originalImage.Dispose();
                         }

@@ -10,11 +10,11 @@ namespace AiPainter.Controls
         {
             NOTHING,
             MASKING,
-            RED_BOX_MOVING,
+            ACTIVE_BOX_MOVING,
             GLOBAL_MOVING,
         }
 
-        private const int RED_BOX_EXTEND_SIZE = 16;
+        private const int ACTIVE_BOX_EXTEND_SIZE = 16;
         
         private const int PEN_SIZE = 48;
         
@@ -37,7 +37,7 @@ namespace AiPainter.Controls
         private float zoom => zoomLevels[zoomIndex];
 
         private readonly HatchBrush whiteGrayCheckesBrush = new(HatchStyle.LargeCheckerBoard, Color.DarkGray, Color.White);
-        private readonly Pen redBoxPen = new(Color.Red, 3);
+        private readonly Pen activeBoxPen = new(Color.Red, 3);
 
         private Mode mode = Mode.NOTHING;
         private Point movingStartPoint;
@@ -47,10 +47,10 @@ namespace AiPainter.Controls
         private int globalX;
         private int globalY;
         
-        public int RedBoxX;
-        public int RedBoxY;
-        public int RedBoxW = 512;
-        public int RedBoxH = 512;
+        public int ActiveBoxX;
+        public int ActiveBoxY;
+        public int ActiveBoxW = 512;
+        public int ActiveBoxH = 512;
 
         public bool HasMask => primitives.Any();
 
@@ -86,9 +86,9 @@ namespace AiPainter.Controls
                 m.Translate
                 (
                     // ReSharper disable once PossibleLossOfFraction
-                    (ClientSize.Width - RedBoxW) / 2,
+                    (ClientSize.Width - ActiveBoxW) / 2,
                     // ReSharper disable once PossibleLossOfFraction
-                    (ClientSize.Height - RedBoxH) / 2
+                    (ClientSize.Height - ActiveBoxH) / 2
                 );
                 return m;
             }
@@ -174,8 +174,8 @@ namespace AiPainter.Controls
 
         public void ResetView()
         {
-            RedBoxX = 0;
-            RedBoxY = 0;
+            ActiveBoxX = 0;
+            ActiveBoxY = 0;
             zoomIndex = Array.IndexOf(zoomLevels, 1.0f);
             Invalidate();
         }
@@ -201,7 +201,7 @@ namespace AiPainter.Controls
                     if (cursorPt != null) { cursorPt = null; Refresh(); }
                     break;
 
-                case Mode.RED_BOX_MOVING:
+                case Mode.ACTIVE_BOX_MOVING:
                 case Mode.GLOBAL_MOVING:
                     if (!isCursorVisible) { Cursor.Show(); isCursorVisible = true; }
                     if (cursorPt != null) { cursorPt = null; Refresh(); }
@@ -219,18 +219,18 @@ namespace AiPainter.Controls
                     zoomIndex = Math.Clamp(zoomIndex + Math.Sign(e.Delta), 0, zoomLevels.Length - 1);
                     break;
 
-                case Mode.RED_BOX_MOVING:
-                    var newRedBoxW = Math.Max(RED_BOX_EXTEND_SIZE, RedBoxW + Math.Sign(e.Delta) * RED_BOX_EXTEND_SIZE);
-                    var newRedBoxH = Math.Max(RED_BOX_EXTEND_SIZE, RedBoxH + Math.Sign(e.Delta) * RED_BOX_EXTEND_SIZE);
+                case Mode.ACTIVE_BOX_MOVING:
+                    var newActiveBoxW = Math.Max(ACTIVE_BOX_EXTEND_SIZE, ActiveBoxW + Math.Sign(e.Delta) * ACTIVE_BOX_EXTEND_SIZE);
+                    var newActiveBoxH = Math.Max(ACTIVE_BOX_EXTEND_SIZE, ActiveBoxH + Math.Sign(e.Delta) * ACTIVE_BOX_EXTEND_SIZE);
 
-                    var dx = newRedBoxW - RedBoxW;
-                    var dy = newRedBoxH - RedBoxH;
+                    var dx = newActiveBoxW - ActiveBoxW;
+                    var dy = newActiveBoxH - ActiveBoxH;
 
-                    RedBoxW += dx;
-                    RedBoxH += dy;
+                    ActiveBoxW += dx;
+                    ActiveBoxH += dy;
 
-                    RedBoxX += dx >> 1;
-                    RedBoxY += dy >> 1;
+                    ActiveBoxX += dx >> 1;
+                    ActiveBoxY += dy >> 1;
 
                     movingStartPoint = getTransformedMousePos(e.Location);
 
@@ -249,8 +249,8 @@ namespace AiPainter.Controls
                 e.Graphics.FillRectangle
                 (
                     whiteGrayCheckesBrush, 
-                    RedBoxX, 
-                    RedBoxY, 
+                    ActiveBoxX, 
+                    ActiveBoxY, 
                     Image.Width, 
                     Image.Height
                 );
@@ -258,24 +258,24 @@ namespace AiPainter.Controls
                 e.Graphics.DrawImage
                 (
                     Image, 
-                    RedBoxX, 
-                    RedBoxY,
+                    ActiveBoxX, 
+                    ActiveBoxY,
                     Image.Width,
                     Image.Height
                 );
             }
 
-            redBoxPen.Width = 3 / zoom;
+            activeBoxPen.Width = 3 / zoom;
             e.Graphics.DrawRectangle
             (
-                redBoxPen,
+                activeBoxPen,
                 -2 / zoom, 
                 -2 / zoom, 
-                RedBoxW + 3 / zoom, 
-                RedBoxH + 3 / zoom
+                ActiveBoxW + 3 / zoom, 
+                ActiveBoxH + 3 / zoom
             );
 
-            MaskHelper.DrawPrimitives(RedBoxX, RedBoxY, e.Graphics, primBrush, primitives);
+            MaskHelper.DrawPrimitives(ActiveBoxX, ActiveBoxY, e.Graphics, primBrush, primitives);
 
             drawCursor(e.Graphics);
         }
@@ -304,7 +304,7 @@ namespace AiPainter.Controls
             if (Image == null) return;
 
             if (e.Button == MouseButtons.Left) maskingMouseDown(e.Location);
-            if (e.Button == MouseButtons.Right) redBoxMovingMouseDown(e.Location);
+            if (e.Button == MouseButtons.Right) activeBoxMovingMouseDown(e.Location);
             if (e.Button == MouseButtons.Middle) globalMovingMouseDown(e.Location);
         }
 
@@ -320,8 +320,8 @@ namespace AiPainter.Controls
                     maskingMouseMove(e.Location);
                     break;
 
-                case Mode.RED_BOX_MOVING:
-                    redBoxMovingMouseMove(e.Location);
+                case Mode.ACTIVE_BOX_MOVING:
+                    activeBoxMovingMouseMove(e.Location);
                     break;
 
                 case Mode.GLOBAL_MOVING:
@@ -337,8 +337,8 @@ namespace AiPainter.Controls
             if (Image == null) return;
 
             mode = Mode.NOTHING;
-            RedBoxX = (int)Math.Round(RedBoxX / 16.0) * 16;
-            RedBoxY = (int)Math.Round(RedBoxY / 16.0) * 16;
+            ActiveBoxX = (int)Math.Round(ActiveBoxX / 16.0) * 16;
+            ActiveBoxY = (int)Math.Round(ActiveBoxY / 16.0) * 16;
             Refresh();
         }
 
@@ -347,8 +347,8 @@ namespace AiPainter.Controls
             if (!Enabled) return;
 
             var pt = getTransformedMousePos(loc);
-            pt.X -= RedBoxX;
-            pt.Y -= RedBoxY;
+            pt.X -= ActiveBoxX;
+            pt.Y -= ActiveBoxY;
             
             mode = Mode.MASKING;
 
@@ -373,8 +373,8 @@ namespace AiPainter.Controls
             if (!Enabled) return;
 
             var pt = getTransformedMousePos(loc);
-            pt.X -= RedBoxX;
-            pt.Y -= RedBoxY;
+            pt.X -= ActiveBoxX;
+            pt.Y -= ActiveBoxY;
 
             switch (lastPrim!.Kind)
             {
@@ -396,19 +396,19 @@ namespace AiPainter.Controls
             Refresh();
         }
 
-        private void redBoxMovingMouseDown(Point loc)
+        private void activeBoxMovingMouseDown(Point loc)
         {
-            mode = Mode.RED_BOX_MOVING;
+            mode = Mode.ACTIVE_BOX_MOVING;
             movingStartPoint = getTransformedMousePos(loc);
             manageCursor(loc);
         }
 
-        private void redBoxMovingMouseMove(Point loc)
+        private void activeBoxMovingMouseMove(Point loc)
         {
             loc = getTransformedMousePos(loc);
 
-            RedBoxX += loc.X - movingStartPoint.X;
-            RedBoxY += loc.Y - movingStartPoint.Y;
+            ActiveBoxX += loc.X - movingStartPoint.X;
+            ActiveBoxY += loc.Y - movingStartPoint.Y;
             movingStartPoint = loc;
             Refresh();
         }
