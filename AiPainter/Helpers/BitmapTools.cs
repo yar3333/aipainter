@@ -131,18 +131,18 @@ public static class BitmapTools
         var dstData = dst.LockBits(new Rectangle(0, 0, dst.Width, dst.Height), ImageLockMode.WriteOnly, PixelFormat.Format32bppArgb);
         unsafe
         {
-            var pOrgDst = (byte*)dstData.Scan0.ToPointer();
+            var pOrgDst = (int*)dstData.Scan0.ToPointer();
+            var stride = dstData.Stride >> 2;
+            var value = color.ToArgb();
 
             for (var y = 0; y < h; y++)
             {
-                var pDst = pOrgDst + dstData.Stride * (y0 + y) + x0 * 4;
-                for (var x = 0; x < w; x++)
+                var pDst = pOrgDst + stride * (y0 + y) + x0;
+                var pEnd = pDst + w;
+                while (pDst < pEnd)
                 {
-                    pDst[0] = color.A;
-                    pDst[1] = color.R;
-                    pDst[2] = color.G;
-                    pDst[3] = color.B;
-                    pDst+=4;
+                    *pDst = value;
+                    pDst++;
                 }
             }
         }
@@ -161,19 +161,22 @@ public static class BitmapTools
         var srcData = src.LockBits(new Rectangle(0, 0, src.Width, src.Height), ImageLockMode.ReadOnly, PixelFormat.Format32bppArgb);
         var dstData = dst.LockBits(new Rectangle(0, 0, dst.Width, dst.Height), ImageLockMode.WriteOnly, PixelFormat.Format32bppArgb);
 
+        var srcStride = srcData.Stride >> 2;
+        var dstStride = dstData.Stride >> 2;
+
         var w = Math.Min(dst.Width  - dstX, src.Width  - srcX);
         var h = Math.Min(dst.Height - dstY, src.Height - srcY);
 
         unsafe
         {
-            var pOrgSrc = (byte*)srcData.Scan0.ToPointer();
-            var pOrgDst = (byte*)dstData.Scan0.ToPointer();
+            var pOrgSrc = (int*)srcData.Scan0.ToPointer();
+            var pOrgDst = (int*)dstData.Scan0.ToPointer();
 
             for (var y = 0; y < h; y++)
             {
-                var pSrc = pOrgSrc + srcData.Stride * (srcY + y) + srcX * 4;
-                var pDst = pOrgDst + dstData.Stride * (dstY + y) + dstX * 4;
-                for (var x = 0; x < w * 4; x++)
+                var pSrc = pOrgSrc + srcStride * (srcY + y) + srcX;
+                var pDst = pOrgDst + dstStride * (dstY + y) + dstX;
+                for (var x = 0; x < w; x++)
                 {
                     *pDst = *pSrc;
                     pSrc++;

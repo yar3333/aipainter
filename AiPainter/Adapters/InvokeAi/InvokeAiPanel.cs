@@ -59,27 +59,23 @@ namespace AiPainter.Adapters.InvokeAi
                 var fullMaskedImage = pictureBox.GetMaskedImage(0)!;
 
                 var croppedMaskedImage = BitmapTools.GetCropped(fullMaskedImage, -activeBoxX, -activeBoxY, activeBoxW, activeBoxH, Color.Transparent)!;
-                generate(croppedMaskedImage, url =>
+                generate(croppedMaskedImage, resultFilePath =>
                 {
-                    var resultFilePath = Path.Combine(Program.Config.InvokeAiOutputFolderPath, url.Split('/', '\\').Last());
-                    waitForFile(resultFilePath, () =>
+                    try
                     {
-                        try
-                        {
-                            var bmp = BitmapTools.Load(resultFilePath)!;
-                            bmp = BitmapTools.ResizeIfNeed(bmp, croppedMaskedImage.Width, croppedMaskedImage.Height)!;
-                            using var g = Graphics.FromImage(originalImage);
-                            g.DrawImageUnscaled(bmp, -activeBoxX, -activeBoxY);
-                            originalImage.Save(resultFilePath, ImageFormat.Png);
-                            originalImage.Dispose();
-                        }
-                        catch (Exception e)
-                        {
-                            InvokeAiClient.Log.WriteLine(e.ToString());
-                        }
+                        var resultImage = BitmapTools.Load(resultFilePath)!;
+                        resultImage = BitmapTools.ResizeIfNeed(resultImage, croppedMaskedImage.Width, croppedMaskedImage.Height)!;
+                        BitmapTools.DrawBitmapAtPos(resultImage, originalImage, -activeBoxX, -activeBoxY);
+                        originalImage.Save(resultFilePath, ImageFormat.Png);
+                        originalImage.Dispose();
+                        resultImage.Dispose();
+                    }
+                    catch (Exception ee)
+                    {
+                        InvokeAiClient.Log.WriteLine(ee.ToString());
+                    }
 
-                        InProcess = pbIterations.Value < pbIterations.Maximum;
-                    });
+                    InProcess = pbIterations.Value < pbIterations.Maximum;
                 });
             }
         }
@@ -116,7 +112,18 @@ namespace AiPainter.Adapters.InvokeAi
                             pbIterations.Value++;
                             pbIterations.CustomText = pbIterations.Value + " / " + sdImage.iterations;
                             pbIterations.Refresh();
-                            onGenerated(progress.url!);
+
+                            var resultFilePath = Path.Combine(Program.Config.InvokeAiOutputFolderPath, progress.url!.Split('/', '\\').Last());
+                            Task.Run(async () =>
+                            {
+                                while (!File.Exists(resultFilePath))
+                                {
+                                    if (!InProcess) return;
+                                    await Task.Delay(500);
+                                }
+                                await Task.Delay(1000);
+                                onGenerated(resultFilePath);
+                            });
                             break;
 
                         case "canceled":
@@ -160,27 +167,14 @@ namespace AiPainter.Adapters.InvokeAi
                 numImg2img.Enabled = cbUseInitImage.Checked;
             }
 
-            btGenerate.Text =               InProcess ? "CANCEL" 
-                                         : isPortOpen ? "Generate" 
-                            : InvokeAiProcess.Loading ? "LOADING..." 
-                                                      : "ERROR";
+            btGenerate.Text = InProcess ? "CANCEL" 
+                           : isPortOpen ? "Generate" 
+              : InvokeAiProcess.Loading ? "LOADING..." 
+                                        : "ERROR";
+
             tbPrompt.Enabled = !InProcess;
 
             btGenerate.Enabled = isPortOpen;
-        }
-
-        private void waitForFile(string filePath, Action onResult)
-        {
-            _ = Task.Run(async () =>
-            {
-                while (!File.Exists(filePath))
-                {
-                    if (!InProcess) return;
-                    await Task.Delay(500);
-                }
-                await Task.Delay(1000);
-                onResult();
-            });
         }
     }
 }

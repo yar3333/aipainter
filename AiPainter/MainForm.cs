@@ -360,9 +360,9 @@ namespace AiPainter
         {
             while (true)
             {
-                invokeaiIsPortOpen = ProcessHelper.IsPortOpen(Program.Config.InvokeAiUrl);
-                lamaCleanerIsPortOpen = ProcessHelper.IsPortOpen(Program.Config.LamaCleanerUrl);
-                remBgIsPortOpen = ProcessHelper.IsPortOpen(Program.Config.RemBgUrl);
+                invokeaiIsPortOpen = true;//ProcessHelper.IsPortOpen(Program.Config.InvokeAiUrl);
+                lamaCleanerIsPortOpen = true;//ProcessHelper.IsPortOpen(Program.Config.LamaCleanerUrl);
+                remBgIsPortOpen = true;//ProcessHelper.IsPortOpen(Program.Config.RemBgUrl);
                 Thread.Sleep(200);
             }
         }
