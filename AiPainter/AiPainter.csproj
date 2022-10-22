@@ -39,6 +39,7 @@
   <ItemGroup>
     <None Remove=".editorconfig" />
     <None Remove=".gitignore" />
+    <None Remove="AboutDialog.rtf" />
     <None Remove="AiPainter.sln.DotSettings" />
     <None Remove="build-release-x64.cmd" />
     <None Remove="pack-to-dist.cmd" />
@@ -72,6 +73,10 @@
 
   <ItemGroup>
     <EditorConfigFiles Remove="C:\MyProg\ai-image-processing\AiPainter\.editorconfig" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="AboutDialog.rtf" />
   </ItemGroup>
 
 </Project>
