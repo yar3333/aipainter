@@ -75,7 +75,7 @@ namespace AiPainter.Adapters.InvokeAi
                         }
                         catch (Exception e)
                         {
-
+                            InvokeAiClient.Log.WriteLine(e.ToString());
                         }
 
                         InProcess = pbIterations.Value < pbIterations.Maximum;
