@@ -57,6 +57,7 @@ namespace AiPainter
             this.panInvokeAi = new AiPainter.Adapters.InvokeAi.InvokeAiPanel();
             this.hPicScroll = new System.Windows.Forms.HScrollBar();
             this.toolTip = new System.Windows.Forms.ToolTip(this.components);
+            this.btCopyToClipboard = new System.Windows.Forms.ToolStripButton();
             controlsStateUpdater = new System.Windows.Forms.Timer(this.components);
             this.toolbar.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer)).BeginInit();
@@ -84,6 +85,7 @@ namespace AiPainter
             this.btLoad,
             this.btSavePng,
             this.btSaveJpeg,
+            this.btCopyToClipboard,
             this.toolStripSeparator2,
             this.btResetMask,
             this.btDeAlpha,
@@ -314,6 +316,16 @@ namespace AiPainter
             this.hPicScroll.Size = new System.Drawing.Size(924, 30);
             this.hPicScroll.TabIndex = 0;
             // 
+            // btCopyToClipboard
+            // 
+            this.btCopyToClipboard.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.btCopyToClipboard.Image = ((System.Drawing.Image)(resources.GetObject("btCopyToClipboard.Image")));
+            this.btCopyToClipboard.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btCopyToClipboard.Name = "btCopyToClipboard";
+            this.btCopyToClipboard.Size = new System.Drawing.Size(38, 37);
+            this.btCopyToClipboard.Text = "Copy to clipboard";
+            this.btCopyToClipboard.Click += new System.EventHandler(this.btCopyToClipboard_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
@@ -367,5 +379,6 @@ namespace AiPainter
         private System.ComponentModel.BackgroundWorker checkPortsWorker;
         private ToolStripButton btRestorePrevMask;
         private ToolStripButton btAbout;
+        private ToolStripButton btCopyToClipboard;
     }
 }

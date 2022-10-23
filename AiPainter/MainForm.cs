@@ -344,9 +344,25 @@ namespace AiPainter
 
             pictureBox.Enabled = !panLamaCleaner.InProcess && !panRemBg.InProcess;
 
+            var activeBox = pictureBox.ActiveBox;
+
             Text = (string.IsNullOrEmpty(filePath) ? "AiPainter" : Path.GetFileName(filePath))
                  + (pictureBox.Image == null ? "" : " (" + pictureBox.Image.Width + " x " + pictureBox.Image.Height + ")")
+                 + $" [Active box: X,Y = {activeBox.X},{activeBox.Y}; WxH = {activeBox.Width}x{activeBox.Height}]"
                  + (string.IsNullOrEmpty(filePath) ? "" : " | " + Path.GetDirectoryName(filePath));
+
+            btClearActiveImage.Enabled = pictureBox.Image != null;
+            btCopyToClipboard.Enabled = pictureBox.Image != null;
+            btSavePng.Enabled = pictureBox.Image != null;
+            btSaveJpeg.Enabled = pictureBox.Image != null;
+            btResetMask.Enabled = pictureBox.HasMask;
+            btDeAlpha.Enabled = pictureBox.Image != null && BitmapTools.HasAlpha(pictureBox.Image);
+            btRestorePrevMask.Enabled = pictureBox.HasPrevMask;
+
+            btLeft.Enabled = pictureBox.Image != null;
+            btUp.Enabled = pictureBox.Image != null;
+            btDown.Enabled = pictureBox.Image != null;
+            btRight.Enabled = pictureBox.Image != null;
         }
 
         private void checkPortsWorker_DoWork(object sender, System.ComponentModel.DoWorkEventArgs e)
@@ -369,6 +385,11 @@ namespace AiPainter
         {
             var aboutDialog = new AboutDialog();
             aboutDialog.ShowDialog(this);
+        }
+
+        private void btCopyToClipboard_Click(object sender, EventArgs e)
+        {
+            Clipboard.SetImage(pictureBox.Image!);
         }
     }
 }

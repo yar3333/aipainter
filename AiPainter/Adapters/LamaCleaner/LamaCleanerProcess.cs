@@ -5,6 +5,8 @@ namespace AiPainter.Adapters.LamaCleaner;
 
 static class LamaCleanerProcess
 {
+    public static bool Loading { get; private set; }
+
     public static Process? Start()
     {
         var log = LamaCleanerClient.Log;
@@ -19,6 +21,7 @@ static class LamaCleanerProcess
 
         var baseDir = Path.Join(Application.StartupPath, "external", "lama-cleaner");
         
+        Loading = true;
         return ProcessHelper.RunInBackground
         (
             Path.Join("main", "aipainter_lamacleaner.exe"),
@@ -31,7 +34,11 @@ static class LamaCleanerProcess
                 { "TORCH_HOME", Path.Join(baseDir, "stuff", "models") }
             },
             logFunc: s => log.WriteLine("[process] " + s),
-            onExit: code => log.WriteLine("[process] Exit " + code)
+            onExit: code =>
+            {
+                Loading = false;
+                log.WriteLine("[process] Exit " + code);
+            }
         );
     }
 }

@@ -5,6 +5,8 @@ namespace AiPainter.Adapters.RemBg;
 
 static class RemBgProcess
 {
+    public static bool Loading { get; private set; }
+
     public static Process? Start()
     {
         var log = RemBgClient.Log;
@@ -19,6 +21,7 @@ static class RemBgProcess
         
         var baseDir = Path.Join(Application.StartupPath, "external", "rembg");
 
+        Loading = true;
         return ProcessHelper.RunInBackground
         (
             Path.Join("aipainter_rembg", "aipainter_rembg.exe"),
@@ -37,7 +40,11 @@ static class RemBgProcess
                 },
             },
             logFunc: s => log.WriteLine("[process] " + s),
-            onExit: code => log.WriteLine("[process] Exit " + code)
+            onExit: code =>
+            {
+                Loading = false;
+                log.WriteLine("[process] Exit " + code);
+            }
         );
     }
 }

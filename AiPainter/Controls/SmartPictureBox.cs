@@ -51,6 +51,7 @@ namespace AiPainter.Controls
         public Rectangle ActiveBox = new(0, 0, 512, 512);
 
         public bool HasMask => primitives.Any();
+        public bool HasPrevMask => oldPrimitives.Any();
 
         private bool isCursorVisible = true;
 

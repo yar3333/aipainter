@@ -59,7 +59,11 @@ namespace AiPainter.Adapters.LamaCleaner
             pictureBox = pb;
 
             btInpaint.Enabled = !InProcess && pb.Image != null && pb.HasMask && isPortOpen;
-            btInpaint.Text = !InProcess ? "Clean masked area" : "PROCESSING";
+
+            btInpaint.Text =       InProcess ? "PROCESSING" 
+                                : isPortOpen ? "Clean masked area" 
+                : LamaCleanerProcess.Loading ? "LOADING..." 
+                                             : "ERROR";
         }
     }
 }
