@@ -4,16 +4,14 @@ namespace AiPainter.Helpers;
 
 public static class BitmapTools
 {
-    public static Bitmap? Load(string filePath)
+    public static Bitmap Load(string filePath)
     {
         using var src = (Bitmap)Image.FromFile(filePath);
         return Clone(src);
     }
 
-    public static Bitmap? Clone(Bitmap? src)
+    public static Bitmap Clone(Bitmap src)
     {
-        if (src == null) return null;
-
         var dst = new Bitmap(src.Width, src.Height, PixelFormat.Format32bppArgb);
 
         var srcData = src.LockBits(new Rectangle(0, 0, src.Width, src.Height), ImageLockMode.ReadOnly, PixelFormat.Format32bppArgb);
@@ -38,19 +36,15 @@ public static class BitmapTools
         return dst;
     }
 
-    public static string? GetBase64String(Image? image)
+    public static string GetBase64String(Image image)
     {
-        if (image == null) return null;
-
         using var m = new MemoryStream();
         image.Save(m, ImageFormat.Png);
         return "data:image/png;base64," + Convert.ToBase64String(m.ToArray());
     }
 
-    public static void DeAlpha(Bitmap? bmp)
+    public static void DeAlpha(Bitmap bmp)
     {
-        if (bmp == null) return;
-
         var data = bmp.LockBits(new Rectangle(0, 0, bmp.Width, bmp.Height), ImageLockMode.WriteOnly, PixelFormat.Format32bppArgb);
 
         unsafe
@@ -115,18 +109,17 @@ public static class BitmapTools
         }
     }
 
-    public static Bitmap? GetCropped(Bitmap? src, int x, int y, int width, int height, Color backColor)
+    public static Bitmap GetCropped(Bitmap src, Rectangle rect, Color backColor)
     {
-        if (src == null) return null;
-
-        var dst = new Bitmap(width, height, PixelFormat.Format32bppArgb);
-        FillBox(dst, 0, 0, dst.Width, dst.Height, backColor);
-        DrawBitmapAtPos(src, dst, -x, -y);
-
+        if (rect.X == 0 && rect.Y == 0 && rect.Width == src.Width && rect.Height == src.Height) return new Bitmap(src);
+        
+        var dst = new Bitmap(rect.Width, rect.Height, PixelFormat.Format32bppArgb);
+        FillBox(dst, new Rectangle(0, 0, dst.Width, dst.Height), backColor);
+        DrawBitmapAtPos(src, dst, -rect.X, -rect.Y);
         return dst;
     }
 
-    public static void FillBox(Bitmap dst, int x0, int y0, int w, int h, Color color)
+    public static void FillBox(Bitmap dst, Rectangle rect, Color color)
     {
         var dstData = dst.LockBits(new Rectangle(0, 0, dst.Width, dst.Height), ImageLockMode.WriteOnly, PixelFormat.Format32bppArgb);
         unsafe
@@ -135,10 +128,10 @@ public static class BitmapTools
             var stride = dstData.Stride >> 2;
             var value = color.ToArgb();
 
-            for (var y = 0; y < h; y++)
+            for (var y = 0; y < rect.Height; y++)
             {
-                var pDst = pOrgDst + stride * (y0 + y) + x0;
-                var pEnd = pDst + w;
+                var pDst = pOrgDst + stride * (rect.Y + y) + rect.X;
+                var pEnd = pDst + rect.Width;
                 while (pDst < pEnd)
                 {
                     *pDst = value;
@@ -189,38 +182,31 @@ public static class BitmapTools
         src.UnlockBits(srcData);
     }
 
-    public static Bitmap? ResizeIfNeed(Bitmap? image, int width, int height)
+    public static Bitmap GetShrinked(Bitmap image, int maxWidth, int maxHeight)
     {
-        if (image == null) return null;
-        if (image.Width == width && image.Height == height) return image;
-        return Resize(image, width, height);
-    }
-
-    public static Bitmap ShrinkIfNeed(Bitmap image, int maxWidth, int maxHeight)
-    {
-        if (image.Width <= maxWidth && image.Height <= maxHeight) return image;
+        if (image.Width <= maxWidth && image.Height <= maxHeight) return new Bitmap(image);
 
         var k = Math.Min((double)maxWidth / image.Width, (double)maxHeight / image.Height);
-        return Resize(image, (int)Math.Round(image.Width * k), (int)Math.Round(image.Height * k));
+        return GetResized(image, (int)Math.Round(image.Width * k), (int)Math.Round(image.Height * k));
     }
 
-    public static bool HasAlpha(Bitmap bmp)
+    public static bool HasAlpha(Bitmap image)
     {
-        var data = bmp.LockBits(new Rectangle(0, 0, bmp.Width, bmp.Height), ImageLockMode.ReadOnly, PixelFormat.Format32bppArgb);
+        var data = image.LockBits(new Rectangle(0, 0, image.Width, image.Height), ImageLockMode.ReadOnly, PixelFormat.Format32bppArgb);
 
         unsafe
         {
             var scan0 = (byte*)data.Scan0.ToPointer();
 
-            for (var y = 0; y < bmp.Height; y++)
+            for (var y = 0; y < image.Height; y++)
             {
                 var p = scan0 + y * data.Stride + 3;
-                var end = p + bmp.Width * 4;
+                var end = p + image.Width * 4;
                 while (p < end)
                 {
                     if (*p != 255)
                     {
-                        bmp.UnlockBits(data);
+                        image.UnlockBits(data);
                         return true;
                     }
                     p += 4;
@@ -228,7 +214,7 @@ public static class BitmapTools
             }
         }
 
-        bmp.UnlockBits(data);
+        image.UnlockBits(data);
         return false;
     }
 
@@ -263,8 +249,10 @@ public static class BitmapTools
         return dst;
     }
 
-    public static Bitmap Resize(Bitmap image, int width, int height)
+    public static Bitmap GetResized(Bitmap image, int width, int height)
     {
+        if (image.Width == width && image.Height == height) return new Bitmap(image);
+
         var dst = new Bitmap(width, height, PixelFormat.Format32bppArgb);
         drawImageResizedInner(image, dst, new Rectangle(0, 0, width, height), 128);
         return dst;

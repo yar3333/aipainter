@@ -1,5 +1,6 @@
 ﻿using AiPainter.Helpers;
 using System.Drawing.Drawing2D;
+using System.Drawing.Imaging;
 using System.Numerics;
 
 namespace AiPainter.Controls
@@ -75,18 +76,19 @@ namespace AiPainter.Controls
             {
                 var m = new Matrix(Matrix3x2.Identity);
 
-                m.Translate(globalX, globalY);
+                m.Scale(zoom, zoom, MatrixOrder.Append);
 
-                m.Translate( ClientSize.Width / 2,  ClientSize.Height / 2);
-                m.Scale(zoom, zoom);
-                m.Translate(-ClientSize.Width / 2, -ClientSize.Height / 2);
                 m.Translate
                 (
                     // ReSharper disable once PossibleLossOfFraction
                     (ClientSize.Width - ActiveBox.Width) / 2,
                     // ReSharper disable once PossibleLossOfFraction
-                    (ClientSize.Height - ActiveBox.Height) / 2
+                    (ClientSize.Height - ActiveBox.Height) / 2,
+                    MatrixOrder.Append
                 );
+
+                m.Translate(globalX, globalY, MatrixOrder.Append);
+                
                 return m;
             }
         }
@@ -111,25 +113,21 @@ namespace AiPainter.Controls
             });
         }
 
-        public Bitmap? GetMaskedImage(byte alpha)
+        public Bitmap GetMaskedImageCropped(Color back, byte alpha)
         {
-            if (Image == null) return null;
-
-            var bmp = BitmapTools.Clone(Image)!;
-            MaskHelper.DrawAlpha(bmp, primitives, alpha);
+            var bmp = BitmapTools.GetCropped(Image!, ActiveBox, back);
+            MaskHelper.DrawAlpha(-ActiveBox.X, -ActiveBox.Y, bmp, primitives, alpha);
             return bmp;
         }
 
-        public Bitmap? GetMaskCropped(int x,int y, int w, int h, Color backColor, Color maskColor)
+        public Bitmap GetMaskCropped(Color backColor, Color maskColor)
         {
-            if (Image == null) return null;
-
-            var bmp = new Bitmap(w, h, Image.PixelFormat);
+            var bmp = new Bitmap(ActiveBox.Width, ActiveBox.Height, PixelFormat.Format32bppArgb);
             using var g = Graphics.FromImage(bmp);
             using var backBrush = new SolidBrush(backColor);
             using var maskBrush = new SolidBrush(maskColor);
             g.FillRectangle(backBrush, 0, 0, bmp.Width, bmp.Height);
-            MaskHelper.DrawPrimitives(-x, -y, g, maskBrush, primitives);
+            MaskHelper.DrawPrimitives(-ActiveBox.X, -ActiveBox.Y, g, maskBrush, primitives);
             return bmp;
         }
 
@@ -215,7 +213,12 @@ namespace AiPainter.Controls
             switch (mode)
             {
                 case Mode.NOTHING:
+                    var center = new Point(ClientSize / 2);
+                    var oldCenter = getTransformedMousePos(center);
                     zoomIndex = Math.Clamp(zoomIndex + Math.Sign(e.Delta), 0, zoomLevels.Length - 1);
+                    var newCenter = getTransformedMousePos(center);
+                    globalX += (int)Math.Round((newCenter.X - oldCenter.X) * zoom);
+                    globalY += (int)Math.Round((newCenter.Y - oldCenter.Y) * zoom);
                     break;
 
                 case Mode.ACTIVE_BOX_MOVING:
@@ -228,8 +231,8 @@ namespace AiPainter.Controls
                     ActiveBox.Width += dx;
                     ActiveBox.Height += dy;
 
-                    ActiveBox.X += dx >> 1;
-                    ActiveBox.Y += dy >> 1;
+                    ActiveBox.X -= dx >> 1;
+                    ActiveBox.Y -= dy >> 1;
 
                     movingStartPoint = getTransformedMousePos(e.Location);
 
@@ -248,8 +251,8 @@ namespace AiPainter.Controls
                 e.Graphics.FillRectangle
                 (
                     whiteGrayCheckesBrush, 
-                    ActiveBox.X, 
-                    ActiveBox.Y, 
+                    -ActiveBox.X, 
+                    -ActiveBox.Y, 
                     Image.Width, 
                     Image.Height
                 );
@@ -257,8 +260,8 @@ namespace AiPainter.Controls
                 e.Graphics.DrawImage
                 (
                     Image, 
-                    ActiveBox.X, 
-                    ActiveBox.Y,
+                    -ActiveBox.X, 
+                    -ActiveBox.Y,
                     Image.Width,
                     Image.Height
                 );
@@ -274,7 +277,7 @@ namespace AiPainter.Controls
                 ActiveBox.Height + 3 / zoom
             );
 
-            MaskHelper.DrawPrimitives(ActiveBox.X, ActiveBox.Y, e.Graphics, primBrush, primitives);
+            MaskHelper.DrawPrimitives(-ActiveBox.X, -ActiveBox.Y, e.Graphics, primBrush, primitives);
 
             drawCursor(e.Graphics);
         }
@@ -406,8 +409,8 @@ namespace AiPainter.Controls
         {
             loc = getTransformedMousePos(loc);
 
-            ActiveBox.X += loc.X - movingStartPoint.X;
-            ActiveBox.Y += loc.Y - movingStartPoint.Y;
+            ActiveBox.X -= loc.X - movingStartPoint.X;
+            ActiveBox.Y -= loc.Y - movingStartPoint.Y;
             movingStartPoint = loc;
             Refresh();
         }
@@ -434,6 +437,13 @@ namespace AiPainter.Controls
             
             var points = new[] { point };
             transform.TransformPoints(points);
+            return points[0];
+        }        
+        
+        private Point getTransformedPoint(Point point)
+        {
+            var points = new[] { new Point(point.X, point.Y) };
+            Transform.TransformPoints(points);
             return points[0];
         }
 

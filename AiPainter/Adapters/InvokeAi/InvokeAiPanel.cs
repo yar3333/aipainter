@@ -6,7 +6,7 @@ namespace AiPainter.Adapters.InvokeAi
 {
     public partial class InvokeAiPanel : UserControl
     {
-        private SmartPictureBox? pictureBox;
+        private SmartPictureBox pictureBox = null!;
 
         public bool InProcess;
 
@@ -38,34 +38,25 @@ namespace AiPainter.Adapters.InvokeAi
             pbSteps.CustomText = "0 / " + (int)numSteps.Value;
             pbSteps.Refresh();
 
-            var activeBox = pictureBox!.ActiveBox;
-
-            var originalImage = pictureBox.Image!;
-
             if (!cbUseInitImage.Checked)
             {
                 generate(null, _ => InProcess = pbIterations.Value < pbIterations.Maximum);
             }
-            else if (activeBox.X == 0 && activeBox.Y == 0 && activeBox.Width == originalImage.Width && activeBox.Height == originalImage.Height)
-            {
-                generate(pictureBox.GetMaskedImage(0), _ => InProcess = pbIterations.Value < pbIterations.Maximum);
-            }
             else
             {
-                originalImage = BitmapTools.Clone(originalImage)!;
-                var fullMaskedImage = pictureBox.GetMaskedImage(0)!;
-
-                var croppedMaskedImage = BitmapTools.GetCropped(fullMaskedImage, -activeBox.X, -activeBox.Y, activeBox.Width, activeBox.Height, Color.Transparent)!;
-                generate(croppedMaskedImage, resultFilePath =>
+                var activeBox = pictureBox.ActiveBox;
+                var originalImage = BitmapTools.Clone(pictureBox.Image!);
+                using var croppedMaskedImage = pictureBox.GetMaskedImageCropped(Color.Black, 0);
+                using var image512 = BitmapTools.GetResized(croppedMaskedImage, 512, 512);
+                generate(image512, resultFilePath =>
                 {
                     try
                     {
-                        var resultImage = BitmapTools.Load(resultFilePath)!;
-                        resultImage = BitmapTools.ResizeIfNeed(resultImage, croppedMaskedImage.Width, croppedMaskedImage.Height)!;
-                        BitmapTools.DrawBitmapAtPos(resultImage, originalImage, -activeBox.X, -activeBox.Y);
+                        using var resultImage = BitmapTools.Load(resultFilePath);
+                        using var resultImageResized = BitmapTools.GetResized(resultImage, activeBox.Width, activeBox.Height)!;
+                        BitmapTools.DrawBitmapAtPos(resultImageResized, originalImage, activeBox.X, activeBox.Y);
                         originalImage.Save(resultFilePath, ImageFormat.Png);
                         originalImage.Dispose();
-                        resultImage.Dispose();
                     }
                     catch (Exception ee)
                     {
@@ -88,7 +79,7 @@ namespace AiPainter.Adapters.InvokeAi
                 seed = tbSeed.Text.Trim() == "" ? -1 : long.Parse(tbSeed.Text.Trim()),
                 steps = (int)numSteps.Value,
                 strength = numImg2img.Value,
-                initimg = BitmapTools.GetBase64String(BitmapTools.ResizeIfNeed(image, 512, 512)),
+                initimg = image != null ? BitmapTools.GetBase64String(image) : null,
             };
 
             InvokeAiClient.Generate(sdImage, progress =>

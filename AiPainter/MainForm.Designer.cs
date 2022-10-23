@@ -41,7 +41,6 @@ namespace AiPainter
             this.btSaveJpeg = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.btResetMask = new System.Windows.Forms.ToolStripButton();
-            this.btApplyAlphaMask = new System.Windows.Forms.ToolStripButton();
             this.btDeAlpha = new System.Windows.Forms.ToolStripButton();
             this.btRestorePrevMask = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
@@ -49,6 +48,7 @@ namespace AiPainter
             this.btDown = new System.Windows.Forms.ToolStripButton();
             this.btUp = new System.Windows.Forms.ToolStripButton();
             this.btRight = new System.Windows.Forms.ToolStripButton();
+            this.btAbout = new System.Windows.Forms.ToolStripButton();
             this.splitContainer = new System.Windows.Forms.SplitContainer();
             this.pictureBox = new AiPainter.Controls.SmartPictureBox();
             this.panel1 = new System.Windows.Forms.Panel();
@@ -57,7 +57,6 @@ namespace AiPainter
             this.panInvokeAi = new AiPainter.Adapters.InvokeAi.InvokeAiPanel();
             this.hPicScroll = new System.Windows.Forms.HScrollBar();
             this.toolTip = new System.Windows.Forms.ToolTip(this.components);
-            this.btAbout = new System.Windows.Forms.ToolStripButton();
             controlsStateUpdater = new System.Windows.Forms.Timer(this.components);
             this.toolbar.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer)).BeginInit();
@@ -87,7 +86,6 @@ namespace AiPainter
             this.btSaveJpeg,
             this.toolStripSeparator2,
             this.btResetMask,
-            this.btApplyAlphaMask,
             this.btDeAlpha,
             this.btRestorePrevMask,
             this.toolStripSeparator1,
@@ -158,16 +156,6 @@ namespace AiPainter
             this.btResetMask.Text = "Reset mask";
             this.btResetMask.Click += new System.EventHandler(this.btResetMask_Click);
             // 
-            // btApplyAlphaMask
-            // 
-            this.btApplyAlphaMask.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.btApplyAlphaMask.Image = ((System.Drawing.Image)(resources.GetObject("btApplyAlphaMask.Image")));
-            this.btApplyAlphaMask.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.btApplyAlphaMask.Name = "btApplyAlphaMask";
-            this.btApplyAlphaMask.Size = new System.Drawing.Size(38, 37);
-            this.btApplyAlphaMask.Text = "Apply mask (make transparent)";
-            this.btApplyAlphaMask.Click += new System.EventHandler(this.btApplyAlphaMask_Click);
-            // 
             // btDeAlpha
             // 
             this.btDeAlpha.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
@@ -232,6 +220,17 @@ namespace AiPainter
             this.btRight.Size = new System.Drawing.Size(38, 37);
             this.btRight.Text = "Extend canvas";
             this.btRight.Click += new System.EventHandler(this.btRight_Click);
+            // 
+            // btAbout
+            // 
+            this.btAbout.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+            this.btAbout.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.btAbout.Image = ((System.Drawing.Image)(resources.GetObject("btAbout.Image")));
+            this.btAbout.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btAbout.Name = "btAbout";
+            this.btAbout.Size = new System.Drawing.Size(38, 37);
+            this.btAbout.Text = "About...";
+            this.btAbout.Click += new System.EventHandler(this.btAbout_Click);
             // 
             // splitContainer
             // 
@@ -315,17 +314,6 @@ namespace AiPainter
             this.hPicScroll.Size = new System.Drawing.Size(924, 30);
             this.hPicScroll.TabIndex = 0;
             // 
-            // btAbout
-            // 
-            this.btAbout.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
-            this.btAbout.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.btAbout.Image = ((System.Drawing.Image)(resources.GetObject("btAbout.Image")));
-            this.btAbout.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.btAbout.Name = "btAbout";
-            this.btAbout.Size = new System.Drawing.Size(38, 37);
-            this.btAbout.Text = "About...";
-            this.btAbout.Click += new System.EventHandler(this.btAbout_Click);
-            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
@@ -371,7 +359,6 @@ namespace AiPainter
         private ToolStripButton btRight;
         private ToolStripButton btResetMask;
         private ToolTip toolTip;
-        private ToolStripButton btApplyAlphaMask;
         private SmartPictureBox pictureBox;
         private ToolStripButton btSaveJpeg;
         private Adapters.InvokeAi.InvokeAiPanel panInvokeAi;

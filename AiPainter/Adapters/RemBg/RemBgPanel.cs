@@ -5,7 +5,7 @@ namespace AiPainter.Adapters.RemBg
 {
     public partial class RemBgPanel : UserControl
     {
-        private SmartPictureBox? pictureBox;
+        private SmartPictureBox pictureBox = null!;
 
         public bool InProcess;
 
@@ -18,21 +18,23 @@ namespace AiPainter.Adapters.RemBg
         {
             InProcess = true;
 
-            var activeBox = pictureBox!.ActiveBox;
+            var activeBox = pictureBox.ActiveBox;
 
-            var fullImage = pictureBox!.Image!;
-            var croppedImage = BitmapTools.GetCropped(fullImage, -activeBox.X, -activeBox.Y, activeBox.Width, activeBox.Height, Color.Black)!;
+            var fullImage = pictureBox.Image!;
+            var croppedImage = BitmapTools.GetCropped(fullImage, activeBox, Color.Black);
 
             Task.Run(() =>
             {
                 try
                 {
                     var resultImage = RemBgClient.RunAsync(croppedImage).Result;
+                    croppedImage.Dispose();
+                    
                     if (resultImage != null)
                     {
                         Invoke(() =>
                         {
-                            BitmapTools.DrawBitmapAtPos(resultImage, fullImage, -activeBox.X, -activeBox.Y);
+                            BitmapTools.DrawBitmapAtPos(resultImage, fullImage, activeBox.X, activeBox.Y);
                             pictureBox.ResetMask();
                             pictureBox.Refresh();
                         });

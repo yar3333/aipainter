@@ -67,11 +67,13 @@ static class LamaCleanerClient
         if (response.StatusCode != HttpStatusCode.OK)
             throw new Exception(await response.Content.ReadAsStringAsync());
 
-        return BitmapTools.RestoreAlpha(image, BitmapTools.ResizeIfNeed
+        using var resizedImage = BitmapTools.GetResized
         (
             (Bitmap)Image.FromStream(await response.Content.ReadAsStreamAsync()),
             image.Width,
             image.Height
-        )!);
+        );
+
+        return BitmapTools.RestoreAlpha(image, resizedImage);
     }
 }

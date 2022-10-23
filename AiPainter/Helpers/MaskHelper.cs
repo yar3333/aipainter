@@ -44,7 +44,7 @@ static class MaskHelper
         }
     }
 
-    public static void DrawAlpha(Bitmap bmp, List<Primitive> primitives, byte alpha)
+    public static void DrawAlpha(int cenX, int cenY, Bitmap bmp, List<Primitive> primitives, byte alpha)
     {
         var data = bmp.LockBits(new Rectangle(0, 0, bmp.Width, bmp.Height), ImageLockMode.ReadWrite, PixelFormat.Format32bppArgb);
 
@@ -64,7 +64,7 @@ static class MaskHelper
                     dy /= steps;
                     for (var i = 0; i < steps; i++)
                     {
-                        BitmapTools.DrawAlphaCirle(data, (int)x, (int)y, r, alpha);
+                        BitmapTools.DrawAlphaCirle(data, (int)x + cenX, (int)y + cenY, r, alpha);
                         x += dx;
                         y += dy;
                     }
@@ -75,8 +75,8 @@ static class MaskHelper
                     BitmapTools.DrawAlphaBox
                     (
                         data,
-                        Math.Min(p.Pt0.X, p.Pt1.X),
-                        Math.Min(p.Pt0.Y, p.Pt1.Y),
+                        Math.Min(p.Pt0.X, p.Pt1.X) + cenX,
+                        Math.Min(p.Pt0.Y, p.Pt1.Y) + cenY,
                         Math.Abs(p.Pt1.X - p.Pt0.X),
                         Math.Abs(p.Pt1.Y - p.Pt0.Y),
                         alpha

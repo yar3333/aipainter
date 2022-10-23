@@ -5,7 +5,7 @@ namespace AiPainter.Adapters.LamaCleaner
 {
     public partial class LamaCleanerPanel : UserControl
     {
-        private SmartPictureBox? pictureBox;
+        private SmartPictureBox pictureBox = null!;
 
         public bool InProcess;
         
@@ -18,22 +18,25 @@ namespace AiPainter.Adapters.LamaCleaner
         {
             InProcess = true;
 
-            var activeBox = pictureBox!.ActiveBox;
+            var activeBox = pictureBox.ActiveBox;
 
-            var fullImage = pictureBox!.Image!;
-            var croppedImage = BitmapTools.GetCropped(fullImage, -activeBox.X, -activeBox.Y, activeBox.Width, activeBox.Height, Color.Black)!;
-            var croppedMask = pictureBox!.GetMaskCropped(-activeBox.X, -activeBox.Y, activeBox.Width, activeBox.Height, Color.Black, Color.White)!;
+            var fullImage = pictureBox.Image!;
+            var croppedImage = BitmapTools.GetCropped(fullImage, activeBox, Color.Black);
+            var croppedMask = pictureBox.GetMaskCropped(Color.Black, Color.White);
             
             Task.Run(() =>
             {
                 try
                 {
                     var resultImage = LamaCleanerClient.RunAsync(croppedImage, croppedMask).Result;
+                    croppedMask.Dispose();
+                    croppedImage.Dispose();
+                    
                     if (resultImage != null)
                     {
                         Invoke(() =>
                         {
-                            BitmapTools.DrawBitmapAtPos(resultImage, fullImage, -activeBox.X, -activeBox.Y);
+                            BitmapTools.DrawBitmapAtPos(resultImage, fullImage, activeBox.X, activeBox.Y);
                             pictureBox.ResetMask();
                             pictureBox.Refresh();
                         });

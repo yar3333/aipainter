@@ -37,7 +37,7 @@ class StoredImageItem
 
     public bool Update()
     {
-        if (bitmap == null) return false;
+        if (bitmap == null) return true;
 
         var newChTime = File.GetLastWriteTime(FilePath);
         if (newChTime != changeTime)

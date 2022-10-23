@@ -34,9 +34,9 @@ namespace AiPainter
             hPicScroll.Scroll += (_, ee) => updateImages(ee.NewValue);
 
             splitContainer.Panel2.MouseWheel += (_, ee) =>
-                {
-                    hPicScroll.Value = Math.Max(hPicScroll.Minimum, Math.Min(hPicScroll.Maximum, hPicScroll.Value + (ee.Delta > 0 ? -1 : 1)));
-                    updateImages(null);
+            {
+                hPicScroll.Value = Math.Max(hPicScroll.Minimum, Math.Min(hPicScroll.Maximum, hPicScroll.Value + (ee.Delta > 0 ? -1 : 1)));
+                updateImages(null);
             };
 
             Task.Run(async () =>
@@ -237,10 +237,10 @@ namespace AiPainter
             if (openFileDialog.ShowDialog() == DialogResult.OK)
             {
                 filePath = openFileDialog.FileName;
-
-                pictureBox.Image = BitmapTools.ShrinkIfNeed
+                using var image = BitmapTools.Load(filePath);
+                pictureBox.Image = BitmapTools.GetShrinked
                 (
-                    BitmapTools.Load(filePath)!,
+                    image,
                     Program.Config.ShrinkImageOnOpenMaxWidth,
                     Program.Config.ShrinkImageOnOpenMaxHeight
                 );
@@ -332,13 +332,6 @@ namespace AiPainter
 
         private void btResetMask_Click(object sender, EventArgs e)
         {
-            pictureBox.ResetMask();
-            pictureBox.Refresh();
-        }
-
-        private void btApplyAlphaMask_Click(object sender, EventArgs e)
-        {
-            pictureBox.Image = pictureBox.GetMaskedImage(0);
             pictureBox.ResetMask();
             pictureBox.Refresh();
         }
