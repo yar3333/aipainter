@@ -213,6 +213,7 @@ namespace AiPainter.Controls
             switch (mode)
             {
                 case Mode.NOTHING:
+                {
                     var center = new Point(ClientSize / 2);
                     var oldCenter = getTransformedMousePos(center);
                     zoomIndex = Math.Clamp(zoomIndex + Math.Sign(e.Delta), 0, zoomLevels.Length - 1);
@@ -220,23 +221,36 @@ namespace AiPainter.Controls
                     globalX += (int)Math.Round((newCenter.X - oldCenter.X) * zoom);
                     globalY += (int)Math.Round((newCenter.Y - oldCenter.Y) * zoom);
                     break;
+                }
 
                 case Mode.ACTIVE_BOX_MOVING:
-                    var newActiveBoxW = Math.Max(ACTIVE_BOX_EXTEND_SIZE, ActiveBox.Width + Math.Sign(e.Delta) * ACTIVE_BOX_EXTEND_SIZE);
-                    var newActiveBoxH = Math.Max(ACTIVE_BOX_EXTEND_SIZE, ActiveBox.Height + Math.Sign(e.Delta) * ACTIVE_BOX_EXTEND_SIZE);
+                {
+                    var center = new Point(ClientSize / 2);
+                    var oldCenter = getTransformedMousePos(center);
+
+                    var inc = (int)Math.Round(ACTIVE_BOX_EXTEND_SIZE * Math.Sign(e.Delta) / zoom);
+
+                    var newActiveBoxW = Math.Max(ACTIVE_BOX_EXTEND_SIZE, ActiveBox.Width  + inc);
+                    var newActiveBoxH = Math.Max(ACTIVE_BOX_EXTEND_SIZE, ActiveBox.Height + inc);
 
                     var dx = newActiveBoxW - ActiveBox.Width;
                     var dy = newActiveBoxH - ActiveBox.Height;
 
-                    ActiveBox.Width += dx;
+                    ActiveBox.Width  += dx;
                     ActiveBox.Height += dy;
 
                     ActiveBox.X -= dx >> 1;
                     ActiveBox.Y -= dy >> 1;
 
+                    var newCenter = getTransformedMousePos(center);
+
+                    globalX += (int)Math.Round((newCenter.X - oldCenter.X) * zoom);
+                    globalY += (int)Math.Round((newCenter.Y - oldCenter.Y) * zoom);
+
                     movingStartPoint = getTransformedMousePos(e.Location);
 
                     break;
+                }
             }
 
             Refresh();
@@ -248,36 +262,21 @@ namespace AiPainter.Controls
 
             if (Image != null)
             {
-                e.Graphics.FillRectangle
-                (
-                    whiteGrayCheckesBrush, 
-                    -ActiveBox.X, 
-                    -ActiveBox.Y, 
-                    Image.Width, 
-                    Image.Height
-                );
-
-                e.Graphics.DrawImage
-                (
-                    Image, 
-                    -ActiveBox.X, 
-                    -ActiveBox.Y,
-                    Image.Width,
-                    Image.Height
-                );
+                e.Graphics.FillRectangle(whiteGrayCheckesBrush, 0, 0, Image.Width, Image.Height);
+                e.Graphics.DrawImage(Image, 0, 0);
             }
 
             activeBoxPen.Width = 3 / zoom;
             e.Graphics.DrawRectangle
             (
                 activeBoxPen,
-                -2 / zoom, 
-                -2 / zoom, 
+                ActiveBox.X - 2 / zoom, 
+                ActiveBox.Y - 2 / zoom, 
                 ActiveBox.Width + 3 / zoom, 
                 ActiveBox.Height + 3 / zoom
             );
 
-            MaskHelper.DrawPrimitives(-ActiveBox.X, -ActiveBox.Y, e.Graphics, primBrush, primitives);
+            MaskHelper.DrawPrimitives(0, 0, e.Graphics, primBrush, primitives);
 
             drawCursor(e.Graphics);
         }
@@ -407,11 +406,20 @@ namespace AiPainter.Controls
 
         private void activeBoxMovingMouseMove(Point loc)
         {
-            loc = getTransformedMousePos(loc);
+            var oldCenter = getTransformedPoint(new Point(ActiveBox.X, ActiveBox.Y));
 
-            ActiveBox.X -= loc.X - movingStartPoint.X;
-            ActiveBox.Y -= loc.Y - movingStartPoint.Y;
-            movingStartPoint = loc;
+            var tranLoc = getTransformedMousePos(loc);
+
+            ActiveBox.X -= tranLoc.X - movingStartPoint.X;
+            ActiveBox.Y -= tranLoc.Y - movingStartPoint.Y;
+
+            var newCenter = getTransformedPoint(new Point(ActiveBox.X, ActiveBox.Y));
+
+            globalX -= newCenter.X - oldCenter.X;
+            globalY -= newCenter.Y - oldCenter.Y;
+            
+            movingStartPoint = getTransformedMousePos(loc);
+            
             Refresh();
         }
 
@@ -442,7 +450,7 @@ namespace AiPainter.Controls
         
         private Point getTransformedPoint(Point point)
         {
-            var points = new[] { new Point(point.X, point.Y) };
+            var points = new[] { point };
             Transform.TransformPoints(points);
             return points[0];
         }
