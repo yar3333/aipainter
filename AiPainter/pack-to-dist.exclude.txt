@@ -1,6 +1,5 @@
 AiPainter\images
 
-AiPainter\external\InvokeAI\models\ldm\stable-diffusion-v1\model.ckpt
 AiPainter\external\InvokeAI\stuff\models\readme.txt
 
 AiPainter\external\rembg\stuff\cudnn-windows-x86_64-8.4.1.50_cuda11.6\include
