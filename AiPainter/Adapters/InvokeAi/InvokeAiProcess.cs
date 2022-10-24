@@ -51,8 +51,6 @@ static class InvokeAiProcess
         --prompt_as_dir
         */
 
-        var baseDir = Path.Join(Application.StartupPath, "external", "InvokeAI");
-
         Loading = true;
         return ProcessHelper.RunInBackground
         (
@@ -61,16 +59,16 @@ static class InvokeAiProcess
                 + " --host=" + new Uri(Program.Config.InvokeAiUrl).Host
                 + " --port=" + new Uri(Program.Config.InvokeAiUrl).Port
                 + " --outdir=" + Path.Combine(Application.StartupPath, Program.Config.InvokeAiOutputFolderPath),
-            directory: baseDir,
+            directory: Path.Join(Application.StartupPath, @"external\InvokeAI"),
             env: new Dictionary<string, string>
             {
                 {
                     "PATH", 
-                      Path.Join(baseDir, "stuff", "NVIDIA GPU Computing Toolkit_CUDA_v11.4", "bin") + ";" 
+                      Path.Join(Application.StartupPath, @"external\_stuff\NVIDIA GPU Computing Toolkit_CUDA_v11.4\bin") + ";" 
                     + Environment.GetEnvironmentVariable("PATH")
                 },
-                { "TORCH_HOME", Path.Join(baseDir, "stuff", "models") },
-                { "XDG_CACHE_HOME", Path.Join(baseDir, "stuff", "models") },
+                { "TORCH_HOME", Path.Join(Application.StartupPath, @"external\InvokeAI\stuff\models") },
+                { "XDG_CACHE_HOME", Path.Join(Application.StartupPath, @"external\InvokeAI\stuff\models") },
 
             },
             logFunc: s => log.WriteLine("[process] " + s),

@@ -19,8 +19,6 @@ static class LamaCleanerProcess
             return null;
         }
 
-        var baseDir = Path.Join(Application.StartupPath, "external", "lama-cleaner");
-        
         Loading = true;
         return ProcessHelper.RunInBackground
         (
@@ -28,10 +26,10 @@ static class LamaCleanerProcess
                   "--model=lama"
                 + " --device=cpu"
                 + " --port=" + +new Uri(Program.Config.LamaCleanerUrl).Port,
-            directory: baseDir,
+            directory: Path.Join(Application.StartupPath, @"external\lama-cleaner"),
             env: new Dictionary<string, string>
             {
-                { "TORCH_HOME", Path.Join(baseDir, "stuff", "models") }
+                { "TORCH_HOME", Path.Join(Application.StartupPath, @"external\lama-cleaner\stuff\models") }
             },
             logFunc: s => log.WriteLine("[process] " + s),
             onExit: code =>

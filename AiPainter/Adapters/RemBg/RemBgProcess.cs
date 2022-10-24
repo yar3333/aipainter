@@ -19,25 +19,23 @@ static class RemBgProcess
             return null;
         }
         
-        var baseDir = Path.Join(Application.StartupPath, "external", "rembg");
-
         Loading = true;
         return ProcessHelper.RunInBackground
         (
             Path.Join("aipainter_rembg", "aipainter_rembg.exe"),
             "s --port=" + new Uri(Program.Config.RemBgUrl).Port,
-            directory: baseDir,
+            directory: Path.Join(Application.StartupPath, @"external\rembg"),
             env: new Dictionary<string, string>
             {
                 {
                     "PATH",
-                      Path.Join(baseDir, @"stuff\cudnn-windows-x86_64-8.4.1.50_cuda11.6\bin") + ";"
-                    + Path.Join(baseDir, @"stuff\TensorRT-8.4.2.4\lib") + ";"
-                    + Path.Join(baseDir, "stuff", "NVIDIA GPU Computing Toolkit_CUDA_v11.4", "bin") + ";"
+                      Path.Join(Application.StartupPath, @"external\_stuff\cudnn-windows-x86_64-8.4.1.50_cuda11.6\bin") + ";"
+                    + Path.Join(Application.StartupPath, @"external\_stuff\TensorRT-8.4.2.4\lib") + ";"
+                    + Path.Join(Application.StartupPath, @"external\_stuff\NVIDIA GPU Computing Toolkit_CUDA_v11.4\bin") + ";"
                     + Environment.GetEnvironmentVariable("PATH")
                 },
                 {
-                    "U2NET_HOME", Path.Join(baseDir, @"stuff\.u2net")
+                    "U2NET_HOME", Path.Join(Application.StartupPath, @"external\rembg\stuff\.u2net")
                 },
             },
             logFunc: s => log.WriteLine("[process] " + s),
