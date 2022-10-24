@@ -7,8 +7,8 @@ Digital AI painter. Features:
  * remove specified objects from pictures (inpaint via [lama-cleaner](https://github.com/Sanster/lama-cleaner));
  * remove background from pictures (via [rembg](https://github.com/danielgatis/rembg)).
 
-![screenshot](screenshot.png)
-
+![screenshot-01](screenshot-01.jpg) ![screenshot-02](screenshot-02.jpg) ![screenshot-03](screenshot-03.jpg) ![screenshot-04](screenshot-04.jpg)
+![screenshot-05](screenshot-05.jpg) ![screenshot-06](screenshot-06.jpg) ![screenshot-07](screenshot-07.jpg) ![screenshot-08](screenshot-08.jpg)
 
 ## Outpainting (animated gif)
 
