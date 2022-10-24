@@ -301,9 +301,9 @@ namespace AiPainter.Controls
 
         private void SmartPictureBox_MouseDown(object sender, MouseEventArgs e)
         {
-            Capture = true;
+            if (!Enabled) return;
             
-            if (Image == null) return;
+            Capture = true;
 
             if (e.Button == MouseButtons.Left) maskingMouseDown(e.Location);
             if (e.Button == MouseButtons.Right) activeBoxMovingMouseDown(e.Location);
@@ -314,7 +314,7 @@ namespace AiPainter.Controls
         {
             manageCursor(e.Location);
             
-            if (!Enabled || Image == null) return;
+            if (!Enabled) return;
 
             switch (mode)
             {
@@ -335,27 +335,28 @@ namespace AiPainter.Controls
         private void SmartPictureBox_MouseUp(object sender, MouseEventArgs e)
         {
             Capture = false;
-            
-            if (Image == null) return;
+
+            if (mode == Mode.ACTIVE_BOX_MOVING)
+            {
+                if (Math.Abs(ActiveBox.X) < 10)
+                {
+                    moveActiveBoxOnFreezedImage(-ActiveBox.X, 0);
+                }
+                if (Math.Abs(ActiveBox.Y) < 10)
+                {
+                    moveActiveBoxOnFreezedImage(0, -ActiveBox.Y);
+                }
+                if (Math.Abs(Image.Width - (ActiveBox.X + ActiveBox.Width)) < 10)
+                {
+                    moveActiveBoxOnFreezedImage(Image.Width - (ActiveBox.X + ActiveBox.Width), 0);
+                }
+                if (Math.Abs(Image.Height - (ActiveBox.Y + ActiveBox.Height)) < 10)
+                {
+                    moveActiveBoxOnFreezedImage(0, Image.Height - (ActiveBox.Y + ActiveBox.Height));
+                }
+            }
 
             mode = Mode.NOTHING;
-
-            if (Math.Abs(ActiveBox.X) < 10)
-            {
-                moveActiveBoxOnFreezedImage(-ActiveBox.X, 0);
-            }
-            if (Math.Abs(ActiveBox.Y) < 10)
-            {
-                moveActiveBoxOnFreezedImage(0, -ActiveBox.Y);
-            }
-            if (Math.Abs(Image.Width - (ActiveBox.X + ActiveBox.Width)) < 10)
-            {
-                moveActiveBoxOnFreezedImage(Image.Width - (ActiveBox.X + ActiveBox.Width), 0);
-            }
-            if (Math.Abs(Image.Height - (ActiveBox.Y + ActiveBox.Height)) < 10)
-            {
-                moveActiveBoxOnFreezedImage(0, Image.Height - (ActiveBox.Y + ActiveBox.Height));
-            }
             
             Refresh();
         }
@@ -371,7 +372,7 @@ namespace AiPainter.Controls
 
         private void maskingMouseDown(Point loc)
         {
-            if (!Enabled) return;
+            if (Image == null) return;
 
             var pt = getTransformedMousePos(loc);
             
@@ -395,7 +396,7 @@ namespace AiPainter.Controls
 
         private void maskingMouseMove(Point loc)
         {
-            if (!Enabled) return;
+            if (Image == null) return;
 
             var pt = getTransformedMousePos(loc);
 
@@ -421,6 +422,8 @@ namespace AiPainter.Controls
 
         private void activeBoxMovingMouseDown(Point loc)
         {
+            if (Image == null) return;
+            
             mode = Mode.ACTIVE_BOX_MOVING;
             movingStartPoint = getTransformedMousePos(loc);
             manageCursor(loc);
@@ -428,6 +431,8 @@ namespace AiPainter.Controls
 
         private void activeBoxMovingMouseMove(Point loc)
         {
+            if (Image == null) return;
+
             var oldCenter = getTransformedPoint(new Point(ActiveBox.X, ActiveBox.Y));
 
             var tranLoc = getTransformedMousePos(loc);
@@ -447,6 +452,8 @@ namespace AiPainter.Controls
 
         private void globalMovingMouseDown(Point loc)
         {
+            if (Image == null) return;
+            
             mode = Mode.GLOBAL_MOVING;
             movingStartPoint = loc;
             manageCursor(loc);
@@ -454,6 +461,8 @@ namespace AiPainter.Controls
 
         private void globalMovingMouseMove(Point loc)
         {
+            if (Image == null) return;
+
             globalX += loc.X - movingStartPoint.X;
             globalY += loc.Y - movingStartPoint.Y;
             movingStartPoint = loc;
