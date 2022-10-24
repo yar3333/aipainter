@@ -213,16 +213,6 @@ namespace AiPainter
             image.Save(Path.Join(baseDir, baseFileName) + n.ToString("D3") + (Equals(format, ImageFormat.Png) ? ".png" : ".jpg"), format);
         }
 
-        private void btSavePng_Click(object sender, EventArgs e)
-        {
-            save(ImageFormat.Png);
-        }
-
-        private void btSaveJpeg_Click(object sender, EventArgs e)
-        {
-            save(ImageFormat.Jpeg);
-        }
-
         private void btDeAlpha_Click(object sender, EventArgs e)
         {
             if (pictureBox.Image == null) return;
@@ -355,12 +345,15 @@ namespace AiPainter
 
             btClearActiveImage.Enabled = pictureBox.Image != null;
             btCopyToClipboard.Enabled = pictureBox.Image != null;
-            btSavePng.Enabled = pictureBox.Image != null;
-            btSaveJpeg.Enabled = pictureBox.Image != null;
             btResetMask.Enabled = pictureBox.HasMask;
             btDeAlpha.Enabled = pictureBox.Image != null && BitmapTools.HasAlpha(pictureBox.Image);
             btRestorePrevMask.Enabled = pictureBox.HasPrevMask;
             btResizeAndMoveActiveBoxToFitImage.Enabled = pictureBox.Image != null;
+
+            btSave.Enabled = !string.IsNullOrEmpty(filePath) && pictureBox.Image != null;
+            btSaveAs.Enabled = pictureBox.Image != null;
+            btSavePng.Enabled = pictureBox.Image != null;
+            btSaveJpeg.Enabled = pictureBox.Image != null;
 
             btLeft.Enabled = pictureBox.Image != null;
             btUp.Enabled = pictureBox.Image != null;
@@ -406,6 +399,39 @@ namespace AiPainter
                 sz
             );
             pictureBox.Refresh();
+        }
+
+        private void btSave_Click(object sender, EventArgs e)
+        {
+            save(Path.GetExtension(filePath).ToLowerInvariant() == ".png" ? ImageFormat.Png : ImageFormat.Jpeg);
+        }
+
+        private void btSaveAs_Click(object sender, EventArgs e)
+        {
+            var saveFileDialog = new SaveFileDialog();
+            
+            saveFileDialog.Filter = 
+                  "PNG file (*.png)|*.png"
+                + "|JPG file (*.jpg)|*.jpg;*.jpeg"
+                + "|All files (*.*)|*.*";
+            
+            saveFileDialog.FileName = Path.GetFileName(filePath);
+            
+            if (saveFileDialog.ShowDialog() == DialogResult.OK)
+            {
+                filePath = saveFileDialog.FileName;
+                save(Path.GetExtension(filePath).ToLowerInvariant() == ".png" ? ImageFormat.Png : ImageFormat.Jpeg);
+            }
+        }
+
+        private void btSavePng_Click(object sender, EventArgs e)
+        {
+            save(ImageFormat.Png);
+        }
+
+        private void btSaveJpeg_Click(object sender, EventArgs e)
+        {
+            save(ImageFormat.Jpeg);
         }
     }
 }

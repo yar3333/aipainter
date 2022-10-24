@@ -41,6 +41,8 @@ namespace AiPainter
             this.btSaveJpeg = new System.Windows.Forms.ToolStripButton();
             this.btCopyToClipboard = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
+            this.btResizeAndMoveActiveBoxToFitImage = new System.Windows.Forms.ToolStripButton();
+            this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.btResetMask = new System.Windows.Forms.ToolStripButton();
             this.btDeAlpha = new System.Windows.Forms.ToolStripButton();
             this.btRestorePrevMask = new System.Windows.Forms.ToolStripButton();
@@ -58,8 +60,8 @@ namespace AiPainter
             this.panInvokeAi = new AiPainter.Adapters.InvokeAi.InvokeAiPanel();
             this.hPicScroll = new System.Windows.Forms.HScrollBar();
             this.toolTip = new System.Windows.Forms.ToolTip(this.components);
-            this.btResizeAndMoveActiveBoxToFitImage = new System.Windows.Forms.ToolStripButton();
-            this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
+            this.btSave = new System.Windows.Forms.ToolStripButton();
+            this.btSaveAs = new System.Windows.Forms.ToolStripButton();
             controlsStateUpdater = new System.Windows.Forms.Timer(this.components);
             this.toolbar.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer)).BeginInit();
@@ -85,6 +87,8 @@ namespace AiPainter
             this.toolbar.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.btClearActiveImage,
             this.btLoad,
+            this.btSave,
+            this.btSaveAs,
             this.btSavePng,
             this.btSaveJpeg,
             this.btCopyToClipboard,
@@ -133,7 +137,7 @@ namespace AiPainter
             this.btSavePng.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btSavePng.Name = "btSavePng";
             this.btSavePng.Size = new System.Drawing.Size(38, 37);
-            this.btSavePng.Text = "Save image";
+            this.btSavePng.Text = "Save image as PNG (auto name)";
             this.btSavePng.Click += new System.EventHandler(this.btSavePng_Click);
             // 
             // btSaveJpeg
@@ -143,7 +147,7 @@ namespace AiPainter
             this.btSaveJpeg.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btSaveJpeg.Name = "btSaveJpeg";
             this.btSaveJpeg.Size = new System.Drawing.Size(38, 37);
-            this.btSaveJpeg.Text = "toolStripButton1";
+            this.btSaveJpeg.Text = "Save image as JPG (auto name)";
             this.btSaveJpeg.ToolTipText = "Save image";
             this.btSaveJpeg.Click += new System.EventHandler(this.btSaveJpeg_Click);
             // 
@@ -161,6 +165,21 @@ namespace AiPainter
             // 
             this.toolStripSeparator2.Name = "toolStripSeparator2";
             this.toolStripSeparator2.Size = new System.Drawing.Size(6, 40);
+            // 
+            // btResizeAndMoveActiveBoxToFitImage
+            // 
+            this.btResizeAndMoveActiveBoxToFitImage.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.btResizeAndMoveActiveBoxToFitImage.Image = ((System.Drawing.Image)(resources.GetObject("btResizeAndMoveActiveBoxToFitImage.Image")));
+            this.btResizeAndMoveActiveBoxToFitImage.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btResizeAndMoveActiveBoxToFitImage.Name = "btResizeAndMoveActiveBoxToFitImage";
+            this.btResizeAndMoveActiveBoxToFitImage.Size = new System.Drawing.Size(38, 37);
+            this.btResizeAndMoveActiveBoxToFitImage.Text = "Resize and move active zone to fit image";
+            this.btResizeAndMoveActiveBoxToFitImage.Click += new System.EventHandler(this.btResizeAndMoveActiveBoxToFitImage_Click);
+            // 
+            // toolStripSeparator3
+            // 
+            this.toolStripSeparator3.Name = "toolStripSeparator3";
+            this.toolStripSeparator3.Size = new System.Drawing.Size(6, 40);
             // 
             // btResetMask
             // 
@@ -330,20 +349,25 @@ namespace AiPainter
             this.hPicScroll.Size = new System.Drawing.Size(924, 30);
             this.hPicScroll.TabIndex = 0;
             // 
-            // btResizeAndMoveActiveBoxToFitImage
+            // btSave
             // 
-            this.btResizeAndMoveActiveBoxToFitImage.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.btResizeAndMoveActiveBoxToFitImage.Image = ((System.Drawing.Image)(resources.GetObject("btResizeAndMoveActiveBoxToFitImage.Image")));
-            this.btResizeAndMoveActiveBoxToFitImage.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.btResizeAndMoveActiveBoxToFitImage.Name = "btResizeAndMoveActiveBoxToFitImage";
-            this.btResizeAndMoveActiveBoxToFitImage.Size = new System.Drawing.Size(38, 37);
-            this.btResizeAndMoveActiveBoxToFitImage.Text = "Resize and move active zone to fit image";
-            this.btResizeAndMoveActiveBoxToFitImage.Click += new System.EventHandler(this.btResizeAndMoveActiveBoxToFitImage_Click);
+            this.btSave.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.btSave.Image = ((System.Drawing.Image)(resources.GetObject("btSave.Image")));
+            this.btSave.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btSave.Name = "btSave";
+            this.btSave.Size = new System.Drawing.Size(38, 37);
+            this.btSave.Text = "Save image (overwrite)";
+            this.btSave.Click += new System.EventHandler(this.btSave_Click);
             // 
-            // toolStripSeparator3
+            // btSaveAs
             // 
-            this.toolStripSeparator3.Name = "toolStripSeparator3";
-            this.toolStripSeparator3.Size = new System.Drawing.Size(6, 40);
+            this.btSaveAs.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.btSaveAs.Image = ((System.Drawing.Image)(resources.GetObject("btSaveAs.Image")));
+            this.btSaveAs.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btSaveAs.Name = "btSaveAs";
+            this.btSaveAs.Size = new System.Drawing.Size(38, 37);
+            this.btSaveAs.Text = "Save image as...";
+            this.btSaveAs.Click += new System.EventHandler(this.btSaveAs_Click);
             // 
             // MainForm
             // 
@@ -401,5 +425,7 @@ namespace AiPainter
         private ToolStripButton btCopyToClipboard;
         private ToolStripButton btResizeAndMoveActiveBoxToFitImage;
         private ToolStripSeparator toolStripSeparator3;
+        private ToolStripButton btSave;
+        private ToolStripButton btSaveAs;
     }
 }
