@@ -54,9 +54,9 @@ namespace AiPainter.Adapters.InvokeAi
                     {
                         using var resultImage = BitmapTools.Load(resultFilePath);
                         using var resultImageResized = BitmapTools.GetResized(resultImage, activeBox.Width, activeBox.Height)!;
-                        BitmapTools.DrawBitmapAtPos(resultImageResized, originalImage, activeBox.X, activeBox.Y);
-                        originalImage.Save(resultFilePath, ImageFormat.Png);
-                        originalImage.Dispose();
+                        using var tempOriginalImage = BitmapTools.Clone(originalImage);
+                        BitmapTools.DrawBitmapAtPos(resultImageResized, tempOriginalImage, activeBox.X, activeBox.Y);
+                        tempOriginalImage.Save(resultFilePath, ImageFormat.Png);
                     }
                     catch (Exception ee)
                     {
@@ -64,6 +64,7 @@ namespace AiPainter.Adapters.InvokeAi
                     }
 
                     InProcess = pbIterations.Value < pbIterations.Maximum;
+                    if (!InProcess) originalImage.Dispose();
                 });
             }
         }

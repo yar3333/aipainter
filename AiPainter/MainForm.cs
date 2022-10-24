@@ -292,6 +292,7 @@ namespace AiPainter
 
             pictureBox.Image = bmp;
             pictureBox.AddBoxToMask(bmp.Width - IMAGE_EXTEND_SIZE, 0 , IMAGE_EXTEND_SIZE, pictureBox.Image.Height);
+            pictureBox.ActiveBox.X += IMAGE_EXTEND_SIZE;
                 
             pictureBox.Refresh();
         }
@@ -326,6 +327,7 @@ namespace AiPainter
 
             pictureBox.Image = bmp;
             pictureBox.AddBoxToMask(0, bmp.Height - IMAGE_EXTEND_SIZE, pictureBox.Image.Width, IMAGE_EXTEND_SIZE);
+            pictureBox.ActiveBox.Y += IMAGE_EXTEND_SIZE;
                 
             pictureBox.Refresh();
         }

@@ -339,9 +339,34 @@ namespace AiPainter.Controls
             if (Image == null) return;
 
             mode = Mode.NOTHING;
-            ActiveBox.X = (int)Math.Round(ActiveBox.X / 16.0) * 16;
-            ActiveBox.Y = (int)Math.Round(ActiveBox.Y / 16.0) * 16;
+
+            if (Math.Abs(ActiveBox.X) < 10)
+            {
+                moveActiveBoxOnFreezedImage(-ActiveBox.X, 0);
+            }
+            if (Math.Abs(ActiveBox.Y) < 10)
+            {
+                moveActiveBoxOnFreezedImage(0, -ActiveBox.Y);
+            }
+            if (Math.Abs(Image.Width - (ActiveBox.X + ActiveBox.Width)) < 10)
+            {
+                moveActiveBoxOnFreezedImage(Image.Width - (ActiveBox.X + ActiveBox.Width), 0);
+            }
+            if (Math.Abs(Image.Height - (ActiveBox.Y + ActiveBox.Height)) < 10)
+            {
+                moveActiveBoxOnFreezedImage(0, Image.Height - (ActiveBox.Y + ActiveBox.Height));
+            }
+            
             Refresh();
+        }
+
+        private void moveActiveBoxOnFreezedImage(int dx, int dy)
+        {
+            globalX -= (int)Math.Round(dx * zoom);
+            ActiveBox.X += dx;
+
+            globalY -= (int)Math.Round(dy * zoom);
+            ActiveBox.Y += dy;
         }
 
         private void maskingMouseDown(Point loc)
@@ -349,8 +374,6 @@ namespace AiPainter.Controls
             if (!Enabled) return;
 
             var pt = getTransformedMousePos(loc);
-            pt.X -= ActiveBox.X;
-            pt.Y -= ActiveBox.Y;
             
             mode = Mode.MASKING;
 
@@ -375,8 +398,6 @@ namespace AiPainter.Controls
             if (!Enabled) return;
 
             var pt = getTransformedMousePos(loc);
-            pt.X -= ActiveBox.X;
-            pt.Y -= ActiveBox.Y;
 
             switch (lastPrim!.Kind)
             {

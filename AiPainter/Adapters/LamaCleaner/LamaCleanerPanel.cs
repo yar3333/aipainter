@@ -21,7 +21,8 @@ namespace AiPainter.Adapters.LamaCleaner
             var activeBox = pictureBox.ActiveBox;
 
             var fullImage = pictureBox.Image!;
-            var croppedImage = BitmapTools.GetCropped(fullImage, activeBox, Color.Black);
+
+            var croppedImage = pictureBox.GetMaskedImageCropped(Color.Black, 255);
             var croppedMask = pictureBox.GetMaskCropped(Color.Black, Color.White);
             
             Task.Run(() =>
@@ -37,6 +38,7 @@ namespace AiPainter.Adapters.LamaCleaner
                         Invoke(() =>
                         {
                             BitmapTools.DrawBitmapAtPos(resultImage, fullImage, activeBox.X, activeBox.Y);
+                            resultImage.Dispose();
                             pictureBox.ResetMask();
                             pictureBox.Refresh();
                         });
@@ -50,7 +52,6 @@ namespace AiPainter.Adapters.LamaCleaner
                 {
                     InProcess = false;
                 }
-                
             });
         }
 

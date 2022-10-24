@@ -67,7 +67,7 @@ static class LamaCleanerClient
         if (response.StatusCode != HttpStatusCode.OK)
             throw new Exception(await response.Content.ReadAsStringAsync());
 
-        using var resizedImage = BitmapTools.GetResized
+        var resizedImage = BitmapTools.GetResized
         (
             (Bitmap)Image.FromStream(await response.Content.ReadAsStreamAsync()),
             image.Width,

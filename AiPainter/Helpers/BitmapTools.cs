@@ -251,7 +251,7 @@ public static class BitmapTools
 
     public static Bitmap GetResized(Bitmap image, int width, int height)
     {
-        if (image.Width == width && image.Height == height) return new Bitmap(image);
+        if (image.Width == width && image.Height == height) return Clone(image);
 
         var dst = new Bitmap(width, height, PixelFormat.Format32bppArgb);
         drawImageResizedInner(image, dst, new Rectangle(0, 0, width, height), 128);
