@@ -10,7 +10,7 @@ echo D | mv release-x64 dist\AiPainter
 7z a ^
 	-x@..\pack-to-dist.exclude.txt ^
 	-xr!.gitignore ^
-	-mm=BZip2 -mx=3 -mcu ^
+	-mm=BZip2 -mx=1 -mcu ^
 	aipainter.zip AiPainter
 
 @popd
