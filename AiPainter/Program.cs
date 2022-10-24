@@ -8,6 +8,7 @@ namespace AiPainter;
 static class Program
 {
     public static Config Config = new();
+    public static readonly Log Log = new("_general");
 
     [STAThread]
     static void Main()

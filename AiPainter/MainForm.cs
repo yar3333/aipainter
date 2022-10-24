@@ -43,11 +43,20 @@ namespace AiPainter
             {
                 while (Visible)
                 {
-                    bool changesDetected;
-                    lock (storedImageList)
+                    var changesDetected = false;
+                    try
                     {
-                        changesDetected = storedImageList.Update();
+                        lock (storedImageList)
+                        {
+                            changesDetected = storedImageList.Update();
+                        }
                     }
+                    catch (Exception ee)
+                    {
+                        Program.Log.WriteLine(ee.ToString());
+                        await Task.Delay(1000);
+                    }
+                    
                     if (changesDetected)
                     {
                         Invoke(() =>
