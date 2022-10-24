@@ -1,4 +1,6 @@
 AiPainter\images
+AiPainter\logs
+AiPainter\Config.json
 
 AiPainter\external\_stuff\cudnn-windows-x86_64-8.4.1.50_cuda11.6\include
 AiPainter\external\_stuff\cudnn-windows-x86_64-8.4.1.50_cuda11.6\lib 
