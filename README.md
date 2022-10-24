@@ -33,7 +33,7 @@ Tested on NVIDIA 3060.
 
 ## Using
 
- * download [precompiled AiPainter](https://mega.nz/file/NoMQwbBa#0qnnbPDMioJTqVwEbmyJ7m1iRurLEltNSo-UBZNfKnM)
+ * download [precompiled AiPainter](https://mega.nz/file/5pUQWQab#bhRoSqEFQIfMEb5BoKteTBu6FnbpwhmHyNsPZvSqa7U)
  * unpack
  * run `AiPainter.exe`
 
