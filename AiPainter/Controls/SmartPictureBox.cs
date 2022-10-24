@@ -47,7 +47,7 @@ namespace AiPainter.Controls
 
         private int globalX;
         private int globalY;
-        
+
         public Rectangle ActiveBox = new(0, 0, 512, 512);
 
         public bool HasMask => primitives.Any();

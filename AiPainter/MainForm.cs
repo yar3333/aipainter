@@ -360,6 +360,7 @@ namespace AiPainter
             btResetMask.Enabled = pictureBox.HasMask;
             btDeAlpha.Enabled = pictureBox.Image != null && BitmapTools.HasAlpha(pictureBox.Image);
             btRestorePrevMask.Enabled = pictureBox.HasPrevMask;
+            btResizeAndMoveActiveBoxToFitImage.Enabled = pictureBox.Image != null;
 
             btLeft.Enabled = pictureBox.Image != null;
             btUp.Enabled = pictureBox.Image != null;
@@ -392,6 +393,19 @@ namespace AiPainter
         private void btCopyToClipboard_Click(object sender, EventArgs e)
         {
             Clipboard.SetImage(pictureBox.Image!);
+        }
+
+        private void btResizeAndMoveActiveBoxToFitImage_Click(object sender, EventArgs e)
+        {
+            var sz = Math.Max(pictureBox.Image.Width, pictureBox.Image.Height);
+            pictureBox.ActiveBox = new Rectangle
+            (
+                (pictureBox.Image.Width - sz) >> 1,
+                (pictureBox.Image.Height - sz) >> 1,
+                sz,
+                sz
+            );
+            pictureBox.Refresh();
         }
     }
 }

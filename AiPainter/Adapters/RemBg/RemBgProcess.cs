@@ -31,9 +31,10 @@ static class RemBgProcess
             {
                 {
                     "PATH",
-                    Path.Join(baseDir, @"stuff\cudnn-windows-x86_64-8.4.1.50_cuda11.6\bin") + ";"
-                      + Path.Join(baseDir, @"stuff\TensorRT-8.4.2.4\lib") + ";"
-                      + Environment.GetEnvironmentVariable("PATH")
+                      Path.Join(baseDir, @"stuff\cudnn-windows-x86_64-8.4.1.50_cuda11.6\bin") + ";"
+                    + Path.Join(baseDir, @"stuff\TensorRT-8.4.2.4\lib") + ";"
+                    + Path.Join(baseDir, "stuff", "NVIDIA GPU Computing Toolkit_CUDA_v11.4", "bin") + ";"
+                    + Environment.GetEnvironmentVariable("PATH")
                 },
                 {
                     "U2NET_HOME", Path.Join(baseDir, @"stuff\.u2net")

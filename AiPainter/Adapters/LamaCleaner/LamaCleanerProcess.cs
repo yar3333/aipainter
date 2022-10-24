@@ -25,7 +25,7 @@ static class LamaCleanerProcess
         return ProcessHelper.RunInBackground
         (
             Path.Join("main", "aipainter_lamacleaner.exe"),
-            "--model=lama"
+                  "--model=lama"
                 + " --device=cpu"
                 + " --port=" + +new Uri(Program.Config.LamaCleanerUrl).Port,
             directory: baseDir,
