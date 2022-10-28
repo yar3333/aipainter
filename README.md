@@ -14,7 +14,6 @@ Digital AI painter. Features:
 ![screenshot-05](screenshots/screenshot-05.jpg)
 ![screenshot-06](screenshots/screenshot-06.jpg)
 ![screenshot-07](screenshots/screenshot-07.jpg)
-![screenshot-08](screenshots/screenshot-08.jpg)
 
 
 ## Outpainting (animated gif)
