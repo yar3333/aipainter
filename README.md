@@ -33,7 +33,7 @@ Tested on NVIDIA 3060.
 
 ## Using
 
- * download precompiled AiPainter from [mega.nz](https://mega.nz/file/991QnQZZ#zC9Mi3rErTUkuKowlHq0qiNMwvzjgG-JRAVX16O8IlY) or [torrent](https://github.com/yar3333/aipainter/raw/main/AiPainter-1.1.1.torrent)
+ * download precompiled AiPainter from [mega.nz](https://mega.nz/file/991QnQZZ#zC9Mi3rErTUkuKowlHq0qiNMwvzjgG-JRAVX16O8IlY) or [torrent](https://raw.githubusercontent.com/yar3333/aipainter/main/AiPainter-1.1.1.torrent)
  * unpack
  * run `AiPainter.exe`
 
