@@ -1,86 +1,90 @@
-﻿using System.Net.Http.Json;
+﻿using SocketIOClient;
+using System.Net.Http.Json;
+using System.Net.WebSockets;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Nodes;
 
 #pragma warning disable CS8603
 #pragma warning disable CS8604
 
 namespace AiPainter.Adapters.InvokeAi;
 
+[Serializable]
+class AiProgressUpdateEvent
+{
+    public int currentStep { get; set; }
+    public int totalSteps { get; set; }
+    public int currentIteration { get; set; }
+    public int totalIterations { get; set; }
+    public string? currentStatus { get; set; }
+    public bool hasError { get; set; }
+}
+
+[Serializable]
+class AiGenerationResultEvent
+{
+    public string url { get; set; }
+}
+
 static class InvokeAiClient
 {
     public static readonly Log Log = new("InvokeAI");
 
-    public static async Task<AiImageInfo[]> GetImageList()
+    private static readonly Dictionary<string, Action<JsonObject>> actions = new();
+
+    private static SocketIO? connection;
+    private static void run(Action<SocketIO> action)
     {
-        return await requestGet<AiImageInfo[]>("run_log.json");
+        if (connection == null)
+        {
+            connection = new SocketIO(new Uri(Program.Config.InvokeAiUrl));
+            
+            connection.OnConnected += (a, b) =>
+            {
+                Log.WriteLine("OnConnected");
+                action(connection);
+            };
+
+            connection.OnAny((name, response) =>
+            {
+                Log.WriteLine("ON: " + name);
+                Log.WriteLine("response: " + response);
+
+                if (actions.ContainsKey(name)) actions[name](response.GetValue<JsonObject>());
+            });
+
+            connection.ConnectAsync();
+        }
+        else
+        {
+            action(connection);
+        }
     }
 
-    public static void Generate(AiImageInfo imageInfo, Action<AiProgress> onEvent)
+    public static void Generate(AiGenerationParameters generationParameters, AiGfpganParameters? gfpganParameters, Action<AiProgressUpdateEvent> onProgressUpdate, Action onProcessingCanceled, Action<AiGenerationResultEvent> onResult)
     {
-        var thread = new Thread(() =>
+        actions["progressUpdate"] = json => onProgressUpdate(json.Deserialize<AiProgressUpdateEvent>());
+        actions["processingCanceled"] = _ => onProcessingCanceled();
+        actions["generationResult"] = json => onResult(json.Deserialize<AiGenerationResultEvent>());
+
+        run(ws =>
         {
-            try
-            {
-                var stream = requestPost("", imageInfo).ReadAsStream();
-
-                var buf = new List<byte>();
-                int b;
-                while ((b = stream.ReadByte()) >= 0)
-                {
-                    if (b == '\n')
-                    {
-                        onEvent(JsonSerializer.Deserialize<AiProgress>(Encoding.UTF8.GetString(buf.ToArray())));
-                        buf.Clear();
-                    }
-                    else
-                    {
-                        buf.Add((byte)b);
-                    }
-                }
-
-                if (buf.Any()) onEvent(JsonSerializer.Deserialize<AiProgress>(Encoding.UTF8.GetString(buf.ToArray())));
-            }
-            catch (HttpRequestException)
-            {
-                onEvent(new AiProgress { @event = "canceled" });
-            }
+            ws.EmitAsync
+            (
+                "generateImage",
+                generationParameters, 
+                false,//esrganParameters ?? (object)false, // superscale
+                gfpganParameters ?? (object)false   // face fix
+            );
         });
-        thread.Start();
     }
 
     public static void Cancel()
     {
-        requestGet("cancel");
-    }
-
-    private static async Task<T> requestGet<T>(string subUrl) where T : class
-    {
-        var httpClient = new HttpClient { BaseAddress = new Uri(Program.Config.InvokeAiUrl) };
-        return await httpClient.GetFromJsonAsync<T>(subUrl, new JsonSerializerOptions { PropertyNamingPolicy = null });
-    }
-
-    private static void requestGet(string subUrl)
-    {
-        var httpClient = new HttpClient { BaseAddress = new Uri(Program.Config.InvokeAiUrl) };
-        httpClient.GetAsync(subUrl);
-    }
-
-    private static HttpContent requestPost(string subUrl, object dataObj)
-    {
-        var httpClient = new HttpClient(new LoggerHttpClientHandler(Log))
+        run(ws =>
         {
-            BaseAddress = new Uri(Program.Config.InvokeAiUrl),
-            MaxResponseContentBufferSize = 1 // TODO: is this need?
-        };
-
-        var data = JsonSerializer.Serialize(dataObj, new JsonSerializerOptions { PropertyNamingPolicy = null });
-        var content = new StringContent(data, Encoding.UTF8, "application/json");
-
-        //var r = httpClient.PostAsync(subUrl, content).Result;
-        var reqMes = new HttpRequestMessage(HttpMethod.Post, subUrl);
-        reqMes.Content = content;
-        var r = httpClient.Send(reqMes, HttpCompletionOption.ResponseHeadersRead);
-        return r.Content;
+            ws.EmitAsync("cancel");
+        });
     }
 }

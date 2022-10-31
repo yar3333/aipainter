@@ -7,6 +7,7 @@ namespace AiPainter.Adapters.InvokeAi
     public partial class InvokeAiPanel : UserControl
     {
         private SmartPictureBox pictureBox = null!;
+        private readonly Random random = new();
 
         public bool InProcess;
 
@@ -71,67 +72,73 @@ namespace AiPainter.Adapters.InvokeAi
 
         private void generate(Bitmap? image, Action<string> onGenerated)
         {
-            var sdImage = new AiImageInfo
+            var generationParameters = new AiGenerationParameters
             {
-                prompt = tbPrompt.Text.Trim() != "" ? tbPrompt.Text.Trim() : null,
+                prompt = tbPrompt.Text.Trim() != "" ? tbPrompt.Text.Trim() : "",
                 cfg_scale = numCfgScale.Value,
-                gfpgan_strength = numGfpGan.Value,
                 iterations = (int)numIterations.Value,
-                seed = tbSeed.Text.Trim() == "" ? -1 : long.Parse(tbSeed.Text.Trim()),
+                seed = tbSeed.Text.Trim() == "" 
+                           ? (uint)random.NextInt64(4294967295) 
+                           : uint.Parse(tbSeed.Text.Trim()),
                 steps = (int)numSteps.Value,
                 strength = numImg2img.Value,
-                initimg = image != null ? BitmapTools.GetBase64String(image) : null,
+                init_img = image != null ? BitmapTools.GetBase64String(image) : null,
             };
 
-            InvokeAiClient.Generate(sdImage, progress =>
+            var gfpganParameters = new AiGfpganParameters
             {
-                Invoke(() =>
+                strength = numGfpGan.Value
+            };
+
+            InvokeAiClient.Generate(generationParameters, gfpganParameters, 
+                onProgressUpdate: ev =>
                 {
-                    switch (progress.@event)
+                    Invoke(() =>
                     {
-                        case "step":
-                            pbSteps.Value = progress.step ?? 0;
-                            pbSteps.CustomText = pbSteps.Value + " / " + sdImage.steps;
-                            pbSteps.Refresh();
-                            break;                    
-                    
-                        case "result":
-                            pbSteps.Value = 0;
-                            pbSteps.Refresh();
-                            pbIterations.Value++;
-                            pbIterations.CustomText = pbIterations.Value + " / " + sdImage.iterations;
-                            pbIterations.Refresh();
+                        pbSteps.Value = ev.currentStep;
+                        pbSteps.CustomText = pbSteps.Value + " / " + generationParameters.steps;
+                        pbSteps.Refresh();
+                    });
+                },
 
-                            var resultFilePath = Path.Combine(Program.Config.InvokeAiOutputFolderPath, progress.url!.Split('/', '\\').Last());
-                            Task.Run(async () =>
-                            {
-                                while (!File.Exists(resultFilePath))
-                                {
-                                    if (!InProcess) return;
-                                    await Task.Delay(500);
-                                }
-                                await Task.Delay(1000);
-                                onGenerated(resultFilePath);
-                            });
-                            break;
+                onProcessingCanceled: () =>
+                {
+                    pbSteps.Value = 0;
+                    pbSteps.CustomText = "";
+                    InProcess = false;
+                },
 
-                        case "canceled":
-                            pbSteps.Value = 0;
-                            pbSteps.CustomText = "";
-                            InProcess = false;
-                            break;
-                    }
-                });
-            });
+                onResult: ev =>
+                {
+                    pbSteps.Value = 0;
+                    pbSteps.Refresh();
+                    pbIterations.Value++;
+                    pbIterations.CustomText = pbIterations.Value + " / " + generationParameters.iterations;
+                    pbIterations.Refresh();
+
+                    var resultFilePath = Path.Combine(Program.Config.InvokeAiOutputFolderPath, ev.url.Split('/', '\\').Last());
+                    Task.Run(async () =>
+                    {
+                        while (!File.Exists(resultFilePath))
+                        {
+                            if (!InProcess) return;
+                            await Task.Delay(500);
+                        }
+                        await Task.Delay(1000);
+                        onGenerated(resultFilePath);
+                    });
+                }
+            );
         }
 
         private void btReset_Click(object sender, EventArgs e)
         {
-            var sdImage = new AiImageInfo();
-            numImg2img.Value = sdImage.strength;
-            numCfgScale.Value = sdImage.cfg_scale;
-            numGfpGan.Value = sdImage.gfpgan_strength;
-            numSteps.Value = sdImage.steps;
+            var generationParameters = new AiGenerationParameters();
+            var gfpganParameters = new AiGfpganParameters();
+            numImg2img.Value = generationParameters.strength;
+            numCfgScale.Value = generationParameters.cfg_scale;
+            numGfpGan.Value = gfpganParameters.strength;
+            numSteps.Value = generationParameters.steps;
         }
 
         public void UpdateState(SmartPictureBox pb, bool isPortOpen)
