@@ -1,9 +1,6 @@
 [submodule "_external/lama-cleaner/repo"]
 	path = _external/lama-cleaner/repo
 	url = git@github.com:Sanster/lama-cleaner.git
-[submodule "_external/InvokeAI/repo"]
-	path = _external/InvokeAI/repo
-	url = git@github.com:invoke-ai/InvokeAI.git
 [submodule "_external/rembg/repo"]
 	path = _external/rembg/repo
 	url = git@github.com:danielgatis/rembg.git
