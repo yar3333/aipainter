@@ -7,3 +7,6 @@
 [submodule "_external/rembg/repo"]
 	path = _external/rembg/repo
 	url = git@github.com:danielgatis/rembg.git
+[submodule "_external/StableDiffusion/repo"]
+	path = _external/StableDiffusion/repo
+	url = https://github.com/AUTOMATIC1111/stable-diffusion-webui.git
