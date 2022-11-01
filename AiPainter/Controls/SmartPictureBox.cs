@@ -121,8 +121,10 @@ namespace AiPainter.Controls
             return bmp;
         }
 
-        public Bitmap GetMaskCropped(Color backColor, Color maskColor)
+        public Bitmap? GetMaskCropped(Color backColor, Color maskColor)
         {
+            if (!primitives.Any()) return null;
+
             var bmp = new Bitmap(ActiveBox.Width, ActiveBox.Height, PixelFormat.Format32bppArgb);
             using var g = Graphics.FromImage(bmp);
             using var backBrush = new SolidBrush(backColor);

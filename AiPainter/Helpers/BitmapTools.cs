@@ -43,6 +43,12 @@ public static class BitmapTools
         return "data:image/png;base64," + Convert.ToBase64String(m.ToArray());
     }
 
+    public static Bitmap FromBase64(string base64)
+    {
+        using var m = new MemoryStream(Convert.FromBase64String(base64.Split(",").Last()));
+        return (Bitmap)Image.FromStream(m);
+    }
+
     public static void DeAlpha(Bitmap bmp)
     {
         var data = bmp.LockBits(new Rectangle(0, 0, bmp.Width, bmp.Height), ImageLockMode.WriteOnly, PixelFormat.Format32bppArgb);
