@@ -97,8 +97,8 @@ static class StableDiffusionClient
 {
     public static readonly Log Log = new("StableDiffusion");
 
-    private static bool inProcess = false;
-    private static bool wantToCancel = false;
+    private static bool inProcess;
+    private static bool wantToCancel;
 
     // ReSharper disable once InconsistentNaming
     public static void txt2img(SdGenerationRequest request, Action<SdGenerationProgess?> onProgress, Action<SdGenerationResponse> onSuccess, Action<int> onFinish)
@@ -129,9 +129,10 @@ static class StableDiffusionClient
             onFinish(i);
         });
 
-        Task.Run(async () =>
+        /*Task.Run(async () =>
         {
-            await Task.Delay(TimeSpan.FromSeconds(1));
+            await Task.Delay(TimeSpan.FromSeconds(3));
+
             try
             {
                 var result = await getStringAsync("sdapi/v1/progress");
@@ -142,7 +143,7 @@ static class StableDiffusionClient
             {
                 Log.WriteLine(e.ToString());
             }
-        });
+        });*/
     }
 
     public static void Cancel()
