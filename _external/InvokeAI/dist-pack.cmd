@@ -42,6 +42,9 @@ call conda run -n invokeai --cwd repo --no-capture-output pyinstaller ^
 	--hidden-import=engineio.async_drivers.sanic ^
 	--hidden-import=engineio.async_drivers.threading ^
 	--hidden-import=engineio.async_drivers.tornado ^
+	--paths="src\gfpgan" ^
+	--hidden-import=gfpgan  ^
+	--hidden-import=gfpgan.archs  ^
 	scripts/invoke.py
 
 @if ERRORLEVEL 1 exit/b 1
@@ -62,6 +65,6 @@ mkdir dist\ldm\invoke\restoration\codeformer\weights
 mklink dist\ldm\invoke\restoration\codeformer\weights\codeformer.pth %~dp0repo\ldm\invoke\restoration\codeformer\weights\codeformer.pth
 
 mkdir dist\src\gfpgan\experiments\pretrained_models
-mklink dist\src\gfpgan\experiments\pretrained_models\GFPGANv1.4.pth %~dp0repo\src\gfpgan\experiments\pretrained_models\GFPGANv1.4.pth 
+mklink dist\src\gfpgan\experiments\pretrained_models\GFPGANv1.4.pth %~dp0repo\src\gfpgan\experiments\pretrained_models\GFPGANv1.4.pth
 
 call dist-run.cmd

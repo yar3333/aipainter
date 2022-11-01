@@ -4,7 +4,7 @@ using System.Net.Http.Headers;
 
 namespace AiPainter.Adapters.RemBg;
 
-static class RemBgClient
+static class StableDiffusionClient
 {
     public static readonly Log Log = new("rembg");
 

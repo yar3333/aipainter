@@ -2,16 +2,16 @@
 using System.Drawing.Imaging;
 using AiPainter.Controls;
 
-namespace AiPainter.Adapters.InvokeAi
+namespace AiPainter.Adapters.StableDiffusion
 {
-    public partial class InvokeAiPanel : UserControl
+    public partial class StableDiffusionPanel : UserControl
     {
         private SmartPictureBox pictureBox = null!;
         private readonly Random random = new();
 
         public bool InProcess;
 
-        public InvokeAiPanel()
+        public StableDiffusionPanel()
         {
             InitializeComponent();
         }
@@ -20,7 +20,7 @@ namespace AiPainter.Adapters.InvokeAi
         {
             if (InProcess)
             {
-                InvokeAiClient.Cancel();
+                StableDiffusionClient.Cancel();
                 InProcess = false;
                 return;
             }
@@ -61,7 +61,7 @@ namespace AiPainter.Adapters.InvokeAi
                     }
                     catch (Exception ee)
                     {
-                        InvokeAiClient.Log.WriteLine(ee.ToString());
+                        StableDiffusionClient.Log.WriteLine(ee.ToString());
                     }
 
                     InProcess = pbIterations.Value < pbIterations.Maximum;
@@ -72,59 +72,51 @@ namespace AiPainter.Adapters.InvokeAi
 
         private void generate(Bitmap? image, Action<string> onGenerated)
         {
-            var generationParameters = new AiGenerationParameters
+            var parameters = new SdGenerationRequest
             {
                 prompt = tbPrompt.Text.Trim() != "" ? tbPrompt.Text.Trim() : "",
                 cfg_scale = numCfgScale.Value,
-                iterations = (int)numIterations.Value,
+                n_iter = (int)numIterations.Value,
                 seed = tbSeed.Text.Trim() == "" 
-                           ? (uint)random.NextInt64(4294967295) 
-                           : uint.Parse(tbSeed.Text.Trim()),
+                           ? -1
+                           : long.Parse(tbSeed.Text.Trim()),
                 steps = (int)numSteps.Value,
-                strength = numImg2img.Value,
-                init_img = image != null ? BitmapTools.GetBase64String(image) : null,
+                //strength = numImg2img.Value,
+                //init_img = image != null ? BitmapTools.GetBase64String(image) : null,
             };
 
-            var gfpganParameters = new AiGfpganParameters
-            {
-                strength = numGfpGan.Value
-            };
-
-            InvokeAiClient.Generate(generationParameters, gfpganParameters, 
-                onProgressUpdate: ev =>
+            StableDiffusionClient.txt2img(parameters,
+                onProgress: ev =>
                 {
                     Invoke(() =>
                     {
-                        pbSteps.Value = ev.currentStep;
-                        pbSteps.CustomText = pbSteps.Value + " / " + generationParameters.steps;
+                        pbSteps.Value = ev.state.sampling_step;
+                        pbSteps.CustomText = pbSteps.Value + " / " + parameters.steps;
                         pbSteps.Refresh();
                     });
                 },
 
-                onProcessingCanceled: () =>
+                onFinish: _ =>
                 {
-                    pbSteps.Value = 0;
-                    pbSteps.CustomText = "";
-                    InProcess = false;
+                    Invoke(() =>
+                    {
+                        pbSteps.Value = 0;
+                        pbSteps.CustomText = "";
+                        InProcess = false;
+                    });
                 },
 
-                onResult: ev =>
+                onSuccess: ev =>
                 {
-                    pbSteps.Value = 0;
-                    pbSteps.Refresh();
-                    pbIterations.Value++;
-                    pbIterations.CustomText = pbIterations.Value + " / " + generationParameters.iterations;
-                    pbIterations.Refresh();
+                    Invoke(() => {
+                        pbSteps.Value = 0;
+                        pbSteps.Refresh();
+                        pbIterations.Value++;
+                        pbIterations.CustomText = pbIterations.Value + " / " + parameters.n_iter;
+                        pbIterations.Refresh();
 
-                    var resultFilePath = Path.Combine(Program.Config.InvokeAiOutputFolderPath, ev.url.Split('/', '\\').Last());
-                    Task.Run(async () =>
-                    {
-                        while (!File.Exists(resultFilePath))
-                        {
-                            if (!InProcess) return;
-                            await Task.Delay(500);
-                        }
-                        await Task.Delay(1000);
+                        var resultFilePath = Path.Combine(Program.Config.OutputFolder, ev.infoParsed.seed + ".png");
+                        File.WriteAllBytes(resultFilePath, Convert.FromBase64String(ev.images[0].Split(",").Last()));
                         onGenerated(resultFilePath);
                     });
                 }
@@ -133,12 +125,11 @@ namespace AiPainter.Adapters.InvokeAi
 
         private void btReset_Click(object sender, EventArgs e)
         {
-            var generationParameters = new AiGenerationParameters();
-            var gfpganParameters = new AiGfpganParameters();
-            numImg2img.Value = generationParameters.strength;
-            numCfgScale.Value = generationParameters.cfg_scale;
-            numGfpGan.Value = gfpganParameters.strength;
-            numSteps.Value = generationParameters.steps;
+            var parameters = new SdGenerationRequest();
+            //numImg2img.Value = generationParameters.strength; // TODO
+            numCfgScale.Value = parameters.cfg_scale;
+            numGfpGan.Value = parameters.restore_faces ? 1 : 0; // TODO
+            numSteps.Value = parameters.steps;
         }
 
         public void UpdateState(SmartPictureBox pb, bool isPortOpen)
@@ -163,10 +154,10 @@ namespace AiPainter.Adapters.InvokeAi
                 numImg2img.Enabled = cbUseInitImage.Checked;
             }
 
-            btGenerate.Text = InProcess ? "CANCEL" 
-                           : isPortOpen ? "Generate" 
-              : InvokeAiProcess.Loading ? "LOADING..." 
-                                        : "ERROR";
+            btGenerate.Text =        InProcess ? "CANCEL" 
+                                  : isPortOpen ? "Generate" 
+              : StableDiffusionProcess.Loading ? "LOADING..." 
+                                               : "ERROR";
 
             tbPrompt.Enabled = !InProcess;
 

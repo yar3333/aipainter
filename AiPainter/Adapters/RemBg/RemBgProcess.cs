@@ -9,7 +9,7 @@ static class RemBgProcess
 
     public static Process? Start()
     {
-        var log = RemBgClient.Log;
+        var log = StableDiffusionClient.Log;
 
         if (!Program.Config.UseEmbeddedRemBg) return null;
 

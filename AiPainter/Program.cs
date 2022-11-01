@@ -1,7 +1,7 @@
 using System.Text.Json;
-using AiPainter.Adapters.InvokeAi;
 using AiPainter.Adapters.LamaCleaner;
 using AiPainter.Adapters.RemBg;
+using AiPainter.Adapters.StableDiffusion;
 
 namespace AiPainter;
 
@@ -15,7 +15,7 @@ static class Program
     {
         readConfig();
 
-        var invokeAiProcess = InvokeAiProcess.Start();
+        var stableDiffusionProcess = StableDiffusionProcess.Start();
         var lamaCleanerProcess = LamaCleanerProcess.Start();
         var remBgProcess = RemBgProcess.Start();
 
@@ -24,7 +24,7 @@ static class Program
 
         try { remBgProcess?.Kill(true); } catch {}
         try { lamaCleanerProcess?.Kill(true); } catch {}
-        try { invokeAiProcess?.Kill(true); } catch {}
+        try { stableDiffusionProcess?.Kill(true); } catch {}
     }
     
     static void readConfig()

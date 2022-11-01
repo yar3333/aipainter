@@ -27,7 +27,7 @@ namespace AiPainter.Adapters.RemBg
             {
                 try
                 {
-                    var resultImage = RemBgClient.RunAsync(croppedImage).Result;
+                    var resultImage = StableDiffusionClient.RunAsync(croppedImage).Result;
                     croppedImage.Dispose();
                     
                     if (resultImage != null)
@@ -42,7 +42,7 @@ namespace AiPainter.Adapters.RemBg
                 }
                 catch (Exception ee)
                 {
-                    RemBgClient.Log.WriteLine(ee.ToString());
+                    StableDiffusionClient.Log.WriteLine(ee.ToString());
                 }
                 finally
                 {

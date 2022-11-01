@@ -5,7 +5,7 @@ namespace AiPainter.Helpers;
 
 static class ProcessHelper
 {
-    public static Process? RunInBackground(string exeFilePath, string arguments, Action<string?> logFunc, Action<int>? onExit = null, string? directory = null, IDictionary<string, string>? env = null)
+    public static Process? RunInBackground(string exeFilePath, string arguments, Action<string?> logFunc, Action<int>? onExit = null, string? directory = null, IDictionary<string, string?>? env = null)
     {
         var fullPathToExe = directory != null
                                 ? Path.GetFullPath(exeFilePath, directory)
@@ -23,7 +23,14 @@ static class ProcessHelper
         p.StartInfo.RedirectStandardError = true;
         p.StartInfo.CreateNoWindow = true;
         if (!string.IsNullOrEmpty(directory)) p.StartInfo.WorkingDirectory = directory;
-        if (env != null) foreach (var k in env.Keys) p.StartInfo.EnvironmentVariables[k] = env[k];
+        if (env != null)
+        {
+            foreach (var k in env.Keys)
+            {
+                if (env[k] != null) p.StartInfo.EnvironmentVariables[k] = env[k];
+                else if (p.StartInfo.EnvironmentVariables.ContainsKey(k)) p.StartInfo.EnvironmentVariables.Remove(k);
+            }
+        }
 
         p.OutputDataReceived += (_, x) => logFunc(x.Data);
         p.ErrorDataReceived += (_, x) => logFunc(x.Data);

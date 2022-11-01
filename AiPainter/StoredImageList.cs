@@ -8,7 +8,7 @@ class StoredImageList
 
     public bool Update()
     {
-        var allFiles = Directory.GetFiles(Program.Config.InvokeAiOutputFolderPath, "*.png");
+        var allFiles = Directory.GetFiles(Program.Config.OutputFolder, "*.png");
 
         var removeCount = images.RemoveAll(x => !allFiles.Contains(x.FilePath));
 

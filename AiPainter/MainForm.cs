@@ -16,7 +16,7 @@ namespace AiPainter
         
         private string? rightButtonPressed;
 
-        private bool invokeaiIsPortOpen;
+        private bool stableDiffusionIsPortOpen;
         private bool lamaCleanerIsPortOpen;
         private bool remBgIsPortOpen;
         
@@ -339,7 +339,7 @@ namespace AiPainter
 
         private void controlsStateUpdater_Tick(object sender, EventArgs e)
         {
-            panInvokeAi.UpdateState(pictureBox, invokeaiIsPortOpen);
+            panStableDiffusion.UpdateState(pictureBox, stableDiffusionIsPortOpen);
             panLamaCleaner.UpdateState(pictureBox, lamaCleanerIsPortOpen);
             panRemBg.UpdateState(pictureBox, remBgIsPortOpen);
 
@@ -374,7 +374,7 @@ namespace AiPainter
         {
             while (true)
             {
-                invokeaiIsPortOpen = ProcessHelper.IsPortOpen(Program.Config.InvokeAiUrl);
+                stableDiffusionIsPortOpen = ProcessHelper.IsPortOpen(Program.Config.StableDiffusionUrl);
                 lamaCleanerIsPortOpen = ProcessHelper.IsPortOpen(Program.Config.LamaCleanerUrl);
                 remBgIsPortOpen = ProcessHelper.IsPortOpen(Program.Config.RemBgUrl);
                 Thread.Sleep(200);

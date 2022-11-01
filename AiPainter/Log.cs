@@ -41,7 +41,8 @@ class LoggerHttpClientHandler : HttpClientHandler
     {
         log.WriteLine("[request] " + request.RequestUri);
         var r = await base.SendAsync(request, cancellationToken);
-        log.WriteLine("[response] " + r.StatusCode + " " + r.ReasonPhrase);
+        var text = await r.Content.ReadAsStringAsync();
+        log.WriteLine("[response] " + r.StatusCode + " " + r.ReasonPhrase + "\n" + text);
         return r;
     }
 }

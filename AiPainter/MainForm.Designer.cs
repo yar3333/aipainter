@@ -57,7 +57,7 @@ namespace AiPainter
             this.panel1 = new System.Windows.Forms.Panel();
             this.panRemBg = new AiPainter.Adapters.RemBg.RemBgPanel();
             this.panLamaCleaner = new AiPainter.Adapters.LamaCleaner.LamaCleanerPanel();
-            this.panInvokeAi = new AiPainter.Adapters.InvokeAi.InvokeAiPanel();
+            this.panStableDiffusion = new AiPainter.Adapters.StableDiffusion.StableDiffusionPanel();
             this.hPicScroll = new System.Windows.Forms.HScrollBar();
             this.toolTip = new System.Windows.Forms.ToolTip(this.components);
             this.btSave = new System.Windows.Forms.ToolStripButton();
@@ -305,7 +305,7 @@ namespace AiPainter
             this.panel1.BackColor = System.Drawing.SystemColors.ControlDarkDark;
             this.panel1.Controls.Add(this.panRemBg);
             this.panel1.Controls.Add(this.panLamaCleaner);
-            this.panel1.Controls.Add(this.panInvokeAi);
+            this.panel1.Controls.Add(this.panStableDiffusion);
             this.panel1.Location = new System.Drawing.Point(590, 0);
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(334, 523);
@@ -333,13 +333,13 @@ namespace AiPainter
             // 
             // panInvokeAi
             // 
-            this.panInvokeAi.AutoSize = true;
-            this.panInvokeAi.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.panInvokeAi.Dock = System.Windows.Forms.DockStyle.Top;
-            this.panInvokeAi.Location = new System.Drawing.Point(0, 0);
-            this.panInvokeAi.Name = "panInvokeAi";
-            this.panInvokeAi.Size = new System.Drawing.Size(334, 352);
-            this.panInvokeAi.TabIndex = 6;
+            this.panStableDiffusion.AutoSize = true;
+            this.panStableDiffusion.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.panStableDiffusion.Dock = System.Windows.Forms.DockStyle.Top;
+            this.panStableDiffusion.Location = new System.Drawing.Point(0, 0);
+            this.panStableDiffusion.Name = "panStableDiffusion";
+            this.panStableDiffusion.Size = new System.Drawing.Size(334, 352);
+            this.panStableDiffusion.TabIndex = 6;
             // 
             // hPicScroll
             // 
@@ -416,7 +416,7 @@ namespace AiPainter
         private ToolTip toolTip;
         private SmartPictureBox pictureBox;
         private ToolStripButton btSaveJpeg;
-        private Adapters.InvokeAi.InvokeAiPanel panInvokeAi;
+        private Adapters.StableDiffusion.StableDiffusionPanel panStableDiffusion;
         private Adapters.LamaCleaner.LamaCleanerPanel panLamaCleaner;
         private Adapters.RemBg.RemBgPanel panRemBg;
         private System.ComponentModel.BackgroundWorker checkPortsWorker;
