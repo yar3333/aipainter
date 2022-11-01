@@ -35,9 +35,22 @@ static class StableDiffusionProcess
             {
                 ProcessHelper.OpenUrlInBrowser("https://huggingface.co/CompVis/stable-diffusion-v-1-4-original");
             }
-
             return null;
         }
+
+        var pyvenvCfgFilePath = Path.Join(Application.StartupPath, @"external\StableDiffusion\venv\pyvenv.cfg");
+        if (File.Exists(pyvenvCfgFilePath))
+        {
+            File.WriteAllLines(pyvenvCfgFilePath, File.ReadAllLines(pyvenvCfgFilePath).Select(x =>
+            {
+                if (x.TrimStart().StartsWith("home = "))
+                {
+                    return "home = " + Path.Join(Application.StartupPath, @"external\_stuff\python-3.10.6");
+                }
+                return x;
+            }));
+        }
+        
 
         var uri = new Uri(Program.Config.StableDiffusionUrl);
 
@@ -49,8 +62,14 @@ static class StableDiffusionProcess
                 + (uri.Host != "127.0.0.1" && uri.Host.ToLowerInvariant() != "localhost" ? " --listen" : "")
                 + " --port=" + uri.Port,
             directory: Path.Join(Application.StartupPath, @"external\StableDiffusion"),
-            env: new Dictionary<string, string>
-            {
+        env: new Dictionary<string, string?>
+        {
+                {
+                    "PATH", 
+                    Path.Join(Application.StartupPath, @"external\_stuff\python-3.10.6") + ";" 
+                  + Path.Join(Application.StartupPath, @"external\_stuff\python-3.10.6\Scripts") + ";" 
+                  + Environment.GetEnvironmentVariable("PATH")
+                },
                 { "PYTHON", null },
                 { "GIT", null },
                 { "VENV_DIR", null },
