@@ -86,7 +86,8 @@ namespace AiPainter.Adapters.StableDiffusion
             {
                 var parameters = new SdGenerationRequest
                 {
-                    prompt = tbPrompt.Text.Trim() != "" ? tbPrompt.Text.Trim() : "",
+                    prompt = tbPrompt.Text.Trim(),
+                    negative_prompt = tbNegative.Text.Trim(),
                     cfg_scale = numCfgScale.Value,
                     n_iter = (int)numIterations.Value,
                     seed = tbSeed.Text.Trim() == "" 
@@ -108,7 +109,8 @@ namespace AiPainter.Adapters.StableDiffusion
             {
                 var parameters = new SdInpaintRequest
                 {
-                    prompt = tbPrompt.Text.Trim() != "" ? tbPrompt.Text.Trim() : "",
+                    prompt = tbPrompt.Text.Trim(),
+                    negative_prompt = tbNegative.Text.Trim(),
                     cfg_scale = numCfgScale.Value,
                     n_iter = (int)numIterations.Value,
                     seed = tbSeed.Text.Trim() == ""
@@ -169,9 +171,7 @@ namespace AiPainter.Adapters.StableDiffusion
         private void btReset_Click(object sender, EventArgs e)
         {
             var parameters = new SdGenerationRequest();
-            //numImg2img.Value = generationParameters.strength; // TODO
             numCfgScale.Value = parameters.cfg_scale;
-            numGfpGan.Value = parameters.restore_faces ? 1 : 0; // TODO
             numSteps.Value = parameters.steps;
         }
 
@@ -183,18 +183,15 @@ namespace AiPainter.Adapters.StableDiffusion
             {
                 cbUseInitImage.Enabled = false;
                 cbUseInitImage.Checked = true;
-                numImg2img.Enabled = true;
             }
             else if (pb.Image == null)
             {
                 cbUseInitImage.Enabled = false;
                 cbUseInitImage.Checked = false;
-                numImg2img.Enabled = false;
             }
             else
             {
                 cbUseInitImage.Enabled = true;
-                numImg2img.Enabled = cbUseInitImage.Checked;
             }
 
             btGenerate.Text =        InProcess ? "CANCEL" 
@@ -203,6 +200,7 @@ namespace AiPainter.Adapters.StableDiffusion
                                                : "ERROR";
 
             tbPrompt.Enabled = !InProcess;
+            tbNegative.Enabled = !InProcess;
 
             btGenerate.Enabled = isPortOpen;
         }

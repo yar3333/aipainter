@@ -33,12 +33,12 @@ class SdBaseGenerationRequest
     public bool tiling { get; set; } = false;
     public bool restore_faces { get; set; } = false;
     
-    public decimal? eta { get; set; } = 0;
-    
-    public decimal? s_churn { get; set; } = 0;
+    // sampler parameters
+    public decimal? eta { get; set; } = 0; // 0..1
+    public decimal? s_churn { get; set; } = 0; // 0 or 1 are best
+    public decimal? s_noise { get; set; } = 1; // best is 1
     public decimal? s_tmax { get; set; } = 0;
     public decimal? s_tmin { get; set; } = 0;
-    public decimal? s_noise { get; set; } = 1;
 }
 
 [Serializable]
