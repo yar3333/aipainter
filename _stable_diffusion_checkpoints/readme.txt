@@ -1,0 +1,1 @@
+Place *.ckpt files here (subfolders also supported).
