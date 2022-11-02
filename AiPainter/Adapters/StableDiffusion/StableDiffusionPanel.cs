@@ -13,16 +13,23 @@ namespace AiPainter.Adapters.StableDiffusion
         public StableDiffusionPanel()
         {
             InitializeComponent();
+        }
 
+        private void collapsablePanel_Load(object sender, EventArgs e)
+        {
             var items = SdCheckpointsHelper.GetNames().Select(x => new ListItem
             {
                 Value = x, 
                 Text = x + " (" + Math.Round(SdCheckpointsHelper.GetSize(x) / 1024.0 / 1024 / 1024, 1) + " GB)"
             }).ToArray();
+            
             ddCheckpoint.ValueMember = "Value";
             ddCheckpoint.DisplayMember = "Text";
+            
+            ddCheckpoint.Items.Clear();
             // ReSharper disable once CoVariantArrayConversion
             ddCheckpoint.Items.AddRange(items);
+            
             ddCheckpoint.SelectedItem = items.Single(x => x.Value == Program.Config.StableDiffusionCheckpoint);
         }
 
@@ -30,7 +37,9 @@ namespace AiPainter.Adapters.StableDiffusion
         {
             if (InProcess)
             {
+                #pragma warning disable CS4014
                 StableDiffusionClient.Cancel();
+                #pragma warning restore CS4014
                 InProcess = false;
                 return;
             }
@@ -223,12 +232,13 @@ namespace AiPainter.Adapters.StableDiffusion
             if (((ListItem)ddCheckpoint.SelectedItem).Value == Program.Config.StableDiffusionCheckpoint) return;
 
             Program.Config.StableDiffusionCheckpoint = ((ListItem)ddCheckpoint.SelectedItem).Value;
+            Program.SaveConfig();
 
             Task.Run(async () =>
             {
                 StableDiffusionProcess.Stop();
-                while (ProcessHelper.IsPortOpen(Program.Config.StableDiffusionUrl)) await Task.Delay(500);
-                await Task.Delay(500);
+                while (ProcessHelper.IsPortOpen(Program.Config.StableDiffusionUrl)) await Task.Delay(1000);
+                await Task.Delay(1000);
                 StableDiffusionProcess.Start();
             });
         }

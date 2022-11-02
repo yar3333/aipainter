@@ -76,6 +76,7 @@
             this.collapsablePanel.Name = "collapsablePanel";
             this.collapsablePanel.Size = new System.Drawing.Size(334, 427);
             this.collapsablePanel.TabIndex = 4;
+            this.collapsablePanel.Load += new System.EventHandler(this.collapsablePanel_Load);
             // 
             // ddCheckpoint
             // 

@@ -13,7 +13,8 @@ static class Program
     [STAThread]
     static void Main()
     {
-        readConfig();
+        LoadConfig();
+        SaveConfig();
 
         StableDiffusionProcess.Start();
         LamaCleanerProcess.Start();
@@ -27,18 +28,21 @@ static class Program
         StableDiffusionProcess.Stop();
     }
     
-    static void readConfig()
+    public static void LoadConfig()
     {
         var pathToConfig = Path.Join(Application.StartupPath, "Config.json");
-
-        var oldText = "";
         
         if (File.Exists(pathToConfig))
         {
-            oldText = File.ReadAllText(pathToConfig);
-            Config = JsonSerializer.Deserialize<Config>(oldText) ?? new Config();
+            Config = JsonSerializer.Deserialize<Config>(File.ReadAllText(pathToConfig)) ?? new Config();
         }
+    }
+    
+    public static void SaveConfig()
+    {
+        var pathToConfig = Path.Join(Application.StartupPath, "Config.json");
 
+        var oldText = File.Exists(pathToConfig) ? File.ReadAllText(pathToConfig) : "";
         var newText = JsonSerializer.Serialize(Config, new JsonSerializerOptions { PropertyNamingPolicy = null, WriteIndented = true });
 
         if (newText != oldText)
