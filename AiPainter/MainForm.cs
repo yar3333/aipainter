@@ -126,7 +126,7 @@ namespace AiPainter
                                         {
                                             await Task.Delay(100);
 
-                                            if (DateTime.Now - start > TimeSpan.FromSeconds(1))
+                                            if (DateTime.Now - start > TimeSpan.FromMilliseconds(500))
                                             {
                                                 File.Delete(rightButtonPressed);
                                                 lock (storedImageList)

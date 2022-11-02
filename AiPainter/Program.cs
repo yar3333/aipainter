@@ -15,16 +15,16 @@ static class Program
     {
         readConfig();
 
-        var stableDiffusionProcess = StableDiffusionProcess.Start();
-        var lamaCleanerProcess = LamaCleanerProcess.Start();
-        var remBgProcess = RemBgProcess.Start();
+        StableDiffusionProcess.Start();
+        LamaCleanerProcess.Start();
+        RemBgProcess.Start();
 
         ApplicationConfiguration.Initialize();
         Application.Run(new MainForm());
 
-        try { remBgProcess?.Kill(true); } catch {}
-        try { lamaCleanerProcess?.Kill(true); } catch {}
-        try { stableDiffusionProcess?.Kill(true); } catch {}
+        RemBgProcess.Stop();
+        LamaCleanerProcess.Stop();
+        StableDiffusionProcess.Stop();
     }
     
     static void readConfig()

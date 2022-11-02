@@ -6,7 +6,7 @@ class Config
 
     public bool UseEmbeddedStableDiffusion { get; set; } = true;
     public string StableDiffusionUrl { get; set; } = "http://127.0.0.1:7860/";
-    //public string InvokeAiOutputFolderPath { get; set; } = "images";
+    public string StableDiffusionCheckpoint { get; set; } = "sd-v1-4.ckpt";
     
     public bool UseEmbeddedLamaCleaner { get; set; } = true;
     public string LamaCleanerUrl { get; set; } = "http://127.0.0.1:9595/";

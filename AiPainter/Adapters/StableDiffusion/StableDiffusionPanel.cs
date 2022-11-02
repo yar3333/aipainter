@@ -13,6 +13,17 @@ namespace AiPainter.Adapters.StableDiffusion
         public StableDiffusionPanel()
         {
             InitializeComponent();
+
+            var items = SdCheckpointsHelper.GetNames().Select(x => new ListItem
+            {
+                Value = x, 
+                Text = x + " (" + Math.Round(SdCheckpointsHelper.GetSize(x) / 1024.0 / 1024 / 1024, 1) + " GB)"
+            }).ToArray();
+            ddCheckpoint.ValueMember = "Value";
+            ddCheckpoint.DisplayMember = "Text";
+            // ReSharper disable once CoVariantArrayConversion
+            ddCheckpoint.Items.AddRange(items);
+            ddCheckpoint.SelectedItem = items.Single(x => x.Value == Program.Config.StableDiffusionCheckpoint);
         }
 
         private void btGenerate_Click(object sender, EventArgs e)
@@ -203,6 +214,23 @@ namespace AiPainter.Adapters.StableDiffusion
             tbNegative.Enabled = !InProcess;
 
             btGenerate.Enabled = isPortOpen;
+
+            ddCheckpoint.Enabled = StableDiffusionProcess.Loading;
+        }
+
+        private void ddCheckpoint_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (((ListItem)ddCheckpoint.SelectedItem).Value == Program.Config.StableDiffusionCheckpoint) return;
+
+            Program.Config.StableDiffusionCheckpoint = ((ListItem)ddCheckpoint.SelectedItem).Value;
+
+            Task.Run(async () =>
+            {
+                StableDiffusionProcess.Stop();
+                while (ProcessHelper.IsPortOpen(Program.Config.StableDiffusionUrl)) await Task.Delay(500);
+                await Task.Delay(500);
+                StableDiffusionProcess.Start();
+            });
         }
     }
 }

@@ -30,6 +30,7 @@
         {
             this.components = new System.ComponentModel.Container();
             this.collapsablePanel = new AiPainter.Controls.CollapsablePanel();
+            this.ddCheckpoint = new System.Windows.Forms.ComboBox();
             this.tbNegative = new System.Windows.Forms.TextBox();
             this.pbIterations = new AiPainter.Controls.CustomProgressBar();
             this.pbSteps = new AiPainter.Controls.CustomProgressBar();
@@ -55,6 +56,7 @@
             // 
             this.collapsablePanel.BackColor = System.Drawing.SystemColors.Control;
             this.collapsablePanel.Caption = "StableDiffusion";
+            this.collapsablePanel.Controls.Add(this.ddCheckpoint);
             this.collapsablePanel.Controls.Add(this.tbNegative);
             this.collapsablePanel.Controls.Add(this.pbIterations);
             this.collapsablePanel.Controls.Add(this.pbSteps);
@@ -72,15 +74,27 @@
             this.collapsablePanel.IsCollapsed = false;
             this.collapsablePanel.Location = new System.Drawing.Point(0, 0);
             this.collapsablePanel.Name = "collapsablePanel";
-            this.collapsablePanel.Size = new System.Drawing.Size(334, 422);
+            this.collapsablePanel.Size = new System.Drawing.Size(334, 427);
             this.collapsablePanel.TabIndex = 4;
+            // 
+            // ddCheckpoint
+            // 
+            this.ddCheckpoint.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.ddCheckpoint.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.ddCheckpoint.FormattingEnabled = true;
+            this.ddCheckpoint.Location = new System.Drawing.Point(2, 29);
+            this.ddCheckpoint.Name = "ddCheckpoint";
+            this.ddCheckpoint.Size = new System.Drawing.Size(328, 23);
+            this.ddCheckpoint.TabIndex = 18;
+            this.ddCheckpoint.SelectedIndexChanged += new System.EventHandler(this.ddCheckpoint_SelectedIndexChanged);
             // 
             // tbNegative
             // 
             this.tbNegative.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.tbNegative.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.tbNegative.Location = new System.Drawing.Point(7, 153);
+            this.tbNegative.Location = new System.Drawing.Point(7, 158);
             this.tbNegative.Multiline = true;
             this.tbNegative.Name = "tbNegative";
             this.tbNegative.PlaceholderText = "Negative (what you don\'t want to see)";
@@ -92,7 +106,7 @@
             this.pbIterations.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.pbIterations.BackColor = System.Drawing.Color.AliceBlue;
             this.pbIterations.CustomText = "";
-            this.pbIterations.Location = new System.Drawing.Point(5, 382);
+            this.pbIterations.Location = new System.Drawing.Point(5, 387);
             this.pbIterations.Name = "pbIterations";
             this.pbIterations.Size = new System.Drawing.Size(324, 23);
             this.pbIterations.TabIndex = 16;
@@ -104,7 +118,7 @@
             this.pbSteps.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.pbSteps.BackColor = System.Drawing.Color.AliceBlue;
             this.pbSteps.CustomText = "";
-            this.pbSteps.Location = new System.Drawing.Point(5, 355);
+            this.pbSteps.Location = new System.Drawing.Point(5, 360);
             this.pbSteps.Name = "pbSteps";
             this.pbSteps.Size = new System.Drawing.Size(324, 23);
             this.pbSteps.TabIndex = 15;
@@ -115,7 +129,7 @@
             // 
             this.cbUseInitImage.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.cbUseInitImage.AutoSize = true;
-            this.cbUseInitImage.Location = new System.Drawing.Point(8, 215);
+            this.cbUseInitImage.Location = new System.Drawing.Point(8, 220);
             this.cbUseInitImage.Name = "cbUseInitImage";
             this.cbUseInitImage.Size = new System.Drawing.Size(186, 19);
             this.cbUseInitImage.TabIndex = 12;
@@ -126,7 +140,7 @@
             // 
             this.btReset.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.btReset.Font = new System.Drawing.Font("Segoe UI", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.btReset.Location = new System.Drawing.Point(240, 310);
+            this.btReset.Location = new System.Drawing.Point(240, 315);
             this.btReset.Name = "btReset";
             this.btReset.Size = new System.Drawing.Size(90, 39);
             this.btReset.TabIndex = 11;
@@ -137,22 +151,24 @@
             // 
             // tbPrompt
             // 
+            this.tbPrompt.AcceptsReturn = true;
             this.tbPrompt.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.tbPrompt.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.tbPrompt.Location = new System.Drawing.Point(3, 29);
+            this.tbPrompt.Location = new System.Drawing.Point(3, 58);
             this.tbPrompt.Multiline = true;
             this.tbPrompt.Name = "tbPrompt";
             this.tbPrompt.PlaceholderText = "Prompt (describe desired picture)";
-            this.tbPrompt.Size = new System.Drawing.Size(327, 118);
+            this.tbPrompt.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+            this.tbPrompt.Size = new System.Drawing.Size(327, 94);
             this.tbPrompt.TabIndex = 0;
             // 
             // numIterations
             // 
             this.numIterations.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.numIterations.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.numIterations.Location = new System.Drawing.Point(87, 244);
+            this.numIterations.Location = new System.Drawing.Point(87, 249);
             this.numIterations.Maximum = new decimal(new int[] {
             10000,
             0,
@@ -177,7 +193,7 @@
             // 
             this.btGenerate.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.btGenerate.Font = new System.Drawing.Font("Segoe UI", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.btGenerate.Location = new System.Drawing.Point(3, 310);
+            this.btGenerate.Location = new System.Drawing.Point(3, 315);
             this.btGenerate.Name = "btGenerate";
             this.btGenerate.Size = new System.Drawing.Size(232, 39);
             this.btGenerate.TabIndex = 8;
@@ -194,7 +210,7 @@
             0,
             0,
             0});
-            this.numSteps.Location = new System.Drawing.Point(267, 244);
+            this.numSteps.Location = new System.Drawing.Point(267, 249);
             this.numSteps.Maximum = new decimal(new int[] {
             200,
             0,
@@ -219,7 +235,7 @@
             // 
             this.tbSeed.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.tbSeed.Font = new System.Drawing.Font("Segoe UI", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.tbSeed.Location = new System.Drawing.Point(197, 277);
+            this.tbSeed.Location = new System.Drawing.Point(197, 282);
             this.tbSeed.Name = "tbSeed";
             this.tbSeed.PlaceholderText = "Seed...";
             this.tbSeed.Size = new System.Drawing.Size(132, 27);
@@ -230,7 +246,7 @@
             // 
             this.label1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(2, 250);
+            this.label1.Location = new System.Drawing.Point(2, 255);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(79, 15);
             this.label1.TabIndex = 2;
@@ -240,7 +256,7 @@
             // 
             this.label2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(197, 250);
+            this.label2.Location = new System.Drawing.Point(197, 255);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(64, 15);
             this.label2.TabIndex = 2;
@@ -257,7 +273,7 @@
             0,
             0,
             65536});
-            this.numCfgScale.Location = new System.Drawing.Point(126, 277);
+            this.numCfgScale.Location = new System.Drawing.Point(126, 282);
             this.numCfgScale.Maximum = new decimal(new int[] {
             50,
             0,
@@ -282,7 +298,7 @@
             // 
             this.label3.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(3, 283);
+            this.label3.Location = new System.Drawing.Point(3, 288);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(117, 15);
             this.label3.TabIndex = 4;
@@ -297,7 +313,7 @@
             this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.Controls.Add(this.collapsablePanel);
             this.Name = "StableDiffusionPanel";
-            this.Size = new System.Drawing.Size(337, 425);
+            this.Size = new System.Drawing.Size(337, 430);
             this.collapsablePanel.ResumeLayout(false);
             this.collapsablePanel.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numIterations)).EndInit();
@@ -325,5 +341,6 @@
         private Controls.CustomProgressBar pbSteps;
         private ToolTip toolTip;
         private TextBox tbNegative;
+        private ComboBox ddCheckpoint;
     }
 }
