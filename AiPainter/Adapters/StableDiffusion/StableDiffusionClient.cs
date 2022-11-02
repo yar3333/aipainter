@@ -26,7 +26,7 @@ static class StableDiffusionClient
                 try
                 {
                     var result = await postAsync<SdGenerationResponse>("sdapi/v1/txt2img", request);
-                    onSuccess(result);
+                    if (!wantToCancel) onSuccess(result);
                 }
                 catch (Exception e)
                 {
@@ -38,22 +38,8 @@ static class StableDiffusionClient
 
             onFinish(i);
         });
-
-        /*Task.Run(async () =>
-        {
-            await Task.Delay(TimeSpan.FromSeconds(3));
-
-            try
-            {
-                var result = await getStringAsync("sdapi/v1/progress");
-                //onProgress(result);
-                int a = 5;
-            }
-            catch (Exception e)
-            {
-                Log.WriteLine(e.ToString());
-            }
-        });*/
+        
+        runProgressUpdateTask(onProgress);
     }
 
     // ReSharper disable once InconsistentNaming
@@ -72,7 +58,7 @@ static class StableDiffusionClient
                 try
                 {
                     var result = await postAsync<SdGenerationResponse>("sdapi/v1/img2img", request);
-                    onSuccess(result);
+                    if (!wantToCancel) onSuccess(result);
                 }
                 catch (Exception e)
                 {
@@ -84,13 +70,41 @@ static class StableDiffusionClient
 
             onFinish(i);
         });
+
+        runProgressUpdateTask(onProgress);
     }
 
-    public static void Cancel()
+    public static async Task Cancel()
     {
         if (!inProcess) return;
         wantToCancel = true;
-        //await getAsync<JsonObject>("sdapi/v1/progress?skip_current_image=true");
+        await postAsync<object>("/sdapi/v1/interrupt", new object());
+    }
+
+    private static void runProgressUpdateTask(Action<SdGenerationProgess> onProgress)
+    {
+        Task.Run(async () =>
+        {
+            await Task.Delay(TimeSpan.FromSeconds(1));
+
+            while (true)
+            {
+                for (var i = 0; i < 3; i++)
+                {
+                    await Task.Delay(TimeSpan.FromSeconds(0.1));
+                    if (!inProcess) return;
+                }
+                
+                try
+                {
+                    onProgress(await getAsync<SdGenerationProgess>("sdapi/v1/progress"));
+                }
+                catch (Exception e)
+                {
+                    Log.WriteLine(e.ToString());
+                }
+            }
+        });
     }
 
     private static async Task<T> postAsync<T>(string url, object request)

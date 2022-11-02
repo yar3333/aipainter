@@ -105,6 +105,6 @@ static class StableDiffusionProcess
         Loading = false;
 
         try { process?.Kill(true); } catch {}
-        try { process.WaitForExit(); } catch {}
+        try { process?.WaitForExit(); } catch {}
     }
 }
