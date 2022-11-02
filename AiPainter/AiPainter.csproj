@@ -81,6 +81,7 @@
 
   <ItemGroup>
     <PackageReference Include="SocketIOClient" Version="3.0.6" />
+    <PackageReference Include="TagLibSharp" Version="2.3.0" />
   </ItemGroup>
 
 </Project>

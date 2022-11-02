@@ -4,5 +4,5 @@
 @set COMMANDLINE_ARGS=
 
 @pushd repo
-@call webui.bat --api
+@call webui.bat --api %*
 @popd

@@ -1,3 +1,7 @@
+using System.Text.Json;
+using System.Text.Json.Nodes;
+using AiPainter.Helpers;
+
 namespace AiPainter;
 
 class Log : IDisposable
@@ -40,9 +44,28 @@ class LoggerHttpClientHandler : HttpClientHandler
     protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
     {
         log.WriteLine("[request] " + request.RequestUri);
+        if (request.Content != null) logBigString(await request.Content.ReadAsStringAsync());
+
         var r = await base.SendAsync(request, cancellationToken);
-        var text = await r.Content.ReadAsStringAsync();
-        log.WriteLine("[response] " + r.StatusCode + " " + r.ReasonPhrase + "\n" + text);
+
+        log.WriteLine("[response] " + r.StatusCode + " " + r.ReasonPhrase);
+        logBigString(await r.Content.ReadAsStringAsync());
+        
         return r;
+    }
+
+    void logBigString(string? text)
+    {
+        if (text == null) return;
+
+        try
+        {
+            var json = JsonSerializer.Deserialize<JsonElement>(text);
+            log.WriteLine(JsonForLogConverter.Serialize(json));
+        }
+        catch
+        {
+            log.WriteLine(text.Length <= 1024 ? text : text[..1024]);
+        }
     }
 }
