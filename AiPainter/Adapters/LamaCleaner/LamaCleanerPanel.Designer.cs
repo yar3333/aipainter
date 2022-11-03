@@ -43,7 +43,7 @@
             this.collapsablePanel.IsCollapsed = false;
             this.collapsablePanel.Location = new System.Drawing.Point(0, 0);
             this.collapsablePanel.Name = "collapsablePanel";
-            this.collapsablePanel.Size = new System.Drawing.Size(289, 77);
+            this.collapsablePanel.Size = new System.Drawing.Size(292, 77);
             this.collapsablePanel.TabIndex = 5;
             // 
             // btInpaint
@@ -53,7 +53,7 @@
             this.btInpaint.Font = new System.Drawing.Font("Segoe UI", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.btInpaint.Location = new System.Drawing.Point(3, 27);
             this.btInpaint.Name = "btInpaint";
-            this.btInpaint.Size = new System.Drawing.Size(283, 39);
+            this.btInpaint.Size = new System.Drawing.Size(286, 39);
             this.btInpaint.TabIndex = 12;
             this.btInpaint.Text = "Clean masked area";
             this.btInpaint.UseVisualStyleBackColor = true;
@@ -63,8 +63,6 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.AutoSize = true;
-            this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.Controls.Add(this.collapsablePanel);
             this.Name = "LamaCleanerPanel";
             this.Size = new System.Drawing.Size(292, 80);

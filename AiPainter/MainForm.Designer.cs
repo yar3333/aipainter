@@ -37,6 +37,8 @@ namespace AiPainter
             this.toolbar = new System.Windows.Forms.ToolStrip();
             this.btClearActiveImage = new System.Windows.Forms.ToolStripButton();
             this.btLoad = new System.Windows.Forms.ToolStripButton();
+            this.btSave = new System.Windows.Forms.ToolStripButton();
+            this.btSaveAs = new System.Windows.Forms.ToolStripButton();
             this.btSavePng = new System.Windows.Forms.ToolStripButton();
             this.btSaveJpeg = new System.Windows.Forms.ToolStripButton();
             this.btCopyToClipboard = new System.Windows.Forms.ToolStripButton();
@@ -53,20 +55,27 @@ namespace AiPainter
             this.btRight = new System.Windows.Forms.ToolStripButton();
             this.btAbout = new System.Windows.Forms.ToolStripButton();
             this.splitContainer = new System.Windows.Forms.SplitContainer();
+            this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.pictureBox = new AiPainter.Controls.SmartPictureBox();
+            this.splitContainer2 = new System.Windows.Forms.SplitContainer();
             this.panel1 = new System.Windows.Forms.Panel();
             this.panRemBg = new AiPainter.Adapters.RemBg.RemBgPanel();
             this.panLamaCleaner = new AiPainter.Adapters.LamaCleaner.LamaCleanerPanel();
             this.panStableDiffusion = new AiPainter.Adapters.StableDiffusion.StableDiffusionPanel();
             this.hPicScroll = new System.Windows.Forms.HScrollBar();
             this.toolTip = new System.Windows.Forms.ToolTip(this.components);
-            this.btSave = new System.Windows.Forms.ToolStripButton();
-            this.btSaveAs = new System.Windows.Forms.ToolStripButton();
             controlsStateUpdater = new System.Windows.Forms.Timer(this.components);
             this.toolbar.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer)).BeginInit();
             this.splitContainer.Panel1.SuspendLayout();
             this.splitContainer.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
+            this.splitContainer1.Panel1.SuspendLayout();
+            this.splitContainer1.Panel2.SuspendLayout();
+            this.splitContainer1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).BeginInit();
+            this.splitContainer2.Panel1.SuspendLayout();
+            this.splitContainer2.SuspendLayout();
             this.panel1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -129,6 +138,26 @@ namespace AiPainter
             this.btLoad.Size = new System.Drawing.Size(38, 37);
             this.btLoad.Text = "Load image";
             this.btLoad.Click += new System.EventHandler(this.btLoad_Click);
+            // 
+            // btSave
+            // 
+            this.btSave.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.btSave.Image = ((System.Drawing.Image)(resources.GetObject("btSave.Image")));
+            this.btSave.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btSave.Name = "btSave";
+            this.btSave.Size = new System.Drawing.Size(38, 37);
+            this.btSave.Text = "Save image (overwrite)";
+            this.btSave.Click += new System.EventHandler(this.btSave_Click);
+            // 
+            // btSaveAs
+            // 
+            this.btSaveAs.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.btSaveAs.Image = ((System.Drawing.Image)(resources.GetObject("btSaveAs.Image")));
+            this.btSaveAs.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btSaveAs.Name = "btSaveAs";
+            this.btSaveAs.Size = new System.Drawing.Size(38, 37);
+            this.btSaveAs.Text = "Save image as...";
+            this.btSaveAs.Click += new System.EventHandler(this.btSaveAs_Click);
             // 
             // btSavePng
             // 
@@ -278,37 +307,63 @@ namespace AiPainter
             // 
             // splitContainer.Panel1
             // 
-            this.splitContainer.Panel1.Controls.Add(this.pictureBox);
-            this.splitContainer.Panel1.Controls.Add(this.panel1);
+            this.splitContainer.Panel1.Controls.Add(this.splitContainer1);
             this.splitContainer.Size = new System.Drawing.Size(924, 667);
             this.splitContainer.SplitterDistance = 523;
             this.splitContainer.TabIndex = 2;
             this.splitContainer.SplitterMoved += new System.Windows.Forms.SplitterEventHandler(this.splitContainer_SplitterMoved);
             // 
+            // splitContainer1
+            // 
+            this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.splitContainer1.Location = new System.Drawing.Point(0, 0);
+            this.splitContainer1.Name = "splitContainer1";
+            // 
+            // splitContainer1.Panel1
+            // 
+            this.splitContainer1.Panel1.Controls.Add(this.pictureBox);
+            // 
+            // splitContainer1.Panel2
+            // 
+            this.splitContainer1.Panel2.Controls.Add(this.splitContainer2);
+            this.splitContainer1.Size = new System.Drawing.Size(924, 523);
+            this.splitContainer1.SplitterDistance = 308;
+            this.splitContainer1.TabIndex = 4;
+            // 
             // pictureBox
             // 
-            this.pictureBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
             this.pictureBox.BackColor = System.Drawing.SystemColors.Window;
+            this.pictureBox.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pictureBox.Image = null;
             this.pictureBox.Location = new System.Drawing.Point(0, 0);
             this.pictureBox.Name = "pictureBox";
-            this.pictureBox.Size = new System.Drawing.Size(588, 523);
+            this.pictureBox.Size = new System.Drawing.Size(308, 523);
             this.pictureBox.TabIndex = 3;
+            // 
+            // splitContainer2
+            // 
+            this.splitContainer2.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.splitContainer2.Location = new System.Drawing.Point(0, 0);
+            this.splitContainer2.Name = "splitContainer2";
+            // 
+            // splitContainer2.Panel1
+            // 
+            this.splitContainer2.Panel1.Controls.Add(this.panel1);
+            this.splitContainer2.Size = new System.Drawing.Size(612, 523);
+            this.splitContainer2.SplitterDistance = 404;
+            this.splitContainer2.TabIndex = 0;
             // 
             // panel1
             // 
-            this.panel1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Right)));
             this.panel1.AutoScroll = true;
             this.panel1.BackColor = System.Drawing.SystemColors.ControlDarkDark;
             this.panel1.Controls.Add(this.panRemBg);
             this.panel1.Controls.Add(this.panLamaCleaner);
             this.panel1.Controls.Add(this.panStableDiffusion);
-            this.panel1.Location = new System.Drawing.Point(590, 0);
+            this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panel1.Location = new System.Drawing.Point(0, 0);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(334, 523);
+            this.panel1.Size = new System.Drawing.Size(404, 523);
             this.panel1.TabIndex = 2;
             // 
             // panRemBg
@@ -316,9 +371,9 @@ namespace AiPainter
             this.panRemBg.AutoSize = true;
             this.panRemBg.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.panRemBg.Dock = System.Windows.Forms.DockStyle.Top;
-            this.panRemBg.Location = new System.Drawing.Point(0, 432);
+            this.panRemBg.Location = new System.Drawing.Point(0, 510);
             this.panRemBg.Name = "panRemBg";
-            this.panRemBg.Size = new System.Drawing.Size(334, 80);
+            this.panRemBg.Size = new System.Drawing.Size(387, 80);
             this.panRemBg.TabIndex = 8;
             // 
             // panLamaCleaner
@@ -326,19 +381,19 @@ namespace AiPainter
             this.panLamaCleaner.AutoSize = true;
             this.panLamaCleaner.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.panLamaCleaner.Dock = System.Windows.Forms.DockStyle.Top;
-            this.panLamaCleaner.Location = new System.Drawing.Point(0, 352);
+            this.panLamaCleaner.Location = new System.Drawing.Point(0, 430);
             this.panLamaCleaner.Name = "panLamaCleaner";
-            this.panLamaCleaner.Size = new System.Drawing.Size(334, 80);
+            this.panLamaCleaner.Size = new System.Drawing.Size(387, 80);
             this.panLamaCleaner.TabIndex = 7;
             // 
-            // panInvokeAi
+            // panStableDiffusion
             // 
             this.panStableDiffusion.AutoSize = true;
             this.panStableDiffusion.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.panStableDiffusion.Dock = System.Windows.Forms.DockStyle.Top;
             this.panStableDiffusion.Location = new System.Drawing.Point(0, 0);
             this.panStableDiffusion.Name = "panStableDiffusion";
-            this.panStableDiffusion.Size = new System.Drawing.Size(334, 352);
+            this.panStableDiffusion.Size = new System.Drawing.Size(387, 430);
             this.panStableDiffusion.TabIndex = 6;
             // 
             // hPicScroll
@@ -348,26 +403,6 @@ namespace AiPainter
             this.hPicScroll.Name = "hPicScroll";
             this.hPicScroll.Size = new System.Drawing.Size(924, 30);
             this.hPicScroll.TabIndex = 0;
-            // 
-            // btSave
-            // 
-            this.btSave.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.btSave.Image = ((System.Drawing.Image)(resources.GetObject("btSave.Image")));
-            this.btSave.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.btSave.Name = "btSave";
-            this.btSave.Size = new System.Drawing.Size(38, 37);
-            this.btSave.Text = "Save image (overwrite)";
-            this.btSave.Click += new System.EventHandler(this.btSave_Click);
-            // 
-            // btSaveAs
-            // 
-            this.btSaveAs.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.btSaveAs.Image = ((System.Drawing.Image)(resources.GetObject("btSaveAs.Image")));
-            this.btSaveAs.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.btSaveAs.Name = "btSaveAs";
-            this.btSaveAs.Size = new System.Drawing.Size(38, 37);
-            this.btSaveAs.Text = "Save image as...";
-            this.btSaveAs.Click += new System.EventHandler(this.btSaveAs_Click);
             // 
             // MainForm
             // 
@@ -390,6 +425,13 @@ namespace AiPainter
             this.splitContainer.Panel1.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer)).EndInit();
             this.splitContainer.ResumeLayout(false);
+            this.splitContainer1.Panel1.ResumeLayout(false);
+            this.splitContainer1.Panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
+            this.splitContainer1.ResumeLayout(false);
+            this.splitContainer2.Panel1.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).EndInit();
+            this.splitContainer2.ResumeLayout(false);
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
             this.ResumeLayout(false);
@@ -427,5 +469,7 @@ namespace AiPainter
         private ToolStripSeparator toolStripSeparator3;
         private ToolStripButton btSave;
         private ToolStripButton btSaveAs;
+        private SplitContainer splitContainer1;
+        private SplitContainer splitContainer2;
     }
 }

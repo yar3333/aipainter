@@ -43,7 +43,7 @@
             this.collapsablePanel.IsCollapsed = false;
             this.collapsablePanel.Location = new System.Drawing.Point(0, 0);
             this.collapsablePanel.Name = "collapsablePanel";
-            this.collapsablePanel.Size = new System.Drawing.Size(261, 77);
+            this.collapsablePanel.Size = new System.Drawing.Size(292, 77);
             this.collapsablePanel.TabIndex = 6;
             // 
             // btRemoveBackground
@@ -53,7 +53,7 @@
             this.btRemoveBackground.Font = new System.Drawing.Font("Segoe UI", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.btRemoveBackground.Location = new System.Drawing.Point(3, 26);
             this.btRemoveBackground.Name = "btRemoveBackground";
-            this.btRemoveBackground.Size = new System.Drawing.Size(255, 39);
+            this.btRemoveBackground.Size = new System.Drawing.Size(286, 39);
             this.btRemoveBackground.TabIndex = 13;
             this.btRemoveBackground.Text = "Remove background";
             this.btRemoveBackground.UseVisualStyleBackColor = true;
@@ -63,11 +63,9 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.AutoSize = true;
-            this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.Controls.Add(this.collapsablePanel);
             this.Name = "RemBgPanel";
-            this.Size = new System.Drawing.Size(261, 80);
+            this.Size = new System.Drawing.Size(292, 80);
             this.collapsablePanel.ResumeLayout(false);
             this.ResumeLayout(false);
 

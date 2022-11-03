@@ -19,8 +19,6 @@ namespace AiPainter.Controls
         
         private const int PEN_SIZE = 48;
         
-        private static readonly float[] zoomLevels = Enumerable.Range(-16, 32).Where(x => x != -1 && x != 0).Select(x => x < 0 ? -1.0f / x : x).ToArray();
-        
         private static readonly Primitive UNDO_DELIMITER = new() { Kind = PrimitiveKind.UndoDelimiter };
 
         private List<Primitive> primitives = new();
@@ -34,8 +32,7 @@ namespace AiPainter.Controls
 
         private Point? cursorPt;
         
-        private int zoomIndex = zoomLevels.Length >> 1;
-        private float zoom => zoomLevels[zoomIndex];
+        private decimal zoom = 1;
 
         private readonly HatchBrush whiteGrayCheckesBrush = new(HatchStyle.LargeCheckerBoard, Color.DarkGray, Color.White);
         private readonly Pen activeBoxPen = new(Color.Red, 3);
@@ -77,7 +74,7 @@ namespace AiPainter.Controls
             {
                 var m = new Matrix(Matrix3x2.Identity);
 
-                m.Scale(zoom, zoom, MatrixOrder.Append);
+                m.Scale((float)zoom, (float)zoom, MatrixOrder.Append);
 
                 m.Translate
                 (
@@ -176,7 +173,7 @@ namespace AiPainter.Controls
         {
             ActiveBox.X = 0;
             ActiveBox.Y = 0;
-            zoomIndex = Array.IndexOf(zoomLevels, 1.0f);
+            zoom = 1;
             Invalidate();
         }
 
@@ -219,7 +216,7 @@ namespace AiPainter.Controls
                 {
                     var center = new Point(ClientSize / 2);
                     var oldCenter = getTransformedMousePos(center);
-                    zoomIndex = Math.Clamp(zoomIndex + Math.Sign(e.Delta), 0, zoomLevels.Length - 1);
+                    zoom = e.Delta > 0 ? zoom * 1.1m : zoom / 1.1m;
                     var newCenter = getTransformedMousePos(center);
                     globalX += (int)Math.Round((newCenter.X - oldCenter.X) * zoom);
                     globalY += (int)Math.Round((newCenter.Y - oldCenter.Y) * zoom);
@@ -269,14 +266,14 @@ namespace AiPainter.Controls
                 e.Graphics.DrawImage(Image, 0, 0);
             }
 
-            activeBoxPen.Width = 3 / zoom;
+            activeBoxPen.Width = 3 / (float)zoom;
             e.Graphics.DrawRectangle
             (
                 activeBoxPen,
-                ActiveBox.X - 2 / zoom, 
-                ActiveBox.Y - 2 / zoom, 
-                ActiveBox.Width + 3 / zoom, 
-                ActiveBox.Height + 3 / zoom
+                ActiveBox.X - 2 / (float)zoom, 
+                ActiveBox.Y - 2 / (float)zoom, 
+                ActiveBox.Width + 3 / (float)zoom, 
+                ActiveBox.Height + 3 / (float)zoom
             );
 
             MaskHelper.DrawPrimitives(0, 0, e.Graphics, primBrush, primitives);
