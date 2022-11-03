@@ -17,29 +17,29 @@ namespace AiPainter.Adapters.StableDiffusion
 
         private void collapsablePanel_Load(object sender, EventArgs e)
         {
-            var items = SdCheckpointsHelper.GetNames().Select(x => new ListItem
+            var checkpoints = SdCheckpointsHelper.GetNames().Select(x => new ListItem
             {
                 Value = x, 
                 Text = x + " (" + Math.Round(SdCheckpointsHelper.GetSize(x) / 1024.0 / 1024 / 1024, 1) + " GB)"
             }).ToArray();
-            
             ddCheckpoint.ValueMember = "Value";
             ddCheckpoint.DisplayMember = "Text";
-            
             ddCheckpoint.Items.Clear();
             // ReSharper disable once CoVariantArrayConversion
-            ddCheckpoint.Items.AddRange(items);
-            
-            ddCheckpoint.SelectedItem = items.Single(x => x.Value == Program.Config.StableDiffusionCheckpoint);
+            ddCheckpoint.Items.AddRange(checkpoints);
+            ddCheckpoint.SelectedItem = checkpoints.Single(x => x.Value == Program.Config.StableDiffusionCheckpoint);
+
+            ddInpaintingFill.Items.Clear();
+            // ReSharper disable once CoVariantArrayConversion
+            ddInpaintingFill.Items.AddRange(Enum.GetNames<SdInpaintingFill>());
+            ddInpaintingFill.SelectedIndex = 0;
         }
 
         private void btGenerate_Click(object sender, EventArgs e)
         {
             if (InProcess)
             {
-                #pragma warning disable CS4014
-                StableDiffusionClient.Cancel();
-                #pragma warning restore CS4014
+                _ = StableDiffusionClient.Cancel();
                 InProcess = false;
                 return;
             }
@@ -114,7 +114,6 @@ namespace AiPainter.Adapters.StableDiffusion
                                ? -1
                                : long.Parse(tbSeed.Text.Trim()),
                     steps = (int)numSteps.Value,
-                    //strength = numImg2img.Value,
                 };
 
                 StableDiffusionClient.txt2img
@@ -137,9 +136,10 @@ namespace AiPainter.Adapters.StableDiffusion
                                ? -1
                                : long.Parse(tbSeed.Text.Trim()),
                     steps = (int)numSteps.Value,
-                    //strength = numImg2img.Value,
                     init_images = new[] { BitmapTools.GetBase64String(initImage) },
                     mask = maskImage != null ? BitmapTools.GetBase64String(maskImage) : null,
+
+                    inpainting_fill = Enum.Parse<SdInpaintingFill>((string)ddInpaintingFill.SelectedItem),
                 };
 
                 StableDiffusionClient.img2img
@@ -225,6 +225,8 @@ namespace AiPainter.Adapters.StableDiffusion
             btGenerate.Enabled = isPortOpen;
 
             ddCheckpoint.Enabled = StableDiffusionProcess.Loading;
+
+            ddInpaintingFill.Enabled = pb.Image != null && pb.HasMask && cbUseInitImage.Checked;
         }
 
         private void ddCheckpoint_SelectedIndexChanged(object sender, EventArgs e)

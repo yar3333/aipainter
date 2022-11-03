@@ -74,7 +74,7 @@ class SdInpaintRequest : SdBaseGenerationRequest
     
     // https://github.com/AUTOMATIC1111/stable-diffusion-webui/wiki/Features#masked-content
     public SdInpaintingFill inpainting_fill { get; set; }
-    public bool inpaint_full_res { get; set; } = true;
+    public bool inpaint_full_res { get; set; }
     public int inpaint_full_res_padding { get; set; }
     public int inpainting_mask_invert { get; set; }
     

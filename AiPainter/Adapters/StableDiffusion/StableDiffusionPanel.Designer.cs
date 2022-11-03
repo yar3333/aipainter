@@ -30,6 +30,7 @@
         {
             this.components = new System.ComponentModel.Container();
             this.collapsablePanel = new AiPainter.Controls.CollapsablePanel();
+            this.ddInpaintingFill = new System.Windows.Forms.ComboBox();
             this.ddCheckpoint = new System.Windows.Forms.ComboBox();
             this.tbNegative = new System.Windows.Forms.TextBox();
             this.pbIterations = new AiPainter.Controls.CustomProgressBar();
@@ -56,6 +57,7 @@
             // 
             this.collapsablePanel.BackColor = System.Drawing.SystemColors.Control;
             this.collapsablePanel.Caption = "StableDiffusion";
+            this.collapsablePanel.Controls.Add(this.ddInpaintingFill);
             this.collapsablePanel.Controls.Add(this.ddCheckpoint);
             this.collapsablePanel.Controls.Add(this.tbNegative);
             this.collapsablePanel.Controls.Add(this.pbIterations);
@@ -77,6 +79,18 @@
             this.collapsablePanel.Size = new System.Drawing.Size(334, 427);
             this.collapsablePanel.TabIndex = 4;
             this.collapsablePanel.Load += new System.EventHandler(this.collapsablePanel_Load);
+            // 
+            // ddInpaintingFill
+            // 
+            this.ddInpaintingFill.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.ddInpaintingFill.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.ddInpaintingFill.FormattingEnabled = true;
+            this.ddInpaintingFill.Location = new System.Drawing.Point(197, 218);
+            this.ddInpaintingFill.Name = "ddInpaintingFill";
+            this.ddInpaintingFill.Size = new System.Drawing.Size(132, 23);
+            this.ddInpaintingFill.TabIndex = 19;
+            this.toolTip.SetToolTip(this.ddInpaintingFill, "Inpaint type (preparing masked area)");
             // 
             // ddCheckpoint
             // 
@@ -343,5 +357,6 @@
         private ToolTip toolTip;
         private TextBox tbNegative;
         private ComboBox ddCheckpoint;
+        private ComboBox ddInpaintingFill;
     }
 }

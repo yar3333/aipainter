@@ -19,7 +19,7 @@ namespace AiPainter.Controls
         
         private const int PEN_SIZE = 48;
         
-        private static readonly float[] zoomLevels = { 1.0f/16, 1.0f/8, 1.0f/4, 1.0f/2, 1, 2, 4, 8, 16 };
+        private static readonly float[] zoomLevels = Enumerable.Range(-16, 32).Where(x => x != -1 && x != 0).Select(x => x < 0 ? -1.0f / x : x).ToArray();
         
         private static readonly Primitive UNDO_DELIMITER = new() { Kind = PrimitiveKind.UndoDelimiter };
 
@@ -34,7 +34,7 @@ namespace AiPainter.Controls
 
         private Point? cursorPt;
         
-        private int zoomIndex = 4;
+        private int zoomIndex = zoomLevels.Length >> 1;
         private float zoom => zoomLevels[zoomIndex];
 
         private readonly HatchBrush whiteGrayCheckesBrush = new(HatchStyle.LargeCheckerBoard, Color.DarkGray, Color.White);
