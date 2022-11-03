@@ -17,17 +17,23 @@ namespace AiPainter.Adapters.StableDiffusion
 
         private void collapsablePanel_Load(object sender, EventArgs e)
         {
-            var checkpoints = SdCheckpointsHelper.GetNames().Select(x => new ListItem
+            var checkpoints = SdCheckpointsHelper.GetNames();
+            if (!checkpoints.Contains(Program.Config.StableDiffusionCheckpoint))
+            {
+                checkpoints = new[] { Program.Config.StableDiffusionCheckpoint }.Concat(checkpoints).ToArray();
+            }
+            var checkpointItems = checkpoints.Select(x => new ListItem
             {
                 Value = x, 
                 Text = x + " (" + Math.Round(SdCheckpointsHelper.GetSize(x) / 1024.0 / 1024 / 1024, 1) + " GB)"
             }).ToArray();
+            
             ddCheckpoint.ValueMember = "Value";
             ddCheckpoint.DisplayMember = "Text";
             ddCheckpoint.Items.Clear();
             // ReSharper disable once CoVariantArrayConversion
-            ddCheckpoint.Items.AddRange(checkpoints);
-            ddCheckpoint.SelectedItem = checkpoints.Single(x => x.Value == Program.Config.StableDiffusionCheckpoint);
+            ddCheckpoint.Items.AddRange(checkpointItems);
+            ddCheckpoint.SelectedItem = checkpointItems.Single(x => x.Value == Program.Config.StableDiffusionCheckpoint);
 
             ddInpaintingFill.Items.Clear();
             // ReSharper disable once CoVariantArrayConversion

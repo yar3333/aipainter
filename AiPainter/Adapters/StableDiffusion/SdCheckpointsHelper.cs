@@ -15,7 +15,8 @@ static class SdCheckpointsHelper
 
     public static long GetSize(string name)
     {
-        return new FileInfo(GetPath(name)).Length;
+        var path = GetPath(name);
+        return File.Exists(path) ? new FileInfo(path).Length : 0;
     }
 
     public static string GetPath(string name)
