@@ -20,7 +20,7 @@ class StoredImageItem
                 using var src = (Bitmap)Image.FromFile(FilePath);
                 if (src == null || src.Width == 0 || src.Height == 0) throw new Exception();
                 changeTime = File.GetLastWriteTime(FilePath);
-                return bitmap = BitmapTools.Clone(src);
+                return bitmap = BitmapTools.GetShrinked(src, 256, 256);
             }
             catch
             {

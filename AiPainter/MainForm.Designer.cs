@@ -329,6 +329,7 @@ namespace AiPainter
             this.splitContainer1.Size = new System.Drawing.Size(924, 523);
             this.splitContainer1.SplitterDistance = 308;
             this.splitContainer1.TabIndex = 4;
+            this.splitContainer1.SplitterMoved += new System.Windows.Forms.SplitterEventHandler(this.splitContainer1_SplitterMoved);
             // 
             // pictureBox
             // 

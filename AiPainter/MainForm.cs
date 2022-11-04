@@ -1,5 +1,6 @@
 using System.Drawing.Imaging;
 using System.Text.RegularExpressions;
+using AiPainter.Controls;
 using AiPainter.Helpers;
 
 #pragma warning disable CS8602
@@ -14,8 +15,6 @@ namespace AiPainter
 
         private static readonly StoredImageList storedImageList = new();
         
-        private string? rightButtonPressed;
-
         private bool stableDiffusionIsPortOpen;
         private bool lamaCleanerIsPortOpen;
         private bool remBgIsPortOpen;
@@ -94,71 +93,38 @@ namespace AiPainter
                 var j = hPicScrollValue ?? hPicScroll.Value;
                 while (x < splitContainer.Panel2.ClientSize.Width && j < storedImageList.Count)
                 {
-                    var pb = (PictureBox?)splitContainer.Panel2.Controls.Find("pic" + n, false).FirstOrDefault();
+                    var pb = (SmartImagePreview?)splitContainer.Panel2.Controls.Find("pic" + n, false).FirstOrDefault();
                     if (pb == null)
                     {
-                        pb = new PictureBox();
+                        pb = new SmartImagePreview();
                         pb.Name = "pic" + n;
-                        pb.SizeMode = PictureBoxSizeMode.Zoom;
-                        pb.Cursor = Cursors.UpArrow;
                         pb.Parent = splitContainer.Panel2;
 
-                        pb.MouseDown += (_, e) =>
+                        pb.OnImageClick = () =>
                         {
-                            switch (e.Button)
-                            {
-                                case MouseButtons.Left:
-                                    filePath = (string)pb.Tag;
-                                    pictureBox.Image = BitmapTools.Clone((Bitmap)pb.Image);
-                                    pictureBox.ResetMask();
-                                    pictureBox.ResetView();
-                                    break;
-
-                                case MouseButtons.Right:
-                                    rightButtonPressed = (string)pb.Tag;
-                                    pb.Capture = true;
-
-                                    Task.Run(async () =>
-                                    {
-                                        var start = DateTime.Now;
-
-                                        while (rightButtonPressed != null)
-                                        {
-                                            await Task.Delay(100);
-
-                                            if (DateTime.Now - start > TimeSpan.FromMilliseconds(500))
-                                            {
-                                                File.Delete(rightButtonPressed);
-                                                lock (storedImageList)
-                                                {
-                                                    storedImageList.Remove(rightButtonPressed);
-                                                }
-                                                Invoke(() => updateImages(null));
-                                                break;
-                                            }
-                                        }
-                                    });
-                                    break;
-                            }
+                            filePath = pb.FilePath;
+                            pictureBox.Image = BitmapTools.Load(pb.FilePath);
+                            pictureBox.ResetMask();
+                            pictureBox.ResetView();
                         };
 
-                        pb.MouseUp += (_, e) =>
+                        pb.OnImageRemove = () =>
                         {
-                            if (e.Button == MouseButtons.Right)
+                            lock (storedImageList)
                             {
-                                rightButtonPressed = null;
-                                pb.Capture = false;
+                                File.Delete(pb.FilePath!);
+                                storedImageList.Remove(pb.FilePath);
                             }
+                            updateImages(null);
                         };
                     }
 
-                    pb.Image = storedImageList.GetAt(j).Bitmap;
+                    pb.Image = storedImageList.GetAt(j).Bitmap!;
                     pb.Location = new Point(x, 0);
                     pb.Size = new Size(sz, sz);
-                    pb.Tag = storedImageList.GetAt(j).FilePath;
+                    pb.FilePath = storedImageList.GetAt(j).FilePath;
                     pb.Visible = true;
-                    pb.Text = storedImageList.GetAt(j).FilePath;
-                    toolTip.SetToolTip(pb, Path.GetFileName(pb.Text) + " (" + Path.GetDirectoryName(pb.Text) + ")\n\nHold right mouse button to remove file from disk.");
+                    toolTip.SetToolTip(pb, Path.GetFileName(pb.FilePath) + " (" + Path.GetDirectoryName(pb.FilePath) + ")\n\nHold right mouse button to remove file from disk.");
 
                     x += sz + 10;
                     j++;
@@ -168,7 +134,7 @@ namespace AiPainter
 
             while (x < splitContainer.Panel2.ClientSize.Width)
             {
-                var pb = (PictureBox?)splitContainer.Panel2.Controls.Find("pic" + n, false).FirstOrDefault();
+                var pb = (SmartImagePreview?)splitContainer.Panel2.Controls.Find("pic" + n, false).FirstOrDefault();
                 if (pb != null) pb.Visible = false;
                 x += sz + 10;
                 n++;
@@ -250,7 +216,13 @@ namespace AiPainter
 
         private void splitContainer_SplitterMoved(object sender, SplitterEventArgs e)
         {
+            pictureBox.Refresh();
             updateImages(null);
+        }
+
+        private void splitContainer1_SplitterMoved(object sender, SplitterEventArgs e)
+        {
+            pictureBox.Refresh();
         }
 
         private void btClearActiveImage_Click(object sender, EventArgs e)
