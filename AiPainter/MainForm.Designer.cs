@@ -64,6 +64,8 @@ namespace AiPainter
             this.panStableDiffusion = new AiPainter.Adapters.StableDiffusion.StableDiffusionPanel();
             this.hPicScroll = new System.Windows.Forms.HScrollBar();
             this.toolTip = new System.Windows.Forms.ToolTip(this.components);
+            this.panGenerationList = new AiPainter.Controls.GenerationList();
+            this.updateImageListWorker = new System.ComponentModel.BackgroundWorker();
             controlsStateUpdater = new System.Windows.Forms.Timer(this.components);
             this.toolbar.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer)).BeginInit();
@@ -75,6 +77,7 @@ namespace AiPainter
             this.splitContainer1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).BeginInit();
             this.splitContainer2.Panel1.SuspendLayout();
+            this.splitContainer2.Panel2.SuspendLayout();
             this.splitContainer2.SuspendLayout();
             this.panel1.SuspendLayout();
             this.SuspendLayout();
@@ -350,6 +353,10 @@ namespace AiPainter
             // splitContainer2.Panel1
             // 
             this.splitContainer2.Panel1.Controls.Add(this.panel1);
+            // 
+            // splitContainer2.Panel2
+            // 
+            this.splitContainer2.Panel2.Controls.Add(this.panGenerationList);
             this.splitContainer2.Size = new System.Drawing.Size(612, 523);
             this.splitContainer2.SplitterDistance = 404;
             this.splitContainer2.TabIndex = 0;
@@ -405,6 +412,18 @@ namespace AiPainter
             this.hPicScroll.Size = new System.Drawing.Size(924, 30);
             this.hPicScroll.TabIndex = 0;
             // 
+            // panGenerationList
+            // 
+            this.panGenerationList.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panGenerationList.Location = new System.Drawing.Point(0, 0);
+            this.panGenerationList.Name = "panGenerationList";
+            this.panGenerationList.Size = new System.Drawing.Size(204, 523);
+            this.panGenerationList.TabIndex = 0;
+            // 
+            // updateImageListWorker
+            // 
+            this.updateImageListWorker.DoWork += new System.ComponentModel.DoWorkEventHandler(this.updateImageListWorker_DoWork);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
@@ -431,6 +450,7 @@ namespace AiPainter
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
             this.splitContainer1.ResumeLayout(false);
             this.splitContainer2.Panel1.ResumeLayout(false);
+            this.splitContainer2.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).EndInit();
             this.splitContainer2.ResumeLayout(false);
             this.panel1.ResumeLayout(false);
@@ -472,5 +492,7 @@ namespace AiPainter
         private ToolStripButton btSaveAs;
         private SplitContainer splitContainer1;
         private SplitContainer splitContainer2;
+        private GenerationList panGenerationList;
+        private System.ComponentModel.BackgroundWorker updateImageListWorker;
     }
 }

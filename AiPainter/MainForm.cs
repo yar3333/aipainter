@@ -24,6 +24,11 @@ namespace AiPainter
             InitializeComponent();
 
             checkPortsWorker.RunWorkerAsync();
+
+            panStableDiffusion.OnGenerate = () =>
+            {
+                panGenerationList.AddGeneration(panStableDiffusion, pictureBox);
+            };
         }
 
         private void MainForm_Load(object sender, EventArgs e)
@@ -38,36 +43,6 @@ namespace AiPainter
                 updateImages(null);
             };
 
-            Task.Run(async () =>
-            {
-                while (Visible)
-                {
-                    var changesDetected = false;
-                    try
-                    {
-                        lock (storedImageList)
-                        {
-                            changesDetected = storedImageList.Update();
-                        }
-                    }
-                    catch (Exception ee)
-                    {
-                        Program.Log.WriteLine(ee.ToString());
-                        await Task.Delay(1000);
-                    }
-                    
-                    if (changesDetected)
-                    {
-                        Invoke(() =>
-                        {
-                            updateImages(null);
-                        });
-                    }
-
-                    for (var i = 0; i < 10 && Visible; i++) await Task.Delay(100);
-                }
-            });
-
             var args = Environment.GetCommandLineArgs();
             if (args.Length == 2)
             {
@@ -76,6 +51,36 @@ namespace AiPainter
                     filePath = args[1];
                     pictureBox.Image = BitmapTools.Load(filePath);
                 }
+            }
+        }
+
+        private void updateImageListWorker_DoWork(object sender, System.ComponentModel.DoWorkEventArgs e)
+        {
+            while (!updateImageListWorker.CancellationPending)
+            {
+                var changesDetected = false;
+                try
+                {
+                    lock (storedImageList)
+                    {
+                        changesDetected = storedImageList.Update();
+                    }
+                }
+                catch (Exception ee)
+                {
+                    Program.Log.WriteLine(ee.ToString());
+                    Thread.Sleep(1000);
+                }
+                
+                if (changesDetected)
+                {
+                    Invoke(() =>
+                    {
+                        updateImages(null);
+                    });
+                }
+
+                Thread.Sleep(1000);
             }
         }
         
@@ -344,7 +349,7 @@ namespace AiPainter
 
         private void checkPortsWorker_DoWork(object sender, System.ComponentModel.DoWorkEventArgs e)
         {
-            while (true)
+            while (!checkPortsWorker.CancellationPending)
             {
                 stableDiffusionIsPortOpen = ProcessHelper.IsPortOpen(Program.Config.StableDiffusionUrl);
                 lamaCleanerIsPortOpen = ProcessHelper.IsPortOpen(Program.Config.LamaCleanerUrl);

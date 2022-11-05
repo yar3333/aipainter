@@ -344,22 +344,22 @@
         #endregion
 
         private Controls.CollapsablePanel collapsablePanel;
-        private CheckBox cbUseInitImage;
+        public CheckBox cbUseInitImage;
         private Button btReset;
-        private TextBox tbPrompt;
-        private NumericUpDown numIterations;
+        public TextBox tbPrompt;
+        public NumericUpDown numIterations;
         private Button btGenerate;
-        private NumericUpDown numSteps;
-        private TextBox tbSeed;
+        public NumericUpDown numSteps;
+        public TextBox tbSeed;
         private Label label1;
         private Label label2;
-        private NumericUpDown numCfgScale;
+        public NumericUpDown numCfgScale;
         private Label label3;
         private Controls.CustomProgressBar pbIterations;
         private Controls.CustomProgressBar pbSteps;
         private ToolTip toolTip;
-        private TextBox tbNegative;
+        public TextBox tbNegative;
         private ComboBox ddCheckpoint;
-        private ComboBox ddInpaintingFill;
+        public ComboBox ddInpaintingFill;
     }
 }

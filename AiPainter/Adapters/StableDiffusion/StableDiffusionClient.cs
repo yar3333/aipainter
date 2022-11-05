@@ -11,74 +11,62 @@ static class StableDiffusionClient
     private static bool wantToCancel;
 
     // ReSharper disable once InconsistentNaming
-    public static void txt2img(SdGenerationRequest request, Action<SdGenerationProgess> onProgress, Action<SdGenerationResponse> onSuccess, Action<int> onFinish)
+    public static void txt2img(SdGenerationRequest request, Action<SdGenerationProgess> onProgress, Action<SdGenerationResponse> onSuccess)
     {
         request = JsonSerializer.Deserialize<SdGenerationRequest>(JsonSerializer.Serialize(request))!;
+        request.n_iter = 1;
 
+        inProcess = true;
         Task.Run(async () =>
         {
-            var count = request.n_iter;
-            request.n_iter = 1;
 
-            inProcess = true;
-            var i = 0; for (; i < count && !wantToCancel; i++)
+            try
             {
-                try
-                {
-                    var result = await postAsync<SdGenerationResponse>("sdapi/v1/txt2img", request);
-                    if (!wantToCancel) onSuccess(result);
-                }
-                catch (Exception e)
-                {
-                    Log.WriteLine(e.ToString());
-                }
+                var result = await postAsync<SdGenerationResponse>("sdapi/v1/txt2img", request);
+                if (!wantToCancel) onSuccess(result);
+            }
+            catch (Exception e)
+            {
+                Log.WriteLine(e.ToString());
             }
             inProcess = false;
             wantToCancel = false;
-
-            onFinish(i);
         });
         
         runProgressUpdateTask(onProgress);
     }
 
     // ReSharper disable once InconsistentNaming
-    public static void img2img(SdInpaintRequest request, Action<SdGenerationProgess> onProgress, Action<SdGenerationResponse> onSuccess, Action<int> onFinish)
+    public static void img2img(SdInpaintRequest request, Action<SdGenerationProgess> onProgress, Action<SdGenerationResponse> onSuccess)
     {
         request = JsonSerializer.Deserialize<SdInpaintRequest>(JsonSerializer.Serialize(request))!;
+        request.n_iter = 1;
 
+        inProcess = true;
         Task.Run(async () =>
         {
-            var count = request.n_iter;
-            request.n_iter = 1;
-
-            inProcess = true;
-            var i = 0; for (; i < count && !wantToCancel; i++)
+            try
             {
-                try
-                {
-                    var result = await postAsync<SdGenerationResponse>("sdapi/v1/img2img", request);
-                    if (!wantToCancel) onSuccess(result);
-                }
-                catch (Exception e)
-                {
-                    Log.WriteLine(e.ToString());
-                }
+                var result = await postAsync<SdGenerationResponse>("sdapi/v1/img2img", request);
+                if (!wantToCancel) onSuccess(result);
+            }
+            catch (Exception e)
+            {
+                Log.WriteLine(e.ToString());
             }
             inProcess = false;
             wantToCancel = false;
-
-            onFinish(i);
         });
 
         runProgressUpdateTask(onProgress);
     }
 
-    public static async Task Cancel()
+    public static void Cancel()
     {
         if (!inProcess) return;
         wantToCancel = true;
-        await postAsync<object>("/sdapi/v1/interrupt", new object());
+        try { postAsync<object>("/sdapi/v1/interrupt", new object()).Wait(); }
+        catch {}
     }
 
     private static void runProgressUpdateTask(Action<SdGenerationProgess> onProgress)
@@ -87,14 +75,8 @@ static class StableDiffusionClient
         {
             await Task.Delay(TimeSpan.FromSeconds(1));
 
-            while (true)
+            while (inProcess)
             {
-                for (var i = 0; i < 3; i++)
-                {
-                    await Task.Delay(TimeSpan.FromSeconds(0.1));
-                    if (!inProcess) return;
-                }
-                
                 try
                 {
                     onProgress(await getAsync<SdGenerationProgess>("sdapi/v1/progress"));
@@ -103,6 +85,8 @@ static class StableDiffusionClient
                 {
                     Log.WriteLine(e.ToString());
                 }
+                
+                for (var i = 0; i < 3; i++) await Task.Delay(TimeSpan.FromSeconds(0.1));
             }
         });
     }
