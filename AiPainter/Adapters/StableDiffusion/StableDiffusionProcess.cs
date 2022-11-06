@@ -8,14 +8,14 @@ static class StableDiffusionProcess
     private static Process? process;
     
     public static bool Loading { get; private set; }
-    public static string Checkpoint { get; private set; }
+    public static string ActiveCheckpoint { get; private set; }
 
     public static bool IsReady()
     {
         return ProcessHelper.IsPortOpen(Program.Config.StableDiffusionUrl);
     }
 
-    public static void Start()
+    public static void Start(string checkpoint)
     {
         var log = StableDiffusionClient.Log;
 
@@ -28,31 +28,29 @@ static class StableDiffusionProcess
         }
 
         var checkpoints = SdCheckpointsHelper.GetNames();
-        if (!File.Exists(SdCheckpointsHelper.GetPath(Program.Config.StableDiffusionCheckpoint)))
+        var pathToCheckpoint = SdCheckpointsHelper.GetPath(checkpoint);
+        if (!File.Exists(pathToCheckpoint))
         {
-            Program.Config.StableDiffusionCheckpoint = new Config().StableDiffusionCheckpoint;
-            var pathToCheckpoint = SdCheckpointsHelper.GetPath(Program.Config.StableDiffusionCheckpoint);
-            if (!File.Exists(pathToCheckpoint))
+            if (!checkpoints.Any())
             {
-                if (checkpoints.Any()) Program.Config.StableDiffusionCheckpoint = checkpoints.First();
-                else
-                {
-                    log.WriteLine($"Can't find {pathToCheckpoint}.");
-                    log.WriteLine("Please, download StableDiffusion model `sd-v1-4.ckpt` from HuggingFace site and save to that path.");
-                    log.WriteLine("https://huggingface.co/CompVis/stable-diffusion-v-1-4-original");
+                log.WriteLine($"Can't find {pathToCheckpoint}.");
+                log.WriteLine("Please, download StableDiffusion model `sd-v1-4.ckpt` from HuggingFace site and save to that path.");
+                log.WriteLine("https://huggingface.co/CompVis/stable-diffusion-v-1-4-original");
 
-                    if (MessageBox.Show
-                        (
-                            $"Please, download StableDiffusion model `sd-v1-4.ckpt` from HuggingFace site and save to {pathToCheckpoint}. Open browser for HuggingFace site?",
-                            "Error",
-                            MessageBoxButtons.YesNo
-                        ) == DialogResult.Yes)
-                    {
-                        ProcessHelper.OpenUrlInBrowser("https://huggingface.co/CompVis/stable-diffusion-v-1-4-original");
-                    }
-                    return;
+                if (MessageBox.Show
+                    (
+                        $"Please, download StableDiffusion model `sd-v1-4.ckpt` from HuggingFace site and save to {pathToCheckpoint}. Open browser for HuggingFace site?",
+                        "Error",
+                        MessageBoxButtons.YesNo
+                    ) == DialogResult.Yes)
+                {
+                    ProcessHelper.OpenUrlInBrowser("https://huggingface.co/CompVis/stable-diffusion-v-1-4-original");
                 }
+                return;
             }
+
+            checkpoint = checkpoints.First();
+            pathToCheckpoint = SdCheckpointsHelper.GetPath(checkpoint);
         }
 
         var pyvenvCfgFilePath = Path.Join(Application.StartupPath, @"external\StableDiffusion\venv\pyvenv.cfg");
@@ -72,7 +70,7 @@ static class StableDiffusionProcess
 
         Loading = true;
 
-        Checkpoint = Program.Config.StableDiffusionCheckpoint;
+        ActiveCheckpoint = checkpoint;
         
         process = ProcessHelper.RunInBackground
         (
@@ -80,7 +78,7 @@ static class StableDiffusionProcess
             "--api"
                 + (uri.Host != "127.0.0.1" && uri.Host.ToLowerInvariant() != "localhost" ? " --listen" : "")
                 + " --port=" + uri.Port
-                + " --ckpt=\"" + SdCheckpointsHelper.GetPath(Program.Config.StableDiffusionCheckpoint) + "\"",
+                + " --ckpt=\"" + pathToCheckpoint + "\"",
             
             directory: Path.Join(Application.StartupPath, @"external\StableDiffusion"),
             

@@ -12,7 +12,6 @@ namespace AiPainter.Controls
         public GenerationState State { get; private set; } = GenerationState.WAITING;
 
         private string checkpoint;
-        private int steps;
         private string negative;
         private decimal cfgScale;
         private long seed;
@@ -33,7 +32,6 @@ namespace AiPainter.Controls
             this.pictureBox = pictureBox;
 
             checkpoint = ((ListItem)sdPanel.ddCheckpoint.SelectedItem).Value;
-            steps = (int)sdPanel.numSteps.Value;
             tbPrompt.Text = sdPanel.tbPrompt.Text.Trim();
             negative = sdPanel.tbNegative.Text.Trim();
             cfgScale = sdPanel.numCfgScale.Value;
@@ -48,8 +46,8 @@ namespace AiPainter.Controls
             pbIterations.Refresh();
             
             pbSteps.Value = 0;
-            pbSteps.Maximum = steps;
-            pbSteps.CustomText = "0 / " + steps;
+            pbSteps.Maximum = (int)sdPanel.numSteps.Value;
+            pbSteps.CustomText = "";
             pbSteps.Refresh();
             
             if (sdPanel.cbUseInitImage.Checked)
@@ -81,11 +79,25 @@ namespace AiPainter.Controls
 
         private async Task runInTask()
         {
-            if (StableDiffusionProcess.Loading)
+            if (Program.Config.UseEmbeddedStableDiffusion)
+            {
+                if (StableDiffusionProcess.ActiveCheckpoint != checkpoint)
+                {
+                    pbSteps.CustomText = "Stopping...";
+                    StableDiffusionProcess.Stop();
+                    while (StableDiffusionProcess.IsReady()) await Task.Delay(500);
+                    
+                    pbSteps.CustomText = "Starting...";
+                    StableDiffusionProcess.Start(checkpoint);
+                }
+            }
+
+            pbSteps.CustomText = "Waiting ready...";
+            while (!StableDiffusionProcess.IsReady()) await Task.Delay(500);
+            await Task.Delay(2000);
 
             pbSteps.Value = 0;
-            pbSteps.Maximum = steps;
-            pbSteps.CustomText = "0 / " + steps;
+            pbSteps.CustomText = "0 / " + pbSteps.Maximum;
             pbSteps.Refresh();
 
             if (originalImage == null)
@@ -135,7 +147,7 @@ namespace AiPainter.Controls
                     negative_prompt = negative,
                     cfg_scale = cfgScale,
                     seed = seed,
-                    steps = steps,
+                    steps = pbSteps.Maximum,
                 };
 
                 StableDiffusionClient.txt2img
@@ -153,7 +165,7 @@ namespace AiPainter.Controls
                     negative_prompt = negative,
                     cfg_scale = cfgScale,
                     seed = seed,
-                    steps = steps,
+                    steps = pbSteps.Maximum,
                     init_images = new[] { BitmapTools.GetBase64String(initImage) },
                     mask = maskImage != null ? BitmapTools.GetBase64String(maskImage) : null,
 
@@ -174,7 +186,7 @@ namespace AiPainter.Controls
             Invoke(() =>
             {
                 pbSteps.Value = ev.state.sampling_step;
-                pbSteps.CustomText = pbSteps.Value + " / " + parameters.steps;
+                pbSteps.CustomText = pbSteps.Value + " / " + pbSteps.Maximum;
                 pbSteps.Refresh();
             });
         }
@@ -208,7 +220,7 @@ namespace AiPainter.Controls
 
         private void btLoadParamsBackToPanel_Click(object sender, EventArgs e)
         {
-            sdPanel.numSteps.Value = steps;
+            sdPanel.numSteps.Value = pbSteps.Maximum;
             sdPanel.tbPrompt.Text = tbPrompt.Text;
             sdPanel.tbNegative.Text = negative;
             sdPanel.numCfgScale.Value = cfgScale;

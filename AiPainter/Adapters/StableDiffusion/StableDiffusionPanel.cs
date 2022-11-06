@@ -77,14 +77,6 @@ namespace AiPainter.Adapters.StableDiffusion
 
             Program.Config.StableDiffusionCheckpoint = ((ListItem)ddCheckpoint.SelectedItem).Value;
             Program.SaveConfig();
-
-            Task.Run(async () =>
-            {
-                StableDiffusionProcess.Stop();
-                while (ProcessHelper.IsPortOpen(Program.Config.StableDiffusionUrl)) await Task.Delay(1000);
-                await Task.Delay(1000);
-                StableDiffusionProcess.Start();
-            });
         }
     }
 }

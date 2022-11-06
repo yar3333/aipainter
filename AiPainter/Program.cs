@@ -16,7 +16,7 @@ static class Program
         LoadConfig();
         SaveConfig();
 
-        StableDiffusionProcess.Start();
+        StableDiffusionProcess.Start(Config.StableDiffusionCheckpoint);
         LamaCleanerProcess.Start();
         RemBgProcess.Start();
 
