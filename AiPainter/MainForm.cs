@@ -23,6 +23,8 @@ namespace AiPainter
             {
                 panGenerationList.AddGeneration(panStableDiffusion, pictureBox);
             };
+
+            updateImageListWorker.RunWorkerAsync();
         }
 
         private void MainForm_Load(object sender, EventArgs e)

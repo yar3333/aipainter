@@ -40,7 +40,6 @@ namespace AiPainter.Controls
             seed = sdPanel.tbSeed.Text.Trim() != "" ? long.Parse(sdPanel.tbSeed.Text.Trim()) : -1;
 
             numIterations.Value = sdPanel.numIterations.Value;
-            //numSteps.Value = sdPanel.numSteps.Value;
 
             pbIterations.Maximum = (int)sdPanel.numIterations.Value;
             pbIterations.Value = 0;
@@ -185,7 +184,11 @@ namespace AiPainter.Controls
                 (
                     parameters,
                     onProgress: onProgress,
-                    onSuccess: ev => onSuccess(parameters, ev, onGenerated)
+                    onSuccess: ev =>
+                    {
+                        updateProgressBars();
+                        onGenerated(BitmapTools.FromBase64(ev.images[0]), getDestImageFilePath(ev));
+                    }
                 );
             }
             else
@@ -199,7 +202,6 @@ namespace AiPainter.Controls
                     steps = pbSteps.Maximum,
                     init_images = new[] { BitmapTools.GetBase64String(initImage) },
                     mask = maskImage != null ? BitmapTools.GetBase64String(maskImage) : null,
-
                     inpainting_fill = inpaintingFill,
                 };
 
@@ -207,7 +209,11 @@ namespace AiPainter.Controls
                 (
                     parameters,
                     onProgress: onProgress,
-                    onSuccess: ev => onSuccess(parameters, ev, onGenerated)
+                    onSuccess: ev =>
+                    {
+                        updateProgressBars();
+                        onGenerated(BitmapTools.FromBase64(ev.images[0]), getDestImageFilePath(ev));
+                    }
                 );
             }
         }
@@ -222,19 +228,14 @@ namespace AiPainter.Controls
             });
         }
 
-        private void onSuccess(SdBaseGenerationRequest parameters, SdGenerationResponse ev, Action<Bitmap, string> onGenerated)
+        private void updateProgressBars()
         {
             Invoke(() => {
                 pbSteps.Value = 0;
                 pbSteps.Refresh();
                 pbIterations.Value++;
-                pbIterations.CustomText = pbIterations.Value + " / " + parameters.n_iter;
+                pbIterations.CustomText = pbIterations.Value + " / " + pbIterations.Maximum;
                 pbIterations.Refresh();
-
-                var resultFilePath = Path.Combine(Program.Config.OutputFolder, ev.infoParsed.seed + ".png");
-                var resultBitmap = BitmapTools.FromBase64(ev.images[0]);
-                
-                onGenerated(resultBitmap, resultFilePath);
             });
         }
 
@@ -274,6 +275,11 @@ namespace AiPainter.Controls
         private void numIterations_ValueChanged(object sender, EventArgs e)
         {
             pbIterations.Maximum = (int)numIterations.Value;
+        }
+
+        private string getDestImageFilePath(SdGenerationResponse ev)
+        {
+            return Path.Combine(Program.Config.OutputFolder, ev.infoParsed.seed + ".png");
         }
     }
 }
