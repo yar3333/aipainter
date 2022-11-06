@@ -1,6 +1,6 @@
-obj/
 .vs/
-*.user
 bin/
-release-x64/
 dist/
+obj/
+release-x64/
+*.user
