@@ -6,12 +6,15 @@ namespace AiPainter.Adapters.RemBg
     public partial class RemBgPanel : UserControl
     {
         private SmartPictureBox pictureBox = null!;
+        private bool isPortOpen;
 
         public bool InProcess;
 
         public RemBgPanel()
         {
             InitializeComponent();
+
+            portCheckWorker.RunWorkerAsync();
         }
 
         private void btRemBgRemoveBackground_Click(object sender, EventArgs e)
@@ -51,7 +54,7 @@ namespace AiPainter.Adapters.RemBg
             });
         }
 
-        public void UpdateState(SmartPictureBox pb, bool isPortOpen)
+        public void UpdateState(SmartPictureBox pb)
         {
             pictureBox = pb;
 
@@ -61,6 +64,15 @@ namespace AiPainter.Adapters.RemBg
                                    : isPortOpen ? "Remove background" 
                          : RemBgProcess.Loading ? "LOADING..." 
                                                 : "ERROR";
+        }
+
+        private void portCheckWorker_DoWork(object sender, System.ComponentModel.DoWorkEventArgs e)
+        {
+            while (Application.OpenForms.Count > 0)
+            {
+                isPortOpen = RemBgProcess.IsReady();
+                for (var i = 0; i < 10 && Application.OpenForms.Count > 0; i++) Thread.Sleep(100);
+            }
         }
     }
 }

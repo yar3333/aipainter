@@ -8,6 +8,12 @@ static class StableDiffusionProcess
     private static Process? process;
     
     public static bool Loading { get; private set; }
+    public static string Checkpoint { get; private set; }
+
+    public static bool IsReady()
+    {
+        return ProcessHelper.IsPortOpen(Program.Config.StableDiffusionUrl);
+    }
 
     public static void Start()
     {
@@ -65,6 +71,8 @@ static class StableDiffusionProcess
         var uri = new Uri(Program.Config.StableDiffusionUrl);
 
         Loading = true;
+
+        Checkpoint = Program.Config.StableDiffusionCheckpoint;
         
         process = ProcessHelper.RunInBackground
         (

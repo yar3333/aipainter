@@ -15,15 +15,9 @@ namespace AiPainter
 
         private static readonly StoredImageList storedImageList = new();
         
-        private bool stableDiffusionIsPortOpen;
-        private bool lamaCleanerIsPortOpen;
-        private bool remBgIsPortOpen;
-        
         public MainForm()
         {
             InitializeComponent();
-
-            checkPortsWorker.RunWorkerAsync();
 
             panStableDiffusion.OnGenerate = () =>
             {
@@ -316,9 +310,9 @@ namespace AiPainter
 
         private void controlsStateUpdater_Tick(object sender, EventArgs e)
         {
-            panStableDiffusion.UpdateState(pictureBox, stableDiffusionIsPortOpen);
-            panLamaCleaner.UpdateState(pictureBox, lamaCleanerIsPortOpen);
-            panRemBg.UpdateState(pictureBox, remBgIsPortOpen);
+            panStableDiffusion.UpdateState(pictureBox);
+            panLamaCleaner.UpdateState(pictureBox);
+            panRemBg.UpdateState(pictureBox);
 
             pictureBox.Enabled = !panLamaCleaner.InProcess && !panRemBg.InProcess;
 
@@ -345,17 +339,6 @@ namespace AiPainter
             btUp.Enabled = pictureBox.Image != null;
             btDown.Enabled = pictureBox.Image != null;
             btRight.Enabled = pictureBox.Image != null;
-        }
-
-        private void checkPortsWorker_DoWork(object sender, System.ComponentModel.DoWorkEventArgs e)
-        {
-            while (!checkPortsWorker.CancellationPending)
-            {
-                stableDiffusionIsPortOpen = ProcessHelper.IsPortOpen(Program.Config.StableDiffusionUrl);
-                lamaCleanerIsPortOpen = ProcessHelper.IsPortOpen(Program.Config.LamaCleanerUrl);
-                remBgIsPortOpen = ProcessHelper.IsPortOpen(Program.Config.RemBgUrl);
-                Thread.Sleep(200);
-            }
         }
 
         private void btRestorePrevMask_Click(object sender, EventArgs e)

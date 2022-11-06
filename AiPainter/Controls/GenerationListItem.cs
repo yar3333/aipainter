@@ -1,7 +1,6 @@
 ﻿using AiPainter.Adapters.StableDiffusion;
 using AiPainter.Helpers;
 using System.Drawing.Imaging;
-using System.Windows.Forms;
 
 namespace AiPainter.Controls
 {
@@ -12,6 +11,7 @@ namespace AiPainter.Controls
 
         public GenerationState State { get; private set; } = GenerationState.WAITING;
 
+        private string checkpoint;
         private int steps;
         private string negative;
         private decimal cfgScale;
@@ -32,6 +32,7 @@ namespace AiPainter.Controls
             this.sdPanel = sdPanel;
             this.pictureBox = pictureBox;
 
+            checkpoint = ((ListItem)sdPanel.ddCheckpoint.SelectedItem).Value;
             steps = (int)sdPanel.numSteps.Value;
             tbPrompt.Text = sdPanel.tbPrompt.Text.Trim();
             negative = sdPanel.tbNegative.Text.Trim();
@@ -64,6 +65,23 @@ namespace AiPainter.Controls
         {
             State = pbIterations.Value < pbIterations.Maximum ? GenerationState.IN_PROCESS : GenerationState.FULLY_FINISHED;
             if (State == GenerationState.FULLY_FINISHED) return;
+
+            Task.Run(() =>
+            {
+                try
+                {
+                    runInTask().Wait();
+                }
+                catch (Exception e)
+                {
+                    Program.Log.WriteLine(e.ToString());
+                }
+            });
+        }
+
+        private async Task runInTask()
+        {
+            if (StableDiffusionProcess.Loading)
 
             pbSteps.Value = 0;
             pbSteps.Maximum = steps;

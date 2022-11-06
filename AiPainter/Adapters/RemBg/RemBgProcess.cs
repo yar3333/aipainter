@@ -9,6 +9,11 @@ static class RemBgProcess
     
     public static bool Loading { get; private set; }
 
+    public static bool IsReady()
+    {
+        return ProcessHelper.IsPortOpen(Program.Config.RemBgUrl);
+    }
+    
     public static void Start()
     {
         var log = StableDiffusionClient.Log;

@@ -30,6 +30,7 @@
         {
             this.collapsablePanel = new AiPainter.Controls.CollapsablePanel();
             this.btInpaint = new System.Windows.Forms.Button();
+            this.portCheckWorker = new System.ComponentModel.BackgroundWorker();
             this.collapsablePanel.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -59,6 +60,10 @@
             this.btInpaint.UseVisualStyleBackColor = true;
             this.btInpaint.Click += new System.EventHandler(this.btInpaint_Click);
             // 
+            // portCheckWorker
+            // 
+            this.portCheckWorker.DoWork += new System.ComponentModel.DoWorkEventHandler(this.portCheckWorker_DoWork);
+            // 
             // LamaCleanerPanel
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
@@ -75,5 +80,6 @@
 
         private Controls.CollapsablePanel collapsablePanel;
         private Button btInpaint;
+        private System.ComponentModel.BackgroundWorker portCheckWorker;
     }
 }

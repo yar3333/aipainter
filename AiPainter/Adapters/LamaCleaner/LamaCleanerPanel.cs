@@ -6,12 +6,15 @@ namespace AiPainter.Adapters.LamaCleaner
     public partial class LamaCleanerPanel : UserControl
     {
         private SmartPictureBox pictureBox = null!;
+        private bool isPortOpen;
 
         public bool InProcess;
         
         public LamaCleanerPanel()
         {
             InitializeComponent();
+
+            portCheckWorker.RunWorkerAsync();
         }
 
         private void btInpaint_Click(object sender, EventArgs e)
@@ -55,7 +58,7 @@ namespace AiPainter.Adapters.LamaCleaner
             });
         }
 
-        public void UpdateState(SmartPictureBox pb, bool isPortOpen)
+        public void UpdateState(SmartPictureBox pb)
         {
             pictureBox = pb;
 
@@ -65,6 +68,15 @@ namespace AiPainter.Adapters.LamaCleaner
                                 : isPortOpen ? "Clean masked area" 
                 : LamaCleanerProcess.Loading ? "LOADING..." 
                                              : "ERROR";
+        }
+
+        private void portCheckWorker_DoWork(object sender, System.ComponentModel.DoWorkEventArgs e)
+        {
+            while (Application.OpenForms.Count > 0)
+            {
+                isPortOpen = LamaCleanerProcess.IsReady();
+                for (var i = 0; i < 10 && Application.OpenForms.Count > 0; i++) Thread.Sleep(100);
+            }
         }
     }
 }

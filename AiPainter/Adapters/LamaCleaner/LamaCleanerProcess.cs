@@ -9,6 +9,11 @@ static class LamaCleanerProcess
     
     public static bool Loading { get; private set; }
 
+    public static bool IsReady()
+    {
+        return ProcessHelper.IsPortOpen(Program.Config.LamaCleanerUrl);
+    }
+
     public static void Start()
     {
         var log = LamaCleanerClient.Log;

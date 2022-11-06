@@ -51,7 +51,7 @@ namespace AiPainter.Adapters.StableDiffusion
             numSteps.Value = parameters.steps;
         }
 
-        public void UpdateState(SmartPictureBox pb, bool isPortOpen)
+        public void UpdateState(SmartPictureBox pb)
         {
             if (pb.Image != null && pb.HasMask)
             {
@@ -67,12 +67,6 @@ namespace AiPainter.Adapters.StableDiffusion
             {
                 cbUseInitImage.Enabled = true;
             }
-
-            btGenerate.Text =         isPortOpen ? "Generate" 
-                : StableDiffusionProcess.Loading ? "LOADING..." 
-                                                 : "ERROR";
-
-            ddCheckpoint.Enabled = StableDiffusionProcess.Loading;
 
             ddInpaintingFill.Enabled = pb.Image != null && pb.HasMask && cbUseInitImage.Checked;
         }

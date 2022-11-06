@@ -33,7 +33,6 @@ namespace AiPainter
             this.components = new System.ComponentModel.Container();
             System.Windows.Forms.Timer controlsStateUpdater;
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
-            this.checkPortsWorker = new System.ComponentModel.BackgroundWorker();
             this.toolbar = new System.Windows.Forms.ToolStrip();
             this.btClearActiveImage = new System.Windows.Forms.ToolStripButton();
             this.btLoad = new System.Windows.Forms.ToolStripButton();
@@ -64,7 +63,6 @@ namespace AiPainter
             this.panStableDiffusion = new AiPainter.Adapters.StableDiffusion.StableDiffusionPanel();
             this.hPicScroll = new System.Windows.Forms.HScrollBar();
             this.toolTip = new System.Windows.Forms.ToolTip(this.components);
-            this.panGenerationList = new AiPainter.Controls.GenerationList();
             this.updateImageListWorker = new System.ComponentModel.BackgroundWorker();
             controlsStateUpdater = new System.Windows.Forms.Timer(this.components);
             this.toolbar.SuspendLayout();
@@ -77,7 +75,6 @@ namespace AiPainter
             this.splitContainer1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).BeginInit();
             this.splitContainer2.Panel1.SuspendLayout();
-            this.splitContainer2.Panel2.SuspendLayout();
             this.splitContainer2.SuspendLayout();
             this.panel1.SuspendLayout();
             this.SuspendLayout();
@@ -87,10 +84,6 @@ namespace AiPainter
             controlsStateUpdater.Enabled = true;
             controlsStateUpdater.Interval = 200;
             controlsStateUpdater.Tick += new System.EventHandler(this.controlsStateUpdater_Tick);
-            // 
-            // checkPortsWorker
-            // 
-            this.checkPortsWorker.DoWork += new System.ComponentModel.DoWorkEventHandler(this.checkPortsWorker_DoWork);
             // 
             // toolbar
             // 
@@ -353,10 +346,6 @@ namespace AiPainter
             // splitContainer2.Panel1
             // 
             this.splitContainer2.Panel1.Controls.Add(this.panel1);
-            // 
-            // splitContainer2.Panel2
-            // 
-            this.splitContainer2.Panel2.Controls.Add(this.panGenerationList);
             this.splitContainer2.Size = new System.Drawing.Size(612, 523);
             this.splitContainer2.SplitterDistance = 404;
             this.splitContainer2.TabIndex = 0;
@@ -412,14 +401,6 @@ namespace AiPainter
             this.hPicScroll.Size = new System.Drawing.Size(924, 30);
             this.hPicScroll.TabIndex = 0;
             // 
-            // panGenerationList
-            // 
-            this.panGenerationList.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panGenerationList.Location = new System.Drawing.Point(0, 0);
-            this.panGenerationList.Name = "panGenerationList";
-            this.panGenerationList.Size = new System.Drawing.Size(204, 523);
-            this.panGenerationList.TabIndex = 0;
-            // 
             // updateImageListWorker
             // 
             this.updateImageListWorker.DoWork += new System.ComponentModel.DoWorkEventHandler(this.updateImageListWorker_DoWork);
@@ -450,7 +431,6 @@ namespace AiPainter
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
             this.splitContainer1.ResumeLayout(false);
             this.splitContainer2.Panel1.ResumeLayout(false);
-            this.splitContainer2.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).EndInit();
             this.splitContainer2.ResumeLayout(false);
             this.panel1.ResumeLayout(false);
@@ -482,7 +462,6 @@ namespace AiPainter
         private Adapters.StableDiffusion.StableDiffusionPanel panStableDiffusion;
         private Adapters.LamaCleaner.LamaCleanerPanel panLamaCleaner;
         private Adapters.RemBg.RemBgPanel panRemBg;
-        private System.ComponentModel.BackgroundWorker checkPortsWorker;
         private ToolStripButton btRestorePrevMask;
         private ToolStripButton btAbout;
         private ToolStripButton btCopyToClipboard;

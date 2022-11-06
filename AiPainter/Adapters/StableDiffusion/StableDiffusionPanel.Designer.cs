@@ -359,7 +359,7 @@
         private Controls.CustomProgressBar pbSteps;
         private ToolTip toolTip;
         public TextBox tbNegative;
-        private ComboBox ddCheckpoint;
+        public ComboBox ddCheckpoint;
         public ComboBox ddInpaintingFill;
     }
 }
