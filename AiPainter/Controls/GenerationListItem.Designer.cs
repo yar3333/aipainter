@@ -93,7 +93,7 @@
             // 
             // btLoadParamsBackToPanel
             // 
-            this.btLoadParamsBackToPanel.Location = new System.Drawing.Point(6, 5);
+            this.btLoadParamsBackToPanel.Location = new System.Drawing.Point(6, 6);
             this.btLoadParamsBackToPanel.Name = "btLoadParamsBackToPanel";
             this.btLoadParamsBackToPanel.Size = new System.Drawing.Size(38, 25);
             this.btLoadParamsBackToPanel.TabIndex = 5;
