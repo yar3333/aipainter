@@ -59,6 +59,13 @@ namespace AiPainter.Controls
                 originalImage = BitmapTools.Clone(pictureBox.Image!);
                 croppedMask = pictureBox.GetMaskCropped(Color.Black, Color.White);
             }
+
+            toolTip.SetToolTip
+            (
+                tbPrompt, 
+                "Positive:\n" + tbPrompt.Text
+          + "\n\nNegative:\n" + negative
+            );
         }
 
         public void Run()
@@ -262,6 +269,11 @@ namespace AiPainter.Controls
                 sdPanel.ddInpaintingFill.SelectedItem = inpaintingFill.ToString();
                 pictureBox.Image = BitmapTools.Clone(originalImage);
             }
+        }
+
+        private void numIterations_ValueChanged(object sender, EventArgs e)
+        {
+            pbIterations.Maximum = (int)numIterations.Value;
         }
     }
 }

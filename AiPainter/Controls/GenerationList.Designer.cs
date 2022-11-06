@@ -41,6 +41,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.AutoScroll = true;
             this.BackColor = System.Drawing.SystemColors.ControlDarkDark;
             this.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.Name = "GenerationList";

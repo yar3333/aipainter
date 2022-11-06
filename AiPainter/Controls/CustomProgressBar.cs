@@ -2,7 +2,17 @@
 
 class CustomProgressBar : ProgressBar
 {
-    public string? CustomText { get; set; }
+    public string? customText;
+
+    public string? CustomText
+    {
+        get => customText;
+        set
+        {
+            customText = value;
+            Invalidate();
+        }
+    }
     public Color TextColor { get; set; } = Color.Black;
 
     public CustomProgressBar()

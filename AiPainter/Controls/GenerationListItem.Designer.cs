@@ -28,12 +28,14 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.tbPrompt = new System.Windows.Forms.TextBox();
             this.pbSteps = new AiPainter.Controls.CustomProgressBar();
             this.pbIterations = new AiPainter.Controls.CustomProgressBar();
             this.numIterations = new System.Windows.Forms.NumericUpDown();
             this.btRemove = new System.Windows.Forms.Button();
             this.btLoadParamsBackToPanel = new System.Windows.Forms.Button();
+            this.toolTip = new System.Windows.Forms.ToolTip(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.numIterations)).BeginInit();
             this.SuspendLayout();
             // 
@@ -45,7 +47,7 @@
             this.tbPrompt.Location = new System.Drawing.Point(50, 7);
             this.tbPrompt.Name = "tbPrompt";
             this.tbPrompt.ReadOnly = true;
-            this.tbPrompt.Size = new System.Drawing.Size(268, 23);
+            this.tbPrompt.Size = new System.Drawing.Size(264, 23);
             this.tbPrompt.TabIndex = 0;
             // 
             // pbSteps
@@ -58,6 +60,7 @@
             this.pbSteps.Size = new System.Drawing.Size(100, 23);
             this.pbSteps.TabIndex = 1;
             this.pbSteps.TextColor = System.Drawing.Color.Black;
+            this.toolTip.SetToolTip(this.pbSteps, "Steps");
             // 
             // pbIterations
             // 
@@ -69,14 +72,32 @@
             this.pbIterations.Size = new System.Drawing.Size(100, 23);
             this.pbIterations.TabIndex = 2;
             this.pbIterations.TextColor = System.Drawing.Color.Black;
+            this.toolTip.SetToolTip(this.pbIterations, "Iterations");
             // 
             // numIterations
             // 
             this.numIterations.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.numIterations.Location = new System.Drawing.Point(324, 7);
+            this.numIterations.Location = new System.Drawing.Point(320, 7);
+            this.numIterations.Maximum = new decimal(new int[] {
+            9999,
+            0,
+            0,
+            0});
+            this.numIterations.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
             this.numIterations.Name = "numIterations";
-            this.numIterations.Size = new System.Drawing.Size(44, 23);
+            this.numIterations.Size = new System.Drawing.Size(48, 23);
             this.numIterations.TabIndex = 3;
+            this.toolTip.SetToolTip(this.numIterations, "Count");
+            this.numIterations.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.numIterations.ValueChanged += new System.EventHandler(this.numIterations_ValueChanged);
             // 
             // btRemove
             // 
@@ -88,6 +109,7 @@
             this.btRemove.Size = new System.Drawing.Size(31, 23);
             this.btRemove.TabIndex = 4;
             this.btRemove.Text = "X";
+            this.toolTip.SetToolTip(this.btRemove, "Cancel");
             this.btRemove.UseVisualStyleBackColor = true;
             this.btRemove.Click += new System.EventHandler(this.btRemove_Click);
             // 
@@ -98,6 +120,7 @@
             this.btLoadParamsBackToPanel.Size = new System.Drawing.Size(38, 25);
             this.btLoadParamsBackToPanel.TabIndex = 5;
             this.btLoadParamsBackToPanel.Text = "<=";
+            this.toolTip.SetToolTip(this.btLoadParamsBackToPanel, "Load parameters into panel");
             this.btLoadParamsBackToPanel.UseVisualStyleBackColor = true;
             this.btLoadParamsBackToPanel.Click += new System.EventHandler(this.btLoadParamsBackToPanel_Click);
             // 
@@ -129,5 +152,6 @@
         private NumericUpDown numIterations;
         private Button btRemove;
         private Button btLoadParamsBackToPanel;
+        private ToolTip toolTip;
     }
 }
