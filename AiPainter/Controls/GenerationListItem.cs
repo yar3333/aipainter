@@ -86,10 +86,6 @@ namespace AiPainter.Controls
         {
             InProcess = true;
 
-            pbSteps.Value = 0;
-            pbSteps.CustomText = pbSteps.Value + " / " + pbSteps.Maximum;
-            pbSteps.Refresh();
-
             Task.Run(() =>
             {
                 try
@@ -214,24 +210,34 @@ namespace AiPainter.Controls
             }
         }
 
-        private void onImageGenerated(SdGenerationResponse ev, Action<Bitmap, string> processGeneratedImage)
+        private void onImageGenerated(SdGenerationResponse? ev, Action<Bitmap, string> processGeneratedImage)
         {
-            if (numIterations.Value > 0)
+            if (ev != null)
+            {
+                if (numIterations.Value > 0)
+                {
+                    Invoke(() =>
+                    {
+                        ignoreNumIterationsChange = true;
+                        numIterations.Value--;
+                        ignoreNumIterationsChange = false;
+                    
+                        lastIterations = (int)numIterations.Value;
+                    
+                        pbIterations.Value++;
+                        pbIterations.CustomText = pbIterations.Value + " / " + pbIterations.Maximum;
+                        pbIterations.Refresh();
+                    });
+                
+                    processGeneratedImage(BitmapTools.FromBase64(ev.images[0]), getDestImageFilePath(ev));
+                }
+            }
+            else
             {
                 Invoke(() =>
                 {
-                    ignoreNumIterationsChange = true;
-                    numIterations.Value--;
-                    ignoreNumIterationsChange = false;
-                    
-                    lastIterations = (int)numIterations.Value;
-                    
-                    pbIterations.Value++;
-                    pbIterations.CustomText = pbIterations.Value + " / " + pbIterations.Maximum;
-                    pbIterations.Refresh();
+                    pbIterations.CustomText = "ERROR";
                 });
-                
-                processGeneratedImage(BitmapTools.FromBase64(ev.images[0]), getDestImageFilePath(ev));
             }
             
             InProcess = false;

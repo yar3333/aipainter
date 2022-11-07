@@ -14,6 +14,8 @@ namespace AiPainter
         public string? FilePath { get; set; }
 
         private static readonly StoredImageList storedImageList = new();
+
+        private int previewCount;
         
         public MainForm()
         {
@@ -35,7 +37,7 @@ namespace AiPainter
 
             splitContainer.Panel2.MouseWheel += (_, ee) =>
             {
-                hPicScroll.Value = Math.Max(hPicScroll.Minimum, Math.Min(hPicScroll.Maximum, hPicScroll.Value + (ee.Delta > 0 ? -1 : 1)));
+                hPicScroll.Value = Math.Max(hPicScroll.Minimum, Math.Min(hPicScroll.Maximum - previewCount + 1, hPicScroll.Value + (ee.Delta > 0 ? -1 : 1)));
                 updateImages(null);
             };
 
@@ -54,11 +56,13 @@ namespace AiPainter
         {
             while (!IsDisposed)
             {
+                var oldImagesCount = 0;
                 var changesDetected = false;
                 try
                 {
                     lock (storedImageList)
                     {
+                        oldImagesCount = storedImageList.Count;
                         changesDetected = storedImageList.Update();
                     }
                 }
@@ -72,7 +76,15 @@ namespace AiPainter
                 {
                     Invoke(() =>
                     {
-                        updateImages(null);
+                        lock (storedImageList)
+                        {
+                            if (hPicScroll.Value == hPicScroll.Maximum - oldImagesCount + 1)
+                            {
+                                hPicScroll.Maximum = Math.Max(0, storedImageList.Count - 1);
+                                hPicScroll.Value = Math.Max(0, hPicScroll.Maximum - storedImageList.Count + 1);
+                            }
+                            updateImages(null);
+                        }
                     });
                 }
 
@@ -82,65 +94,73 @@ namespace AiPainter
         
         private void updateImages(int? hPicScrollValue)
         {
-            var sz = Math.Max(50, splitContainer.Panel2.ClientSize.Height);
+            var panel = splitContainer.Panel2;
+
+            var sz = Math.Max(50, panel.ClientSize.Height);
+            previewCount = (panel.ClientSize.Width + 5) / (sz + 5);
             var x = 0;
             var n = 0;
             
             lock (storedImageList)
             {
-                hPicScroll.LargeChange = Math.Max(1, splitContainer.Panel2.ClientSize.Width / (sz + 10) - 1);
-                hPicScroll.Maximum = Math.Max(0, storedImageList.Count - 2);
+                hPicScroll.LargeChange = previewCount;
+                hPicScroll.Maximum = Math.Max(0, storedImageList.Count - 1);
 
-                var j = hPicScrollValue ?? hPicScroll.Value;
-                while (x < splitContainer.Panel2.ClientSize.Width && j < storedImageList.Count)
+                var i = hPicScrollValue ?? hPicScroll.Value;
+                while (x < panel.ClientSize.Width && i < storedImageList.Count)
                 {
-                    var pb = (SmartImagePreview?)splitContainer.Panel2.Controls.Find("pic" + n, false).FirstOrDefault();
-                    if (pb == null)
-                    {
-                        pb = new SmartImagePreview();
-                        pb.Name = "pic" + n;
-                        pb.Parent = splitContainer.Panel2;
+                    var pb = (SmartImagePreview?)panel.Controls.Find("pic" + n, false).SingleOrDefault() ?? createSmartImagePreview(n);
 
-                        pb.OnImageClick = () =>
-                        {
-                            FilePath = pb.FilePath;
-                            pictureBox.Image = BitmapTools.Load(pb.FilePath);
-                            pictureBox.ResetMask();
-                        };
-
-                        pb.OnImageRemove = () =>
-                        {
-                            lock (storedImageList)
-                            {
-                                File.Delete(pb.FilePath!);
-                                storedImageList.Remove(pb.FilePath);
-                            }
-                            updateImages(null);
-                        };
-                    }
-
-                    pb.Image = storedImageList.GetAt(j).Bitmap!;
+                    pb.Image = storedImageList.GetAt(i).Bitmap!;
                     pb.Location = new Point(x, 0);
                     pb.Size = new Size(sz, sz);
-                    pb.FilePath = storedImageList.GetAt(j).FilePath;
+                    pb.FilePath = storedImageList.GetAt(i).FilePath;
                     pb.Visible = true;
                     toolTip.SetToolTip(pb, Path.GetFileName(pb.FilePath) + " (" + Path.GetDirectoryName(pb.FilePath) + ")\n\nHold right mouse button to remove file from disk.");
 
-                    x += sz + 10;
-                    j++;
+                    x += sz + 5;
+                    i++;
                     n++;
                 }
             }
 
-            while (x < splitContainer.Panel2.ClientSize.Width)
+            while (x < panel.ClientSize.Width)
             {
-                var pb = (SmartImagePreview?)splitContainer.Panel2.Controls.Find("pic" + n, false).FirstOrDefault();
+                var pb = (SmartImagePreview?)panel.Controls.Find("pic" + n, false).FirstOrDefault();
                 if (pb != null) pb.Visible = false;
-                x += sz + 10;
+                x += sz + 5;
                 n++;
             }
 
-            splitContainer.Panel2.Refresh();
+            panel.Refresh();
+        }
+
+        private SmartImagePreview createSmartImagePreview(int n)
+        {
+            var pb = new SmartImagePreview();
+            pb.Name = "pic" + n;
+            pb.Parent = splitContainer.Panel2;
+
+            pb.OnImageClick = () =>
+            {
+                FilePath = pb.FilePath;
+                pictureBox.Image = BitmapTools.Load(pb.FilePath);
+                pictureBox.ResetMask();
+            };
+
+            pb.OnImageRemove = () =>
+            {
+                lock (storedImageList)
+                {
+                    File.Delete(pb.FilePath!);
+                    storedImageList.Remove(pb.FilePath);
+                }
+
+                hPicScroll.Value = Math.Min(hPicScroll.Value, hPicScroll.Maximum);
+                updateImages(null);
+            };
+            
+            return pb;
         }
 
         protected override bool ProcessCmdKey(ref Message msg, Keys keyData)

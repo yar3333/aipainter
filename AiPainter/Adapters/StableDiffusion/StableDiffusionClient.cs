@@ -11,7 +11,7 @@ static class StableDiffusionClient
     private static bool inProcess;
 
     // ReSharper disable once InconsistentNaming
-    public static void txt2img(SdGenerationRequest request, Action<SdGenerationProgess> onProgress, Action<SdGenerationResponse> onSuccess)
+    public static void txt2img(SdGenerationRequest request, Action<SdGenerationProgess> onProgress, Action<SdGenerationResponse?> onSuccess)
     {
         request = JsonSerializer.Deserialize<SdGenerationRequest>(JsonSerializer.Serialize(request))!;
         request.n_iter = 1;
@@ -28,6 +28,7 @@ static class StableDiffusionClient
             catch (Exception e)
             {
                 Log.WriteLine(e.ToString());
+                onSuccess(null);
             }
             inProcess = false;
         });
@@ -36,7 +37,7 @@ static class StableDiffusionClient
     }
 
     // ReSharper disable once InconsistentNaming
-    public static void img2img(SdInpaintRequest request, Action<SdGenerationProgess> onProgress, Action<SdGenerationResponse> onSuccess)
+    public static void img2img(SdInpaintRequest request, Action<SdGenerationProgess> onProgress, Action<SdGenerationResponse?> onSuccess)
     {
         request = JsonSerializer.Deserialize<SdInpaintRequest>(JsonSerializer.Serialize(request))!;
         request.n_iter = 1;
@@ -52,6 +53,7 @@ static class StableDiffusionClient
             catch (Exception e)
             {
                 Log.WriteLine(e.ToString());
+                onSuccess(null);
             }
             inProcess = false;
         });
