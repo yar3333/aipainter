@@ -226,13 +226,7 @@ namespace AiPainter
             if (openFileDialog.ShowDialog() == DialogResult.OK)
             {
                 FilePath = openFileDialog.FileName;
-                using var image = BitmapTools.Load(FilePath);
-                pictureBox.Image = BitmapTools.GetShrinked
-                (
-                    image,
-                    Program.Config.ShrinkImageOnOpenMaxWidth,
-                    Program.Config.ShrinkImageOnOpenMaxHeight
-                );
+                pictureBox.Image = BitmapTools.Load(FilePath);
                 pictureBox.ResetMask();
                 pictureBox.ResetView();
             }

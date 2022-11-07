@@ -175,7 +175,7 @@ namespace AiPainter
             this.btSaveJpeg.Name = "btSaveJpeg";
             this.btSaveJpeg.Size = new System.Drawing.Size(38, 37);
             this.btSaveJpeg.Text = "Save image as JPG (auto name)";
-            this.btSaveJpeg.ToolTipText = "Save image";
+            this.btSaveJpeg.ToolTipText = "Save image as JPG (auto name)";
             this.btSaveJpeg.Click += new System.EventHandler(this.btSaveJpeg_Click);
             // 
             // btCopyToClipboard

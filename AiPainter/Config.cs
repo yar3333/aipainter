@@ -13,7 +13,4 @@ class Config
 
     public bool UseEmbeddedRemBg { get; set; } = true;
     public string RemBgUrl { get; set; } = "http://127.0.0.1:9696/";
-
-    public int ShrinkImageOnOpenMaxWidth { get; set; } = 2048;
-    public int ShrinkImageOnOpenMaxHeight { get; set; } = 2048;
 }
