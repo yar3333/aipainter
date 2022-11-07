@@ -29,7 +29,7 @@
         private void InitializeComponent()
         {
             this.pictureBox = new System.Windows.Forms.PictureBox();
-            this.btRemove = new System.Windows.Forms.PictureBox();
+            this.btRemove = new AiPainter.Controls.ImageButton();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.btRemove)).BeginInit();
             this.SuspendLayout();
@@ -40,7 +40,7 @@
             this.pictureBox.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pictureBox.Location = new System.Drawing.Point(0, 0);
             this.pictureBox.Name = "pictureBox";
-            this.pictureBox.Size = new System.Drawing.Size(310, 295);
+            this.pictureBox.Size = new System.Drawing.Size(250, 243);
             this.pictureBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.pictureBox.TabIndex = 0;
             this.pictureBox.TabStop = false;
@@ -52,13 +52,13 @@
             // btRemove
             // 
             this.btRemove.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btRemove.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.btRemove.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
             this.btRemove.Image = global::AiPainter.Properties.Resources.remove;
-            this.btRemove.Location = new System.Drawing.Point(279, 3);
+            this.btRemove.Location = new System.Drawing.Point(219, 3);
             this.btRemove.Name = "btRemove";
             this.btRemove.Size = new System.Drawing.Size(28, 28);
             this.btRemove.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
-            this.btRemove.TabIndex = 2;
+            this.btRemove.TabIndex = 3;
             this.btRemove.TabStop = false;
             this.btRemove.Visible = false;
             this.btRemove.Click += new System.EventHandler(this.btRemove_Click);
@@ -70,7 +70,7 @@
             this.Controls.Add(this.btRemove);
             this.Controls.Add(this.pictureBox);
             this.Name = "SmartImagePreview";
-            this.Size = new System.Drawing.Size(310, 295);
+            this.Size = new System.Drawing.Size(250, 243);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.btRemove)).EndInit();
             this.ResumeLayout(false);
@@ -80,6 +80,6 @@
         #endregion
 
         private PictureBox pictureBox;
-        private PictureBox btRemove;
+        private ImageButton btRemove;
     }
 }
