@@ -11,7 +11,7 @@ namespace AiPainter
     {
         private const int IMAGE_EXTEND_SIZE = 64;
         
-        private string? filePath;
+        public string? FilePath { get; set; }
 
         private static readonly StoredImageList storedImageList = new();
         
@@ -21,7 +21,7 @@ namespace AiPainter
 
             panStableDiffusion.OnGenerate = () =>
             {
-                panGenerationList.AddGeneration(panStableDiffusion, pictureBox);
+                panGenerationList.AddGeneration(panStableDiffusion, pictureBox, this);
             };
 
             updateImageListWorker.RunWorkerAsync();
@@ -44,8 +44,8 @@ namespace AiPainter
             {
                 if (File.Exists(args[1]))
                 {
-                    filePath = args[1];
-                    pictureBox.Image = BitmapTools.Load(filePath);
+                    FilePath = args[1];
+                    pictureBox.Image = BitmapTools.Load(FilePath);
                 }
             }
         }
@@ -103,7 +103,7 @@ namespace AiPainter
 
                         pb.OnImageClick = () =>
                         {
-                            filePath = pb.FilePath;
+                            FilePath = pb.FilePath;
                             pictureBox.Image = BitmapTools.Load(pb.FilePath);
                             pictureBox.ResetMask();
                         };
@@ -173,17 +173,17 @@ namespace AiPainter
             var image = pictureBox.Image;
             if (image == null) return;
 
-            format ??= BitmapTools.HasAlpha(image) || Path.GetExtension(filePath).ToLowerInvariant() == ".png"
+            format ??= BitmapTools.HasAlpha(image) || Path.GetExtension(FilePath).ToLowerInvariant() == ".png"
                            ? ImageFormat.Png
                            : ImageFormat.Jpeg;
 
-            var baseFileName = Path.GetFileNameWithoutExtension(filePath)!;
+            var baseFileName = Path.GetFileNameWithoutExtension(FilePath)!;
             var match = Regex.Match(baseFileName, @"(.+)-aip_(\d+)$");
             var n = match.Success ? int.Parse(match.Groups[2].Value) + 1 : 1;
             if (match.Success) baseFileName = match.Groups[1].Value;
             baseFileName += "-aip_";
             
-            var baseDir = Path.GetDirectoryName(filePath)!;
+            var baseDir = Path.GetDirectoryName(FilePath)!;
   
             while (Directory.GetFiles(baseDir, baseFileName + n.ToString("D3") + ".*").Any()) n++;
             
@@ -203,8 +203,8 @@ namespace AiPainter
             openFileDialog.Filter = "Image files (*.jpg;*.jpeg;*.png)|*.jpg;*.jpeg;*.png|All files (*.*)|*.*";
             if (openFileDialog.ShowDialog() == DialogResult.OK)
             {
-                filePath = openFileDialog.FileName;
-                using var image = BitmapTools.Load(filePath);
+                FilePath = openFileDialog.FileName;
+                using var image = BitmapTools.Load(FilePath);
                 pictureBox.Image = BitmapTools.GetShrinked
                 (
                     image,
@@ -229,7 +229,7 @@ namespace AiPainter
 
         private void btClearActiveImage_Click(object sender, EventArgs e)
         {
-            filePath = null;
+            FilePath = null;
             pictureBox.Image = null;
             pictureBox.Refresh();
         }
@@ -320,10 +320,10 @@ namespace AiPainter
 
             var activeBox = pictureBox.ActiveBox;
 
-            Text = (string.IsNullOrEmpty(filePath) ? "AiPainter" : Path.GetFileName(filePath))
+            Text = (string.IsNullOrEmpty(FilePath) ? "AiPainter" : Path.GetFileName(FilePath))
                  + (pictureBox.Image == null ? "" : " (" + pictureBox.Image.Width + " x " + pictureBox.Image.Height + ")")
                  + $" [Active box: X,Y = {activeBox.X},{activeBox.Y}; WxH = {activeBox.Width}x{activeBox.Height}]"
-                 + (string.IsNullOrEmpty(filePath) ? "" : " | " + Path.GetDirectoryName(filePath));
+                 + (string.IsNullOrEmpty(FilePath) ? "" : " | " + Path.GetDirectoryName(FilePath));
 
             btClearActiveImage.Enabled = pictureBox.Image != null;
             btCopyToClipboard.Enabled = pictureBox.Image != null;
@@ -332,7 +332,7 @@ namespace AiPainter
             btRestorePrevMask.Enabled = pictureBox.HasPrevMask;
             btResizeAndMoveActiveBoxToFitImage.Enabled = pictureBox.Image != null;
 
-            btSave.Enabled = !string.IsNullOrEmpty(filePath) && pictureBox.Image != null;
+            btSave.Enabled = !string.IsNullOrEmpty(FilePath) && pictureBox.Image != null;
             btSaveAs.Enabled = pictureBox.Image != null;
             btSavePng.Enabled = pictureBox.Image != null;
             btSaveJpeg.Enabled = pictureBox.Image != null;
@@ -374,7 +374,7 @@ namespace AiPainter
 
         private void btSave_Click(object sender, EventArgs e)
         {
-            save(Path.GetExtension(filePath).ToLowerInvariant() == ".png" ? ImageFormat.Png : ImageFormat.Jpeg);
+            save(Path.GetExtension(FilePath).ToLowerInvariant() == ".png" ? ImageFormat.Png : ImageFormat.Jpeg);
         }
 
         private void btSaveAs_Click(object sender, EventArgs e)
@@ -386,12 +386,12 @@ namespace AiPainter
                 + "|JPG file (*.jpg)|*.jpg;*.jpeg"
                 + "|All files (*.*)|*.*";
             
-            saveFileDialog.FileName = Path.GetFileName(filePath);
+            saveFileDialog.FileName = Path.GetFileName(FilePath);
             
             if (saveFileDialog.ShowDialog() == DialogResult.OK)
             {
-                filePath = saveFileDialog.FileName;
-                save(Path.GetExtension(filePath).ToLowerInvariant() == ".png" ? ImageFormat.Png : ImageFormat.Jpeg);
+                FilePath = saveFileDialog.FileName;
+                save(Path.GetExtension(FilePath).ToLowerInvariant() == ".png" ? ImageFormat.Png : ImageFormat.Jpeg);
             }
         }
 

@@ -2,7 +2,7 @@
 
 class CustomProgressBar : ProgressBar
 {
-    public string? customText;
+    private string? customText;
 
     public string? CustomText
     {

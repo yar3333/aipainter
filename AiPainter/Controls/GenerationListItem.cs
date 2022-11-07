@@ -6,10 +6,12 @@ namespace AiPainter.Controls
 {
     public partial class GenerationListItem : UserControl
     {
+        private MainForm mainForm = null!;
         private StableDiffusionPanel sdPanel = null!;
         private SmartPictureBox pictureBox = null!;
 
-        public GenerationState State { get; private set; } = GenerationState.WAITING;
+        public bool InProcess;
+        public int ImagesdInQueue => (int)numIterations.Value;
 
         private string checkpoint;
         private string negative;
@@ -21,19 +23,21 @@ namespace AiPainter.Controls
         private Bitmap? originalImage;
         private Bitmap? croppedMask;
 
+        private string? savedFilePath;
         private Primitive[] savedMask;
         
-        private bool wantCancel;
-
         private int lastIterations;
+
+        private bool ignoreNumIterationsChange;
 
         public GenerationListItem()
         {
             InitializeComponent();
         }
 
-        public void Init(StableDiffusionPanel sdPanel, SmartPictureBox pictureBox)
+        public void Init(StableDiffusionPanel sdPanel, SmartPictureBox pictureBox, MainForm mainForm)
         {
+            this.mainForm = mainForm;
             this.sdPanel = sdPanel;
             this.pictureBox = pictureBox;
 
@@ -43,11 +47,13 @@ namespace AiPainter.Controls
             cfgScale = sdPanel.numCfgScale.Value;
             seed = sdPanel.tbSeed.Text.Trim() != "" ? long.Parse(sdPanel.tbSeed.Text.Trim()) : -1;
 
+            ignoreNumIterationsChange = true;
             numIterations.Value = sdPanel.numIterations.Value;
+            ignoreNumIterationsChange = false;
 
             pbIterations.Maximum = (int)sdPanel.numIterations.Value;
             pbIterations.Value = 0;
-            pbIterations.CustomText = "0 / " + pbIterations.Maximum;
+            pbIterations.CustomText = pbIterations.Value + " / " + pbIterations.Maximum;
             pbIterations.Refresh();
             
             pbSteps.Value = 0;
@@ -72,13 +78,17 @@ namespace AiPainter.Controls
           + "\n\nNegative:\n" + negative
             );
 
+            savedFilePath = mainForm.FilePath;
             savedMask = pictureBox.SaveMask();
         }
 
         public void Run()
         {
-            State = pbIterations.Value < pbIterations.Maximum ? GenerationState.IN_PROCESS : GenerationState.FULLY_FINISHED;
-            if (State == GenerationState.FULLY_FINISHED) return;
+            InProcess = true;
+
+            pbSteps.Value = 0;
+            pbSteps.CustomText = pbSteps.Value + " / " + pbSteps.Maximum;
+            pbSteps.Refresh();
 
             Task.Run(() =>
             {
@@ -132,18 +142,8 @@ namespace AiPainter.Controls
             {
                 generate(null, null, (resultImage, resultFilePath) => 
                 {
-                    if (!wantCancel)
-                    {
-                        resultImage.Save(resultFilePath, ImageFormat.Png);
-                        resultImage.Dispose();
-
-                        State = GenerationState.PART_FINISHED;
-                    }
-                    else
-                    {
-                        wantCancel = false;
-                        State = GenerationState.FULLY_FINISHED;
-                    }
+                    resultImage.Save(resultFilePath, ImageFormat.Png);
+                    resultImage.Dispose();
                 });
             }
             else
@@ -154,34 +154,24 @@ namespace AiPainter.Controls
                 
                 generate(image512, mask512, (resultImage, resultFilePath) =>
                 {
-                    if (!wantCancel)
+                    try
                     {
-                        try
-                        {
-                            using var resultImageResized = BitmapTools.GetResized(resultImage, activeBox.Width, activeBox.Height)!;
-                            resultImage.Dispose();
-                        
-                            using var tempOriginalImage = BitmapTools.Clone(originalImage);
-                            BitmapTools.DrawBitmapAtPos(resultImageResized, tempOriginalImage, activeBox.X, activeBox.Y);
-                            tempOriginalImage.Save(resultFilePath, ImageFormat.Png);
-                        }
-                        catch (Exception ee)
-                        {
-                            StableDiffusionClient.Log.WriteLine(ee.ToString());
-                        }
-
-                        State = GenerationState.PART_FINISHED;
+                        using var resultImageResized = BitmapTools.GetResized(resultImage, activeBox.Width, activeBox.Height)!;
+                        resultImage.Dispose();
+                    
+                        using var tempOriginalImage = BitmapTools.Clone(originalImage);
+                        BitmapTools.DrawBitmapAtPos(resultImageResized, tempOriginalImage, activeBox.X, activeBox.Y);
+                        tempOriginalImage.Save(resultFilePath, ImageFormat.Png);
                     }
-                    else
+                    catch (Exception ee)
                     {
-                        wantCancel = false;
-                        State = GenerationState.FULLY_FINISHED;
+                        StableDiffusionClient.Log.WriteLine(ee.ToString());
                     }
                 });
             }
         }
 
-        private void generate(Bitmap? initImage, Bitmap? maskImage, Action<Bitmap, string> onGenerated)
+        private void generate(Bitmap? initImage, Bitmap? maskImage, Action<Bitmap, string> processGeneratedImage)
         {
             if (initImage == null)
             {
@@ -198,11 +188,7 @@ namespace AiPainter.Controls
                 (
                     parameters,
                     onProgress: onProgress,
-                    onSuccess: ev =>
-                    {
-                        updateProgressBars();
-                        onGenerated(BitmapTools.FromBase64(ev.images[0]), getDestImageFilePath(ev));
-                    }
+                    onSuccess: ev => onImageGenerated(ev, processGeneratedImage)
                 );
             }
             else
@@ -223,13 +209,32 @@ namespace AiPainter.Controls
                 (
                     parameters,
                     onProgress: onProgress,
-                    onSuccess: ev =>
-                    {
-                        updateProgressBars();
-                        onGenerated(BitmapTools.FromBase64(ev.images[0]), getDestImageFilePath(ev));
-                    }
+                    onSuccess: ev => onImageGenerated(ev, processGeneratedImage)
                 );
             }
+        }
+
+        private void onImageGenerated(SdGenerationResponse ev, Action<Bitmap, string> processGeneratedImage)
+        {
+            if (numIterations.Value > 0)
+            {
+                Invoke(() =>
+                {
+                    ignoreNumIterationsChange = true;
+                    numIterations.Value--;
+                    ignoreNumIterationsChange = false;
+                    
+                    lastIterations = (int)numIterations.Value;
+                    
+                    pbIterations.Value++;
+                    pbIterations.CustomText = pbIterations.Value + " / " + pbIterations.Maximum;
+                    pbIterations.Refresh();
+                });
+                
+                processGeneratedImage(BitmapTools.FromBase64(ev.images[0]), getDestImageFilePath(ev));
+            }
+            
+            InProcess = false;
         }
 
         private void onProgress(SdGenerationProgess ev)
@@ -242,26 +247,12 @@ namespace AiPainter.Controls
             });
         }
 
-        private void updateProgressBars()
-        {
-            Invoke(() => {
-                pbSteps.Value = 0;
-                pbSteps.Refresh();
-                pbIterations.Value++;
-                pbIterations.CustomText = pbIterations.Value + " / " + pbIterations.Maximum;
-                pbIterations.Refresh();
-                
-                numIterations.Value--;
-                lastIterations = (int)numIterations.Value;
-            });
-        }
-
         private void btRemove_Click(object sender, EventArgs e)
         {
-            if (State == GenerationState.IN_PROCESS)
+            if (InProcess)
             {
-                wantCancel = true;
-                StableDiffusionClient.Cancel();
+                numIterations.Value = 0;
+                Task.Run(StableDiffusionClient.Cancel);
             }
             Parent = null;
             Dispose();
@@ -288,22 +279,23 @@ namespace AiPainter.Controls
                 pictureBox.Image = BitmapTools.Clone(originalImage);
                 pictureBox.LoadMask(savedMask);
             }
+
+            mainForm.FilePath = savedFilePath;
         }
 
         private void numIterations_ValueChanged(object sender, EventArgs e)
         {
+            if (ignoreNumIterationsChange) return;
+
             pbIterations.Maximum += (int)numIterations.Value - lastIterations;
+            pbIterations.CustomText = pbIterations.Value + " / " + pbIterations.Maximum;
+            
             lastIterations = (int)numIterations.Value;
-            if (numIterations.Value == 0)
+            
+            if (numIterations.Value == 0 && InProcess)
             {
-                if (State == GenerationState.IN_PROCESS)
-                {
-                    wantCancel = true;
-                    Task.Run(() =>
-                    {
-                        StableDiffusionClient.Cancel();
-                    });
-                }
+                Task.Run(StableDiffusionClient.Cancel);
+                InProcess = false;
             }
         }
 

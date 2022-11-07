@@ -17,10 +17,10 @@ namespace AiPainter.Controls
             };
         }
 
-        public void AddGeneration(StableDiffusionPanel sdPanel, SmartPictureBox pictureBox)
+        public void AddGeneration(StableDiffusionPanel sdPanel, SmartPictureBox pictureBox, MainForm mainForm)
         {
             var item = new GenerationListItem();
-            item.Init(sdPanel, pictureBox);
+            item.Init(sdPanel, pictureBox, mainForm);
             item.Width = ClientSize.Width;
             item.Anchor = AnchorStyles.Left | AnchorStyles.Top | AnchorStyles.Right;
 
@@ -42,8 +42,10 @@ namespace AiPainter.Controls
 
         private void stateManager_Tick(object sender, EventArgs e)
         {
-            if (items.Any(x => x.State == GenerationState.IN_PROCESS)) return;
-            var item = items.Find(x => x.State == GenerationState.PART_FINISHED || x.State == GenerationState.WAITING);
+            items.RemoveAll(x => x.IsDisposed);
+
+            if (items.Any(x => x.InProcess)) return;
+            var item = items.Find(x => x.ImagesdInQueue > 0);
             item?.Run();
         }
     }
