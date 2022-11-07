@@ -15,8 +15,6 @@ namespace AiPainter
 
         private static readonly StoredImageList storedImageList = new();
 
-        private int previewCount;
-        
         public MainForm()
         {
             InitializeComponent();
@@ -37,7 +35,7 @@ namespace AiPainter
 
             splitContainer.Panel2.MouseWheel += (_, ee) =>
             {
-                hPicScroll.Value = Math.Max(hPicScroll.Minimum, Math.Min(hPicScroll.Maximum - previewCount + 1, hPicScroll.Value + (ee.Delta > 0 ? -1 : 1)));
+                hPicScroll.Value = Math.Max(hPicScroll.Minimum, Math.Min(hPicScroll.Maximum - hPicScroll.LargeChange + 1, hPicScroll.Value + (ee.Delta > 0 ? -1 : 1)));
                 updateImages(null);
             };
 
@@ -56,13 +54,11 @@ namespace AiPainter
         {
             while (!IsDisposed)
             {
-                var oldImagesCount = 0;
                 var changesDetected = false;
                 try
                 {
                     lock (storedImageList)
                     {
-                        oldImagesCount = storedImageList.Count;
                         changesDetected = storedImageList.Update();
                     }
                 }
@@ -72,20 +68,26 @@ namespace AiPainter
                     DelayTools.WaitForExit(1000);
                 }
                 
-                if (changesDetected && !IsDisposed)
+                if (changesDetected)
                 {
-                    Invoke(() =>
+                    try
                     {
-                        lock (storedImageList)
+                        Invoke(() =>
                         {
-                            if (hPicScroll.Value == hPicScroll.Maximum - oldImagesCount + 1)
+                            lock (storedImageList)
                             {
-                                hPicScroll.Maximum = Math.Max(0, storedImageList.Count - 1);
-                                hPicScroll.Value = Math.Max(0, hPicScroll.Maximum - storedImageList.Count + 1);
+                                if (hPicScroll.Value == Math.Max(0, hPicScroll.Maximum - hPicScroll.LargeChange + 1))
+                                {
+                                    hPicScroll.Maximum = Math.Max(0, storedImageList.Count - 1);
+                                    hPicScroll.Value = Math.Max(0, hPicScroll.Maximum - hPicScroll.LargeChange + 1);
+                                }
+                                updateImages(null);
                             }
-                            updateImages(null);
-                        }
-                    });
+                        });
+                    }
+                    catch (InvalidOperationException)
+                    {
+                    }
                 }
 
                 DelayTools.WaitForExit(1000);
@@ -97,14 +99,15 @@ namespace AiPainter
             var panel = splitContainer.Panel2;
 
             var sz = Math.Max(50, panel.ClientSize.Height);
-            previewCount = (panel.ClientSize.Width + 5) / (sz + 5);
             var x = 0;
             var n = 0;
             
             lock (storedImageList)
             {
-                hPicScroll.LargeChange = previewCount;
+                hPicScroll.LargeChange = (panel.ClientSize.Width + 5) / (sz + 5);
                 hPicScroll.Maximum = Math.Max(0, storedImageList.Count - 1);
+                hPicScroll.Value = Math.Max(0, Math.Min(hPicScroll.Value, hPicScroll.Maximum - hPicScroll.LargeChange + 1));
+                if (hPicScrollValue != null) hPicScrollValue = Math.Max(0, Math.Min(hPicScrollValue.Value, hPicScroll.Maximum - hPicScroll.LargeChange + 1));
 
                 var i = hPicScrollValue ?? hPicScroll.Value;
                 while (x < panel.ClientSize.Width && i < storedImageList.Count)
@@ -152,12 +155,11 @@ namespace AiPainter
             {
                 lock (storedImageList)
                 {
-                    File.Delete(pb.FilePath!);
+                    File.Delete(pb.FilePath);
                     storedImageList.Remove(pb.FilePath);
-                }
 
-                hPicScroll.Value = Math.Min(hPicScroll.Value, hPicScroll.Maximum);
-                updateImages(null);
+                    updateImages(null);
+                }
             };
             
             return pb;
