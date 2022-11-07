@@ -83,20 +83,10 @@
             0,
             0,
             0});
-            this.numIterations.Minimum = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
             this.numIterations.Name = "numIterations";
             this.numIterations.Size = new System.Drawing.Size(48, 23);
             this.numIterations.TabIndex = 3;
             this.toolTip.SetToolTip(this.numIterations, "Count");
-            this.numIterations.Value = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
             this.numIterations.ValueChanged += new System.EventHandler(this.numIterations_ValueChanged);
             // 
             // btRemove

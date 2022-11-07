@@ -68,6 +68,8 @@ namespace AiPainter.Adapters.RemBg
 
         private void portCheckWorker_DoWork(object sender, System.ComponentModel.DoWorkEventArgs e)
         {
+            while (Application.OpenForms.Count == 0) Thread.Sleep(200);
+            
             while (!DelayTools.WaitForExit(1000))
             {
                 isPortOpen = RemBgProcess.IsReady();

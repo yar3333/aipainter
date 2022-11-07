@@ -2,7 +2,6 @@
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.Numerics;
-using System.Text.Json;
 
 namespace AiPainter.Controls
 {
@@ -306,9 +305,9 @@ namespace AiPainter.Controls
             
             Capture = true;
 
-            if (e.Button == MouseButtons.Left  && !ctrlPressed) maskingMouseDown(e.Location);
-            if (e.Button == MouseButtons.Right &&  ctrlPressed) activeBoxMovingMouseDown(e.Location);
-            if (e.Button == MouseButtons.Right && !ctrlPressed) globalMovingMouseDown(e.Location);
+            if (e.Button == MouseButtons.Left && !ctrlPressed) maskingMouseDown(e.Location);
+            if (e.Button == MouseButtons.Left &&  ctrlPressed) activeBoxMovingMouseDown(e.Location);
+            if (e.Button == MouseButtons.Right) globalMovingMouseDown(e.Location);
         }
 
         private void SmartPictureBox_MouseMove(object sender, MouseEventArgs e)

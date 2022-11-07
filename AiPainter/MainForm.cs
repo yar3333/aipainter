@@ -106,7 +106,6 @@ namespace AiPainter
                             filePath = pb.FilePath;
                             pictureBox.Image = BitmapTools.Load(pb.FilePath);
                             pictureBox.ResetMask();
-                            pictureBox.ResetView();
                         };
 
                         pb.OnImageRemove = () =>

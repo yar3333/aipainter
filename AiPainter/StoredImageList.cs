@@ -23,7 +23,7 @@ class StoredImageList
             
         if (removeCount > 0 || wasUpdate || newFiles.Length > 0)
         {
-            images.Sort((a, b) => DateTime.Compare(b.ChangeTime, a.ChangeTime));
+            images.Sort((a, b) => DateTime.Compare(a.ChangeTime, b.ChangeTime));
             return true;
         }
 

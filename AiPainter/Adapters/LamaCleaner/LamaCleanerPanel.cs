@@ -13,7 +13,7 @@ namespace AiPainter.Adapters.LamaCleaner
         public LamaCleanerPanel()
         {
             InitializeComponent();
-
+            
             portCheckWorker.RunWorkerAsync();
         }
 
@@ -72,6 +72,8 @@ namespace AiPainter.Adapters.LamaCleaner
 
         private void portCheckWorker_DoWork(object sender, System.ComponentModel.DoWorkEventArgs e)
         {
+            while (Application.OpenForms.Count == 0) Thread.Sleep(200);
+
             while (!DelayTools.WaitForExit(1000))
             {
                 isPortOpen = LamaCleanerProcess.IsReady();

@@ -25,6 +25,8 @@ namespace AiPainter.Controls
         
         private bool wantCancel;
 
+        private int lastIterations;
+
         public GenerationListItem()
         {
             InitializeComponent();
@@ -52,6 +54,8 @@ namespace AiPainter.Controls
             pbSteps.Maximum = (int)sdPanel.numSteps.Value;
             pbSteps.CustomText = "";
             pbSteps.Refresh();
+
+            lastIterations = (int)numIterations.Value;
             
             if (sdPanel.cbUseInitImage.Checked)
             {
@@ -246,6 +250,9 @@ namespace AiPainter.Controls
                 pbIterations.Value++;
                 pbIterations.CustomText = pbIterations.Value + " / " + pbIterations.Maximum;
                 pbIterations.Refresh();
+                
+                numIterations.Value--;
+                lastIterations = (int)numIterations.Value;
             });
         }
 
@@ -285,7 +292,19 @@ namespace AiPainter.Controls
 
         private void numIterations_ValueChanged(object sender, EventArgs e)
         {
-            pbIterations.Maximum = (int)numIterations.Value;
+            pbIterations.Maximum += (int)numIterations.Value - lastIterations;
+            lastIterations = (int)numIterations.Value;
+            if (numIterations.Value == 0)
+            {
+                if (State == GenerationState.IN_PROCESS)
+                {
+                    wantCancel = true;
+                    Task.Run(() =>
+                    {
+                        StableDiffusionClient.Cancel();
+                    });
+                }
+            }
         }
 
         private string getDestImageFilePath(SdGenerationResponse ev)
