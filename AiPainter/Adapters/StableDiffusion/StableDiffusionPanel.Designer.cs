@@ -99,6 +99,8 @@
             this.ddCheckpoint.Name = "ddCheckpoint";
             this.ddCheckpoint.Size = new System.Drawing.Size(334, 23);
             this.ddCheckpoint.TabIndex = 18;
+            this.toolTip.SetToolTip(this.ddCheckpoint, "Active StableDiffusion checkpoint (weights). Just download additional *.ckpt file" +
+        "s and put them into `stable_diffusion_checkpoints` folder.");
             this.ddCheckpoint.SelectedIndexChanged += new System.EventHandler(this.ddCheckpoint_SelectedIndexChanged);
             // 
             // tbNegative

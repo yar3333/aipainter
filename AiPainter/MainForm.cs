@@ -52,7 +52,7 @@ namespace AiPainter
 
         private void updateImageListWorker_DoWork(object sender, System.ComponentModel.DoWorkEventArgs e)
         {
-            while (!updateImageListWorker.CancellationPending)
+            while (!IsDisposed)
             {
                 var changesDetected = false;
                 try
@@ -65,10 +65,10 @@ namespace AiPainter
                 catch (Exception ee)
                 {
                     Program.Log.WriteLine(ee.ToString());
-                    Thread.Sleep(1000);
+                    DelayTools.WaitForExit(1000);
                 }
                 
-                if (changesDetected)
+                if (changesDetected && !IsDisposed)
                 {
                     Invoke(() =>
                     {
@@ -76,7 +76,7 @@ namespace AiPainter
                     });
                 }
 
-                Thread.Sleep(1000);
+                DelayTools.WaitForExit(1000);
             }
         }
         
@@ -144,27 +144,29 @@ namespace AiPainter
             splitContainer.Panel2.Refresh();
         }
 
-        private void MainForm_KeyDown(object sender, KeyEventArgs e)
+        protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
         {
-            if (e.Modifiers == 0 && e.KeyCode == Keys.Escape)
-            {
-                Application.Exit();
-            }
+            var focusInText = panStableDiffusion.IsTextboxInFocus;
 
-            if (e.Modifiers == Keys.Control && e.KeyCode == Keys.Z)
+            if (!focusInText && keyData == (Keys.Control | Keys.Z))
             {
                 pictureBox.Undo();
+                return true;
             }
 
-            if (e.Modifiers == Keys.Control && e.KeyCode == Keys.Y || e.Modifiers == (Keys.Control|Keys.Shift) && e.KeyCode == Keys.Z)
+            if (!focusInText && keyData == (Keys.Control | Keys.Y) || keyData == (Keys.Control | Keys.Shift | Keys.Z))
             {
                 pictureBox.Redo();
+                return true;
             }
 
-            if (e.Modifiers == Keys.Control && e.KeyCode == Keys.S)
+            if (keyData == (Keys.Control | Keys.S))
             {
                 save(null);
+                return true;
             }
+
+            return base.ProcessCmdKey(ref msg, keyData);
         }
 
         private void save(ImageFormat? format)
@@ -283,7 +285,6 @@ namespace AiPainter
             pictureBox.AddBoxToMask(0, 0, pictureBox.Image.Width, IMAGE_EXTEND_SIZE);
 
             pictureBox.Refresh();
-            
         }
 
         private void btDown_Click(object sender, EventArgs e)
@@ -403,6 +404,11 @@ namespace AiPainter
         private void btSaveJpeg_Click(object sender, EventArgs e)
         {
             save(ImageFormat.Jpeg);
+        }
+
+        private void splitContainer_Panel2_Resize(object sender, EventArgs e)
+        {
+            updateImages(null);
         }
     }
 }

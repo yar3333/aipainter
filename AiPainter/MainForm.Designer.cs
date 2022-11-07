@@ -306,6 +306,10 @@ namespace AiPainter
             // splitContainer.Panel1
             // 
             this.splitContainer.Panel1.Controls.Add(this.splitContainer1);
+            // 
+            // splitContainer.Panel2
+            // 
+            this.splitContainer.Panel2.Resize += new System.EventHandler(this.splitContainer_Panel2_Resize);
             this.splitContainer.Size = new System.Drawing.Size(924, 667);
             this.splitContainer.SplitterDistance = 523;
             this.splitContainer.TabIndex = 2;
@@ -432,12 +436,10 @@ namespace AiPainter
             this.Controls.Add(this.splitContainer);
             this.Controls.Add(this.toolbar);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.KeyPreview = true;
             this.Name = "MainForm";
             this.Text = "AiPainter";
             this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
             this.Load += new System.EventHandler(this.MainForm_Load);
-            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.MainForm_KeyDown);
             this.toolbar.ResumeLayout(false);
             this.toolbar.PerformLayout();
             this.splitContainer.Panel1.ResumeLayout(false);

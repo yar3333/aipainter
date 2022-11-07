@@ -55,6 +55,7 @@ namespace AiPainter.Controls
         private Primitive[] oldPrimitives = {};
 
         private bool mouseInPictureBox;
+        private bool ctrlPressed;
         
         public SmartPictureBox()
         {
@@ -210,9 +211,9 @@ namespace AiPainter.Controls
         {
             if (Image == null) return;
 
-            switch (mode)
+            switch (ctrlPressed)
             {
-                case Mode.NOTHING:
+                case false:
                 {
                     var center = new Point(ClientSize / 2);
                     var oldCenter = getTransformedMousePos(center);
@@ -223,7 +224,7 @@ namespace AiPainter.Controls
                     break;
                 }
 
-                case Mode.ACTIVE_BOX_MOVING:
+                case true:
                 {
                     var center = new Point(ClientSize / 2);
                     var oldCenter = getTransformedMousePos(center);
@@ -304,9 +305,9 @@ namespace AiPainter.Controls
             
             Capture = true;
 
-            if (e.Button == MouseButtons.Left) maskingMouseDown(e.Location);
-            if (e.Button == MouseButtons.Right) activeBoxMovingMouseDown(e.Location);
-            if (e.Button == MouseButtons.Middle) globalMovingMouseDown(e.Location);
+            if (e.Button == MouseButtons.Left  && !ctrlPressed) maskingMouseDown(e.Location);
+            if (e.Button == MouseButtons.Right &&  ctrlPressed) activeBoxMovingMouseDown(e.Location);
+            if (e.Button == MouseButtons.Right && !ctrlPressed) globalMovingMouseDown(e.Location);
         }
 
         private void SmartPictureBox_MouseMove(object sender, MouseEventArgs e)
@@ -432,17 +433,10 @@ namespace AiPainter.Controls
         {
             if (Image == null) return;
 
-            var oldCenter = getTransformedPoint(new Point(ActiveBox.X, ActiveBox.Y));
-
             var tranLoc = getTransformedMousePos(loc);
 
-            ActiveBox.X -= tranLoc.X - movingStartPoint.X;
-            ActiveBox.Y -= tranLoc.Y - movingStartPoint.Y;
-
-            var newCenter = getTransformedPoint(new Point(ActiveBox.X, ActiveBox.Y));
-
-            globalX -= newCenter.X - oldCenter.X;
-            globalY -= newCenter.Y - oldCenter.Y;
+            ActiveBox.X += tranLoc.X - movingStartPoint.X;
+            ActiveBox.Y += tranLoc.Y - movingStartPoint.Y;
             
             movingStartPoint = getTransformedMousePos(loc);
             
@@ -494,6 +488,24 @@ namespace AiPainter.Controls
         {
             mouseInPictureBox = false;
             manageCursor(Point.Empty);
+        }
+
+        private void SmartPictureBox_Resize(object sender, EventArgs e)
+        {
+            Refresh();
+        }
+
+        protected override bool ProcessKeyEventArgs(ref Message m)
+        {
+            if (m.Msg == 0x100 && m.WParam == (IntPtr)0x11) // WM_KEYDOWN + Ctrl
+            {
+                ctrlPressed = true;
+            }
+            if (m.Msg == 0x101 && m.WParam == (IntPtr)0x11) // WM_KEYUP + Ctrl
+            {
+                ctrlPressed = false;
+            }
+            return base.ProcessKeyEventArgs(ref m);
         }
     }
 }

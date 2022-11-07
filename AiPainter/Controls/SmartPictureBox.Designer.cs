@@ -42,6 +42,7 @@
             this.MouseLeave += new System.EventHandler(this.SmartPictureBox_MouseLeave);
             this.MouseMove += new System.Windows.Forms.MouseEventHandler(this.SmartPictureBox_MouseMove);
             this.MouseUp += new System.Windows.Forms.MouseEventHandler(this.SmartPictureBox_MouseUp);
+            this.Resize += new System.EventHandler(this.SmartPictureBox_Resize);
             this.ResumeLayout(false);
 
         }

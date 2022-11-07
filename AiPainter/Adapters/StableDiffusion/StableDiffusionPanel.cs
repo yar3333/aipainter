@@ -1,5 +1,4 @@
-﻿using AiPainter.Helpers;
-using AiPainter.Controls;
+﻿using AiPainter.Controls;
 
 namespace AiPainter.Adapters.StableDiffusion
 {
@@ -11,6 +10,8 @@ namespace AiPainter.Adapters.StableDiffusion
         {
             InitializeComponent();
         }
+
+        public bool IsTextboxInFocus => collapsablePanel.ActiveControl is TextBox;
 
         private void collapsablePanel_Load(object sender, EventArgs e)
         {
@@ -35,7 +36,7 @@ namespace AiPainter.Adapters.StableDiffusion
             ddInpaintingFill.Items.Clear();
             // ReSharper disable once CoVariantArrayConversion
             ddInpaintingFill.Items.AddRange(Enum.GetNames<SdInpaintingFill>());
-            ddInpaintingFill.SelectedIndex = 0;
+            ddInpaintingFill.SelectedIndex = 1;
         }
 
         private void btGenerate_Click(object sender, EventArgs e)

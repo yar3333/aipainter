@@ -87,13 +87,16 @@ namespace AiPainter.Controls
 
         private async Task runInTask()
         {
-            if (Program.Config.UseEmbeddedStableDiffusion)
+            if (Program.Config.UseEmbeddedStableDiffusion && StableDiffusionProcess.Loading)
             {
                 if (StableDiffusionProcess.ActiveCheckpoint != checkpoint)
                 {
                     Invoke(() => pbSteps.CustomText = "Stopping...");
                     StableDiffusionProcess.Stop();
-                    while (StableDiffusionProcess.IsReady()) if (await DelayTools.WaitForExitAsync(500)) return;
+                    while (StableDiffusionProcess.IsReady())
+                    {
+                        if (await DelayTools.WaitForExitAsync(500) || IsDisposed) return;
+                    }
                     
                     Invoke(() => pbSteps.CustomText = "Starting...");
                     StableDiffusionProcess.Start(checkpoint);
@@ -103,8 +106,11 @@ namespace AiPainter.Controls
             if (!StableDiffusionProcess.IsReady())
             {
                 Invoke(() => pbSteps.CustomText = "Waiting ready...");
-                while (!StableDiffusionProcess.IsReady()) if (await DelayTools.WaitForExitAsync(500)) return;
-                if (await DelayTools.WaitForExitAsync(2000)) return;
+                while (!StableDiffusionProcess.IsReady())
+                {
+                    if (await DelayTools.WaitForExitAsync(500) || IsDisposed) return;
+                }
+                if (await DelayTools.WaitForExitAsync(2000) || IsDisposed) return;
             }
 
             Invoke(() =>

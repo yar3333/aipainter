@@ -1,5 +1,6 @@
 ﻿using System.Net.Http.Json;
 using System.Text.Json;
+using AiPainter.Helpers;
 
 namespace AiPainter.Adapters.StableDiffusion;
 
@@ -69,7 +70,7 @@ static class StableDiffusionClient
     {
         Task.Run(async () =>
         {
-            await Task.Delay(TimeSpan.FromSeconds(1));
+            await DelayTools.WaitForExitAsync(1000);
 
             while (inProcess)
             {
@@ -81,8 +82,7 @@ static class StableDiffusionClient
                 {
                     Log.WriteLine(e.ToString());
                 }
-                
-                for (var i = 0; i < 3; i++) await Task.Delay(TimeSpan.FromSeconds(0.1));
+                await DelayTools.WaitForExitAsync(250);
             }
         });
     }
