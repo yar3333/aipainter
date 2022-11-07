@@ -1,6 +1,6 @@
 namespace AiPainter;
 
-enum PrimitiveKind
+public enum PrimitiveKind
 {
     Line,
     Box,

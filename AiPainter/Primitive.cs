@@ -1,6 +1,6 @@
 namespace AiPainter;
 
-class Primitive
+public class Primitive
 {
     public PrimitiveKind Kind;
     

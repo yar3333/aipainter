@@ -2,6 +2,7 @@
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.Numerics;
+using System.Text.Json;
 
 namespace AiPainter.Controls
 {
@@ -506,6 +507,18 @@ namespace AiPainter.Controls
                 ctrlPressed = false;
             }
             return base.ProcessKeyEventArgs(ref m);
+        }
+
+        public Primitive[] SaveMask()
+        {
+            return primitives.ToArray();
+        }
+
+        public void LoadMask(Primitive[] data)
+        {
+            oldPrimitives = primitives.ToArray();
+            redoPrimitiveBlocks.Clear();
+            primitives = data.ToList();
         }
     }
 }

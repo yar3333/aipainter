@@ -21,6 +21,8 @@ namespace AiPainter.Controls
         private Bitmap? originalImage;
         private Bitmap? croppedMask;
 
+        private Primitive[] savedMask;
+        
         private bool wantCancel;
 
         public GenerationListItem()
@@ -65,6 +67,8 @@ namespace AiPainter.Controls
                 "Positive:\n" + tbPrompt.Text
           + "\n\nNegative:\n" + negative
             );
+
+            savedMask = pictureBox.SaveMask();
         }
 
         public void Run()
@@ -275,6 +279,7 @@ namespace AiPainter.Controls
                 pictureBox.ActiveBox = activeBox;
                 sdPanel.ddInpaintingFill.SelectedItem = inpaintingFill.ToString();
                 pictureBox.Image = BitmapTools.Clone(originalImage);
+                pictureBox.LoadMask(savedMask);
             }
         }
 
