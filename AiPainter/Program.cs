@@ -2,6 +2,7 @@ using System.Text.Json;
 using AiPainter.Adapters.LamaCleaner;
 using AiPainter.Adapters.RemBg;
 using AiPainter.Adapters.StableDiffusion;
+using AiPainter.Helpers;
 
 namespace AiPainter;
 
@@ -9,6 +10,7 @@ static class Program
 {
     public static Config Config = new();
     public static readonly Log Log = new("_general");
+    public static readonly Job Job = new();
 
     [STAThread]
     static void Main()

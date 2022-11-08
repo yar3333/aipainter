@@ -53,6 +53,8 @@ static class RemBgProcess
                 log.WriteLine("[process] Exit " + code);
             }
         );
+
+        if (process != null) Program.Job.AddProcess(process.Id);
     }
 
     public static void Stop()
