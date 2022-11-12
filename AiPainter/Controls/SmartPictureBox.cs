@@ -495,17 +495,16 @@ namespace AiPainter.Controls
             Refresh();
         }
 
-        protected override bool ProcessKeyEventArgs(ref Message m)
+        public void ProcessKeys(Message msg)
         {
-            if (m.Msg == 0x100 && m.WParam == (IntPtr)0x11) // WM_KEYDOWN + Ctrl
+            if (msg.Msg == 0x100 && msg.WParam == (IntPtr)0x11) // WM_KEYDOWN + Ctrl
             {
                 ctrlPressed = true;
             }
-            if (m.Msg == 0x101 && m.WParam == (IntPtr)0x11) // WM_KEYUP + Ctrl
+            if (msg.Msg == 0x101 && msg.WParam == (IntPtr)0x11) // WM_KEYUP + Ctrl
             {
                 ctrlPressed = false;
             }
-            return base.ProcessKeyEventArgs(ref m);
         }
 
         public Primitive[] SaveMask()

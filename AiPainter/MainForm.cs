@@ -165,6 +165,12 @@ namespace AiPainter
             return pb;
         }
 
+        protected override bool ProcessKeyPreview(ref Message msg)
+        {
+            pictureBox?.ProcessKeys(msg);
+            return base.ProcessKeyPreview(ref msg);
+        }
+
         protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
         {
             var focusInText = panStableDiffusion.IsTextboxInFocus;
