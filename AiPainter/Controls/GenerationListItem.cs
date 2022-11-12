@@ -272,8 +272,6 @@ namespace AiPainter.Controls
             sdPanel.numCfgScale.Value = cfgScale;
             sdPanel.tbSeed.Text = seed.ToString();
 
-            sdPanel.numIterations.Value = numIterations.Value;
-
             sdPanel.numIterations.Value = pbIterations.Maximum;
 
             sdPanel.cbUseInitImage.Checked = originalImage != null;
