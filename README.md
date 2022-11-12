@@ -23,7 +23,7 @@ Digital AI painter. Features:
 
 ## Requirements
 
- * Windows 10+ (x64)
+ * Windows 8+ (x64)
  * NVIDIA video card (>4GB RAM)
  * video card must support CUDA 11.4
 
@@ -32,7 +32,7 @@ Tested on NVIDIA 3060.
 
 ## Using
 
- * download precompiled AiPainter from [mega.nz](https://mega.nz/file/h5MSUDYD#qA1vj-nZ6j-34nO209XmnjHhwjLPxKbPvuoZIG2Gzgo)
+ * download precompiled AiPainter from [mega.nz](https://mega.nz/file/sl9mDTbT#NJoZsKVPIs8mAQYZ9k1GNEtTnskuN-habkudIaxlz-U)
  * unpack
  * run `AiPainter.exe`
 
