@@ -23,6 +23,13 @@ static class StableDiffusionClient
             try
             {
                 var result = await postAsync<SdGenerationResponse>("sdapi/v1/txt2img", request);
+                onProgress(new SdGenerationProgess
+                {
+                    state = new SdGenerationProgessState
+                    {
+                        sampling_step = request.steps,
+                    },
+                });
                 onSuccess(result);
             }
             catch (Exception e)
@@ -48,6 +55,13 @@ static class StableDiffusionClient
             try
             {
                 var result = await postAsync<SdGenerationResponse>("sdapi/v1/img2img", request);
+                onProgress(new SdGenerationProgess
+                {
+                    state = new SdGenerationProgessState
+                    {
+                        sampling_step = request.steps,
+                    },
+                });
                 onSuccess(result);
             }
             catch (Exception e)
@@ -75,7 +89,7 @@ static class StableDiffusionClient
             await DelayTools.WaitForExitAsync(1000);
 
             while (inProcess)
-            {
+    {
                 try
                 {
                     onProgress(await getAsync<SdGenerationProgess>("sdapi/v1/progress"));
