@@ -1,3 +1,5 @@
+if exist release-x64 rmdir /s /q release-x64
+
 dotnet publish -p:PublishSingleFile=true /p:DebugType=None -r win-x64 -c Release --self-contained false -o release-x64
 
 if not exist release-x64\external                 mkdir release-x64\external
