@@ -89,7 +89,7 @@ static class StableDiffusionClient
             await DelayTools.WaitForExitAsync(1000);
 
             while (inProcess)
-    {
+            {
                 try
                 {
                     onProgress(await getAsync<SdGenerationProgess>("sdapi/v1/progress"));
