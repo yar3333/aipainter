@@ -24,8 +24,8 @@ Digital AI painter. Features:
 ## Requirements
 
  * Windows 8+ (x64)
- * NVIDIA video card (>4GB RAM)
- * video card must support CUDA 11.4
+ * NVIDIA video card (>4GB RAM, CUDA 11.4)
+ * 16 GB disk space
 
 Tested on NVIDIA 3060.
  
