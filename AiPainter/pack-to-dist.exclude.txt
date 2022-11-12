@@ -2,6 +2,8 @@ AiPainter\images
 AiPainter\logs
 AiPainter\Config.json
 
+AiPainter\stable_diffusion_checkpoints\_ext
+
 AiPainter\external\_stuff\python-3.10.6\readme.txt
 
 AiPainter\external\_stuff\cudnn-windows-x86_64-8.4.1.50_cuda11.6\include

@@ -74,8 +74,8 @@ namespace AiPainter.Controls
             toolTip.SetToolTip
             (
                 tbPrompt, 
-                "Positive:\n" + tbPrompt.Text
-          + "\n\nNegative:\n" + negative
+                "Positive prompt:\n" + tbPrompt.Text
+          + "\n\nNegative prompt:\n" + negative
             );
 
             savedFilePath = mainForm.FilePath;
@@ -307,7 +307,9 @@ namespace AiPainter.Controls
 
         private string getDestImageFilePath(SdGenerationResponse ev)
         {
-            return Path.Combine(Program.Config.OutputFolder, ev.infoParsed.seed + ".png");
+            var destDir = Path.Combine(Application.StartupPath, Program.Config.OutputFolder);
+            if (!string.IsNullOrEmpty(destDir) && !Directory.Exists(destDir)) Directory.CreateDirectory(destDir);
+            return Path.Combine(destDir, ev.infoParsed.seed + ".png");
         }
     }
 }
