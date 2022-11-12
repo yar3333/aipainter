@@ -243,11 +243,11 @@ namespace AiPainter.Controls
             InProcess = false;
         }
 
-        private void onProgress(SdGenerationProgess ev)
+        private void onProgress(int step)
         {
             Invoke(() =>
             {
-                pbSteps.Value = ev.state.sampling_step;
+                pbSteps.Value = step;
                 pbSteps.CustomText = pbSteps.Value + " / " + pbSteps.Maximum;
                 pbSteps.Refresh();
             });

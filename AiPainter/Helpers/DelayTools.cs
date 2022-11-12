@@ -13,13 +13,14 @@ static class DelayTools
         return false;
     }    
     
-    public static async Task<bool> WaitForExitAsync(int ms)
+    public static async Task<bool> WaitForExitAsync(int ms, CancellationToken? cancellationToken = null)
     {
         var n = ms / 200;
         for (var i = 0; i < n; i++)
         {
             if (Application.OpenForms.Count == 0) return true;
-            await Task.Delay(200);
+            if (cancellationToken != null) await Task.Delay(200, cancellationToken.Value);
+            else                           await Task.Delay(200);
         }
         return false;
     }

@@ -111,7 +111,7 @@
             this.tbNegative.Location = new System.Drawing.Point(3, 193);
             this.tbNegative.Multiline = true;
             this.tbNegative.Name = "tbNegative";
-            this.tbNegative.PlaceholderText = "Negative (what you don\'t want to see)";
+            this.tbNegative.PlaceholderText = "Negative prompt (don\'t want to get)";
             this.tbNegative.Size = new System.Drawing.Size(334, 56);
             this.tbNegative.TabIndex = 17;
             // 
@@ -188,7 +188,7 @@
             this.btGenerate.Name = "btGenerate";
             this.btGenerate.Size = new System.Drawing.Size(235, 39);
             this.btGenerate.TabIndex = 8;
-            this.btGenerate.Text = "Generate";
+            this.btGenerate.Text = "Add to generation queue";
             this.btGenerate.UseVisualStyleBackColor = true;
             this.btGenerate.Click += new System.EventHandler(this.btGenerate_Click);
             // 
