@@ -4,6 +4,8 @@ namespace AiPainter.Adapters.StableDiffusion
 {
     public partial class StableDiffusionPanel : UserControl
     {
+        private SdModifiersForm modifiersForm = null!;
+
         public Action OnGenerate = null!;
 
         public StableDiffusionPanel()
@@ -15,6 +17,8 @@ namespace AiPainter.Adapters.StableDiffusion
 
         private void collapsablePanel_Load(object sender, EventArgs e)
         {
+            modifiersForm = new SdModifiersForm();
+
             var checkpoints = SdCheckpointsHelper.GetNames();
             if (!checkpoints.Contains(Program.Config.StableDiffusionCheckpoint))
             {
@@ -78,6 +82,14 @@ namespace AiPainter.Adapters.StableDiffusion
 
             Program.Config.StableDiffusionCheckpoint = ((ListItem)ddCheckpoint.SelectedItem).Value;
             Program.SaveConfig();
+        }
+
+        private void lbModifiers_Click(object sender, EventArgs e)
+        {
+            if (modifiersForm.ShowDialog(this) == DialogResult.OK)
+            {
+                int a = 5;
+            }
         }
     }
 }

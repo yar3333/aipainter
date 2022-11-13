@@ -45,6 +45,7 @@
             this.numCfgScale = new System.Windows.Forms.NumericUpDown();
             this.label3 = new System.Windows.Forms.Label();
             this.toolTip = new System.Windows.Forms.ToolTip(this.components);
+            this.lbModifiers = new System.Windows.Forms.ListBox();
             this.collapsablePanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numIterations)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numSteps)).BeginInit();
@@ -53,10 +54,12 @@
             // 
             // collapsablePanel
             // 
-            this.collapsablePanel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.collapsablePanel.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.collapsablePanel.BackColor = System.Drawing.SystemColors.Control;
             this.collapsablePanel.Caption = "StableDiffusion";
+            this.collapsablePanel.Controls.Add(this.lbModifiers);
             this.collapsablePanel.Controls.Add(this.ddInpaintingFill);
             this.collapsablePanel.Controls.Add(this.ddCheckpoint);
             this.collapsablePanel.Controls.Add(this.tbNegative);
@@ -74,7 +77,7 @@
             this.collapsablePanel.IsCollapsed = false;
             this.collapsablePanel.Location = new System.Drawing.Point(0, 0);
             this.collapsablePanel.Name = "collapsablePanel";
-            this.collapsablePanel.Size = new System.Drawing.Size(340, 400);
+            this.collapsablePanel.Size = new System.Drawing.Size(340, 420);
             this.collapsablePanel.TabIndex = 4;
             this.collapsablePanel.Load += new System.EventHandler(this.collapsablePanel_Load);
             // 
@@ -83,7 +86,7 @@
             this.ddInpaintingFill.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.ddInpaintingFill.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.ddInpaintingFill.FormattingEnabled = true;
-            this.ddInpaintingFill.Location = new System.Drawing.Point(197, 251);
+            this.ddInpaintingFill.Location = new System.Drawing.Point(197, 215);
             this.ddInpaintingFill.Name = "ddInpaintingFill";
             this.ddInpaintingFill.Size = new System.Drawing.Size(137, 23);
             this.ddInpaintingFill.TabIndex = 19;
@@ -108,7 +111,7 @@
             this.tbNegative.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.tbNegative.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.tbNegative.Location = new System.Drawing.Point(3, 193);
+            this.tbNegative.Location = new System.Drawing.Point(3, 157);
             this.tbNegative.Multiline = true;
             this.tbNegative.Name = "tbNegative";
             this.tbNegative.PlaceholderText = "Negative prompt (don\'t want to get)";
@@ -119,7 +122,7 @@
             // 
             this.cbUseInitImage.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.cbUseInitImage.AutoSize = true;
-            this.cbUseInitImage.Location = new System.Drawing.Point(8, 255);
+            this.cbUseInitImage.Location = new System.Drawing.Point(8, 219);
             this.cbUseInitImage.Name = "cbUseInitImage";
             this.cbUseInitImage.Size = new System.Drawing.Size(186, 19);
             this.cbUseInitImage.TabIndex = 12;
@@ -130,9 +133,9 @@
             // 
             this.btReset.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.btReset.Font = new System.Drawing.Font("Segoe UI", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.btReset.Location = new System.Drawing.Point(243, 350);
+            this.btReset.Location = new System.Drawing.Point(241, 369);
             this.btReset.Name = "btReset";
-            this.btReset.Size = new System.Drawing.Size(94, 39);
+            this.btReset.Size = new System.Drawing.Size(96, 39);
             this.btReset.TabIndex = 11;
             this.btReset.Text = "Reset";
             this.toolTip.SetToolTip(this.btReset, "Reset values to defaut state");
@@ -151,14 +154,14 @@
             this.tbPrompt.Name = "tbPrompt";
             this.tbPrompt.PlaceholderText = "Prompt (describe desired picture)";
             this.tbPrompt.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.tbPrompt.Size = new System.Drawing.Size(334, 129);
+            this.tbPrompt.Size = new System.Drawing.Size(334, 93);
             this.tbPrompt.TabIndex = 0;
             // 
             // numIterations
             // 
             this.numIterations.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.numIterations.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.numIterations.Location = new System.Drawing.Point(87, 284);
+            this.numIterations.Location = new System.Drawing.Point(87, 248);
             this.numIterations.Maximum = new decimal(new int[] {
             9999,
             0,
@@ -184,7 +187,7 @@
             this.btGenerate.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.btGenerate.Font = new System.Drawing.Font("Segoe UI", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.btGenerate.Location = new System.Drawing.Point(3, 350);
+            this.btGenerate.Location = new System.Drawing.Point(1, 369);
             this.btGenerate.Name = "btGenerate";
             this.btGenerate.Size = new System.Drawing.Size(235, 39);
             this.btGenerate.TabIndex = 8;
@@ -201,7 +204,7 @@
             0,
             0,
             0});
-            this.numSteps.Location = new System.Drawing.Point(272, 284);
+            this.numSteps.Location = new System.Drawing.Point(272, 248);
             this.numSteps.Maximum = new decimal(new int[] {
             200,
             0,
@@ -227,7 +230,7 @@
             this.tbSeed.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.tbSeed.Font = new System.Drawing.Font("Segoe UI", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.tbSeed.Location = new System.Drawing.Point(197, 317);
+            this.tbSeed.Location = new System.Drawing.Point(197, 281);
             this.tbSeed.Name = "tbSeed";
             this.tbSeed.PlaceholderText = "Seed...";
             this.tbSeed.Size = new System.Drawing.Size(140, 27);
@@ -238,7 +241,7 @@
             // 
             this.label1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(2, 290);
+            this.label1.Location = new System.Drawing.Point(2, 254);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(79, 15);
             this.label1.TabIndex = 2;
@@ -248,7 +251,7 @@
             // 
             this.label2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(202, 290);
+            this.label2.Location = new System.Drawing.Point(202, 254);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(64, 15);
             this.label2.TabIndex = 2;
@@ -265,7 +268,7 @@
             0,
             0,
             65536});
-            this.numCfgScale.Location = new System.Drawing.Point(126, 317);
+            this.numCfgScale.Location = new System.Drawing.Point(126, 281);
             this.numCfgScale.Maximum = new decimal(new int[] {
             50,
             0,
@@ -290,12 +293,25 @@
             // 
             this.label3.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(3, 323);
+            this.label3.Location = new System.Drawing.Point(3, 287);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(117, 15);
             this.label3.TabIndex = 4;
             this.label3.Text = "Relevance to prompt";
             this.label3.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            // 
+            // lbModifiers
+            // 
+            this.lbModifiers.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.lbModifiers.FormattingEnabled = true;
+            this.lbModifiers.ItemHeight = 15;
+            this.lbModifiers.Location = new System.Drawing.Point(3, 314);
+            this.lbModifiers.Name = "lbModifiers";
+            this.lbModifiers.SelectionMode = System.Windows.Forms.SelectionMode.None;
+            this.lbModifiers.Size = new System.Drawing.Size(334, 49);
+            this.lbModifiers.TabIndex = 20;
+            this.lbModifiers.Click += new System.EventHandler(this.lbModifiers_Click);
             // 
             // StableDiffusionPanel
             // 
@@ -303,7 +319,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.collapsablePanel);
             this.Name = "StableDiffusionPanel";
-            this.Size = new System.Drawing.Size(340, 400);
+            this.Size = new System.Drawing.Size(340, 423);
             this.collapsablePanel.ResumeLayout(false);
             this.collapsablePanel.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numIterations)).EndInit();
@@ -331,5 +347,6 @@
         public TextBox tbNegative;
         public ComboBox ddCheckpoint;
         public ComboBox ddInpaintingFill;
+        private ListBox lbModifiers;
     }
 }

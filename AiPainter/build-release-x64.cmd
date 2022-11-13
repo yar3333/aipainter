@@ -9,3 +9,4 @@ if not exist release-x64\external\lama-cleaner    mklink /D release-x64\external
 if not exist release-x64\external\rembg           mklink /D release-x64\external\rembg %~dp0..\_external\rembg\dist 2> nul
 
 if not exist release-x64\stable_diffusion_checkpoints mklink /D release-x64\stable_diffusion_checkpoints %~dp0..\_stable_diffusion_checkpoints 2> nul
+if not exist release-x64\stable_diffusion_modifiers   mklink /D release-x64\stable_diffusion_modifiers %~dp0..\_stable_diffusion_modifiers 2> nul
