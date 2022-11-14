@@ -3,10 +3,10 @@
 class SdModCategory
 {
     public string category { get; set; }
-    public SdModMofifier[] modifiers { get; set; }
+    public SdModModifier[] modifiers { get; set; }
 }
 
-class SdModMofifier
+class SdModModifier
 {
     public string modifier { get; set; }
     public SdModPreview[] previews { get; set; }

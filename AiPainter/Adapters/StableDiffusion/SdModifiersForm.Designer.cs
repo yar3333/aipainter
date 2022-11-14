@@ -113,7 +113,6 @@
             this.btOk.TabIndex = 3;
             this.btOk.Text = "OK";
             this.btOk.UseVisualStyleBackColor = true;
-            this.btOk.Click += new System.EventHandler(this.btOk_Click);
             // 
             // btCancel
             // 
@@ -125,7 +124,6 @@
             this.btCancel.TabIndex = 3;
             this.btCancel.Text = "Cancel";
             this.btCancel.UseVisualStyleBackColor = true;
-            this.btCancel.Click += new System.EventHandler(this.btCancel_Click);
             // 
             // SdModifiersForm
             // 
@@ -144,7 +142,6 @@
             this.Name = "SdModifiersForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "StableDiffusion modifiers";
-            this.Load += new System.EventHandler(this.SdModifiersForm_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
 

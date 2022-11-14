@@ -6,13 +6,28 @@ namespace AiPainter.Adapters.StableDiffusion
     {
         private SdModCategory[] categories = null!;
 
-        public SdModifiersForm()
+        private string previewName = "portrait"; // "landscape"
+
+        private readonly ImageList imageList = new() { ImageSize = new Size(128, 128), ColorDepth = ColorDepth.Depth32Bit };
+
+        public string[] Modifiers
         {
-            InitializeComponent();
+            get => lvSelected.Items.OfType<ListViewItem>().Select(x => x.Text).ToArray();
+            set 
+            {
+                lvSelected.Items.Clear();
+                foreach (var modifier in value)
+                {
+                    ensureImageLoaded(modifier);
+                    lvSelected.Items.Add(modifier, modifier, modifier);
+                }
+            }
         }
 
-        private void SdModifiersForm_Load(object sender, EventArgs e)
+        public SdModifiersForm()
         {
+            InitializeComponent();            
+            
             var baseDir = Path.Join(Application.StartupPath, "stable_diffusion_modifiers");
             var jsonFile = Path.Join(baseDir, "modifiers.json");
             if (File.Exists(jsonFile))
@@ -23,30 +38,18 @@ namespace AiPainter.Adapters.StableDiffusion
                 lbCategory.Items.AddRange(categories.Select(x => x.category).Distinct().OrderBy(x => x).ToArray());
             }
 
-            lvSelected.LargeImageList = new ImageList();
-            lvSelected.LargeImageList.ImageSize = new Size(128, 128);  
-            lvSelected.LargeImageList.ColorDepth = ColorDepth.Depth32Bit;
+            lvModifiers.LargeImageList = imageList;
+            lvSelected.LargeImageList = imageList;
         }
         
         private void lbCategory_SelectedIndexChanged(object sender, EventArgs e)
         {
-            var baseDir = Path.Join(Application.StartupPath, "stable_diffusion_modifiers");
-
-            var category = (string)lbCategory.SelectedItem!;
-            var modifiers = categories.Where(x => x.category == category).SelectMany(x => x.modifiers).ToArray();
-            var images = modifiers.SelectMany(x => x.previews).Select(x => x.path).Distinct().ToArray();
-
-            lvModifiers.LargeImageList = new ImageList();
-            lvModifiers.LargeImageList.ImageSize = new Size(128, 128);  
-            lvModifiers.LargeImageList.ColorDepth = ColorDepth.Depth32Bit;
-            lvModifiers.LargeImageList.Images.AddRange(images.Select(x => Image.FromFile(Path.Join(baseDir, x))).ToArray());
-            
             lvModifiers.Items.Clear();
-            lvModifiers.Items.AddRange(modifiers.Select(x => new ListViewItem
+            foreach (var modifier in categories.Single(x => x.category == (string)lbCategory.SelectedItem).modifiers.Select(x => x.modifier))
             {
-                Text = x.modifier,
-                ImageIndex = Array.IndexOf(images, x.previews[0].path)
-            }).ToArray());
+                ensureImageLoaded(modifier);
+                lvModifiers.Items.Add(modifier, modifier, modifier);
+            }
         }
 
         private void lvModifiers_DoubleClick(object sender, EventArgs e)
@@ -57,12 +60,7 @@ namespace AiPainter.Adapters.StableDiffusion
 
             if (!isListViewItemExist(lvSelected.Items, item.Text))
             {
-                lvSelected.LargeImageList.Images.Add(item.ImageList.Images[item.ImageIndex]);
-                lvSelected.Items.Add(new ListViewItem
-                {
-                    Text = item.Text,
-                    ImageIndex = lvSelected.LargeImageList.Images.Count - 1
-                });
+                lvSelected.Items.Add(item.Text, item.Text, item.Text);
             }
         }
  
@@ -70,20 +68,9 @@ namespace AiPainter.Adapters.StableDiffusion
         {
             if (lvSelected.SelectedItems.Count == 0) return;
 
-            var item = lvSelected.SelectedItems[0];
-            lvSelected.Items.Remove(item);
+            lvSelected.Items.Remove(lvSelected.SelectedItems[0]);
         }
         
-        private void btOk_Click(object sender, EventArgs e)
-        {
-            int b = 6;
-        }
-
-        private void btCancel_Click(object sender, EventArgs e)
-        {
-
-        }
-
         private bool isListViewItemExist(ListView.ListViewItemCollection items, string text)
         {
             foreach (ListViewItem item in items)
@@ -93,5 +80,18 @@ namespace AiPainter.Adapters.StableDiffusion
             return false;
         }
 
+        private void ensureImageLoaded(string modifier)
+        {
+            if (imageList.Images.ContainsKey(modifier)) return;
+
+            var m = categories.SelectMany(x => x.modifiers).FirstOrDefault(x => x.modifier == modifier);
+            if (m == null) return;
+
+            var baseDir = Path.Join(Application.StartupPath, "stable_diffusion_modifiers");
+            var preview = m.previews.SingleOrDefault(x => x.name == previewName)
+                       ?? m.previews.First();
+            var path = Path.Join(baseDir, preview.path);
+            lvModifiers.LargeImageList.Images.Add(modifier, Image.FromFile(path));
+        }
     }
 }
