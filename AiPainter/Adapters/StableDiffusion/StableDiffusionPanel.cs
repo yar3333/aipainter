@@ -8,6 +8,17 @@ namespace AiPainter.Adapters.StableDiffusion
 
         public Action OnGenerate = null!;
 
+        public string[] Modifiers
+        {
+            get => lbModifiers.Items.OfType<string>().ToArray();
+            set
+            {
+                lbModifiers.Items.Clear();
+                // ReSharper disable once CoVariantArrayConversion
+                lbModifiers.Items.AddRange(value);
+            }
+        }
+
         public StableDiffusionPanel()
         {
             InitializeComponent();
@@ -86,9 +97,10 @@ namespace AiPainter.Adapters.StableDiffusion
 
         private void lbModifiers_Click(object sender, EventArgs e)
         {
+            modifiersForm.Modifiers = Modifiers;
             if (modifiersForm.ShowDialog(this) == DialogResult.OK)
             {
-                int a = 5;
+                Modifiers = modifiersForm.Modifiers;
             }
         }
     }

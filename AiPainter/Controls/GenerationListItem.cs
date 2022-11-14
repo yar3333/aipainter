@@ -23,6 +23,8 @@ namespace AiPainter.Controls
         private Bitmap? originalImage;
         private Bitmap? croppedMask;
 
+        private string[] modifiers;
+
         private string? savedFilePath;
         private Primitive[] savedMask;
         
@@ -46,6 +48,8 @@ namespace AiPainter.Controls
             negative = sdPanel.tbNegative.Text.Trim();
             cfgScale = sdPanel.numCfgScale.Value;
             seed = sdPanel.tbSeed.Text.Trim() != "" ? long.Parse(sdPanel.tbSeed.Text.Trim()) : -1;
+
+            modifiers = sdPanel.Modifiers;
 
             ignoreNumIterationsChange = true;
             numIterations.Value = sdPanel.numIterations.Value;
@@ -173,7 +177,7 @@ namespace AiPainter.Controls
             {
                 var parameters = new SdGenerationRequest
                 {
-                    prompt = tbPrompt.Text,
+                    prompt = tbPrompt.Text + (modifiers.Any() ? "; " + string.Join(", ", modifiers) : ""),
                     negative_prompt = negative,
                     cfg_scale = cfgScale,
                     seed = seed,
@@ -191,7 +195,7 @@ namespace AiPainter.Controls
             {
                 var parameters = new SdInpaintRequest
                 {
-                    prompt = tbPrompt.Text,
+                    prompt = tbPrompt.Text + (modifiers.Any() ? "; " + string.Join(", ", modifiers) : ""),
                     negative_prompt = negative,
                     cfg_scale = cfgScale,
                     seed = seed,
@@ -283,6 +287,8 @@ namespace AiPainter.Controls
                 pictureBox.Image = BitmapTools.Clone(originalImage);
                 pictureBox.LoadMask(savedMask);
             }
+
+            sdPanel.Modifiers = modifiers;
 
             mainForm.FilePath = savedFilePath;
         }
