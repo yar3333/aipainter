@@ -10,18 +10,24 @@ namespace AiPainter.Adapters.StableDiffusion
 
         public string[] Modifiers
         {
-            get => lbModifiers.Items.OfType<string>().ToArray();
+            get => lbModifiers.Items.OfType<string>().Where(x => x != "Modifiers. Click to select.").ToArray();
             set
             {
                 lbModifiers.Items.Clear();
                 // ReSharper disable once CoVariantArrayConversion
                 lbModifiers.Items.AddRange(value);
+
+                if (!value.Any())
+                {
+                    lbModifiers.Items.Add("Modifiers. Click to select.");
+                }
             }
         }
 
         public StableDiffusionPanel()
         {
             InitializeComponent();
+            Modifiers = new string[] {};
         }
 
         public bool IsTextboxInFocus => collapsablePanel.ActiveControl is TextBox;

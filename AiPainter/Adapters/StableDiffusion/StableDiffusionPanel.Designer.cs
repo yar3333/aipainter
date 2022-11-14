@@ -30,6 +30,7 @@
         {
             this.components = new System.ComponentModel.Container();
             this.collapsablePanel = new AiPainter.Controls.CollapsablePanel();
+            this.lbModifiers = new System.Windows.Forms.ListBox();
             this.ddInpaintingFill = new System.Windows.Forms.ComboBox();
             this.ddCheckpoint = new System.Windows.Forms.ComboBox();
             this.tbNegative = new System.Windows.Forms.TextBox();
@@ -45,7 +46,6 @@
             this.numCfgScale = new System.Windows.Forms.NumericUpDown();
             this.label3 = new System.Windows.Forms.Label();
             this.toolTip = new System.Windows.Forms.ToolTip(this.components);
-            this.lbModifiers = new System.Windows.Forms.ListBox();
             this.collapsablePanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numIterations)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numSteps)).BeginInit();
@@ -80,6 +80,21 @@
             this.collapsablePanel.Size = new System.Drawing.Size(340, 420);
             this.collapsablePanel.TabIndex = 4;
             this.collapsablePanel.Load += new System.EventHandler(this.collapsablePanel_Load);
+            // 
+            // lbModifiers
+            // 
+            this.lbModifiers.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.lbModifiers.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
+            this.lbModifiers.FormattingEnabled = true;
+            this.lbModifiers.ItemHeight = 15;
+            this.lbModifiers.Location = new System.Drawing.Point(3, 314);
+            this.lbModifiers.Name = "lbModifiers";
+            this.lbModifiers.SelectionMode = System.Windows.Forms.SelectionMode.None;
+            this.lbModifiers.Size = new System.Drawing.Size(334, 49);
+            this.lbModifiers.TabIndex = 20;
+            this.toolTip.SetToolTip(this.lbModifiers, "Modifiers (style names, will be added to prompt)");
+            this.lbModifiers.Click += new System.EventHandler(this.lbModifiers_Click);
             // 
             // ddInpaintingFill
             // 
@@ -299,19 +314,6 @@
             this.label3.TabIndex = 4;
             this.label3.Text = "Relevance to prompt";
             this.label3.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            // 
-            // lbModifiers
-            // 
-            this.lbModifiers.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.lbModifiers.FormattingEnabled = true;
-            this.lbModifiers.ItemHeight = 15;
-            this.lbModifiers.Location = new System.Drawing.Point(3, 314);
-            this.lbModifiers.Name = "lbModifiers";
-            this.lbModifiers.SelectionMode = System.Windows.Forms.SelectionMode.None;
-            this.lbModifiers.Size = new System.Drawing.Size(334, 49);
-            this.lbModifiers.TabIndex = 20;
-            this.lbModifiers.Click += new System.EventHandler(this.lbModifiers_Click);
             // 
             // StableDiffusionPanel
             // 
