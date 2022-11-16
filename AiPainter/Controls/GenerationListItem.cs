@@ -140,14 +140,20 @@ namespace AiPainter.Controls
 
             if (originalImage == null)
             {
-                generate(null, null, (resultImage, resultFilePath, seed) => 
+                generate(null, null, (resultImage, seed) =>
                 {
-                    resultImage.Save(resultFilePath, ImageFormat.Png);
-                    resultImage.Dispose();
+                    try
+                    {
+                        var resultFilePath = getDestImageFilePath(seed);
+                        resultImage.Save(resultFilePath, ImageFormat.Png);
+                        resultImage.Dispose();
 
-                    var t = sdGenerationParameters.ShallowCopy();
-                    t.seed = seed;
-                    File.WriteAllText(Path.Join(Path.GetDirectoryName(resultFilePath), Path.GetFileNameWithoutExtension(resultFilePath)) + ".json", JsonSerializer.Serialize(t, new JsonSerializerOptions { WriteIndented = true }));
+                        saveSdGeneraqtionParameters(resultFilePath, seed);
+                    }
+                    catch (Exception ee)
+                    {
+                        StableDiffusionClient.Log.WriteLine(ee.ToString());
+                    }
                 });
             }
             else
@@ -156,7 +162,7 @@ namespace AiPainter.Controls
                 using var image512 = BitmapTools.GetResized(croppedImage, 512, 512);
                 using var mask512 = croppedMask != null ? BitmapTools.GetResized(croppedMask, 512, 512) : null;
                 
-                generate(image512, mask512, (resultImage, resultFilePath, _) =>
+                generate(image512, mask512, (resultImage, seed) =>
                 {
                     try
                     {
@@ -165,7 +171,10 @@ namespace AiPainter.Controls
                     
                         using var tempOriginalImage = BitmapTools.Clone(originalImage);
                         BitmapTools.DrawBitmapAtPos(resultImageResized, tempOriginalImage, activeBox.X, activeBox.Y);
+                        var resultFilePath = getDestImageFilePath(seed);
                         tempOriginalImage.Save(resultFilePath, ImageFormat.Png);
+
+                        saveSdGeneraqtionParameters(resultFilePath, seed);
                     }
                     catch (Exception ee)
                     {
@@ -175,7 +184,7 @@ namespace AiPainter.Controls
             }
         }
 
-        private void generate(Bitmap? initImage, Bitmap? maskImage, Action<Bitmap, string, long> processGeneratedImage)
+        private void generate(Bitmap? initImage, Bitmap? maskImage, Action<Bitmap, long> processGeneratedImage)
         {
             if (initImage == null)
             {
@@ -218,7 +227,7 @@ namespace AiPainter.Controls
             }
         }
 
-        private void onImageGenerated(SdGenerationResponse? ev, Action<Bitmap, string, long> processGeneratedImage)
+        private void onImageGenerated(SdGenerationResponse? ev, Action<Bitmap, long> processGeneratedImage)
         {
             if (ev != null)
             {
@@ -237,7 +246,7 @@ namespace AiPainter.Controls
                         pbIterations.Refresh();
                     });
                 
-                    processGeneratedImage(BitmapTools.FromBase64(ev.images[0]), getDestImageFilePath(ev), ev.infoParsed.seed);
+                    processGeneratedImage(BitmapTools.FromBase64(ev.images[0]), ev.infoParsed.seed);
                 }
             }
             else
@@ -313,11 +322,19 @@ namespace AiPainter.Controls
             }
         }
 
-        private string getDestImageFilePath(SdGenerationResponse ev)
+        private string getDestImageFilePath(long seed)
         {
             var destDir = Path.Combine(Application.StartupPath, Program.Config.OutputFolder);
             if (!string.IsNullOrEmpty(destDir) && !Directory.Exists(destDir)) Directory.CreateDirectory(destDir);
-            return Path.Combine(destDir, ev.infoParsed.seed + ".png");
+            return Path.Combine(destDir, seed + ".png");
+        }
+
+        private void saveSdGeneraqtionParameters(string resultImageFilePath, long seed)
+        {
+            var t = sdGenerationParameters.ShallowCopy();
+            t.seed = seed;
+            var resultJsonFilePath = Path.Join(Path.GetDirectoryName(resultImageFilePath), Path.GetFileNameWithoutExtension(resultImageFilePath)) + ".json";
+            File.WriteAllText(resultJsonFilePath, JsonSerializer.Serialize(t, new JsonSerializerOptions { WriteIndented = true }));
         }
     }
 }

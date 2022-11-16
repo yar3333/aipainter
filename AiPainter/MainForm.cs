@@ -158,6 +158,9 @@ namespace AiPainter
                     File.Delete(pb.FilePath);
                     storedImageList.Remove(pb.FilePath);
 
+                    var jsonFilePath = Path.Join(Path.GetDirectoryName(pb.FilePath), Path.GetFileNameWithoutExtension(pb.FilePath)) + ".json";
+                    if (File.Exists(jsonFilePath)) File.Delete(jsonFilePath);
+
                     updateImages(null);
                 }
             };
