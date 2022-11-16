@@ -1,6 +1,7 @@
 ﻿using AiPainter.Adapters.StableDiffusion;
 using AiPainter.Helpers;
 using System.Drawing.Imaging;
+using System.Text.Json;
 
 namespace AiPainter.Controls
 {
@@ -9,21 +10,15 @@ namespace AiPainter.Controls
         private MainForm mainForm = null!;
         private StableDiffusionPanel sdPanel = null!;
         private SmartPictureBox pictureBox = null!;
+        private SdGenerationParameters sdGenerationParameters = null!;
 
         public bool InProcess;
         public int ImagesdInQueue => (int)numIterations.Value;
 
-        private string checkpoint;
-        private string negative;
-        private decimal cfgScale;
-        private long seed;
-        
-        private SdInpaintingFill inpaintingFill;
         private Rectangle activeBox;
         private Bitmap? originalImage;
         private Bitmap? croppedMask;
-
-        private string[] modifiers;
+        private SdInpaintingFill inpaintingFill;
 
         private string? savedFilePath;
         private Primitive[] savedMask;
@@ -43,13 +38,18 @@ namespace AiPainter.Controls
             this.sdPanel = sdPanel;
             this.pictureBox = pictureBox;
 
-            checkpoint = ((ListItem)sdPanel.ddCheckpoint.SelectedItem).Value;
-            tbPrompt.Text = sdPanel.tbPrompt.Text.Trim();
-            negative = sdPanel.tbNegative.Text.Trim();
-            cfgScale = sdPanel.numCfgScale.Value;
-            seed = sdPanel.tbSeed.Text.Trim() != "" ? long.Parse(sdPanel.tbSeed.Text.Trim()) : -1;
+            sdGenerationParameters = new SdGenerationParameters
+            {
+                checkpoint = ((ListItem)sdPanel.ddCheckpoint.SelectedItem).Value,
+                prompt = sdPanel.tbPrompt.Text.Trim(),
+                negative = sdPanel.tbNegative.Text.Trim(),
+                steps = (int)sdPanel.numSteps.Value,
+                cfgScale = sdPanel.numCfgScale.Value,
+                seed = sdPanel.tbSeed.Text.Trim() != "" ? long.Parse(sdPanel.tbSeed.Text.Trim()) : -1,
+                modifiers = sdPanel.Modifiers,
+            };
 
-            modifiers = sdPanel.Modifiers;
+            tbPrompt.Text = sdGenerationParameters.prompt;
 
             ignoreNumIterationsChange = true;
             numIterations.Value = sdPanel.numIterations.Value;
@@ -61,7 +61,7 @@ namespace AiPainter.Controls
             pbIterations.Refresh();
             
             pbSteps.Value = 0;
-            pbSteps.Maximum = (int)sdPanel.numSteps.Value;
+            pbSteps.Maximum = sdGenerationParameters.steps;
             pbSteps.CustomText = "";
             pbSteps.Refresh();
 
@@ -78,8 +78,8 @@ namespace AiPainter.Controls
             toolTip.SetToolTip
             (
                 tbPrompt, 
-                "Positive prompt:\n" + tbPrompt.Text
-          + "\n\nNegative prompt:\n" + negative
+                "Positive prompt:\n" + sdGenerationParameters.prompt + "\n\n"
+              + "Negative prompt:\n" + sdGenerationParameters.negative
             );
 
             savedFilePath = mainForm.FilePath;
@@ -107,7 +107,7 @@ namespace AiPainter.Controls
         {
             if (Program.Config.UseEmbeddedStableDiffusion && StableDiffusionProcess.Loading)
             {
-                if (StableDiffusionProcess.ActiveCheckpoint != checkpoint)
+                if (StableDiffusionProcess.ActiveCheckpoint != sdGenerationParameters.checkpoint)
                 {
                     Invoke(() => pbSteps.CustomText = "Stopping...");
                     StableDiffusionProcess.Stop();
@@ -117,7 +117,7 @@ namespace AiPainter.Controls
                     }
                     
                     Invoke(() => pbSteps.CustomText = "Starting...");
-                    StableDiffusionProcess.Start(checkpoint);
+                    StableDiffusionProcess.Start(sdGenerationParameters.checkpoint);
                 }
             }
 
@@ -140,10 +140,14 @@ namespace AiPainter.Controls
 
             if (originalImage == null)
             {
-                generate(null, null, (resultImage, resultFilePath) => 
+                generate(null, null, (resultImage, resultFilePath, seed) => 
                 {
                     resultImage.Save(resultFilePath, ImageFormat.Png);
                     resultImage.Dispose();
+
+                    var t = sdGenerationParameters.ShallowCopy();
+                    t.seed = seed;
+                    File.WriteAllText(Path.Join(Path.GetDirectoryName(resultFilePath), Path.GetFileNameWithoutExtension(resultFilePath)) + ".json", JsonSerializer.Serialize(t, new JsonSerializerOptions { WriteIndented = true }));
                 });
             }
             else
@@ -152,7 +156,7 @@ namespace AiPainter.Controls
                 using var image512 = BitmapTools.GetResized(croppedImage, 512, 512);
                 using var mask512 = croppedMask != null ? BitmapTools.GetResized(croppedMask, 512, 512) : null;
                 
-                generate(image512, mask512, (resultImage, resultFilePath) =>
+                generate(image512, mask512, (resultImage, resultFilePath, _) =>
                 {
                     try
                     {
@@ -171,16 +175,16 @@ namespace AiPainter.Controls
             }
         }
 
-        private void generate(Bitmap? initImage, Bitmap? maskImage, Action<Bitmap, string> processGeneratedImage)
+        private void generate(Bitmap? initImage, Bitmap? maskImage, Action<Bitmap, string, long> processGeneratedImage)
         {
             if (initImage == null)
             {
                 var parameters = new SdGenerationRequest
                 {
-                    prompt = tbPrompt.Text + (modifiers.Any() ? "; " + string.Join(", ", modifiers) : ""),
-                    negative_prompt = negative,
-                    cfg_scale = cfgScale,
-                    seed = seed,
+                    prompt = tbPrompt.Text + (sdGenerationParameters.modifiers.Any() ? "; " + string.Join(", ", sdGenerationParameters.modifiers) : ""),
+                    negative_prompt = sdGenerationParameters.negative,
+                    cfg_scale = sdGenerationParameters.cfgScale,
+                    seed = sdGenerationParameters.seed,
                     steps = pbSteps.Maximum,
                 };
 
@@ -195,10 +199,10 @@ namespace AiPainter.Controls
             {
                 var parameters = new SdInpaintRequest
                 {
-                    prompt = tbPrompt.Text + (modifiers.Any() ? "; " + string.Join(", ", modifiers) : ""),
-                    negative_prompt = negative,
-                    cfg_scale = cfgScale,
-                    seed = seed,
+                    prompt = tbPrompt.Text + (sdGenerationParameters.modifiers.Any() ? "; " + string.Join(", ", sdGenerationParameters.modifiers) : ""),
+                    negative_prompt = sdGenerationParameters.negative,
+                    cfg_scale = sdGenerationParameters.cfgScale,
+                    seed = sdGenerationParameters.seed,
                     steps = pbSteps.Maximum,
                     init_images = new[] { BitmapTools.GetBase64String(initImage) },
                     mask = maskImage != null ? BitmapTools.GetBase64String(maskImage) : null,
@@ -214,7 +218,7 @@ namespace AiPainter.Controls
             }
         }
 
-        private void onImageGenerated(SdGenerationResponse? ev, Action<Bitmap, string> processGeneratedImage)
+        private void onImageGenerated(SdGenerationResponse? ev, Action<Bitmap, string, long> processGeneratedImage)
         {
             if (ev != null)
             {
@@ -233,7 +237,7 @@ namespace AiPainter.Controls
                         pbIterations.Refresh();
                     });
                 
-                    processGeneratedImage(BitmapTools.FromBase64(ev.images[0]), getDestImageFilePath(ev));
+                    processGeneratedImage(BitmapTools.FromBase64(ev.images[0]), getDestImageFilePath(ev), ev.infoParsed.seed);
                 }
             }
             else
@@ -272,9 +276,9 @@ namespace AiPainter.Controls
         {
             sdPanel.numSteps.Value = pbSteps.Maximum;
             sdPanel.tbPrompt.Text = tbPrompt.Text;
-            sdPanel.tbNegative.Text = negative;
-            sdPanel.numCfgScale.Value = cfgScale;
-            sdPanel.tbSeed.Text = seed.ToString();
+            sdPanel.tbNegative.Text = sdGenerationParameters.negative;
+            sdPanel.numCfgScale.Value = sdGenerationParameters.cfgScale;
+            sdPanel.tbSeed.Text = sdGenerationParameters.seed.ToString();
 
             sdPanel.numIterations.Value = pbIterations.Maximum;
 
@@ -288,7 +292,7 @@ namespace AiPainter.Controls
                 pictureBox.LoadMask(savedMask);
             }
 
-            sdPanel.Modifiers = modifiers;
+            sdPanel.Modifiers = sdGenerationParameters.modifiers;
 
             mainForm.FilePath = savedFilePath;
         }
