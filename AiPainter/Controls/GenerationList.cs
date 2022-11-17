@@ -9,12 +9,6 @@ namespace AiPainter.Controls
         public GenerationList()
         {
             InitializeComponent();            
-            
-            ControlRemoved += (_, e) =>
-            {
-                items.RemoveAll(x => x == e.Control);
-                arrangeItems();
-            };
         }
 
         public void AddGeneration(StableDiffusionPanel sdPanel, SmartPictureBox pictureBox, MainForm mainForm)
@@ -42,9 +36,18 @@ namespace AiPainter.Controls
 
         private void stateManager_Tick(object sender, EventArgs e)
         {
-            items.RemoveAll(x => x.IsDisposed);
-
             if (items.Any(x => x.InProcess)) return;
+
+            var wasRemoved = false;
+            foreach (var itemToRemove in items.Where(x => x.WantToBeRemoved).ToArray())
+            {
+                wasRemoved = true;
+                Controls.Remove(itemToRemove);
+                items.Remove(itemToRemove);
+                itemToRemove.Dispose();
+            }
+            if (wasRemoved) arrangeItems();
+
             var item = items.Find(x => x.ImagesdInQueue > 0);
             item?.Run();
         }

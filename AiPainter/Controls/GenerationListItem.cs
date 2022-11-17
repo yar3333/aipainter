@@ -13,6 +13,7 @@ namespace AiPainter.Controls
         private SdGenerationParameters sdGenerationParameters = null!;
 
         public bool InProcess;
+        public bool WantToBeRemoved;
         public int ImagesdInQueue => (int)numIterations.Value;
 
         private Rectangle activeBox;
@@ -251,10 +252,13 @@ namespace AiPainter.Controls
             }
             else
             {
-                Invoke(() =>
+                if (!WantToBeRemoved)
                 {
-                    pbIterations.CustomText = "ERROR";
-                });
+                    Invoke(() =>
+                    {
+                        pbIterations.CustomText = "ERROR";
+                    });
+                }
             }
             
             InProcess = false;
@@ -272,13 +276,11 @@ namespace AiPainter.Controls
 
         private void btRemove_Click(object sender, EventArgs e)
         {
-            if (InProcess)
-            {
-                numIterations.Value = 0;
-                Task.Run(StableDiffusionClient.Cancel);
-            }
-            Parent = null;
-            Dispose();
+            numIterations.Value = 0;
+            btRemove.Enabled = false;
+            numIterations.Enabled = false;
+            
+            WantToBeRemoved = true;
         }
 
         private void btLoadParamsBackToPanel_Click(object sender, EventArgs e)
@@ -318,7 +320,6 @@ namespace AiPainter.Controls
             if (numIterations.Value == 0 && InProcess)
             {
                 Task.Run(StableDiffusionClient.Cancel);
-                InProcess = false;
             }
         }
 
