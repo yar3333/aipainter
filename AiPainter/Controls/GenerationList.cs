@@ -36,10 +36,8 @@ namespace AiPainter.Controls
 
         private void stateManager_Tick(object sender, EventArgs e)
         {
-            if (items.Any(x => x.InProcess)) return;
-
             var wasRemoved = false;
-            foreach (var itemToRemove in items.Where(x => x.WantToBeRemoved).ToArray())
+            foreach (var itemToRemove in items.Where(x => !x.InProcess && x.WantToBeRemoved).ToArray())
             {
                 wasRemoved = true;
                 Controls.Remove(itemToRemove);
@@ -48,8 +46,11 @@ namespace AiPainter.Controls
             }
             if (wasRemoved) arrangeItems();
 
-            var item = items.Find(x => x.ImagesdInQueue > 0);
-            item?.Run();
+            if (items.All(x => !x.InProcess))
+            {
+                var item = items.Find(x => x.ImagesdInQueue > 0);
+                item?.Run();
+            }
         }
     }
 }
