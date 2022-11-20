@@ -301,6 +301,7 @@ namespace AiPainter.Controls
                 sdPanel.ddInpaintingFill.SelectedItem = inpaintingFill.ToString();
                 pictureBox.Image = BitmapTools.Clone(originalImage);
                 pictureBox.LoadMask(savedMask);
+                pictureBox.Refresh();
             }
 
             sdPanel.Modifiers = sdGenerationParameters.modifiers;
