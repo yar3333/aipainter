@@ -1,4 +1,5 @@
 using System.Drawing.Imaging;
+using System.Text.Json;
 using System.Text.RegularExpressions;
 using AiPainter.Controls;
 using AiPainter.Helpers;
@@ -119,7 +120,7 @@ namespace AiPainter
                     pb.Size = new Size(sz, sz);
                     pb.FilePath = storedImageList.GetAt(i).FilePath;
                     pb.Visible = true;
-                    toolTip.SetToolTip(pb, Path.GetFileName(pb.FilePath) + " (" + Path.GetDirectoryName(pb.FilePath) + ")\n\nHold right mouse button to remove file from disk.");
+                    toolTip.SetToolTip(pb.PictureBox, Path.GetFileName(pb.FilePath) + " (" + Path.GetDirectoryName(pb.FilePath) + ")\n\nClick to load image. Double click to load also original parameters from *.json file.");
 
                     x += sz + 5;
                     i++;
@@ -149,6 +150,22 @@ namespace AiPainter
                 FilePath = pb.FilePath;
                 pictureBox.Image = BitmapTools.Load(pb.FilePath);
                 pictureBox.ResetMask();
+            };
+
+            pb.OnImageDoubleClick = () =>
+            {
+                var parametersJsonFilePath = Path.Join(Path.GetDirectoryName(FilePath), Path.GetFileNameWithoutExtension(FilePath)) + ".json";
+                if (File.Exists(parametersJsonFilePath))
+                {
+                    var sdGenerationParameters = JsonSerializer.Deserialize<SdGenerationParameters>(File.ReadAllText(parametersJsonFilePath));
+
+                    panStableDiffusion.numSteps.Value = sdGenerationParameters.steps;
+                    panStableDiffusion.tbPrompt.Text = sdGenerationParameters.prompt;
+                    panStableDiffusion.tbNegative.Text = sdGenerationParameters.negative;
+                    panStableDiffusion.numCfgScale.Value = sdGenerationParameters.cfgScale;
+                    panStableDiffusion.tbSeed.Text = sdGenerationParameters.seed.ToString();
+                    panStableDiffusion.Modifiers = sdGenerationParameters.modifiers;
+                }
             };
 
             pb.OnImageRemove = () =>
