@@ -80,6 +80,7 @@
             this.collapsablePanel.Size = new System.Drawing.Size(340, 420);
             this.collapsablePanel.TabIndex = 4;
             this.collapsablePanel.Load += new System.EventHandler(this.collapsablePanel_Load);
+            this.collapsablePanel.Resize += new System.EventHandler(this.collapsablePanel_Resize);
             // 
             // lbModifiers
             // 

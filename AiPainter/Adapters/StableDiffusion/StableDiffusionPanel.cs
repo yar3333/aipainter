@@ -109,5 +109,10 @@ namespace AiPainter.Adapters.StableDiffusion
                 Modifiers = modifiersForm.Modifiers;
             }
         }
+
+        private void collapsablePanel_Resize(object sender, EventArgs e)
+        {
+            Height = collapsablePanel.Height;
+        }
     }
 }
