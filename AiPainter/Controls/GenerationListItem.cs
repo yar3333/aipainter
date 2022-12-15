@@ -2,6 +2,7 @@
 using AiPainter.Helpers;
 using System.Drawing.Imaging;
 using System.Text.Json;
+using System.Text.RegularExpressions;
 
 namespace AiPainter.Controls
 {
@@ -172,10 +173,8 @@ namespace AiPainter.Controls
                     
                         using var tempOriginalImage = BitmapTools.Clone(originalImage);
                         BitmapTools.DrawBitmapAtPos(resultImageResized, tempOriginalImage, activeBox.X, activeBox.Y);
-                        var resultFilePath = getDestImageFilePath(seed);
-                        tempOriginalImage.Save(resultFilePath, ImageFormat.Png);
 
-                        saveSdGeneraqtionParameters(resultFilePath, seed);
+                        saveImageBasedOnOriginalImage(tempOriginalImage, seed);
                     }
                     catch (Exception ee)
                     {
@@ -183,6 +182,23 @@ namespace AiPainter.Controls
                     }
                 });
             }
+        }
+
+        private void saveImageBasedOnOriginalImage(Bitmap image, long seed)
+        {
+            var basePath = Path.Join(Path.GetDirectoryName(savedFilePath), Path.GetFileNameWithoutExtension(savedFilePath));
+            var matches = Regex.Matches(basePath, @"-aip(\d+)$");
+
+            var n = 1;
+            if (matches.Count == 1)
+            {
+                n = int.Parse(matches[0].Groups[1].Value) + 1;
+                basePath = basePath.Substring(0, basePath.Length - matches[0].Groups[0].Value.Length);
+            }
+
+            var resultFilePath = basePath + "-aip" + n.ToString("D3") + Path.GetExtension(savedFilePath);
+            image.Save(resultFilePath, Path.GetExtension(resultFilePath).ToLowerInvariant() == ".png" ? ImageFormat.Png : ImageFormat.Jpeg);
+            saveSdGeneraqtionParameters(resultFilePath, seed);
         }
 
         private void generate(Bitmap? initImage, Bitmap? maskImage, Action<Bitmap, long> processGeneratedImage)

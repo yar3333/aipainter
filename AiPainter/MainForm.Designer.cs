@@ -38,11 +38,13 @@ namespace AiPainter
             this.btLoad = new System.Windows.Forms.ToolStripButton();
             this.btSave = new System.Windows.Forms.ToolStripButton();
             this.btSaveAs = new System.Windows.Forms.ToolStripButton();
-            this.btSavePng = new System.Windows.Forms.ToolStripButton();
-            this.btSaveJpeg = new System.Windows.Forms.ToolStripButton();
             this.btCopyToClipboard = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.btResizeAndMoveActiveBoxToFitImage = new System.Windows.Forms.ToolStripButton();
+            this.sbResize = new System.Windows.Forms.ToolStripSplitButton();
+            this.resizeTo2048ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.resizeTo1024ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.resizeTo512ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.btResetMask = new System.Windows.Forms.ToolStripButton();
             this.btDeAlpha = new System.Windows.Forms.ToolStripButton();
@@ -96,11 +98,10 @@ namespace AiPainter
             this.btLoad,
             this.btSave,
             this.btSaveAs,
-            this.btSavePng,
-            this.btSaveJpeg,
             this.btCopyToClipboard,
             this.toolStripSeparator2,
             this.btResizeAndMoveActiveBoxToFitImage,
+            this.sbResize,
             this.toolStripSeparator3,
             this.btResetMask,
             this.btDeAlpha,
@@ -157,27 +158,6 @@ namespace AiPainter
             this.btSaveAs.Text = "Save image as...";
             this.btSaveAs.Click += new System.EventHandler(this.btSaveAs_Click);
             // 
-            // btSavePng
-            // 
-            this.btSavePng.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.btSavePng.Image = ((System.Drawing.Image)(resources.GetObject("btSavePng.Image")));
-            this.btSavePng.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.btSavePng.Name = "btSavePng";
-            this.btSavePng.Size = new System.Drawing.Size(38, 37);
-            this.btSavePng.Text = "Save image as PNG (auto name)";
-            this.btSavePng.Click += new System.EventHandler(this.btSavePng_Click);
-            // 
-            // btSaveJpeg
-            // 
-            this.btSaveJpeg.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.btSaveJpeg.Image = ((System.Drawing.Image)(resources.GetObject("btSaveJpeg.Image")));
-            this.btSaveJpeg.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.btSaveJpeg.Name = "btSaveJpeg";
-            this.btSaveJpeg.Size = new System.Drawing.Size(38, 37);
-            this.btSaveJpeg.Text = "Save image as JPG (auto name)";
-            this.btSaveJpeg.ToolTipText = "Save image as JPG (auto name)";
-            this.btSaveJpeg.Click += new System.EventHandler(this.btSaveJpeg_Click);
-            // 
             // btCopyToClipboard
             // 
             this.btCopyToClipboard.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
@@ -202,6 +182,40 @@ namespace AiPainter
             this.btResizeAndMoveActiveBoxToFitImage.Size = new System.Drawing.Size(38, 37);
             this.btResizeAndMoveActiveBoxToFitImage.Text = "Resize and move active zone to fit image";
             this.btResizeAndMoveActiveBoxToFitImage.Click += new System.EventHandler(this.btResizeAndMoveActiveBoxToFitImage_Click);
+            // 
+            // sbResize
+            // 
+            this.sbResize.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.sbResize.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.resizeTo2048ToolStripMenuItem,
+            this.resizeTo1024ToolStripMenuItem,
+            this.resizeTo512ToolStripMenuItem});
+            this.sbResize.Image = ((System.Drawing.Image)(resources.GetObject("sbResize.Image")));
+            this.sbResize.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.sbResize.Name = "sbResize";
+            this.sbResize.Size = new System.Drawing.Size(50, 37);
+            this.sbResize.Text = "Resize image";
+            // 
+            // resizeTo2048ToolStripMenuItem
+            // 
+            this.resizeTo2048ToolStripMenuItem.Name = "resizeTo2048ToolStripMenuItem";
+            this.resizeTo2048ToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.resizeTo2048ToolStripMenuItem.Text = "Resize to 2048";
+            this.resizeTo2048ToolStripMenuItem.Click += new System.EventHandler(this.resizeTo2048ToolStripMenuItem_Click);
+            // 
+            // resizeTo1024ToolStripMenuItem
+            // 
+            this.resizeTo1024ToolStripMenuItem.Name = "resizeTo1024ToolStripMenuItem";
+            this.resizeTo1024ToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.resizeTo1024ToolStripMenuItem.Text = "Resize to 1024";
+            this.resizeTo1024ToolStripMenuItem.Click += new System.EventHandler(this.resizeTo1024ToolStripMenuItem_Click);
+            // 
+            // resizeTo512ToolStripMenuItem
+            // 
+            this.resizeTo512ToolStripMenuItem.Name = "resizeTo512ToolStripMenuItem";
+            this.resizeTo512ToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.resizeTo512ToolStripMenuItem.Text = "Resize to 512";
+            this.resizeTo512ToolStripMenuItem.Click += new System.EventHandler(this.resizeTo512ToolStripMenuItem_Click);
             // 
             // toolStripSeparator3
             // 
@@ -399,6 +413,7 @@ namespace AiPainter
             this.panStableDiffusion.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.panStableDiffusion.Dock = System.Windows.Forms.DockStyle.Top;
             this.panStableDiffusion.Location = new System.Drawing.Point(0, 0);
+            this.panStableDiffusion.Modifiers = new string[0];
             this.panStableDiffusion.Name = "panStableDiffusion";
             this.panStableDiffusion.Size = new System.Drawing.Size(334, 403);
             this.panStableDiffusion.TabIndex = 6;
@@ -462,7 +477,6 @@ namespace AiPainter
         #endregion
 
         private ToolStrip toolbar;
-        private ToolStripButton btSavePng;
         private ToolStripButton btDeAlpha;
         private ToolStripButton btLoad;
         private ToolStripSeparator toolStripSeparator2;
@@ -478,7 +492,6 @@ namespace AiPainter
         private ToolStripButton btResetMask;
         private ToolTip toolTip;
         private SmartPictureBox pictureBox;
-        private ToolStripButton btSaveJpeg;
         private Adapters.StableDiffusion.StableDiffusionPanel panStableDiffusion;
         private Adapters.LamaCleaner.LamaCleanerPanel panLamaCleaner;
         private Adapters.RemBg.RemBgPanel panRemBg;
@@ -493,5 +506,9 @@ namespace AiPainter
         private SplitContainer splitContainer2;
         private System.ComponentModel.BackgroundWorker updateImageListWorker;
         private GenerationList panGenerationList;
+        private ToolStripSplitButton sbResize;
+        private ToolStripMenuItem resizeTo2048ToolStripMenuItem;
+        private ToolStripMenuItem resizeTo1024ToolStripMenuItem;
+        private ToolStripMenuItem resizeTo512ToolStripMenuItem;
     }
 }

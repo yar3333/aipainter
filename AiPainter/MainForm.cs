@@ -209,33 +209,37 @@ namespace AiPainter
 
             if (keyData == (Keys.Control | Keys.S))
             {
-                save(null);
+                save();
                 return true;
             }
 
             return base.ProcessCmdKey(ref msg, keyData);
         }
 
-        private void save(ImageFormat? format)
+        private void save()
         {
-            var image = pictureBox.Image;
-            if (image == null) return;
+            if (pictureBox.Image == null) return;
 
-            format ??= BitmapTools.HasAlpha(image) || Path.GetExtension(FilePath).ToLowerInvariant() == ".png"
-                           ? ImageFormat.Png
-                           : ImageFormat.Jpeg;
+            if (Path.GetExtension(FilePath).ToLowerInvariant() != ".png" && BitmapTools.HasAlpha(pictureBox.Image))
+            {
+                var r = MessageBox.Show
+                (
+                    this,
+                    "Image has transparent areas. Do you want to save it as *.png?",
+                    "Warning",
+                    MessageBoxButtons.YesNoCancel
+                );
+                if (r == DialogResult.Cancel) return;
+                if (r == DialogResult.Yes)
+                {
+                    FilePath = Path.Join(Path.GetDirectoryName(FilePath), Path.GetFileNameWithoutExtension(FilePath)) + ".png";
+                    save();
+                    return;
+                }
+            }
 
-            var baseFileName = Path.GetFileNameWithoutExtension(FilePath)!;
-            var match = Regex.Match(baseFileName, @"(.+)-aip_(\d+)$");
-            var n = match.Success ? int.Parse(match.Groups[2].Value) + 1 : 1;
-            if (match.Success) baseFileName = match.Groups[1].Value;
-            baseFileName += "-aip_";
-            
-            var baseDir = Path.GetDirectoryName(FilePath)!;
-  
-            while (Directory.GetFiles(baseDir, baseFileName + n.ToString("D3") + ".*").Any()) n++;
-            
-            image.Save(Path.Join(baseDir, baseFileName) + n.ToString("D3") + (Equals(format, ImageFormat.Png) ? ".png" : ".jpg"), format);
+            var format = Path.GetExtension(FilePath).ToLowerInvariant() == ".png" ? ImageFormat.Png : ImageFormat.Jpeg;
+            pictureBox.Image.Save(FilePath!, format);
         }
 
         private void btDeAlpha_Click(object sender, EventArgs e)
@@ -376,13 +380,13 @@ namespace AiPainter
 
             btSave.Enabled = !string.IsNullOrEmpty(FilePath) && pictureBox.Image != null;
             btSaveAs.Enabled = pictureBox.Image != null;
-            btSavePng.Enabled = pictureBox.Image != null;
-            btSaveJpeg.Enabled = pictureBox.Image != null;
 
             btLeft.Enabled = pictureBox.Image != null;
             btUp.Enabled = pictureBox.Image != null;
             btDown.Enabled = pictureBox.Image != null;
             btRight.Enabled = pictureBox.Image != null;
+
+            sbResize.Enabled = pictureBox.Image != null;
         }
 
         private void btRestorePrevMask_Click(object sender, EventArgs e)
@@ -416,7 +420,7 @@ namespace AiPainter
 
         private void btSave_Click(object sender, EventArgs e)
         {
-            save(Path.GetExtension(FilePath).ToLowerInvariant() == ".png" ? ImageFormat.Png : ImageFormat.Jpeg);
+            save();
         }
 
         private void btSaveAs_Click(object sender, EventArgs e)
@@ -433,23 +437,35 @@ namespace AiPainter
             if (saveFileDialog.ShowDialog() == DialogResult.OK)
             {
                 FilePath = saveFileDialog.FileName;
-                save(Path.GetExtension(FilePath).ToLowerInvariant() == ".png" ? ImageFormat.Png : ImageFormat.Jpeg);
+                save();
             }
-        }
-
-        private void btSavePng_Click(object sender, EventArgs e)
-        {
-            save(ImageFormat.Png);
-        }
-
-        private void btSaveJpeg_Click(object sender, EventArgs e)
-        {
-            save(ImageFormat.Jpeg);
         }
 
         private void splitContainer_Panel2_Resize(object sender, EventArgs e)
         {
             updateImages(null);
+        }
+
+        private void resizeTo2048ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            resizeImage(2048);
+        }
+
+        private void resizeTo1024ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            resizeImage(1024);
+        }
+
+        private void resizeTo512ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            resizeImage(512);
+        }
+
+        private void resizeImage(int size)
+        {
+            var image = pictureBox.Image!;
+            var k = Math.Min((double)size / image.Width, (double)size / image.Height);
+            pictureBox.Image = BitmapTools.GetResized(image, (int)Math.Round(image.Width * k), (int)Math.Round(image.Height * k));
         }
     }
 }
