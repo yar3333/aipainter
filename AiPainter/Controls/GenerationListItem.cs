@@ -196,7 +196,13 @@ namespace AiPainter.Controls
                 basePath = basePath.Substring(0, basePath.Length - matches[0].Groups[0].Value.Length);
             }
 
-            var resultFilePath = basePath + "-aip" + n.ToString("D3") + Path.GetExtension(savedFilePath);
+            string resultFilePath;
+            for (;;)
+            {
+                resultFilePath = basePath + "-aip" + n.ToString("D3") + Path.GetExtension(savedFilePath);
+                if (!File.Exists(resultFilePath)) break;
+                n++;
+            }
             image.Save(resultFilePath, Path.GetExtension(resultFilePath).ToLowerInvariant() == ".png" ? ImageFormat.Png : ImageFormat.Jpeg);
             saveSdGeneraqtionParameters(resultFilePath, seed);
         }
