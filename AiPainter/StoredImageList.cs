@@ -6,11 +6,21 @@ class StoredImageList
 
     public int Count => images.Count;
 
+    public readonly string Folder;
+
+    public StoredImageList(string folder)
+    {
+        Folder = folder;
+    }
+
     public bool Update()
     {
-        if (!Directory.Exists(Program.Config.OutputFolder)) return false;
+        if (!Directory.Exists(Folder)) return false;
 
-        var allFiles = Directory.GetFiles(Program.Config.OutputFolder, "*.png");
+        var allFiles = Directory.GetFiles(Folder, "*.png")
+               .Concat(Directory.GetFiles(Folder, "*.jpg"))
+               .Concat(Directory.GetFiles(Folder, "*.jpeg"))
+               .ToArray();
 
         var removeCount = images.RemoveAll(x => !allFiles.Contains(x.FilePath));
 

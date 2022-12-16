@@ -1,6 +1,5 @@
 using System.Drawing.Imaging;
 using System.Text.Json;
-using System.Windows.Forms;
 using AiPainter.Controls;
 using AiPainter.Helpers;
 
@@ -11,10 +10,24 @@ namespace AiPainter
     public partial class MainForm : Form
     {
         private const int IMAGE_EXTEND_SIZE = 64;
-        
-        public string? FilePath { get; set; }
 
-        private static readonly StoredImageList storedImageList = new();
+        private string? filePath;
+        public string? FilePath 
+        { 
+            get => filePath;
+            set
+            {
+                filePath = value;
+
+                var folder = filePath != null ? (Path.GetDirectoryName(filePath) ?? Program.Config.OutputFolder) : Program.Config.OutputFolder;
+                if (storedImageList.Folder != folder)
+                {
+                    storedImageList = new(folder);
+                }
+            }
+        }
+
+        private static StoredImageList storedImageList = new(Program.Config.OutputFolder);
 
         public MainForm()
         {
@@ -258,7 +271,8 @@ namespace AiPainter
                 FilePath = openFileDialog.FileName;
                 pictureBox.Image = BitmapTools.Load(FilePath);
                 pictureBox.ResetMask();
-                pictureBox.ResetView();
+                pictureBox.ZoomAndMoveGlobalViewToFitImage();
+                pictureBox.Refresh();
             }
         }
 

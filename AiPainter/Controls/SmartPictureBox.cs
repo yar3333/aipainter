@@ -532,6 +532,8 @@ namespace AiPainter.Controls
                 sz,
                 sz
             );
+            
+            Invalidate();
         }
 
         public void ZoomAndMoveGlobalViewToFitImage()
@@ -546,6 +548,8 @@ namespace AiPainter.Controls
 
             globalX = (ActiveBox.Width  - (int)Math.Round(Image.Width  * zoom)) >> 1;
             globalY = (ActiveBox.Height - (int)Math.Round(Image.Height * zoom)) >> 1;
+            
+            Invalidate();
         }
     }
 }
