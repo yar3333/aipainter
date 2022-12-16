@@ -1,6 +1,6 @@
 using System.Drawing.Imaging;
 using System.Text.Json;
-using System.Text.RegularExpressions;
+using System.Windows.Forms;
 using AiPainter.Controls;
 using AiPainter.Helpers;
 
@@ -407,14 +407,8 @@ namespace AiPainter
 
         private void btResizeAndMoveActiveBoxToFitImage_Click(object sender, EventArgs e)
         {
-            var sz = Math.Max(pictureBox.Image.Width, pictureBox.Image.Height);
-            pictureBox.ActiveBox = new Rectangle
-            (
-                (pictureBox.Image.Width - sz) >> 1,
-                (pictureBox.Image.Height - sz) >> 1,
-                sz,
-                sz
-            );
+            pictureBox.ResizeAndMoveActiveBoxToFitImage();
+            pictureBox.ZoomAndMoveGlobalViewToFitImage();
             pictureBox.Refresh();
         }
 

@@ -301,10 +301,6 @@ namespace AiPainter.Controls
 
         private void SmartPictureBox_MouseDown(object sender, MouseEventArgs e)
         {
-            if (!Enabled) return;
-            
-            Capture = true;
-
             if (e.Button == MouseButtons.Left && !ctrlPressed) maskingMouseDown(e.Location);
             if (e.Button == MouseButtons.Left &&  ctrlPressed) activeBoxMovingMouseDown(e.Location);
             if (e.Button == MouseButtons.Right) globalMovingMouseDown(e.Location);
@@ -314,8 +310,6 @@ namespace AiPainter.Controls
         {
             manageCursor(e.Location);
             
-            if (!Enabled) return;
-
             switch (mode)
             {
                 case Mode.MASKING:
@@ -372,7 +366,9 @@ namespace AiPainter.Controls
 
         private void maskingMouseDown(Point loc)
         {
-            if (Image == null) return;
+            if (!Enabled || Image == null) return;
+
+            Capture = true;
 
             var pt = getTransformedMousePos(loc);
             
@@ -396,7 +392,7 @@ namespace AiPainter.Controls
 
         private void maskingMouseMove(Point loc)
         {
-            if (Image == null) return;
+            if (!Enabled || Image == null) return;
 
             var pt = getTransformedMousePos(loc);
 
@@ -422,7 +418,9 @@ namespace AiPainter.Controls
 
         private void activeBoxMovingMouseDown(Point loc)
         {
-            if (Image == null) return;
+            if (!Enabled || Image == null) return;
+
+            Capture = true;
             
             mode = Mode.ACTIVE_BOX_MOVING;
             movingStartPoint = getTransformedMousePos(loc);
@@ -431,7 +429,7 @@ namespace AiPainter.Controls
 
         private void activeBoxMovingMouseMove(Point loc)
         {
-            if (Image == null) return;
+            if (!Enabled || Image == null) return;
 
             var tranLoc = getTransformedMousePos(loc);
 
@@ -446,6 +444,8 @@ namespace AiPainter.Controls
         private void globalMovingMouseDown(Point loc)
         {
             if (Image == null) return;
+
+            Capture = true;
             
             mode = Mode.GLOBAL_MOVING;
             movingStartPoint = loc;
@@ -517,6 +517,35 @@ namespace AiPainter.Controls
             oldPrimitives = primitives.ToArray();
             redoPrimitiveBlocks.Clear();
             primitives = data.ToList();
+        }
+
+        public void ResizeAndMoveActiveBoxToFitImage()
+        {
+            if (Image == null) return;
+
+            var sz = Math.Max(Image.Width, Image.Height);
+            
+            ActiveBox = new Rectangle
+            (
+                (Image.Width - sz) >> 1,
+                (Image.Height - sz) >> 1,
+                sz,
+                sz
+            );
+        }
+
+        public void ZoomAndMoveGlobalViewToFitImage()
+        {
+            if (Image == null) return;
+
+            zoom = Math.Min
+            (
+                (decimal)(ClientSize.Width  - 10) / Image.Width, 
+                (decimal)(ClientSize.Height - 10) / Image.Height
+            );
+
+            globalX = (ActiveBox.Width  - (int)Math.Round(Image.Width  * zoom)) >> 1;
+            globalY = (ActiveBox.Height - (int)Math.Round(Image.Height * zoom)) >> 1;
         }
     }
 }
