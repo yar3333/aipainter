@@ -3,6 +3,7 @@ using AiPainter.Helpers;
 using System.Drawing.Imaging;
 using System.Text.Json;
 using System.Text.RegularExpressions;
+using System.Windows.Forms;
 
 namespace AiPainter.Controls
 {
@@ -319,6 +320,8 @@ namespace AiPainter.Controls
 
             if (originalImage != null)
             {
+                pictureBox.HistoryAddCurrentState();
+
                 pictureBox.ActiveBox = activeBox;
                 sdPanel.ddInpaintingFill.SelectedItem = inpaintingFill.ToString();
                 pictureBox.Image = BitmapTools.Clone(originalImage);

@@ -15,14 +15,18 @@ namespace AiPainter.Controls
             GLOBAL_MOVING,
         }
 
+        class HistoryItem
+        {
+            public Primitive[] Mask = null!;
+            public Bitmap? Image;
+            public Rectangle ActiveBox;
+        }
+
         private const int ACTIVE_BOX_EXTEND_SIZE = 16;
         
         private const int PEN_SIZE = 48;
-        
-        private static readonly Primitive UNDO_DELIMITER = new() { Kind = PrimitiveKind.UndoDelimiter };
 
         private List<Primitive> primitives = new();
-        private readonly List<Primitive[]> redoPrimitiveBlocks = new();
 
         private Primitive? lastPrim => primitives.LastOrDefault();
 
@@ -56,6 +60,11 @@ namespace AiPainter.Controls
 
         private bool mouseInPictureBox;
         private bool ctrlPressed;
+        
+        public new bool Enabled { get; set; } = true;
+
+        private readonly List<HistoryItem> historyItems = new();
+        private int historyPos;
         
         public SmartPictureBox()
         {
@@ -103,7 +112,6 @@ namespace AiPainter.Controls
 
         public void AddBoxToMask(int x, int y, int width, int height)
         {
-            if (lastPrim != UNDO_DELIMITER) primitives.Add(UNDO_DELIMITER);
             primitives.Add(new Primitive
             {
                 Kind = PrimitiveKind.Box,
@@ -140,33 +148,10 @@ namespace AiPainter.Controls
             Refresh();
         }
 
-        public void Undo()
-        {
-            if (!primitives.Any()) return;
-                
-            var i = primitives.FindLastIndex(x => x == UNDO_DELIMITER);
-            redoPrimitiveBlocks.Add(primitives.GetRange(i, primitives.Count - i).ToArray());
-            primitives = primitives.GetRange(0, i);
-            
-            Refresh();
-        }
-
-        public void Redo()
-        {
-            if (!redoPrimitiveBlocks.Any()) return;
-
-            var redoBlock = redoPrimitiveBlocks.Last();
-            redoPrimitiveBlocks.RemoveAt(redoPrimitiveBlocks.Count - 1);
-            primitives.AddRange(redoBlock);
-
-            Refresh();
-        }
-
         public void ResetMask()
         {
             if (primitives.Any()) oldPrimitives = primitives.ToArray();
             primitives.Clear();
-            redoPrimitiveBlocks.Clear();
             Invalidate();
         }
 
@@ -374,7 +359,7 @@ namespace AiPainter.Controls
             
             mode = Mode.MASKING;
 
-            if (lastPrim != UNDO_DELIMITER) primitives.Add(UNDO_DELIMITER);
+            HistoryAddCurrentState();
 
             primitives.Add
             (
@@ -515,7 +500,6 @@ namespace AiPainter.Controls
         public void LoadMask(Primitive[] data)
         {
             oldPrimitives = primitives.ToArray();
-            redoPrimitiveBlocks.Clear();
             primitives = data.ToList();
         }
 
@@ -550,6 +534,64 @@ namespace AiPainter.Controls
             globalY = (ActiveBox.Height - (int)Math.Round(Image.Height * zoom)) >> 1;
             
             Invalidate();
+        }
+
+        public void HistoryAddCurrentState()
+        {
+            if (historyPos > 0)
+            {
+                var item = historyItems[historyPos - 1];
+                if (BitmapTools.IsEqual(item.Image, Image) && item.ActiveBox == ActiveBox && DataTools.IsSequencesEqual(item.Mask, primitives)) return;
+            }
+
+            if (historyPos < historyItems.Count)
+            {
+                historyItems.RemoveRange(historyPos, historyItems.Count - historyPos);
+                historyPos = historyItems.Count;
+            }
+
+            historyItems.Add(new HistoryItem
+            {
+                Image = Image,
+                ActiveBox = ActiveBox,
+                Mask = primitives.ToArray(),
+            });
+            historyPos++;
+        }
+
+        public void HistoryUndo()
+        {
+            if (!Enabled) return;
+
+            if (historyPos == historyItems.Count) HistoryAddCurrentState();
+            
+            if (historyPos <= 1) return;
+            historyPos--;
+            loadHistoryItem(historyItems[historyPos - 1]);
+        }
+
+        public void HistoryRedo()
+        {
+            if (!Enabled) return;
+            
+            if (historyPos >= historyItems.Count) return;
+            historyPos++;
+            loadHistoryItem(historyItems[historyPos - 1]);
+        }
+
+        private void loadHistoryItem(HistoryItem item)
+        {
+            Image = item.Image;
+            ActiveBox = item.ActiveBox;
+            primitives = item.Mask.ToList() ?? new List<Primitive>();
+            
+            Invalidate();
+        }
+
+        public void HistoryClear()
+        {
+            historyItems.Clear();
+            historyPos = 0;
         }
     }
 }

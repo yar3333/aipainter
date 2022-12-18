@@ -163,6 +163,7 @@ namespace AiPainter
                 FilePath = pb.FilePath;
                 pictureBox.Image = BitmapTools.Load(pb.FilePath);
                 pictureBox.ResetMask();
+                pictureBox.HistoryClear();
             };
 
             pb.OnImageDoubleClick = () =>
@@ -210,13 +211,13 @@ namespace AiPainter
 
             if (!focusInText && keyData == (Keys.Control | Keys.Z))
             {
-                pictureBox.Undo();
+                pictureBox.HistoryUndo();
                 return true;
             }
 
             if (!focusInText && keyData == (Keys.Control | Keys.Y) || keyData == (Keys.Control | Keys.Shift | Keys.Z))
             {
-                pictureBox.Redo();
+                pictureBox.HistoryRedo();
                 return true;
             }
 
@@ -272,6 +273,7 @@ namespace AiPainter
                 pictureBox.Image = BitmapTools.Load(FilePath);
                 pictureBox.ResetMask();
                 pictureBox.ZoomAndMoveGlobalViewToFitImage();
+                pictureBox.HistoryClear();
                 pictureBox.Refresh();
             }
         }
@@ -291,12 +293,13 @@ namespace AiPainter
         {
             FilePath = null;
             pictureBox.Image = null;
+            pictureBox.HistoryClear();
             pictureBox.Refresh();
         }
 
         private void btLeft_Click(object sender, EventArgs e)
         {
-            if (pictureBox.Image == null) return;
+            pictureBox.HistoryAddCurrentState();
 
             var bmp = new Bitmap(pictureBox.Image.Width + IMAGE_EXTEND_SIZE, pictureBox.Image.Height, PixelFormat.Format32bppArgb);
             using (var g = Graphics.FromImage(bmp))
@@ -314,7 +317,7 @@ namespace AiPainter
 
         private void btRight_Click(object sender, EventArgs e)
         {
-            if (pictureBox.Image == null) return;
+            pictureBox.HistoryAddCurrentState();
             
             var bmp = new Bitmap(pictureBox.Image.Width + IMAGE_EXTEND_SIZE, pictureBox.Image.Height, PixelFormat.Format32bppArgb);
             using (var g = Graphics.FromImage(bmp))
@@ -332,6 +335,8 @@ namespace AiPainter
 
         private void btUp_Click(object sender, EventArgs e)
         {
+            pictureBox.HistoryAddCurrentState();
+            
             var bmp = new Bitmap(pictureBox.Image.Width, pictureBox.Image.Height + IMAGE_EXTEND_SIZE, PixelFormat.Format32bppArgb);
             using (var g = Graphics.FromImage(bmp))
             {
@@ -348,7 +353,7 @@ namespace AiPainter
 
         private void btDown_Click(object sender, EventArgs e)
         {
-            if (pictureBox.Image == null) return;
+            pictureBox.HistoryAddCurrentState();
             
             var bmp = new Bitmap(pictureBox.Image.Width, pictureBox.Image.Height + IMAGE_EXTEND_SIZE, PixelFormat.Format32bppArgb);
             using (var g = Graphics.FromImage(bmp))
@@ -366,6 +371,8 @@ namespace AiPainter
 
         private void btResetMask_Click(object sender, EventArgs e)
         {
+            pictureBox.HistoryAddCurrentState(); // TODO: ???
+            
             pictureBox.ResetMask();
             pictureBox.Refresh();
         }
@@ -385,22 +392,22 @@ namespace AiPainter
                  + $" [Active box: X,Y = {activeBox.X},{activeBox.Y}; WxH = {activeBox.Width}x{activeBox.Height}]"
                  + (string.IsNullOrEmpty(FilePath) ? "" : " | " + Path.GetDirectoryName(FilePath));
 
-            btClearActiveImage.Enabled = pictureBox.Image != null;
-            btCopyToClipboard.Enabled = pictureBox.Image != null;
-            btResetMask.Enabled = pictureBox.HasMask;
-            btDeAlpha.Enabled = pictureBox.Image != null && BitmapTools.HasAlpha(pictureBox.Image);
-            btRestorePrevMask.Enabled = pictureBox.HasPrevMask;
-            btResizeAndMoveActiveBoxToFitImage.Enabled = pictureBox.Image != null;
+            btClearActiveImage.Enabled = pictureBox.Image != null && pictureBox.Enabled;
+            btCopyToClipboard.Enabled = pictureBox.Image != null && pictureBox.Enabled;
+            btResetMask.Enabled = pictureBox.HasMask && pictureBox.Enabled;
+            btDeAlpha.Enabled = pictureBox.Image != null && BitmapTools.HasAlpha(pictureBox.Image) && pictureBox.Enabled;
+            btRestorePrevMask.Enabled = pictureBox.HasPrevMask && pictureBox.Enabled;
+            btResizeAndMoveActiveBoxToFitImage.Enabled = pictureBox.Image != null && pictureBox.Enabled;
 
-            btSave.Enabled = !string.IsNullOrEmpty(FilePath) && pictureBox.Image != null;
-            btSaveAs.Enabled = pictureBox.Image != null;
+            btSave.Enabled = !string.IsNullOrEmpty(FilePath) && pictureBox.Image != null && pictureBox.Enabled;
+            btSaveAs.Enabled = pictureBox.Image != null && pictureBox.Enabled;
 
-            btLeft.Enabled = pictureBox.Image != null;
-            btUp.Enabled = pictureBox.Image != null;
-            btDown.Enabled = pictureBox.Image != null;
-            btRight.Enabled = pictureBox.Image != null;
+            btLeft.Enabled = pictureBox.Image != null && pictureBox.Enabled;
+            btUp.Enabled = pictureBox.Image != null && pictureBox.Enabled;
+            btDown.Enabled = pictureBox.Image != null && pictureBox.Enabled;
+            btRight.Enabled = pictureBox.Image != null && pictureBox.Enabled;
 
-            sbResize.Enabled = pictureBox.Image != null;
+            sbResize.Enabled = pictureBox.Image != null && pictureBox.Enabled;
         }
 
         private void btRestorePrevMask_Click(object sender, EventArgs e)
@@ -421,6 +428,8 @@ namespace AiPainter
 
         private void btResizeAndMoveActiveBoxToFitImage_Click(object sender, EventArgs e)
         {
+            pictureBox.HistoryAddCurrentState();
+
             pictureBox.ResizeAndMoveActiveBoxToFitImage();
             pictureBox.ZoomAndMoveGlobalViewToFitImage();
             pictureBox.Refresh();
@@ -471,6 +480,8 @@ namespace AiPainter
 
         private void resizeImage(int size)
         {
+            pictureBox.HistoryAddCurrentState();
+
             var image = pictureBox.Image!;
             var k = Math.Min((double)size / image.Width, (double)size / image.Height);
             pictureBox.Image = BitmapTools.GetResized(image, (int)Math.Round(image.Width * k), (int)Math.Round(image.Height * k));

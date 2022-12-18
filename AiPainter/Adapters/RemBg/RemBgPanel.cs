@@ -19,11 +19,13 @@ namespace AiPainter.Adapters.RemBg
 
         private void btRemBgRemoveBackground_Click(object sender, EventArgs e)
         {
+            pictureBox.HistoryAddCurrentState();
+            
             InProcess = true;
 
             var activeBox = pictureBox.ActiveBox;
 
-            var fullImage = pictureBox.Image!;
+            var fullImage = BitmapTools.Clone(pictureBox.Image!);
             var croppedImage = BitmapTools.GetCropped(fullImage, activeBox, Color.Black);
 
             Task.Run(() =>
@@ -38,6 +40,8 @@ namespace AiPainter.Adapters.RemBg
                         Invoke(() =>
                         {
                             BitmapTools.DrawBitmapAtPos(resultImage, fullImage, activeBox.X, activeBox.Y);
+                            resultImage.Dispose();
+                            pictureBox.Image = fullImage;
                             pictureBox.ResetMask();
                             pictureBox.Refresh();
                         });

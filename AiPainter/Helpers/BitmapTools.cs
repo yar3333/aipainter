@@ -36,6 +36,41 @@ public static class BitmapTools
         return dst;
     }
 
+    public static bool IsEqual(Bitmap? a, Bitmap? b)
+    {
+        if (a == b) return true;
+        if (a == null && b != null) return false;
+        if (a != null && b == null) return false;
+        if (a!.Width != b!.Width) return false;
+        if (a.Height != b.Height) return false;
+
+        var aData = a.LockBits(new Rectangle(0, 0, a.Width, a.Height), ImageLockMode.ReadOnly, PixelFormat.Format32bppArgb);
+        var bData = b.LockBits(new Rectangle(0, 0, b.Width, b.Height), ImageLockMode.ReadOnly, PixelFormat.Format32bppArgb);
+
+        unsafe
+        {
+            var pA = (byte*)aData.Scan0.ToPointer();
+            var pB = (byte*)bData.Scan0.ToPointer();
+            var pAEnd = pA + aData.Height * aData.Stride;
+            while (pA < pAEnd)
+            {
+                if (*pA != *pB)
+                {
+                    b.UnlockBits(bData);
+                    a.UnlockBits(aData);
+                    return false;
+                }
+                pA++;
+                pB++;
+            }
+        }
+
+        b.UnlockBits(bData);
+        a.UnlockBits(aData);
+
+        return true;
+    }
+
     public static string GetBase64String(Image image)
     {
         using var m = new MemoryStream();

@@ -19,11 +19,13 @@ namespace AiPainter.Adapters.LamaCleaner
 
         private void btInpaint_Click(object sender, EventArgs e)
         {
+            pictureBox.HistoryAddCurrentState();
+
             InProcess = true;
 
             var activeBox = pictureBox.ActiveBox;
 
-            var fullImage = pictureBox.Image!;
+            var fullImage = BitmapTools.Clone(pictureBox.Image!);
 
             var croppedImage = pictureBox.GetMaskedImageCropped(Color.Black, 255);
             var croppedMask = pictureBox.GetMaskCropped(Color.Black, Color.White);
@@ -42,6 +44,7 @@ namespace AiPainter.Adapters.LamaCleaner
                         {
                             BitmapTools.DrawBitmapAtPos(resultImage, fullImage, activeBox.X, activeBox.Y);
                             resultImage.Dispose();
+                            pictureBox.Image = fullImage;
                             pictureBox.ResetMask();
                             pictureBox.Refresh();
                         });

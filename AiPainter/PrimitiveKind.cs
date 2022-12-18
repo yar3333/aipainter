@@ -4,5 +4,4 @@ public enum PrimitiveKind
 {
     Line,
     Box,
-    UndoDelimiter
 }
