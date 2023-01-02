@@ -3,6 +3,7 @@ AiPainter\logs
 AiPainter\Config.json
 
 AiPainter\stable_diffusion_checkpoints\_ext
+AiPainter\stable_diffusion_vae\*.ckpt
 
 AiPainter\external\_stuff\python-3.10.6\readme.txt
 

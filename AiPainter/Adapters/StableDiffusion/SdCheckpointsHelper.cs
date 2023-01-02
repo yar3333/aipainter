@@ -8,6 +8,7 @@ static class SdCheckpointsHelper
     {
         var basePath = BasePath;
         return Directory.GetFiles(basePath, "*.ckpt", SearchOption.AllDirectories)
+       .Concat(Directory.GetFiles(basePath, "*.safetensors", SearchOption.AllDirectories))
                         .Select(x => x.Substring(basePath.Length).TrimStart('\\'))
                         .OrderBy(x => x)
                         .ToArray();
