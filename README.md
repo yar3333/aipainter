@@ -51,8 +51,3 @@ Tested on NVIDIA 3060.
  * run `create_conda_env.cmd` helpers to prepare conda environments
  * now you can use `run.cmd` helpers to run python projects
  * open `AiPainter.sln` in Visual Studio and build it
-
-
-## Donuts
-
- This project fully free and open-source. You can help the project by sending a [small donut via Tinkoff](https://www.tinkoff.ru/cf/1P754cLgSiB).
