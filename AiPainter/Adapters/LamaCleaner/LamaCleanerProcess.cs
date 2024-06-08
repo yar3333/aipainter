@@ -33,7 +33,8 @@ static class LamaCleanerProcess
             Path.Join("main", "aipainter_lamacleaner.exe"),
                   "--model=lama"
                 + " --device=cpu"
-                + " --port=" + +new Uri(Program.Config.LamaCleanerUrl).Port,
+                + " --port=" + new Uri(Program.Config.LamaCleanerUrl).Port
+                + " --host=" + new Uri(Program.Config.LamaCleanerUrl).Host,
             directory: Path.Join(Application.StartupPath, @"external\lama-cleaner"),
             env: new Dictionary<string, string?>
             {
