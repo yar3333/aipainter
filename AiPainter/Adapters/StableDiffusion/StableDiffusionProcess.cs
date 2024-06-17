@@ -79,7 +79,7 @@ static class StableDiffusionProcess
         
         process = ProcessHelper.RunInBackground
         (
-            "webui.bat",
+            "run.bat",
             "--api"
                 + (uri.Host != "127.0.0.1" && uri.Host.ToLowerInvariant() != "localhost" ? " --listen" : "")
                 + " --port=" + uri.Port
@@ -91,16 +91,16 @@ static class StableDiffusionProcess
             
             env: new Dictionary<string, string?>
             {
-                {
-                    "PATH", 
-                    Path.Join(Application.StartupPath, @"external\_stuff\python-3.10.6") + ";" 
-                  + Path.Join(Application.StartupPath, @"external\_stuff\python-3.10.6\Scripts") + ";" 
-                  + Environment.GetEnvironmentVariable("PATH")
-                },
-                { "PYTHON", null },
-                { "GIT", null },
-                { "VENV_DIR", null },
-                { "COMMANDLINE_ARGS", null },
+                //{
+                //    "PATH", 
+                //    Path.Join(Application.StartupPath, @"external\_stuff\python-3.10.6") + ";" 
+                //  + Path.Join(Application.StartupPath, @"external\_stuff\python-3.10.6\Scripts") + ";" 
+                //  + Environment.GetEnvironmentVariable("PATH")
+                //},
+                //{ "PYTHON", null },
+                //{ "GIT", null },
+                //{ "VENV_DIR", null },
+                //{ "COMMANDLINE_ARGS", null },
             },
             
             logFunc: s => log.WriteLine("[process] " + s),
