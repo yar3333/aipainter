@@ -1,0 +1,1 @@
+elixolsen,<lora:eliolsen_juggerX_xl_8_standard_wocap_merger_lastmodel_120_04_06-elixolsen>

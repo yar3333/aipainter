@@ -50,6 +50,7 @@ namespace AiPainter.Controls
                 cfgScale = sdPanel.numCfgScale.Value,
                 seed = sdPanel.tbSeed.Text.Trim() != "" ? long.Parse(sdPanel.tbSeed.Text.Trim()) : -1,
                 modifiers = sdPanel.Modifiers,
+                loraPrompt = SdLoraHelper.GetPrompt(sdPanel.ddLora.SelectedItem.ToString()),
             };
 
             tbPrompt.Text = sdGenerationParameters.prompt;
@@ -214,7 +215,9 @@ namespace AiPainter.Controls
             {
                 var parameters = new SdGenerationRequest
                 {
-                    prompt = tbPrompt.Text + (sdGenerationParameters.modifiers.Any() ? "; " + string.Join(", ", sdGenerationParameters.modifiers) : ""),
+                    prompt = tbPrompt.Text 
+                           + (sdGenerationParameters.modifiers.Any() ? "; " + string.Join(", ", sdGenerationParameters.modifiers) : "")
+                           + (!string.IsNullOrEmpty(sdGenerationParameters.loraPrompt) ? "; " + sdGenerationParameters.loraPrompt : ""),
                     negative_prompt = sdGenerationParameters.negative,
                     cfg_scale = sdGenerationParameters.cfgScale,
                     seed = sdGenerationParameters.seed,
@@ -232,7 +235,9 @@ namespace AiPainter.Controls
             {
                 var parameters = new SdInpaintRequest
                 {
-                    prompt = tbPrompt.Text + (sdGenerationParameters.modifiers.Any() ? "; " + string.Join(", ", sdGenerationParameters.modifiers) : ""),
+                    prompt = tbPrompt.Text 
+                           + (sdGenerationParameters.modifiers.Any() ? "; " + string.Join(", ", sdGenerationParameters.modifiers) : "")
+                           + (!string.IsNullOrEmpty(sdGenerationParameters.loraPrompt) ? "; " + sdGenerationParameters.loraPrompt : ""),
                     negative_prompt = sdGenerationParameters.negative,
                     cfg_scale = sdGenerationParameters.cfgScale,
                     seed = sdGenerationParameters.seed,

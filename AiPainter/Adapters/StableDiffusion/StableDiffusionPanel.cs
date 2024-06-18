@@ -58,6 +58,15 @@ namespace AiPainter.Adapters.StableDiffusion
             // ReSharper disable once CoVariantArrayConversion
             ddInpaintingFill.Items.AddRange(Enum.GetNames<SdInpaintingFill>());
             ddInpaintingFill.SelectedIndex = 1;
+
+            var loras = SdLoraHelper.GetNames();
+            if (!loras.Contains(Program.Config.StableDiffusionLora))
+            {
+                Program.Config.StableDiffusionLora = "";
+            }
+            ddLora.Items.Clear();
+            ddLora.Items.AddRange(loras);
+            ddLora.SelectedItem = Program.Config.StableDiffusionLora;
         }
 
         private void btGenerate_Click(object sender, EventArgs e)
