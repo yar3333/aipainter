@@ -19,13 +19,15 @@ namespace AiPainter
             {
                 filePath = value;
 
-                var folder = filePath != null ? (Path.GetDirectoryName(filePath) ?? Program.Config.OutputFolder) : Program.Config.OutputFolder;
-                if (storedImageList.Folder != folder)
+                outputFolder = filePath != null ? (Path.GetDirectoryName(filePath) ?? Program.Config.OutputFolder) : Program.Config.OutputFolder;
+                if (storedImageList.Folder != outputFolder)
                 {
-                    storedImageList = new(folder);
+                    storedImageList = new(outputFolder);
                 }
             }
         }
+
+        public string? outputFolder { get; private set; }
 
         private static StoredImageList storedImageList = new(Program.Config.OutputFolder);
 

@@ -1,1 +1,0 @@
-Place *.ckpt VAE models here (no subfolders).

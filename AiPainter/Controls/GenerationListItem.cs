@@ -351,7 +351,7 @@ namespace AiPainter.Controls
 
         private string getDestImageFilePath(long seed)
         {
-            var destDir = Path.Combine(Application.StartupPath, Program.Config.OutputFolder);
+            var destDir = mainForm.outputFolder ?? Path.Combine(Application.StartupPath, Program.Config.OutputFolder);
             if (!string.IsNullOrEmpty(destDir) && !Directory.Exists(destDir)) Directory.CreateDirectory(destDir);
             return Path.Combine(destDir, seed + ".png");
         }
