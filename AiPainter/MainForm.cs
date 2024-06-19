@@ -181,6 +181,7 @@ namespace AiPainter
                     panStableDiffusion.numCfgScale.Value = sdGenerationParameters.cfgScale;
                     panStableDiffusion.tbSeed.Text = sdGenerationParameters.seed.ToString();
                     panStableDiffusion.Modifiers = sdGenerationParameters.modifiers;
+                    panStableDiffusion.ddlSize.SelectedItem = sdGenerationParameters.width + "x" + sdGenerationParameters.height;
                 }
             };
 

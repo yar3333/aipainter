@@ -51,6 +51,8 @@ namespace AiPainter.Controls
                 seed = sdPanel.tbSeed.Text.Trim() != "" ? long.Parse(sdPanel.tbSeed.Text.Trim()) : -1,
                 modifiers = sdPanel.Modifiers,
                 loraPrompt = SdLoraHelper.GetPrompt(sdPanel.ddLora.SelectedItem.ToString()),
+                width = int.Parse(sdPanel.ddlSize.SelectedItem.ToString().Split("x")[0]),
+                height = int.Parse(sdPanel.ddlSize.SelectedItem.ToString().Split("x")[1]),
             };
 
             tbPrompt.Text = sdGenerationParameters.prompt;
@@ -222,6 +224,8 @@ namespace AiPainter.Controls
                     cfg_scale = sdGenerationParameters.cfgScale,
                     seed = sdGenerationParameters.seed,
                     steps = pbSteps.Maximum,
+                    width = sdGenerationParameters.width,
+                    height = sdGenerationParameters.height,
                 };
 
                 StableDiffusionClient.txt2img
@@ -245,6 +249,8 @@ namespace AiPainter.Controls
                     init_images = new[] { BitmapTools.GetBase64String(initImage) },
                     mask = maskImage != null ? BitmapTools.GetBase64String(maskImage) : null,
                     inpainting_fill = inpaintingFill,
+                    width = initImage.Width,
+                    height = initImage.Height,
                 };
 
                 StableDiffusionClient.img2img
@@ -335,6 +341,8 @@ namespace AiPainter.Controls
             }
 
             sdPanel.Modifiers = sdGenerationParameters.modifiers;
+
+            sdPanel.ddlSize.SelectedItem = sdGenerationParameters.width + "x" + sdGenerationParameters.height;
 
             mainForm.FilePath = savedFilePath;
         }

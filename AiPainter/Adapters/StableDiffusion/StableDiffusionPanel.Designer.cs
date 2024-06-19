@@ -30,6 +30,8 @@
         {
             components = new System.ComponentModel.Container();
             collapsablePanel = new Controls.CollapsablePanel();
+            label4 = new Label();
+            ddlSize = new ComboBox();
             ddLora = new ComboBox();
             lbModifiers = new ListBox();
             ddInpaintingFill = new ComboBox();
@@ -58,6 +60,8 @@
             collapsablePanel.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             collapsablePanel.BackColor = SystemColors.Control;
             collapsablePanel.Caption = "StableDiffusion";
+            collapsablePanel.Controls.Add(label4);
+            collapsablePanel.Controls.Add(ddlSize);
             collapsablePanel.Controls.Add(ddLora);
             collapsablePanel.Controls.Add(lbModifiers);
             collapsablePanel.Controls.Add(ddInpaintingFill);
@@ -77,10 +81,34 @@
             collapsablePanel.IsCollapsed = false;
             collapsablePanel.Location = new Point(0, 0);
             collapsablePanel.Name = "collapsablePanel";
-            collapsablePanel.Size = new Size(340, 438);
+            collapsablePanel.Size = new Size(348, 438);
             collapsablePanel.TabIndex = 4;
             collapsablePanel.Load += collapsablePanel_Load;
             collapsablePanel.Resize += collapsablePanel_Resize;
+            // 
+            // label4
+            // 
+            label4.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+            label4.AutoSize = true;
+            label4.Location = new Point(152, 272);
+            label4.Name = "label4";
+            label4.Size = new Size(64, 15);
+            label4.TabIndex = 23;
+            label4.Text = "Detail level";
+            label4.TextAlign = ContentAlignment.MiddleRight;
+            // 
+            // ddlSize
+            // 
+            ddlSize.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+            ddlSize.DropDownStyle = ComboBoxStyle.DropDownList;
+            ddlSize.Font = new Font("Segoe UI", 10F, FontStyle.Regular, GraphicsUnit.Point);
+            ddlSize.FormattingEnabled = true;
+            ddlSize.Items.AddRange(new object[] { "512x512", "768x768", "512x768", "768x512", "640x640" });
+            ddlSize.Location = new Point(269, 267);
+            ddlSize.Name = "ddlSize";
+            ddlSize.Size = new Size(72, 25);
+            ddlSize.TabIndex = 22;
+            toolTip.SetToolTip(ddlSize, "Generated image size.");
             // 
             // ddLora
             // 
@@ -89,9 +117,9 @@
             ddLora.FormattingEnabled = true;
             ddLora.Location = new Point(3, 56);
             ddLora.Name = "ddLora";
-            ddLora.Size = new Size(334, 23);
+            ddLora.Size = new Size(342, 23);
             ddLora.TabIndex = 21;
-            toolTip.SetToolTip(ddLora, "Active StableDiffusion LORA (put files into `stable_diffusion_lora` folder).");
+            toolTip.SetToolTip(ddLora, "Active StableDiffusion LoRA (put files into `stable_diffusion_lora` folder).");
             // 
             // lbModifiers
             // 
@@ -102,7 +130,7 @@
             lbModifiers.Location = new Point(3, 332);
             lbModifiers.Name = "lbModifiers";
             lbModifiers.SelectionMode = SelectionMode.None;
-            lbModifiers.Size = new Size(334, 49);
+            lbModifiers.Size = new Size(342, 49);
             lbModifiers.TabIndex = 20;
             toolTip.SetToolTip(lbModifiers, "Modifiers (style names, will be added to prompt)");
             lbModifiers.Click += lbModifiers_Click;
@@ -114,7 +142,7 @@
             ddInpaintingFill.FormattingEnabled = true;
             ddInpaintingFill.Location = new Point(197, 233);
             ddInpaintingFill.Name = "ddInpaintingFill";
-            ddInpaintingFill.Size = new Size(137, 23);
+            ddInpaintingFill.Size = new Size(144, 23);
             ddInpaintingFill.TabIndex = 19;
             toolTip.SetToolTip(ddInpaintingFill, "Inpaint type (preparing masked area)");
             // 
@@ -125,7 +153,7 @@
             ddCheckpoint.FormattingEnabled = true;
             ddCheckpoint.Location = new Point(3, 29);
             ddCheckpoint.Name = "ddCheckpoint";
-            ddCheckpoint.Size = new Size(334, 23);
+            ddCheckpoint.Size = new Size(342, 23);
             ddCheckpoint.TabIndex = 18;
             toolTip.SetToolTip(ddCheckpoint, "Active StableDiffusion checkpoint (weights). Just download additional *.ckpt files and put them into `stable_diffusion_checkpoints` folder.");
             ddCheckpoint.SelectedIndexChanged += ddCheckpoint_SelectedIndexChanged;
@@ -133,12 +161,13 @@
             // tbNegative
             // 
             tbNegative.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            tbNegative.BackColor = Color.FromArgb(255, 242, 242);
             tbNegative.Font = new Font("Segoe UI", 11F, FontStyle.Regular, GraphicsUnit.Point);
-            tbNegative.Location = new Point(3, 175);
+            tbNegative.Location = new Point(3, 183);
             tbNegative.Multiline = true;
             tbNegative.Name = "tbNegative";
             tbNegative.PlaceholderText = "Negative prompt (don't want to get)";
-            tbNegative.Size = new Size(334, 56);
+            tbNegative.Size = new Size(342, 48);
             tbNegative.TabIndex = 17;
             // 
             // cbUseInitImage
@@ -156,7 +185,7 @@
             // 
             btReset.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
             btReset.Font = new Font("Segoe UI", 11.25F, FontStyle.Regular, GraphicsUnit.Point);
-            btReset.Location = new Point(241, 387);
+            btReset.Location = new Point(249, 387);
             btReset.Name = "btReset";
             btReset.Size = new Size(96, 39);
             btReset.TabIndex = 11;
@@ -169,13 +198,14 @@
             // 
             tbPrompt.AcceptsReturn = true;
             tbPrompt.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            tbPrompt.BackColor = Color.FromArgb(233, 255, 232);
             tbPrompt.Font = new Font("Segoe UI", 11F, FontStyle.Regular, GraphicsUnit.Point);
             tbPrompt.Location = new Point(3, 85);
             tbPrompt.Multiline = true;
             tbPrompt.Name = "tbPrompt";
             tbPrompt.PlaceholderText = "Prompt (describe desired picture)";
             tbPrompt.ScrollBars = ScrollBars.Vertical;
-            tbPrompt.Size = new Size(334, 84);
+            tbPrompt.Size = new Size(342, 92);
             tbPrompt.TabIndex = 0;
             // 
             // numIterations
@@ -186,7 +216,7 @@
             numIterations.Maximum = new decimal(new int[] { 9999, 0, 0, 0 });
             numIterations.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
             numIterations.Name = "numIterations";
-            numIterations.Size = new Size(101, 27);
+            numIterations.Size = new Size(59, 27);
             numIterations.TabIndex = 1;
             toolTip.SetToolTip(numIterations, "Count of images to generate (original name: iterations)");
             numIterations.Value = new decimal(new int[] { 1, 0, 0, 0 });
@@ -194,13 +224,15 @@
             // btGenerate
             // 
             btGenerate.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-            btGenerate.Font = new Font("Segoe UI", 11.25F, FontStyle.Regular, GraphicsUnit.Point);
+            btGenerate.BackColor = Color.FromArgb(60, 138, 64);
+            btGenerate.Font = new Font("Segoe UI", 11.25F, FontStyle.Bold, GraphicsUnit.Point);
+            btGenerate.ForeColor = Color.White;
             btGenerate.Location = new Point(1, 387);
             btGenerate.Name = "btGenerate";
-            btGenerate.Size = new Size(235, 39);
+            btGenerate.Size = new Size(243, 39);
             btGenerate.TabIndex = 8;
             btGenerate.Text = "Add to generation queue";
-            btGenerate.UseVisualStyleBackColor = true;
+            btGenerate.UseVisualStyleBackColor = false;
             btGenerate.Click += btGenerate_Click;
             // 
             // numSteps
@@ -208,23 +240,22 @@
             numSteps.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
             numSteps.Font = new Font("Segoe UI", 11F, FontStyle.Regular, GraphicsUnit.Point);
             numSteps.Increment = new decimal(new int[] { 10, 0, 0, 0 });
-            numSteps.Location = new Point(272, 266);
+            numSteps.Location = new Point(219, 266);
             numSteps.Maximum = new decimal(new int[] { 200, 0, 0, 0 });
             numSteps.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
             numSteps.Name = "numSteps";
-            numSteps.Size = new Size(62, 27);
+            numSteps.Size = new Size(44, 27);
             numSteps.TabIndex = 1;
             toolTip.SetToolTip(numSteps, "1..200 (original name: steps)");
             numSteps.Value = new decimal(new int[] { 50, 0, 0, 0 });
             // 
             // tbSeed
             // 
-            tbSeed.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            tbSeed.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
             tbSeed.Font = new Font("Segoe UI", 11.25F, FontStyle.Regular, GraphicsUnit.Point);
-            tbSeed.Location = new Point(197, 299);
+            tbSeed.Location = new Point(230, 299);
             tbSeed.Name = "tbSeed";
-            tbSeed.PlaceholderText = "Seed...";
-            tbSeed.Size = new Size(140, 27);
+            tbSeed.Size = new Size(111, 27);
             tbSeed.TabIndex = 7;
             toolTip.SetToolTip(tbSeed, "Random seed (positive integer)");
             // 
@@ -242,11 +273,11 @@
             // 
             label2.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
             label2.AutoSize = true;
-            label2.Location = new Point(202, 272);
+            label2.Location = new Point(194, 306);
             label2.Name = "label2";
-            label2.Size = new Size(64, 15);
+            label2.Size = new Size(32, 15);
             label2.TabIndex = 2;
-            label2.Text = "Detail level";
+            label2.Text = "Seed";
             label2.TextAlign = ContentAlignment.MiddleRight;
             // 
             // numCfgScale
@@ -281,7 +312,7 @@
             AutoScaleMode = AutoScaleMode.Font;
             Controls.Add(collapsablePanel);
             Name = "StableDiffusionPanel";
-            Size = new Size(340, 441);
+            Size = new Size(348, 441);
             collapsablePanel.ResumeLayout(false);
             collapsablePanel.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)numIterations).EndInit();
@@ -310,5 +341,7 @@
         public ComboBox ddInpaintingFill;
         private ListBox lbModifiers;
         public ComboBox ddLora;
+        public ComboBox ddlSize;
+        private Label label4;
     }
 }

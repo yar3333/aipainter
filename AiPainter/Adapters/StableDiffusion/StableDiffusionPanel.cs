@@ -67,6 +67,8 @@ namespace AiPainter.Adapters.StableDiffusion
             ddLora.Items.Clear();
             ddLora.Items.AddRange(loras);
             ddLora.SelectedItem = Program.Config.StableDiffusionLora;
+
+            if (ddlSize.SelectedIndex == -1) ddlSize.SelectedIndex = 0;
         }
 
         private void btGenerate_Click(object sender, EventArgs e)
@@ -100,6 +102,8 @@ namespace AiPainter.Adapters.StableDiffusion
             }
 
             ddInpaintingFill.Enabled = pb.Image != null && pb.HasMask && cbUseInitImage.Checked;
+
+            ddlSize.Enabled = !(pb.Image != null && cbUseInitImage.Checked);
         }
 
         private void ddCheckpoint_SelectedIndexChanged(object sender, EventArgs e)

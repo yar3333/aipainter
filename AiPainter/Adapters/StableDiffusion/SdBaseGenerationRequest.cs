@@ -27,7 +27,7 @@ class SdBaseGenerationRequest
      */
     public string sampler_index {  get; set; } = "Euler";
     
-    public decimal cfg_scale { get; set; } = 7;
+    public decimal cfg_scale { get; set; } = new(7.5);
     
     public decimal denoising_strength { get; set; } = 0.75m;
     
