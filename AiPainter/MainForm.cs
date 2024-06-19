@@ -1,5 +1,6 @@
 using System.Drawing.Imaging;
 using System.Text.Json;
+using AiPainter.Adapters.StableDiffusion;
 using AiPainter.Controls;
 using AiPainter.Helpers;
 
@@ -37,7 +38,7 @@ namespace AiPainter
 
             panStableDiffusion.OnGenerate = () =>
             {
-                panGenerationList.AddGeneration(panStableDiffusion, pictureBox, this);
+                panGenerationList.AddGeneration(new ImageGeneratorSd(panStableDiffusion, pictureBox, this));
             };
 
             updateImageListWorker.RunWorkerAsync();

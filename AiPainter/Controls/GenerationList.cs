@@ -11,10 +11,10 @@ namespace AiPainter.Controls
             InitializeComponent();            
         }
 
-        public void AddGeneration(StableDiffusionPanel sdPanel, SmartPictureBox pictureBox, MainForm mainForm)
+        public void AddGeneration(IImageGenerator generator)
         {
             var item = new GenerationListItem();
-            item.Init(sdPanel, pictureBox, mainForm);
+            item.Init(generator);
             item.Width = ClientSize.Width;
             item.Anchor = AnchorStyles.Left | AnchorStyles.Top | AnchorStyles.Right;
 

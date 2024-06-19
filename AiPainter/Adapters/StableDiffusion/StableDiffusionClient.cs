@@ -26,7 +26,6 @@ static class StableDiffusionClient
             {
                 var result = await postAsync<SdGenerationResponse>("sdapi/v1/txt2img", request);
                 cancelation.Cancel();
-                onProgress(request.steps);
                 onSuccess(result);
             }
             catch (Exception e)

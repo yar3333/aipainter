@@ -6,7 +6,7 @@ namespace AiPainter.Adapters.StableDiffusion;
 [Serializable]
 class SdGenerationResponse
 {
-    public string[] images { get; set; } = null!; // data:image/png;base64,iVBOR....
+    public string[]? images { get; set; } = null; // data:image/png;base64,iVBOR....
     public SdGenerationRequest parameters { get; set; } = null!;
     public string info { get; set; } = null!;
     public SdGenerationInfo infoParsed => JsonSerializer.Deserialize<SdGenerationInfo>(info)!;
