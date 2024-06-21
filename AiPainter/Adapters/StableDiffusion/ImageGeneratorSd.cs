@@ -45,7 +45,7 @@ class ImageGeneratorSd : IImageGenerator
             cfgScale = sdPanel.numCfgScale.Value,
             seed = sdPanel.tbSeed.Text.Trim() != "" ? long.Parse(sdPanel.tbSeed.Text.Trim()) : -1,
             modifiers = sdPanel.Modifiers,
-            loraPrompt = SdLoraHelper.GetPrompt(sdPanel.ddLora.SelectedItem.ToString()),
+            loraPrompt = SdLoraHelper.GetPrompt(((ListItem)sdPanel.ddLora.SelectedItem).Value, null), // TODO: LoRA weight
             width = int.Parse(sdPanel.ddlSize.SelectedItem.ToString()!.Split("x")[0]),
             height = int.Parse(sdPanel.ddlSize.SelectedItem.ToString()!.Split("x")[1]),
         };

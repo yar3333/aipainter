@@ -100,7 +100,6 @@
         {
             Task.Run(async () =>
             {
-                Invoke(() => { pbIterations.CustomText = "Waiting..."; });
                 await Task.Delay(1000);
                 InProcess = false;
             });

@@ -89,7 +89,7 @@ static class StableDiffusionClient
                 try
                 {
                     var r = await getAsync<SdGenerationProgess>("sdapi/v1/progress");
-                    if (r.state.sampling_step > 0) onProgress(r.state.sampling_step);
+                    if (r.state?.sampling_step > 0) onProgress(r.state.sampling_step);
                 }
                 catch (Exception e)
                 {

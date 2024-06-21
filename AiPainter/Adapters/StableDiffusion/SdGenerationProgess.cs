@@ -5,7 +5,7 @@ class SdGenerationProgess
 {
     public decimal progress { get; set; }
     public decimal eta_relative { get; set; }
-    public SdGenerationProgessState state { get; set; } = null!;
+    public SdGenerationProgessState? state { get; set; } = null!;
     string? current_image { get; set; }
 }
 

@@ -44,9 +44,8 @@ namespace AiPainter.Adapters.StableDiffusion
             var checkpointItems = checkpoints.Select(x => new ListItem
             {
                 Value = x, 
-                Text = x + " (" + Math.Round(SdCheckpointsHelper.GetSize(x) / 1024.0 / 1024 / 1024, 1) + " GB)"
+                Text = SdCheckpointsHelper.GetHumanName(x)
             }).ToArray();
-            
             ddCheckpoint.ValueMember = "Value";
             ddCheckpoint.DisplayMember = "Text";
             ddCheckpoint.Items.Clear();
@@ -64,9 +63,17 @@ namespace AiPainter.Adapters.StableDiffusion
             {
                 Program.Config.StableDiffusionLora = "";
             }
+            var loraItems = loras.Select(x => new ListItem
+            {
+                Value = x, 
+                Text = SdLoraHelper.GetHumanName(x)
+            }).ToArray();
+            ddLora.ValueMember = "Value";
+            ddLora.DisplayMember = "Text";
             ddLora.Items.Clear();
-            ddLora.Items.AddRange(loras);
-            ddLora.SelectedItem = Program.Config.StableDiffusionLora;
+            // ReSharper disable once CoVariantArrayConversion
+            ddLora.Items.AddRange(loraItems);
+            ddLora.SelectedItem = loraItems.Single(x => x.Value == Program.Config.StableDiffusionLora);
 
             if (ddlSize.SelectedIndex == -1) ddlSize.SelectedIndex = 0;
         }

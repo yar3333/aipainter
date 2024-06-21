@@ -72,9 +72,8 @@ static class StableDiffusionProcess
 
         ActiveCheckpoint = checkpoint;
 
-        var pathToVaeConfig = Path.Join(Path.GetDirectoryName(pathToCheckpoint), Path.GetFileNameWithoutExtension(pathToCheckpoint)) + "-vae.txt";
-        var vaeFileName = File.Exists(pathToVaeConfig) ? File.ReadAllText(pathToVaeConfig).Trim() : null;
-        var pathToVaeCheckpoint = !string.IsNullOrEmpty(vaeFileName) ? Path.Join(Application.StartupPath, @"stable_diffusion_vae", vaeFileName) : null;
+        var vaeFileName = SdCheckpointsHelper.GetConfig(checkpoint).vae;
+        var pathToVaeFile = !string.IsNullOrEmpty(vaeFileName) ? Path.Join(Application.StartupPath, @"stable_diffusion_vae", vaeFileName) : null;
         var pathToLoraDir = Path.Join(Application.StartupPath, "stable_diffusion_lora");
         
         process = ProcessHelper.RunInBackground
@@ -84,7 +83,7 @@ static class StableDiffusionProcess
                 + (uri.Host != "127.0.0.1" && uri.Host.ToLowerInvariant() != "localhost" ? " --listen" : "")
                 + " --port=" + uri.Port
                 + " --ckpt=\"" + pathToCheckpoint + "\""
-                + (!string.IsNullOrEmpty(pathToVaeCheckpoint) ? " --vae-path=\"" + pathToVaeCheckpoint + "\"" : "")
+                + (!string.IsNullOrEmpty(pathToVaeFile) ? " --vae-path=\"" + pathToVaeFile + "\"" : "")
                 + " --lora-dir=\"" + pathToLoraDir + "\"",
             
             directory: Path.Join(Application.StartupPath, @"external\StableDiffusion"),

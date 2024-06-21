@@ -1,4 +1,7 @@
-﻿namespace AiPainter.Adapters.StableDiffusion;
+﻿using System.Globalization;
+using System.Text.Json;
+
+namespace AiPainter.Adapters.StableDiffusion;
 
 static class SdLoraHelper
 {
@@ -12,17 +15,36 @@ static class SdLoraHelper
                .Concat(Directory.GetFiles(basePath, "*.ckpt", SearchOption.AllDirectories)
                .Concat(Directory.GetFiles(basePath, "*.safetensors", SearchOption.AllDirectories))
                .Select(x => x.Substring(basePath.Length).TrimStart('\\'))
-               .OrderBy(x => x))
+               .OrderBy(GetHumanName))
                .ToArray();
     }
 
-    public static string GetPrompt(string? name)
+    public static string GetPrompt(string? name, double? weight)
     {
         if (string.IsNullOrEmpty(name)) return "";
 
-        var loraTextFilePath = Path.Combine(BasePath, Path.GetFileNameWithoutExtension(name)) + ".txt";
-        return File.Exists(loraTextFilePath)
-                ? File.ReadAllText(loraTextFilePath).Trim()
-                : "<lora:" + Path.GetFileNameWithoutExtension(name) + ":0.95>";
+        var config = GetConfig(name);
+        return config.prompt
+            + "<lora:" + (!string.IsNullOrEmpty(config.name) ? config.name : Path.GetFileNameWithoutExtension(name))
+                 + ":" + (weight ?? config.weight).ToString(CultureInfo.InvariantCulture) + ">";
+    }
+
+    public static string GetHumanName(string? name)
+    {
+        if (string.IsNullOrEmpty(name)) return "";
+        
+        // ReSharper disable once StringIndexOfIsCultureSpecific.1
+        var n = name.IndexOf(".");
+        if (n > 0) name = name.Substring(0, n);
+        return name;
+    }
+
+    public static SdLoraConfig GetConfig(string name)
+    {
+        var configFilePath = Path.Combine(BasePath, Path.GetFileNameWithoutExtension(name) + ".json");
+
+        return File.Exists(configFilePath)
+                   ? JsonSerializer.Deserialize<SdLoraConfig>(File.ReadAllText(configFilePath)) ?? new SdLoraConfig()
+                   : new SdLoraConfig();
     }
 }
