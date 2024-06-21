@@ -2,7 +2,6 @@
 using System.Text.Json;
 using AiPainter.Helpers;
 using System.Text.RegularExpressions;
-using System.Windows.Forms;
 using AiPainter.Controls;
 
 namespace AiPainter.Adapters.StableDiffusion;
@@ -295,9 +294,14 @@ class ImageGeneratorSd : IImageGenerator
 
     private string getFullPromptText()
     {
-        return sdGenerationParameters.prompt
-             + (sdGenerationParameters.modifiers.Any() ? "; " + string.Join(", ", sdGenerationParameters.modifiers) : "")
-             + (!string.IsNullOrEmpty(sdGenerationParameters.loraPrompt) ? "; " + sdGenerationParameters.loraPrompt : "");
+        var checkpointPrompt = SdCheckpointsHelper.GetConfig(sdGenerationParameters.checkpoint).prompt;
+
+        var r = (!string.IsNullOrWhiteSpace(checkpointPrompt) ? checkpointPrompt + "; " : "")
+              + (!string.IsNullOrWhiteSpace(sdGenerationParameters.prompt) ? sdGenerationParameters.prompt + "; " : "")
+              + (sdGenerationParameters.modifiers.Any() ? "; " + string.Join(", ", sdGenerationParameters.modifiers) + "; " : "")
+              + (!string.IsNullOrEmpty(sdGenerationParameters.loraPrompt) ? sdGenerationParameters.loraPrompt : "");
+
+        return r.Trim(' ', ',', ';');
     }
 
     private string getDestImageFilePath(long seed)
