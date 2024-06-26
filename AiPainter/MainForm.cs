@@ -1,5 +1,7 @@
 using System.Drawing.Imaging;
 using System.Text.Json;
+using AiPainter.Adapters.LamaCleaner;
+using AiPainter.Adapters.RemBg;
 using AiPainter.Adapters.StableDiffusion;
 using AiPainter.Controls;
 using AiPainter.Helpers;
@@ -13,8 +15,8 @@ namespace AiPainter
         private const int IMAGE_EXTEND_SIZE = 64;
 
         private string? filePath;
-        public string? FilePath 
-        { 
+        public string? FilePath
+        {
             get => filePath;
             set
             {
@@ -31,6 +33,9 @@ namespace AiPainter
         public string? outputFolder { get; private set; }
 
         private static StoredImageList storedImageList = new(Program.Config.OutputFolder);
+
+        private LamaCleanerManager lamaCleaner = new();
+        private RemBgManager remBg = new();
 
         public MainForm()
         {
@@ -84,7 +89,7 @@ namespace AiPainter
                     Program.Log.WriteLine(ee.ToString());
                     DelayTools.WaitForExit(1000);
                 }
-                
+
                 if (changesDetected)
                 {
                     try
@@ -110,7 +115,7 @@ namespace AiPainter
                 DelayTools.WaitForExit(1000);
             }
         }
-        
+
         private void updateImages(int? hPicScrollValue)
         {
             var panel = splitContainer.Panel2;
@@ -118,7 +123,7 @@ namespace AiPainter
             var sz = Math.Max(50, panel.ClientSize.Height);
             var x = 0;
             var n = 0;
-            
+
             lock (storedImageList)
             {
                 hPicScroll.LargeChange = (panel.ClientSize.Width + 5) / (sz + 5);
@@ -199,7 +204,7 @@ namespace AiPainter
                     updateImages(null);
                 }
             };
-            
+
             return pb;
         }
 
@@ -322,7 +327,7 @@ namespace AiPainter
         private void btRight_Click(object sender, EventArgs e)
         {
             pictureBox.HistoryAddCurrentState();
-            
+
             var bmp = new Bitmap(pictureBox.Image.Width + IMAGE_EXTEND_SIZE, pictureBox.Image.Height, PixelFormat.Format32bppArgb);
             using (var g = Graphics.FromImage(bmp))
             {
@@ -331,16 +336,16 @@ namespace AiPainter
             }
 
             pictureBox.Image = bmp;
-            pictureBox.AddBoxToMask(bmp.Width - IMAGE_EXTEND_SIZE, 0 , IMAGE_EXTEND_SIZE, pictureBox.Image.Height);
+            pictureBox.AddBoxToMask(bmp.Width - IMAGE_EXTEND_SIZE, 0, IMAGE_EXTEND_SIZE, pictureBox.Image.Height);
             pictureBox.ActiveBox.X += IMAGE_EXTEND_SIZE;
-                
+
             pictureBox.Refresh();
         }
 
         private void btUp_Click(object sender, EventArgs e)
         {
             pictureBox.HistoryAddCurrentState();
-            
+
             var bmp = new Bitmap(pictureBox.Image.Width, pictureBox.Image.Height + IMAGE_EXTEND_SIZE, PixelFormat.Format32bppArgb);
             using (var g = Graphics.FromImage(bmp))
             {
@@ -358,7 +363,7 @@ namespace AiPainter
         private void btDown_Click(object sender, EventArgs e)
         {
             pictureBox.HistoryAddCurrentState();
-            
+
             var bmp = new Bitmap(pictureBox.Image.Width, pictureBox.Image.Height + IMAGE_EXTEND_SIZE, PixelFormat.Format32bppArgb);
             using (var g = Graphics.FromImage(bmp))
             {
@@ -369,14 +374,14 @@ namespace AiPainter
             pictureBox.Image = bmp;
             pictureBox.AddBoxToMask(0, bmp.Height - IMAGE_EXTEND_SIZE, pictureBox.Image.Width, IMAGE_EXTEND_SIZE);
             pictureBox.ActiveBox.Y += IMAGE_EXTEND_SIZE;
-                
+
             pictureBox.Refresh();
         }
 
         private void btResetMask_Click(object sender, EventArgs e)
         {
             pictureBox.HistoryAddCurrentState(); // TODO: ???
-            
+
             pictureBox.ResetMask();
             pictureBox.Refresh();
         }
@@ -384,10 +389,10 @@ namespace AiPainter
         private void controlsStateUpdater_Tick(object sender, EventArgs e)
         {
             panStableDiffusion.UpdateState(pictureBox);
-            panLamaCleaner.UpdateState(pictureBox);
-            panRemBg.UpdateState(pictureBox);
+            lamaCleaner.UpdateState(pictureBox, btRemoveObjectFromImage);
+            remBg.UpdateState(pictureBox, btRemoveBackgroundFromImage);
 
-            pictureBox.Enabled = !panLamaCleaner.InProcess && !panRemBg.InProcess;
+            pictureBox.Enabled = !lamaCleaner.InProcess && !remBg.InProcess;
 
             var activeBox = pictureBox.ActiveBox;
 
@@ -447,14 +452,14 @@ namespace AiPainter
         private void btSaveAs_Click(object sender, EventArgs e)
         {
             var saveFileDialog = new SaveFileDialog();
-            
-            saveFileDialog.Filter = 
+
+            saveFileDialog.Filter =
                   "PNG file (*.png)|*.png"
                 + "|JPG file (*.jpg)|*.jpg;*.jpeg"
                 + "|All files (*.*)|*.*";
-            
+
             saveFileDialog.FileName = Path.GetFileName(FilePath);
-            
+
             if (saveFileDialog.ShowDialog() == DialogResult.OK)
             {
                 FilePath = saveFileDialog.FileName;
@@ -489,6 +494,32 @@ namespace AiPainter
             var image = pictureBox.Image!;
             var k = Math.Min((double)size / image.Width, (double)size / image.Height);
             pictureBox.Image = BitmapTools.GetResized(image, (int)Math.Round(image.Width * k), (int)Math.Round(image.Height * k));
+        }
+
+        private void btRemoveObjectFromImage_Click(object sender, EventArgs e)
+        {
+            lamaCleaner.Run(pictureBox, image =>
+            {
+                Invoke(() =>
+                {
+                    pictureBox.Image = image;
+                    pictureBox.ResetMask();
+                    pictureBox.Refresh();
+                });
+            });
+        }
+
+        private void btRemoveBackgroundFromImage_Click(object sender, EventArgs e)
+        {
+            remBg.Run(pictureBox, image =>
+            {
+                Invoke(() =>
+                {
+                    pictureBox.Image = image;
+                    pictureBox.ResetMask();
+                    pictureBox.Refresh();
+                });
+            });
         }
     }
 }

@@ -7,11 +7,12 @@ class Config
     public bool UseEmbeddedStableDiffusion { get; set; } = true;
     public string StableDiffusionUrl { get; set; } = "http://127.0.0.1:7860/";
     public string StableDiffusionCheckpoint { get; set; } = "sd-v1-5-pruned-emaonly.safetensors";
-    public string StableDiffusionLora { get; set; } = "";
     
     public bool UseEmbeddedLamaCleaner { get; set; } = true;
     public string LamaCleanerUrl { get; set; } = "http://127.0.0.1:9595/";
 
     public bool UseEmbeddedRemBg { get; set; } = true;
     public string RemBgUrl { get; set; } = "http://127.0.0.1:9696/";
+
+    public string NegativePrompt { get; set; } = "[deformed | disfigured], poorly drawn, [bad : wrong] anatomy, [extra | missing | floating | disconnected] limb, (mutated hands and fingers), blurry";
 }

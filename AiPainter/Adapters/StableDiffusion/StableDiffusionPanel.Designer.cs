@@ -30,9 +30,9 @@
         {
             components = new System.ComponentModel.Container();
             collapsablePanel = new Controls.CollapsablePanel();
+            btContextMenuCheckpoint = new Button();
             label4 = new Label();
             ddlSize = new ComboBox();
-            ddLora = new ComboBox();
             lbModifiers = new ListBox();
             ddInpaintingFill = new ComboBox();
             ddCheckpoint = new ComboBox();
@@ -49,6 +49,7 @@
             numCfgScale = new NumericUpDown();
             label3 = new Label();
             toolTip = new ToolTip(components);
+            contextMenuCheckpoint = new ContextMenuStrip(components);
             collapsablePanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)numIterations).BeginInit();
             ((System.ComponentModel.ISupportInitialize)numSteps).BeginInit();
@@ -60,9 +61,9 @@
             collapsablePanel.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             collapsablePanel.BackColor = SystemColors.Control;
             collapsablePanel.Caption = "StableDiffusion";
+            collapsablePanel.Controls.Add(btContextMenuCheckpoint);
             collapsablePanel.Controls.Add(label4);
             collapsablePanel.Controls.Add(ddlSize);
-            collapsablePanel.Controls.Add(ddLora);
             collapsablePanel.Controls.Add(lbModifiers);
             collapsablePanel.Controls.Add(ddInpaintingFill);
             collapsablePanel.Controls.Add(ddCheckpoint);
@@ -85,6 +86,18 @@
             collapsablePanel.TabIndex = 4;
             collapsablePanel.Load += collapsablePanel_Load;
             collapsablePanel.Resize += collapsablePanel_Resize;
+            // 
+            // btContextMenuCheckpoint
+            // 
+            btContextMenuCheckpoint.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            btContextMenuCheckpoint.Font = new Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point);
+            btContextMenuCheckpoint.Location = new Point(313, 28);
+            btContextMenuCheckpoint.Name = "btContextMenuCheckpoint";
+            btContextMenuCheckpoint.Size = new Size(32, 25);
+            btContextMenuCheckpoint.TabIndex = 24;
+            btContextMenuCheckpoint.Text = ">>";
+            btContextMenuCheckpoint.UseVisualStyleBackColor = true;
+            btContextMenuCheckpoint.Click += btContextMenuCheckpoint_Click;
             // 
             // label4
             // 
@@ -109,17 +122,6 @@
             ddlSize.Size = new Size(72, 25);
             ddlSize.TabIndex = 22;
             toolTip.SetToolTip(ddlSize, "Generated image size.");
-            // 
-            // ddLora
-            // 
-            ddLora.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
-            ddLora.DropDownStyle = ComboBoxStyle.DropDownList;
-            ddLora.FormattingEnabled = true;
-            ddLora.Location = new Point(3, 56);
-            ddLora.Name = "ddLora";
-            ddLora.Size = new Size(342, 23);
-            ddLora.TabIndex = 21;
-            toolTip.SetToolTip(ddLora, "Active StableDiffusion LoRA (put files into `stable_diffusion_lora` folder).");
             // 
             // lbModifiers
             // 
@@ -153,7 +155,7 @@
             ddCheckpoint.FormattingEnabled = true;
             ddCheckpoint.Location = new Point(3, 29);
             ddCheckpoint.Name = "ddCheckpoint";
-            ddCheckpoint.Size = new Size(342, 23);
+            ddCheckpoint.Size = new Size(304, 23);
             ddCheckpoint.TabIndex = 18;
             toolTip.SetToolTip(ddCheckpoint, "Active StableDiffusion checkpoint (weights). Just download additional *.ckpt files and put them into `stable_diffusion_checkpoints` folder.");
             ddCheckpoint.SelectedIndexChanged += ddCheckpoint_SelectedIndexChanged;
@@ -200,12 +202,12 @@
             tbPrompt.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             tbPrompt.BackColor = Color.FromArgb(233, 255, 232);
             tbPrompt.Font = new Font("Segoe UI", 11F, FontStyle.Regular, GraphicsUnit.Point);
-            tbPrompt.Location = new Point(3, 85);
+            tbPrompt.Location = new Point(3, 59);
             tbPrompt.Multiline = true;
             tbPrompt.Name = "tbPrompt";
             tbPrompt.PlaceholderText = "Prompt (describe desired picture)";
             tbPrompt.ScrollBars = ScrollBars.Vertical;
-            tbPrompt.Size = new Size(342, 92);
+            tbPrompt.Size = new Size(342, 118);
             tbPrompt.TabIndex = 0;
             // 
             // numIterations
@@ -306,6 +308,11 @@
             label3.Text = "Relevance to prompt";
             label3.TextAlign = ContentAlignment.MiddleRight;
             // 
+            // contextMenuCheckpoint
+            // 
+            contextMenuCheckpoint.Name = "contextMenuCheckpoint";
+            contextMenuCheckpoint.Size = new Size(61, 4);
+            // 
             // StableDiffusionPanel
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -340,8 +347,9 @@
         public ComboBox ddCheckpoint;
         public ComboBox ddInpaintingFill;
         private ListBox lbModifiers;
-        public ComboBox ddLora;
         public ComboBox ddlSize;
         private Label label4;
+        private Button btContextMenuCheckpoint;
+        private ContextMenuStrip contextMenuCheckpoint;
     }
 }

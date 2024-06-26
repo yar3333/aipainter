@@ -30,448 +30,428 @@ namespace AiPainter
         /// </summary>
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
+            components = new System.ComponentModel.Container();
             System.Windows.Forms.Timer controlsStateUpdater;
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
-            this.toolbar = new System.Windows.Forms.ToolStrip();
-            this.btClearActiveImage = new System.Windows.Forms.ToolStripButton();
-            this.btLoad = new System.Windows.Forms.ToolStripButton();
-            this.btSave = new System.Windows.Forms.ToolStripButton();
-            this.btSaveAs = new System.Windows.Forms.ToolStripButton();
-            this.btCopyToClipboard = new System.Windows.Forms.ToolStripButton();
-            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
-            this.btResizeAndMoveActiveBoxToFitImage = new System.Windows.Forms.ToolStripButton();
-            this.sbResize = new System.Windows.Forms.ToolStripSplitButton();
-            this.resizeTo2048ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.resizeTo1024ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.resizeTo512ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
-            this.btResetMask = new System.Windows.Forms.ToolStripButton();
-            this.btDeAlpha = new System.Windows.Forms.ToolStripButton();
-            this.btRestorePrevMask = new System.Windows.Forms.ToolStripButton();
-            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
-            this.btLeft = new System.Windows.Forms.ToolStripButton();
-            this.btDown = new System.Windows.Forms.ToolStripButton();
-            this.btUp = new System.Windows.Forms.ToolStripButton();
-            this.btRight = new System.Windows.Forms.ToolStripButton();
-            this.btAbout = new System.Windows.Forms.ToolStripButton();
-            this.splitContainer = new System.Windows.Forms.SplitContainer();
-            this.splitContainer1 = new System.Windows.Forms.SplitContainer();
-            this.pictureBox = new AiPainter.Controls.SmartPictureBox();
-            this.splitContainer2 = new System.Windows.Forms.SplitContainer();
-            this.panel1 = new System.Windows.Forms.Panel();
-            this.panRemBg = new AiPainter.Adapters.RemBg.RemBgPanel();
-            this.panLamaCleaner = new AiPainter.Adapters.LamaCleaner.LamaCleanerPanel();
-            this.panStableDiffusion = new AiPainter.Adapters.StableDiffusion.StableDiffusionPanel();
-            this.panGenerationList = new AiPainter.Controls.GenerationList();
-            this.hPicScroll = new System.Windows.Forms.HScrollBar();
-            this.toolTip = new System.Windows.Forms.ToolTip(this.components);
-            this.updateImageListWorker = new System.ComponentModel.BackgroundWorker();
-            controlsStateUpdater = new System.Windows.Forms.Timer(this.components);
-            this.toolbar.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.splitContainer)).BeginInit();
-            this.splitContainer.Panel1.SuspendLayout();
-            this.splitContainer.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
-            this.splitContainer1.Panel1.SuspendLayout();
-            this.splitContainer1.Panel2.SuspendLayout();
-            this.splitContainer1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).BeginInit();
-            this.splitContainer2.Panel1.SuspendLayout();
-            this.splitContainer2.Panel2.SuspendLayout();
-            this.splitContainer2.SuspendLayout();
-            this.panel1.SuspendLayout();
-            this.SuspendLayout();
+            toolbar = new ToolStrip();
+            btClearActiveImage = new ToolStripButton();
+            btLoad = new ToolStripButton();
+            btSave = new ToolStripButton();
+            btSaveAs = new ToolStripButton();
+            btCopyToClipboard = new ToolStripButton();
+            toolStripSeparator2 = new ToolStripSeparator();
+            btResizeAndMoveActiveBoxToFitImage = new ToolStripButton();
+            sbResize = new ToolStripSplitButton();
+            resizeTo2048ToolStripMenuItem = new ToolStripMenuItem();
+            resizeTo1024ToolStripMenuItem = new ToolStripMenuItem();
+            resizeTo512ToolStripMenuItem = new ToolStripMenuItem();
+            toolStripSeparator3 = new ToolStripSeparator();
+            btResetMask = new ToolStripButton();
+            btDeAlpha = new ToolStripButton();
+            btRestorePrevMask = new ToolStripButton();
+            toolStripSeparator1 = new ToolStripSeparator();
+            btLeft = new ToolStripButton();
+            btDown = new ToolStripButton();
+            btUp = new ToolStripButton();
+            btRight = new ToolStripButton();
+            toolStripSeparator4 = new ToolStripSeparator();
+            btAbout = new ToolStripButton();
+            btRemoveObjectFromImage = new ToolStripButton();
+            splitContainer = new SplitContainer();
+            splitContainer1 = new SplitContainer();
+            pictureBox = new SmartPictureBox();
+            splitContainer2 = new SplitContainer();
+            panel1 = new Panel();
+            panStableDiffusion = new Adapters.StableDiffusion.StableDiffusionPanel();
+            panGenerationList = new GenerationList();
+            hPicScroll = new HScrollBar();
+            toolTip = new ToolTip(components);
+            updateImageListWorker = new System.ComponentModel.BackgroundWorker();
+            btRemoveBackgroundFromImage = new ToolStripButton();
+            controlsStateUpdater = new System.Windows.Forms.Timer(components);
+            toolbar.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)splitContainer).BeginInit();
+            splitContainer.Panel1.SuspendLayout();
+            splitContainer.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)splitContainer1).BeginInit();
+            splitContainer1.Panel1.SuspendLayout();
+            splitContainer1.Panel2.SuspendLayout();
+            splitContainer1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)splitContainer2).BeginInit();
+            splitContainer2.Panel1.SuspendLayout();
+            splitContainer2.Panel2.SuspendLayout();
+            splitContainer2.SuspendLayout();
+            panel1.SuspendLayout();
+            SuspendLayout();
             // 
             // controlsStateUpdater
             // 
             controlsStateUpdater.Enabled = true;
             controlsStateUpdater.Interval = 200;
-            controlsStateUpdater.Tick += new System.EventHandler(this.controlsStateUpdater_Tick);
+            controlsStateUpdater.Tick += controlsStateUpdater_Tick;
             // 
             // toolbar
             // 
-            this.toolbar.AutoSize = false;
-            this.toolbar.ImageScalingSize = new System.Drawing.Size(34, 34);
-            this.toolbar.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.btClearActiveImage,
-            this.btLoad,
-            this.btSave,
-            this.btSaveAs,
-            this.btCopyToClipboard,
-            this.toolStripSeparator2,
-            this.btResizeAndMoveActiveBoxToFitImage,
-            this.sbResize,
-            this.toolStripSeparator3,
-            this.btResetMask,
-            this.btDeAlpha,
-            this.btRestorePrevMask,
-            this.toolStripSeparator1,
-            this.btLeft,
-            this.btDown,
-            this.btUp,
-            this.btRight,
-            this.btAbout});
-            this.toolbar.Location = new System.Drawing.Point(0, 0);
-            this.toolbar.Name = "toolbar";
-            this.toolbar.Size = new System.Drawing.Size(924, 40);
-            this.toolbar.TabIndex = 0;
-            this.toolbar.Text = "toolStrip1";
+            toolbar.AutoSize = false;
+            toolbar.ImageScalingSize = new Size(34, 34);
+            toolbar.Items.AddRange(new ToolStripItem[] { btClearActiveImage, btLoad, btSave, btSaveAs, btCopyToClipboard, toolStripSeparator2, btResizeAndMoveActiveBoxToFitImage, sbResize, toolStripSeparator3, btResetMask, btDeAlpha, btRestorePrevMask, toolStripSeparator1, btLeft, btDown, btUp, btRight, toolStripSeparator4, btAbout, btRemoveObjectFromImage, btRemoveBackgroundFromImage });
+            toolbar.Location = new Point(0, 0);
+            toolbar.Name = "toolbar";
+            toolbar.Size = new Size(924, 40);
+            toolbar.TabIndex = 0;
+            toolbar.Text = "toolStrip1";
             // 
             // btClearActiveImage
             // 
-            this.btClearActiveImage.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.btClearActiveImage.Image = ((System.Drawing.Image)(resources.GetObject("btClearActiveImage.Image")));
-            this.btClearActiveImage.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.btClearActiveImage.Name = "btClearActiveImage";
-            this.btClearActiveImage.Size = new System.Drawing.Size(38, 37);
-            this.btClearActiveImage.Text = "Clear active image";
-            this.btClearActiveImage.Click += new System.EventHandler(this.btClearActiveImage_Click);
+            btClearActiveImage.DisplayStyle = ToolStripItemDisplayStyle.Image;
+            btClearActiveImage.Image = (Image)resources.GetObject("btClearActiveImage.Image");
+            btClearActiveImage.ImageTransparentColor = Color.Magenta;
+            btClearActiveImage.Name = "btClearActiveImage";
+            btClearActiveImage.Size = new Size(38, 37);
+            btClearActiveImage.Text = "Clear active image";
+            btClearActiveImage.Click += btClearActiveImage_Click;
             // 
             // btLoad
             // 
-            this.btLoad.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.btLoad.Image = ((System.Drawing.Image)(resources.GetObject("btLoad.Image")));
-            this.btLoad.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.btLoad.Name = "btLoad";
-            this.btLoad.Size = new System.Drawing.Size(38, 37);
-            this.btLoad.Text = "Load image";
-            this.btLoad.Click += new System.EventHandler(this.btLoad_Click);
+            btLoad.DisplayStyle = ToolStripItemDisplayStyle.Image;
+            btLoad.Image = (Image)resources.GetObject("btLoad.Image");
+            btLoad.ImageTransparentColor = Color.Magenta;
+            btLoad.Name = "btLoad";
+            btLoad.Size = new Size(38, 37);
+            btLoad.Text = "Load image";
+            btLoad.Click += btLoad_Click;
             // 
             // btSave
             // 
-            this.btSave.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.btSave.Image = ((System.Drawing.Image)(resources.GetObject("btSave.Image")));
-            this.btSave.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.btSave.Name = "btSave";
-            this.btSave.Size = new System.Drawing.Size(38, 37);
-            this.btSave.Text = "Save image (overwrite)";
-            this.btSave.Click += new System.EventHandler(this.btSave_Click);
+            btSave.DisplayStyle = ToolStripItemDisplayStyle.Image;
+            btSave.Image = (Image)resources.GetObject("btSave.Image");
+            btSave.ImageTransparentColor = Color.Magenta;
+            btSave.Name = "btSave";
+            btSave.Size = new Size(38, 37);
+            btSave.Text = "Save image (overwrite)";
+            btSave.Click += btSave_Click;
             // 
             // btSaveAs
             // 
-            this.btSaveAs.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.btSaveAs.Image = ((System.Drawing.Image)(resources.GetObject("btSaveAs.Image")));
-            this.btSaveAs.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.btSaveAs.Name = "btSaveAs";
-            this.btSaveAs.Size = new System.Drawing.Size(38, 37);
-            this.btSaveAs.Text = "Save image as...";
-            this.btSaveAs.Click += new System.EventHandler(this.btSaveAs_Click);
+            btSaveAs.DisplayStyle = ToolStripItemDisplayStyle.Image;
+            btSaveAs.Image = (Image)resources.GetObject("btSaveAs.Image");
+            btSaveAs.ImageTransparentColor = Color.Magenta;
+            btSaveAs.Name = "btSaveAs";
+            btSaveAs.Size = new Size(38, 37);
+            btSaveAs.Text = "Save image as...";
+            btSaveAs.Click += btSaveAs_Click;
             // 
             // btCopyToClipboard
             // 
-            this.btCopyToClipboard.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.btCopyToClipboard.Image = ((System.Drawing.Image)(resources.GetObject("btCopyToClipboard.Image")));
-            this.btCopyToClipboard.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.btCopyToClipboard.Name = "btCopyToClipboard";
-            this.btCopyToClipboard.Size = new System.Drawing.Size(38, 37);
-            this.btCopyToClipboard.Text = "Copy to clipboard";
-            this.btCopyToClipboard.Click += new System.EventHandler(this.btCopyToClipboard_Click);
+            btCopyToClipboard.DisplayStyle = ToolStripItemDisplayStyle.Image;
+            btCopyToClipboard.Image = (Image)resources.GetObject("btCopyToClipboard.Image");
+            btCopyToClipboard.ImageTransparentColor = Color.Magenta;
+            btCopyToClipboard.Name = "btCopyToClipboard";
+            btCopyToClipboard.Size = new Size(38, 37);
+            btCopyToClipboard.Text = "Copy to clipboard";
+            btCopyToClipboard.Click += btCopyToClipboard_Click;
             // 
             // toolStripSeparator2
             // 
-            this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(6, 40);
+            toolStripSeparator2.Name = "toolStripSeparator2";
+            toolStripSeparator2.Size = new Size(6, 40);
             // 
             // btResizeAndMoveActiveBoxToFitImage
             // 
-            this.btResizeAndMoveActiveBoxToFitImage.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.btResizeAndMoveActiveBoxToFitImage.Image = ((System.Drawing.Image)(resources.GetObject("btResizeAndMoveActiveBoxToFitImage.Image")));
-            this.btResizeAndMoveActiveBoxToFitImage.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.btResizeAndMoveActiveBoxToFitImage.Name = "btResizeAndMoveActiveBoxToFitImage";
-            this.btResizeAndMoveActiveBoxToFitImage.Size = new System.Drawing.Size(38, 37);
-            this.btResizeAndMoveActiveBoxToFitImage.Text = "Resize and move active zone to fit image";
-            this.btResizeAndMoveActiveBoxToFitImage.Click += new System.EventHandler(this.btResizeAndMoveActiveBoxToFitImage_Click);
+            btResizeAndMoveActiveBoxToFitImage.DisplayStyle = ToolStripItemDisplayStyle.Image;
+            btResizeAndMoveActiveBoxToFitImage.Image = (Image)resources.GetObject("btResizeAndMoveActiveBoxToFitImage.Image");
+            btResizeAndMoveActiveBoxToFitImage.ImageTransparentColor = Color.Magenta;
+            btResizeAndMoveActiveBoxToFitImage.Name = "btResizeAndMoveActiveBoxToFitImage";
+            btResizeAndMoveActiveBoxToFitImage.Size = new Size(38, 37);
+            btResizeAndMoveActiveBoxToFitImage.Text = "Resize and move active zone to fit image";
+            btResizeAndMoveActiveBoxToFitImage.Click += btResizeAndMoveActiveBoxToFitImage_Click;
             // 
             // sbResize
             // 
-            this.sbResize.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.sbResize.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.resizeTo2048ToolStripMenuItem,
-            this.resizeTo1024ToolStripMenuItem,
-            this.resizeTo512ToolStripMenuItem});
-            this.sbResize.Image = ((System.Drawing.Image)(resources.GetObject("sbResize.Image")));
-            this.sbResize.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.sbResize.Name = "sbResize";
-            this.sbResize.Size = new System.Drawing.Size(50, 37);
-            this.sbResize.Text = "Resize image";
+            sbResize.DisplayStyle = ToolStripItemDisplayStyle.Image;
+            sbResize.DropDownItems.AddRange(new ToolStripItem[] { resizeTo2048ToolStripMenuItem, resizeTo1024ToolStripMenuItem, resizeTo512ToolStripMenuItem });
+            sbResize.Image = (Image)resources.GetObject("sbResize.Image");
+            sbResize.ImageTransparentColor = Color.Magenta;
+            sbResize.Name = "sbResize";
+            sbResize.Size = new Size(50, 37);
+            sbResize.Text = "Resize image";
             // 
             // resizeTo2048ToolStripMenuItem
             // 
-            this.resizeTo2048ToolStripMenuItem.Name = "resizeTo2048ToolStripMenuItem";
-            this.resizeTo2048ToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.resizeTo2048ToolStripMenuItem.Text = "Resize to 2048";
-            this.resizeTo2048ToolStripMenuItem.Click += new System.EventHandler(this.resizeTo2048ToolStripMenuItem_Click);
+            resizeTo2048ToolStripMenuItem.Name = "resizeTo2048ToolStripMenuItem";
+            resizeTo2048ToolStripMenuItem.Size = new Size(147, 22);
+            resizeTo2048ToolStripMenuItem.Text = "Resize to 2048";
+            resizeTo2048ToolStripMenuItem.Click += resizeTo2048ToolStripMenuItem_Click;
             // 
             // resizeTo1024ToolStripMenuItem
             // 
-            this.resizeTo1024ToolStripMenuItem.Name = "resizeTo1024ToolStripMenuItem";
-            this.resizeTo1024ToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.resizeTo1024ToolStripMenuItem.Text = "Resize to 1024";
-            this.resizeTo1024ToolStripMenuItem.Click += new System.EventHandler(this.resizeTo1024ToolStripMenuItem_Click);
+            resizeTo1024ToolStripMenuItem.Name = "resizeTo1024ToolStripMenuItem";
+            resizeTo1024ToolStripMenuItem.Size = new Size(147, 22);
+            resizeTo1024ToolStripMenuItem.Text = "Resize to 1024";
+            resizeTo1024ToolStripMenuItem.Click += resizeTo1024ToolStripMenuItem_Click;
             // 
             // resizeTo512ToolStripMenuItem
             // 
-            this.resizeTo512ToolStripMenuItem.Name = "resizeTo512ToolStripMenuItem";
-            this.resizeTo512ToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.resizeTo512ToolStripMenuItem.Text = "Resize to 512";
-            this.resizeTo512ToolStripMenuItem.Click += new System.EventHandler(this.resizeTo512ToolStripMenuItem_Click);
+            resizeTo512ToolStripMenuItem.Name = "resizeTo512ToolStripMenuItem";
+            resizeTo512ToolStripMenuItem.Size = new Size(147, 22);
+            resizeTo512ToolStripMenuItem.Text = "Resize to 512";
+            resizeTo512ToolStripMenuItem.Click += resizeTo512ToolStripMenuItem_Click;
             // 
             // toolStripSeparator3
             // 
-            this.toolStripSeparator3.Name = "toolStripSeparator3";
-            this.toolStripSeparator3.Size = new System.Drawing.Size(6, 40);
+            toolStripSeparator3.Name = "toolStripSeparator3";
+            toolStripSeparator3.Size = new Size(6, 40);
             // 
             // btResetMask
             // 
-            this.btResetMask.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.btResetMask.Image = ((System.Drawing.Image)(resources.GetObject("btResetMask.Image")));
-            this.btResetMask.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.btResetMask.Name = "btResetMask";
-            this.btResetMask.Size = new System.Drawing.Size(38, 37);
-            this.btResetMask.Text = "Reset mask";
-            this.btResetMask.Click += new System.EventHandler(this.btResetMask_Click);
+            btResetMask.DisplayStyle = ToolStripItemDisplayStyle.Image;
+            btResetMask.Image = (Image)resources.GetObject("btResetMask.Image");
+            btResetMask.ImageTransparentColor = Color.Magenta;
+            btResetMask.Name = "btResetMask";
+            btResetMask.Size = new Size(38, 37);
+            btResetMask.Text = "Reset mask";
+            btResetMask.Click += btResetMask_Click;
             // 
             // btDeAlpha
             // 
-            this.btDeAlpha.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.btDeAlpha.Image = ((System.Drawing.Image)(resources.GetObject("btDeAlpha.Image")));
-            this.btDeAlpha.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.btDeAlpha.Name = "btDeAlpha";
-            this.btDeAlpha.Size = new System.Drawing.Size(38, 37);
-            this.btDeAlpha.Text = "Transparent to opaque";
-            this.btDeAlpha.Click += new System.EventHandler(this.btDeAlpha_Click);
+            btDeAlpha.DisplayStyle = ToolStripItemDisplayStyle.Image;
+            btDeAlpha.Image = (Image)resources.GetObject("btDeAlpha.Image");
+            btDeAlpha.ImageTransparentColor = Color.Magenta;
+            btDeAlpha.Name = "btDeAlpha";
+            btDeAlpha.Size = new Size(38, 37);
+            btDeAlpha.Text = "Transparent to opaque";
+            btDeAlpha.Click += btDeAlpha_Click;
             // 
             // btRestorePrevMask
             // 
-            this.btRestorePrevMask.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.btRestorePrevMask.Image = ((System.Drawing.Image)(resources.GetObject("btRestorePrevMask.Image")));
-            this.btRestorePrevMask.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.btRestorePrevMask.Name = "btRestorePrevMask";
-            this.btRestorePrevMask.Size = new System.Drawing.Size(38, 37);
-            this.btRestorePrevMask.Text = "Restore previous mask";
-            this.btRestorePrevMask.Click += new System.EventHandler(this.btRestorePrevMask_Click);
+            btRestorePrevMask.DisplayStyle = ToolStripItemDisplayStyle.Image;
+            btRestorePrevMask.Image = (Image)resources.GetObject("btRestorePrevMask.Image");
+            btRestorePrevMask.ImageTransparentColor = Color.Magenta;
+            btRestorePrevMask.Name = "btRestorePrevMask";
+            btRestorePrevMask.Size = new Size(38, 37);
+            btRestorePrevMask.Text = "Restore previous mask";
+            btRestorePrevMask.Click += btRestorePrevMask_Click;
             // 
             // toolStripSeparator1
             // 
-            this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(6, 40);
+            toolStripSeparator1.Name = "toolStripSeparator1";
+            toolStripSeparator1.Size = new Size(6, 40);
             // 
             // btLeft
             // 
-            this.btLeft.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.btLeft.Image = ((System.Drawing.Image)(resources.GetObject("btLeft.Image")));
-            this.btLeft.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.btLeft.Name = "btLeft";
-            this.btLeft.Size = new System.Drawing.Size(38, 37);
-            this.btLeft.Text = "Extend canvas";
-            this.btLeft.Click += new System.EventHandler(this.btLeft_Click);
+            btLeft.DisplayStyle = ToolStripItemDisplayStyle.Image;
+            btLeft.Image = (Image)resources.GetObject("btLeft.Image");
+            btLeft.ImageTransparentColor = Color.Magenta;
+            btLeft.Name = "btLeft";
+            btLeft.Size = new Size(38, 37);
+            btLeft.Text = "Extend canvas";
+            btLeft.Click += btLeft_Click;
             // 
             // btDown
             // 
-            this.btDown.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.btDown.Image = ((System.Drawing.Image)(resources.GetObject("btDown.Image")));
-            this.btDown.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.btDown.Name = "btDown";
-            this.btDown.Size = new System.Drawing.Size(38, 37);
-            this.btDown.Text = "Extend canvas";
-            this.btDown.Click += new System.EventHandler(this.btDown_Click);
+            btDown.DisplayStyle = ToolStripItemDisplayStyle.Image;
+            btDown.Image = (Image)resources.GetObject("btDown.Image");
+            btDown.ImageTransparentColor = Color.Magenta;
+            btDown.Name = "btDown";
+            btDown.Size = new Size(38, 37);
+            btDown.Text = "Extend canvas";
+            btDown.Click += btDown_Click;
             // 
             // btUp
             // 
-            this.btUp.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.btUp.Image = ((System.Drawing.Image)(resources.GetObject("btUp.Image")));
-            this.btUp.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.btUp.Name = "btUp";
-            this.btUp.Size = new System.Drawing.Size(38, 37);
-            this.btUp.Text = "Extend canvas";
-            this.btUp.Click += new System.EventHandler(this.btUp_Click);
+            btUp.DisplayStyle = ToolStripItemDisplayStyle.Image;
+            btUp.Image = (Image)resources.GetObject("btUp.Image");
+            btUp.ImageTransparentColor = Color.Magenta;
+            btUp.Name = "btUp";
+            btUp.Size = new Size(38, 37);
+            btUp.Text = "Extend canvas";
+            btUp.Click += btUp_Click;
             // 
             // btRight
             // 
-            this.btRight.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.btRight.Image = ((System.Drawing.Image)(resources.GetObject("btRight.Image")));
-            this.btRight.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.btRight.Name = "btRight";
-            this.btRight.Size = new System.Drawing.Size(38, 37);
-            this.btRight.Text = "Extend canvas";
-            this.btRight.Click += new System.EventHandler(this.btRight_Click);
+            btRight.DisplayStyle = ToolStripItemDisplayStyle.Image;
+            btRight.Image = (Image)resources.GetObject("btRight.Image");
+            btRight.ImageTransparentColor = Color.Magenta;
+            btRight.Name = "btRight";
+            btRight.Size = new Size(38, 37);
+            btRight.Text = "Extend canvas";
+            btRight.Click += btRight_Click;
+            // 
+            // toolStripSeparator4
+            // 
+            toolStripSeparator4.Name = "toolStripSeparator4";
+            toolStripSeparator4.Size = new Size(6, 40);
             // 
             // btAbout
             // 
-            this.btAbout.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
-            this.btAbout.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.btAbout.Image = ((System.Drawing.Image)(resources.GetObject("btAbout.Image")));
-            this.btAbout.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.btAbout.Name = "btAbout";
-            this.btAbout.Size = new System.Drawing.Size(38, 37);
-            this.btAbout.Text = "About...";
-            this.btAbout.Click += new System.EventHandler(this.btAbout_Click);
+            btAbout.Alignment = ToolStripItemAlignment.Right;
+            btAbout.DisplayStyle = ToolStripItemDisplayStyle.Image;
+            btAbout.Image = (Image)resources.GetObject("btAbout.Image");
+            btAbout.ImageTransparentColor = Color.Magenta;
+            btAbout.Name = "btAbout";
+            btAbout.Size = new Size(38, 37);
+            btAbout.Text = "About...";
+            btAbout.Click += btAbout_Click;
+            // 
+            // btRemoveObjectFromImage
+            // 
+            btRemoveObjectFromImage.DisplayStyle = ToolStripItemDisplayStyle.Image;
+            btRemoveObjectFromImage.Image = (Image)resources.GetObject("btRemoveObjectFromImage.Image");
+            btRemoveObjectFromImage.ImageTransparentColor = Color.Magenta;
+            btRemoveObjectFromImage.Name = "btRemoveObjectFromImage";
+            btRemoveObjectFromImage.Size = new Size(38, 37);
+            btRemoveObjectFromImage.Text = "toolStripButton1";
+            btRemoveObjectFromImage.ToolTipText = "Remove masked object from image";
+            btRemoveObjectFromImage.Click += btRemoveObjectFromImage_Click;
             // 
             // splitContainer
             // 
-            this.splitContainer.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.splitContainer.Location = new System.Drawing.Point(0, 40);
-            this.splitContainer.Name = "splitContainer";
-            this.splitContainer.Orientation = System.Windows.Forms.Orientation.Horizontal;
+            splitContainer.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            splitContainer.Location = new Point(0, 40);
+            splitContainer.Name = "splitContainer";
+            splitContainer.Orientation = Orientation.Horizontal;
             // 
             // splitContainer.Panel1
             // 
-            this.splitContainer.Panel1.Controls.Add(this.splitContainer1);
+            splitContainer.Panel1.Controls.Add(splitContainer1);
             // 
             // splitContainer.Panel2
             // 
-            this.splitContainer.Panel2.Resize += new System.EventHandler(this.splitContainer_Panel2_Resize);
-            this.splitContainer.Size = new System.Drawing.Size(924, 667);
-            this.splitContainer.SplitterDistance = 523;
-            this.splitContainer.TabIndex = 2;
-            this.splitContainer.SplitterMoved += new System.Windows.Forms.SplitterEventHandler(this.splitContainer_SplitterMoved);
+            splitContainer.Panel2.Resize += splitContainer_Panel2_Resize;
+            splitContainer.Size = new Size(924, 667);
+            splitContainer.SplitterDistance = 523;
+            splitContainer.TabIndex = 2;
+            splitContainer.SplitterMoved += splitContainer_SplitterMoved;
             // 
             // splitContainer1
             // 
-            this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.splitContainer1.Location = new System.Drawing.Point(0, 0);
-            this.splitContainer1.Name = "splitContainer1";
+            splitContainer1.Dock = DockStyle.Fill;
+            splitContainer1.Location = new Point(0, 0);
+            splitContainer1.Name = "splitContainer1";
             // 
             // splitContainer1.Panel1
             // 
-            this.splitContainer1.Panel1.Controls.Add(this.pictureBox);
+            splitContainer1.Panel1.Controls.Add(pictureBox);
             // 
             // splitContainer1.Panel2
             // 
-            this.splitContainer1.Panel2.Controls.Add(this.splitContainer2);
-            this.splitContainer1.Size = new System.Drawing.Size(924, 523);
-            this.splitContainer1.SplitterDistance = 308;
-            this.splitContainer1.TabIndex = 4;
-            this.splitContainer1.SplitterMoved += new System.Windows.Forms.SplitterEventHandler(this.splitContainer1_SplitterMoved);
+            splitContainer1.Panel2.Controls.Add(splitContainer2);
+            splitContainer1.Size = new Size(924, 523);
+            splitContainer1.SplitterDistance = 308;
+            splitContainer1.TabIndex = 4;
+            splitContainer1.SplitterMoved += splitContainer1_SplitterMoved;
             // 
             // pictureBox
             // 
-            this.pictureBox.BackColor = System.Drawing.SystemColors.Window;
-            this.pictureBox.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.pictureBox.Image = null;
-            this.pictureBox.Location = new System.Drawing.Point(0, 0);
-            this.pictureBox.Name = "pictureBox";
-            this.pictureBox.Size = new System.Drawing.Size(308, 523);
-            this.pictureBox.TabIndex = 3;
+            pictureBox.BackColor = SystemColors.Window;
+            pictureBox.Dock = DockStyle.Fill;
+            pictureBox.Image = null;
+            pictureBox.Location = new Point(0, 0);
+            pictureBox.Name = "pictureBox";
+            pictureBox.Size = new Size(308, 523);
+            pictureBox.TabIndex = 3;
             // 
             // splitContainer2
             // 
-            this.splitContainer2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.splitContainer2.Location = new System.Drawing.Point(0, 0);
-            this.splitContainer2.Name = "splitContainer2";
+            splitContainer2.Dock = DockStyle.Fill;
+            splitContainer2.Location = new Point(0, 0);
+            splitContainer2.Name = "splitContainer2";
             // 
             // splitContainer2.Panel1
             // 
-            this.splitContainer2.Panel1.Controls.Add(this.panel1);
+            splitContainer2.Panel1.Controls.Add(panel1);
             // 
             // splitContainer2.Panel2
             // 
-            this.splitContainer2.Panel2.Controls.Add(this.panGenerationList);
-            this.splitContainer2.Size = new System.Drawing.Size(612, 523);
-            this.splitContainer2.SplitterDistance = 351;
-            this.splitContainer2.TabIndex = 0;
+            splitContainer2.Panel2.Controls.Add(panGenerationList);
+            splitContainer2.Size = new Size(612, 523);
+            splitContainer2.SplitterDistance = 351;
+            splitContainer2.TabIndex = 0;
             // 
             // panel1
             // 
-            this.panel1.AutoScroll = true;
-            this.panel1.BackColor = System.Drawing.SystemColors.ControlDarkDark;
-            this.panel1.Controls.Add(this.panRemBg);
-            this.panel1.Controls.Add(this.panLamaCleaner);
-            this.panel1.Controls.Add(this.panStableDiffusion);
-            this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel1.Location = new System.Drawing.Point(0, 0);
-            this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(351, 523);
-            this.panel1.TabIndex = 2;
-            // 
-            // panRemBg
-            // 
-            this.panRemBg.AutoSize = true;
-            this.panRemBg.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.panRemBg.Dock = System.Windows.Forms.DockStyle.Top;
-            this.panRemBg.Location = new System.Drawing.Point(0, 483);
-            this.panRemBg.Name = "panRemBg";
-            this.panRemBg.Size = new System.Drawing.Size(334, 80);
-            this.panRemBg.TabIndex = 8;
-            // 
-            // panLamaCleaner
-            // 
-            this.panLamaCleaner.AutoSize = true;
-            this.panLamaCleaner.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.panLamaCleaner.Dock = System.Windows.Forms.DockStyle.Top;
-            this.panLamaCleaner.Location = new System.Drawing.Point(0, 403);
-            this.panLamaCleaner.Name = "panLamaCleaner";
-            this.panLamaCleaner.Size = new System.Drawing.Size(334, 80);
-            this.panLamaCleaner.TabIndex = 7;
+            panel1.AutoScroll = true;
+            panel1.BackColor = SystemColors.ControlDarkDark;
+            panel1.Controls.Add(panStableDiffusion);
+            panel1.Dock = DockStyle.Fill;
+            panel1.Location = new Point(0, 0);
+            panel1.Name = "panel1";
+            panel1.Size = new Size(351, 523);
+            panel1.TabIndex = 2;
             // 
             // panStableDiffusion
             // 
-            this.panStableDiffusion.AutoSize = true;
-            this.panStableDiffusion.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.panStableDiffusion.Dock = System.Windows.Forms.DockStyle.Top;
-            this.panStableDiffusion.Location = new System.Drawing.Point(0, 0);
-            this.panStableDiffusion.Modifiers = new string[0];
-            this.panStableDiffusion.Name = "panStableDiffusion";
-            this.panStableDiffusion.Size = new System.Drawing.Size(334, 403);
-            this.panStableDiffusion.TabIndex = 6;
+            panStableDiffusion.AutoSize = true;
+            panStableDiffusion.AutoSizeMode = AutoSizeMode.GrowAndShrink;
+            panStableDiffusion.Dock = DockStyle.Top;
+            panStableDiffusion.Location = new Point(0, 0);
+            panStableDiffusion.Name = "panStableDiffusion";
+            panStableDiffusion.Size = new Size(351, 403);
+            panStableDiffusion.TabIndex = 6;
             // 
             // panGenerationList
             // 
-            this.panGenerationList.AutoScroll = true;
-            this.panGenerationList.BackColor = System.Drawing.SystemColors.ControlDarkDark;
-            this.panGenerationList.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.panGenerationList.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panGenerationList.Location = new System.Drawing.Point(0, 0);
-            this.panGenerationList.Name = "panGenerationList";
-            this.panGenerationList.Size = new System.Drawing.Size(257, 523);
-            this.panGenerationList.TabIndex = 0;
+            panGenerationList.AutoScroll = true;
+            panGenerationList.BackColor = SystemColors.ControlDarkDark;
+            panGenerationList.BorderStyle = BorderStyle.FixedSingle;
+            panGenerationList.Dock = DockStyle.Fill;
+            panGenerationList.Location = new Point(0, 0);
+            panGenerationList.Name = "panGenerationList";
+            panGenerationList.Size = new Size(257, 523);
+            panGenerationList.TabIndex = 0;
             // 
             // hPicScroll
             // 
-            this.hPicScroll.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.hPicScroll.Location = new System.Drawing.Point(0, 710);
-            this.hPicScroll.Name = "hPicScroll";
-            this.hPicScroll.Size = new System.Drawing.Size(924, 30);
-            this.hPicScroll.TabIndex = 0;
+            hPicScroll.Dock = DockStyle.Bottom;
+            hPicScroll.Location = new Point(0, 710);
+            hPicScroll.Name = "hPicScroll";
+            hPicScroll.Size = new Size(924, 30);
+            hPicScroll.TabIndex = 0;
             // 
             // updateImageListWorker
             // 
-            this.updateImageListWorker.DoWork += new System.ComponentModel.DoWorkEventHandler(this.updateImageListWorker_DoWork);
+            updateImageListWorker.DoWork += updateImageListWorker_DoWork;
+            // 
+            // btRemoveBackgroundFromImage
+            // 
+            btRemoveBackgroundFromImage.DisplayStyle = ToolStripItemDisplayStyle.Image;
+            btRemoveBackgroundFromImage.Image = (Image)resources.GetObject("btRemoveBackgroundFromImage.Image");
+            btRemoveBackgroundFromImage.ImageTransparentColor = Color.Magenta;
+            btRemoveBackgroundFromImage.Name = "btRemoveBackgroundFromImage";
+            btRemoveBackgroundFromImage.Size = new Size(38, 37);
+            btRemoveBackgroundFromImage.Text = "Remove background from image";
+            btRemoveBackgroundFromImage.Click += btRemoveBackgroundFromImage_Click;
             // 
             // MainForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
-            this.ClientSize = new System.Drawing.Size(924, 740);
-            this.Controls.Add(this.hPicScroll);
-            this.Controls.Add(this.splitContainer);
-            this.Controls.Add(this.toolbar);
-            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.Name = "MainForm";
-            this.Text = "AiPainter";
-            this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
-            this.Load += new System.EventHandler(this.MainForm_Load);
-            this.toolbar.ResumeLayout(false);
-            this.toolbar.PerformLayout();
-            this.splitContainer.Panel1.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.splitContainer)).EndInit();
-            this.splitContainer.ResumeLayout(false);
-            this.splitContainer1.Panel1.ResumeLayout(false);
-            this.splitContainer1.Panel2.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
-            this.splitContainer1.ResumeLayout(false);
-            this.splitContainer2.Panel1.ResumeLayout(false);
-            this.splitContainer2.Panel2.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).EndInit();
-            this.splitContainer2.ResumeLayout(false);
-            this.panel1.ResumeLayout(false);
-            this.panel1.PerformLayout();
-            this.ResumeLayout(false);
-
+            AutoScaleDimensions = new SizeF(7F, 15F);
+            AutoScaleMode = AutoScaleMode.Font;
+            BackgroundImageLayout = ImageLayout.Center;
+            ClientSize = new Size(924, 740);
+            Controls.Add(hPicScroll);
+            Controls.Add(splitContainer);
+            Controls.Add(toolbar);
+            Icon = (Icon)resources.GetObject("$this.Icon");
+            Name = "MainForm";
+            Text = "AiPainter";
+            WindowState = FormWindowState.Maximized;
+            Load += MainForm_Load;
+            toolbar.ResumeLayout(false);
+            toolbar.PerformLayout();
+            splitContainer.Panel1.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)splitContainer).EndInit();
+            splitContainer.ResumeLayout(false);
+            splitContainer1.Panel1.ResumeLayout(false);
+            splitContainer1.Panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)splitContainer1).EndInit();
+            splitContainer1.ResumeLayout(false);
+            splitContainer2.Panel1.ResumeLayout(false);
+            splitContainer2.Panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)splitContainer2).EndInit();
+            splitContainer2.ResumeLayout(false);
+            panel1.ResumeLayout(false);
+            panel1.PerformLayout();
+            ResumeLayout(false);
         }
 
         #endregion
@@ -493,8 +473,6 @@ namespace AiPainter
         private ToolTip toolTip;
         private SmartPictureBox pictureBox;
         private Adapters.StableDiffusion.StableDiffusionPanel panStableDiffusion;
-        private Adapters.LamaCleaner.LamaCleanerPanel panLamaCleaner;
-        private Adapters.RemBg.RemBgPanel panRemBg;
         private ToolStripButton btRestorePrevMask;
         private ToolStripButton btAbout;
         private ToolStripButton btCopyToClipboard;
@@ -510,5 +488,8 @@ namespace AiPainter
         private ToolStripMenuItem resizeTo2048ToolStripMenuItem;
         private ToolStripMenuItem resizeTo1024ToolStripMenuItem;
         private ToolStripMenuItem resizeTo512ToolStripMenuItem;
+        private ToolStripSeparator toolStripSeparator4;
+        private ToolStripButton btRemoveObjectFromImage;
+        private ToolStripButton btRemoveBackgroundFromImage;
     }
 }

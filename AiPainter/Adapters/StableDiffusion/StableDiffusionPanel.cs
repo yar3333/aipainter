@@ -27,7 +27,7 @@ namespace AiPainter.Adapters.StableDiffusion
         public StableDiffusionPanel()
         {
             InitializeComponent();
-            Modifiers = new string[] {};
+            Modifiers = new string[] { };
         }
 
         public bool IsTextboxInFocus => collapsablePanel.ActiveControl is TextBox;
@@ -43,7 +43,7 @@ namespace AiPainter.Adapters.StableDiffusion
             }
             var checkpointItems = checkpoints.Select(x => new ListItem
             {
-                Value = x, 
+                Value = x,
                 Text = SdCheckpointsHelper.GetHumanName(x)
             }).ToArray();
             ddCheckpoint.ValueMember = "Value";
@@ -58,24 +58,17 @@ namespace AiPainter.Adapters.StableDiffusion
             ddInpaintingFill.Items.AddRange(Enum.GetNames<SdInpaintingFill>());
             ddInpaintingFill.SelectedIndex = 1;
 
-            var loras = SdLoraHelper.GetNames();
-            if (!loras.Contains(Program.Config.StableDiffusionLora))
-            {
-                Program.Config.StableDiffusionLora = "";
-            }
-            var loraItems = loras.Select(x => new ListItem
-            {
-                Value = x, 
-                Text = SdLoraHelper.GetHumanName(x)
-            }).ToArray();
-            ddLora.ValueMember = "Value";
-            ddLora.DisplayMember = "Text";
-            ddLora.Items.Clear();
-            // ReSharper disable once CoVariantArrayConversion
-            ddLora.Items.AddRange(loraItems);
-            ddLora.SelectedItem = loraItems.Single(x => x.Value == Program.Config.StableDiffusionLora);
-
             if (ddlSize.SelectedIndex == -1) ddlSize.SelectedIndex = 0;
+
+            tbNegative.Text = Program.Config.NegativePrompt;
+
+            foreach (var lora in SdLoraHelper.GetNames())
+            {
+                contextMenuCheckpoint.Items.Add("LoRA: " + SdLoraHelper.GetHumanName(lora), null, (_, args) =>
+                {
+                    tbPrompt.Text = SdLoraHelper.GetPrompt(lora) + ", " + tbPrompt.Text;
+                });
+            }
         }
 
         private void btGenerate_Click(object sender, EventArgs e)
@@ -133,6 +126,11 @@ namespace AiPainter.Adapters.StableDiffusion
         private void collapsablePanel_Resize(object sender, EventArgs e)
         {
             Height = collapsablePanel.Height;
+        }
+
+        private void btContextMenuCheckpoint_Click(object sender, EventArgs e)
+        {
+            contextMenuCheckpoint.Show(Cursor.Position);
         }
     }
 }

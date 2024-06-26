@@ -11,7 +11,7 @@ static class SdLoraHelper
     {
         var basePath = BasePath;
         
-        return new []{ "" }
+        return new string[]{}
                .Concat(Directory.GetFiles(basePath, "*.ckpt", SearchOption.AllDirectories)
                .Concat(Directory.GetFiles(basePath, "*.safetensors", SearchOption.AllDirectories))
                .Select(x => x.Substring(basePath.Length).TrimStart('\\'))
@@ -19,14 +19,14 @@ static class SdLoraHelper
                .ToArray();
     }
 
-    public static string GetPrompt(string? name, double? weight)
+    public static string GetPrompt(string? name)
     {
         if (string.IsNullOrEmpty(name)) return "";
 
         var config = GetConfig(name);
-        return config.prompt
-            + "<lora:" + (!string.IsNullOrEmpty(config.name) ? config.name : Path.GetFileNameWithoutExtension(name))
-                 + ":" + (weight ?? config.weight).ToString(CultureInfo.InvariantCulture) + ">";
+        return "<lora:" + (!string.IsNullOrEmpty(config.name) ? config.name : Path.GetFileNameWithoutExtension(name))
+                  + ":" + config.weight.ToString(CultureInfo.InvariantCulture) + ">"
+                  + config.prompt;
     }
 
     public static string GetHumanName(string? name)

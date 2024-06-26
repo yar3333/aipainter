@@ -44,7 +44,6 @@ class ImageGeneratorSd : IImageGenerator
             cfgScale = sdPanel.numCfgScale.Value,
             seed = sdPanel.tbSeed.Text.Trim() != "" ? long.Parse(sdPanel.tbSeed.Text.Trim()) : -1,
             modifiers = sdPanel.Modifiers,
-            loraPrompt = SdLoraHelper.GetPrompt(((ListItem)sdPanel.ddLora.SelectedItem).Value, null), // TODO: LoRA weight
             width = int.Parse(sdPanel.ddlSize.SelectedItem.ToString()!.Split("x")[0]),
             height = int.Parse(sdPanel.ddlSize.SelectedItem.ToString()!.Split("x")[1]),
         };
@@ -298,8 +297,7 @@ class ImageGeneratorSd : IImageGenerator
 
         var r = (!string.IsNullOrWhiteSpace(checkpointPrompt) ? checkpointPrompt + "; " : "")
               + (!string.IsNullOrWhiteSpace(sdGenerationParameters.prompt) ? sdGenerationParameters.prompt + "; " : "")
-              + (sdGenerationParameters.modifiers.Any() ? "; " + string.Join(", ", sdGenerationParameters.modifiers) + "; " : "")
-              + (!string.IsNullOrEmpty(sdGenerationParameters.loraPrompt) ? sdGenerationParameters.loraPrompt : "");
+              + (sdGenerationParameters.modifiers.Any() ? "; " + string.Join(", ", sdGenerationParameters.modifiers) : "");
 
         return r.Trim(' ', ',', ';');
     }
