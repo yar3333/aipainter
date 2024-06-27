@@ -57,6 +57,7 @@ namespace AiPainter
             toolStripSeparator4 = new ToolStripSeparator();
             btAbout = new ToolStripButton();
             btRemoveObjectFromImage = new ToolStripButton();
+            btRemoveBackgroundFromImage = new ToolStripButton();
             splitContainer = new SplitContainer();
             splitContainer1 = new SplitContainer();
             pictureBox = new SmartPictureBox();
@@ -67,7 +68,6 @@ namespace AiPainter
             hPicScroll = new HScrollBar();
             toolTip = new ToolTip(components);
             updateImageListWorker = new System.ComponentModel.BackgroundWorker();
-            btRemoveBackgroundFromImage = new ToolStripButton();
             controlsStateUpdater = new System.Windows.Forms.Timer(components);
             toolbar.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)splitContainer).BeginInit();
@@ -304,6 +304,16 @@ namespace AiPainter
             btRemoveObjectFromImage.ToolTipText = "Remove masked object from image";
             btRemoveObjectFromImage.Click += btRemoveObjectFromImage_Click;
             // 
+            // btRemoveBackgroundFromImage
+            // 
+            btRemoveBackgroundFromImage.DisplayStyle = ToolStripItemDisplayStyle.Image;
+            btRemoveBackgroundFromImage.Image = (Image)resources.GetObject("btRemoveBackgroundFromImage.Image");
+            btRemoveBackgroundFromImage.ImageTransparentColor = Color.Magenta;
+            btRemoveBackgroundFromImage.Name = "btRemoveBackgroundFromImage";
+            btRemoveBackgroundFromImage.Size = new Size(38, 37);
+            btRemoveBackgroundFromImage.Text = "Remove background from image";
+            btRemoveBackgroundFromImage.Click += btRemoveBackgroundFromImage_Click;
+            // 
             // splitContainer
             // 
             splitContainer.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
@@ -386,7 +396,7 @@ namespace AiPainter
             panStableDiffusion.Dock = DockStyle.Top;
             panStableDiffusion.Location = new Point(0, 0);
             panStableDiffusion.Name = "panStableDiffusion";
-            panStableDiffusion.Size = new Size(351, 403);
+            panStableDiffusion.Size = new Size(351, 478);
             panStableDiffusion.TabIndex = 6;
             // 
             // panGenerationList
@@ -411,16 +421,6 @@ namespace AiPainter
             // updateImageListWorker
             // 
             updateImageListWorker.DoWork += updateImageListWorker_DoWork;
-            // 
-            // btRemoveBackgroundFromImage
-            // 
-            btRemoveBackgroundFromImage.DisplayStyle = ToolStripItemDisplayStyle.Image;
-            btRemoveBackgroundFromImage.Image = (Image)resources.GetObject("btRemoveBackgroundFromImage.Image");
-            btRemoveBackgroundFromImage.ImageTransparentColor = Color.Magenta;
-            btRemoveBackgroundFromImage.Name = "btRemoveBackgroundFromImage";
-            btRemoveBackgroundFromImage.Size = new Size(38, 37);
-            btRemoveBackgroundFromImage.Text = "Remove background from image";
-            btRemoveBackgroundFromImage.Click += btRemoveBackgroundFromImage_Click;
             // 
             // MainForm
             // 

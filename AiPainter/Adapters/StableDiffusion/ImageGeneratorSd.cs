@@ -42,10 +42,16 @@ class ImageGeneratorSd : IImageGenerator
             negative = sdPanel.tbNegative.Text.Trim(),
             steps = (int)sdPanel.numSteps.Value,
             cfgScale = sdPanel.numCfgScale.Value,
-            seed = sdPanel.tbSeed.Text.Trim() != "" ? long.Parse(sdPanel.tbSeed.Text.Trim()) : -1,
+            
+            seed = sdPanel.cbUseSeed.Checked && sdPanel.tbSeed.Text.Trim() != "" ? long.Parse(sdPanel.tbSeed.Text.Trim()) : -1,
+            variationSeed = sdPanel.cbUseSeed.Checked && sdPanel.tbVariationSeed.Text.Trim() != "" ? long.Parse(sdPanel.tbVariationSeed.Text.Trim()) : -1,
+            seedVariationStrength = sdPanel.trackBarSeedVariationStrength.Value / 100m,
+
             modifiers = sdPanel.Modifiers,
             width = int.Parse(sdPanel.ddlSize.SelectedItem.ToString()!.Split("x")[0]),
             height = int.Parse(sdPanel.ddlSize.SelectedItem.ToString()!.Split("x")[1]),
+            sampler = sdPanel.ddlSampler.SelectedItem.ToString()!,
+            changesLevel = sdPanel.trackBarChangesLevel.Value / 100.0m,
         };
 
         if (sdPanel.cbUseInitImage.Checked)
@@ -82,7 +88,13 @@ class ImageGeneratorSd : IImageGenerator
         sdPanel.tbPrompt.Text = sdGenerationParameters.prompt;
         sdPanel.tbNegative.Text = sdGenerationParameters.negative;
         sdPanel.numCfgScale.Value = sdGenerationParameters.cfgScale;
+        
         sdPanel.tbSeed.Text = sdGenerationParameters.seed.ToString();
+        sdPanel.tbVariationSeed.Text = sdGenerationParameters.variationSeed.ToString();
+        sdPanel.trackBarSeedVariationStrength.Value = (int)Math.Round(sdGenerationParameters.seedVariationStrength * 100);
+        
+        sdPanel.ddlSampler.SelectedItem = sdGenerationParameters.sampler;
+        sdPanel.trackBarChangesLevel.Value = (int)Math.Round(sdGenerationParameters.changesLevel * 100);
 
         sdPanel.numIterations.Value = originalCount;
 
@@ -145,7 +157,7 @@ class ImageGeneratorSd : IImageGenerator
                 {
                     try
                     {
-                        var resultFilePath = getDestImageFilePath(seed);
+                        var resultFilePath = getDestImageFilePath();
                         resultImage.Save(resultFilePath, ImageFormat.Png);
                         resultImage.Dispose();
 
@@ -231,10 +243,17 @@ class ImageGeneratorSd : IImageGenerator
                 prompt = getFullPromptText(),
                 negative_prompt = sdGenerationParameters.negative,
                 cfg_scale = sdGenerationParameters.cfgScale,
-                seed = sdGenerationParameters.seed,
                 steps = sdGenerationParameters.steps,
+
+                seed = sdGenerationParameters.seed,
+                subseed = sdGenerationParameters.variationSeed,
+                subseed_strength = sdGenerationParameters.seedVariationStrength,
+
                 width = sdGenerationParameters.width,
                 height = sdGenerationParameters.height,
+                
+                sampler_index = sdGenerationParameters.sampler,
+                s_noise = sdGenerationParameters.changesLevel,
             };
 
             StableDiffusionClient.txt2img
@@ -251,13 +270,19 @@ class ImageGeneratorSd : IImageGenerator
                 prompt = getFullPromptText(),
                 negative_prompt = sdGenerationParameters.negative,
                 cfg_scale = sdGenerationParameters.cfgScale,
+                
                 seed = sdGenerationParameters.seed,
+                subseed = sdGenerationParameters.variationSeed,
+                subseed_strength = sdGenerationParameters.seedVariationStrength,
+                
                 steps = sdGenerationParameters.steps,
                 init_images = new[] { BitmapTools.GetBase64String(initImage) },
                 mask = maskImage != null ? BitmapTools.GetBase64String(maskImage) : null,
                 inpainting_fill = inpaintingFill,
                 width = initImage.Width,
                 height = initImage.Height,
+                sampler_index = sdGenerationParameters.sampler,
+                s_noise = sdGenerationParameters.changesLevel,
             };
 
             StableDiffusionClient.img2img
@@ -302,10 +327,10 @@ class ImageGeneratorSd : IImageGenerator
         return r.Trim(' ', ',', ';');
     }
 
-    private string getDestImageFilePath(long seed)
+    private string getDestImageFilePath()
     {
         if (!string.IsNullOrEmpty(destDir) && !Directory.Exists(destDir)) Directory.CreateDirectory(destDir);
-        return Path.Combine(destDir, seed + ".png");
+        return Path.Combine(destDir, DateTime.Now.Ticks + ".png");
     }
 
     private void saveSdGeneraqtionParameters(string resultImageFilePath, long seed)

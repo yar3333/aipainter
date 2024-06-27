@@ -185,9 +185,15 @@ namespace AiPainter
                     panStableDiffusion.tbPrompt.Text = sdGenerationParameters.prompt;
                     panStableDiffusion.tbNegative.Text = sdGenerationParameters.negative;
                     panStableDiffusion.numCfgScale.Value = sdGenerationParameters.cfgScale;
+                    
                     panStableDiffusion.tbSeed.Text = sdGenerationParameters.seed.ToString();
+                    panStableDiffusion.tbVariationSeed.Text = sdGenerationParameters.variationSeed.ToString();
+                    panStableDiffusion.trackBarSeedVariationStrength.Value = (int)Math.Round(sdGenerationParameters.seedVariationStrength * 100m);
+                    
                     panStableDiffusion.Modifiers = sdGenerationParameters.modifiers;
                     panStableDiffusion.ddlSize.SelectedItem = sdGenerationParameters.width + "x" + sdGenerationParameters.height;
+                    panStableDiffusion.ddlSampler.SelectedItem = sdGenerationParameters.sampler;
+                    panStableDiffusion.trackBarChangesLevel.Value = (int)Math.Round(sdGenerationParameters.changesLevel * 100);
                 }
             };
 

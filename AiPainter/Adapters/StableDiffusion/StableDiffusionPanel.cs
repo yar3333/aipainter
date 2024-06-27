@@ -69,6 +69,12 @@ namespace AiPainter.Adapters.StableDiffusion
                     tbPrompt.Text = SdLoraHelper.GetPrompt(lora) + ", " + tbPrompt.Text;
                 });
             }
+
+            ddlSampler.Items.Clear();
+            ddlSampler.Items.Add("Euler a");
+            ddlSampler.Items.Add("DPM++ 2M");
+            ddlSampler.Items.Add("Heun");
+            ddlSampler.SelectedItem = "DPM++ 2M";
         }
 
         private void btGenerate_Click(object sender, EventArgs e)
@@ -104,6 +110,12 @@ namespace AiPainter.Adapters.StableDiffusion
             ddInpaintingFill.Enabled = pb.Image != null && pb.HasMask && cbUseInitImage.Checked;
 
             ddlSize.Enabled = !(pb.Image != null && cbUseInitImage.Checked);
+
+            trackBarChangesLevel.Enabled = pb.Image != null;
+
+            tbSeed.Enabled = cbUseSeed.Checked;
+            tbVariationSeed.Enabled = cbUseSeed.Checked;
+            trackBarSeedVariationStrength.Enabled = cbUseSeed.Checked;
         }
 
         private void ddCheckpoint_SelectedIndexChanged(object sender, EventArgs e)
