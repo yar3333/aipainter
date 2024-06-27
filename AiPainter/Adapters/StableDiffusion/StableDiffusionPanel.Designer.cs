@@ -30,6 +30,7 @@
         {
             components = new System.ComponentModel.Container();
             collapsablePanel = new Controls.CollapsablePanel();
+            cbUseSeed = new CheckBox();
             label5 = new Label();
             ddlSampler = new ComboBox();
             btContextMenuCheckpoint = new Button();
@@ -49,11 +50,9 @@
             numCfgScale = new NumericUpDown();
             label3 = new Label();
             trackBarChangesLevel = new TrackBar();
+            trackBarSeedVariationStrength = new TrackBar();
             toolTip = new ToolTip(components);
             contextMenuCheckpoint = new ContextMenuStrip(components);
-            tbVariationSeed = new TextBox();
-            trackBarSeedVariationStrength = new TrackBar();
-            cbUseSeed = new CheckBox();
             collapsablePanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)numIterations).BeginInit();
             ((System.ComponentModel.ISupportInitialize)numSteps).BeginInit();
@@ -68,7 +67,6 @@
             collapsablePanel.BackColor = SystemColors.Control;
             collapsablePanel.Caption = "StableDiffusion";
             collapsablePanel.Controls.Add(cbUseSeed);
-            collapsablePanel.Controls.Add(tbVariationSeed);
             collapsablePanel.Controls.Add(label5);
             collapsablePanel.Controls.Add(ddlSampler);
             collapsablePanel.Controls.Add(btContextMenuCheckpoint);
@@ -97,11 +95,23 @@
             collapsablePanel.Load += collapsablePanel_Load;
             collapsablePanel.Resize += collapsablePanel_Resize;
             // 
+            // cbUseSeed
+            // 
+            cbUseSeed.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+            cbUseSeed.AutoSize = true;
+            cbUseSeed.Location = new Point(3, 393);
+            cbUseSeed.Name = "cbUseSeed";
+            cbUseSeed.Size = new Size(51, 19);
+            cbUseSeed.TabIndex = 29;
+            cbUseSeed.Text = "Seed";
+            toolTip.SetToolTip(cbUseSeed, "Positive integer");
+            cbUseSeed.UseVisualStyleBackColor = true;
+            // 
             // label5
             // 
             label5.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
             label5.AutoSize = true;
-            label5.Location = new Point(3, 333);
+            label5.Location = new Point(3, 355);
             label5.Name = "label5";
             label5.Size = new Size(50, 15);
             label5.TabIndex = 26;
@@ -115,11 +125,11 @@
             ddlSampler.Font = new Font("Segoe UI", 10F, FontStyle.Regular, GraphicsUnit.Point);
             ddlSampler.FormattingEnabled = true;
             ddlSampler.Items.AddRange(new object[] { "512x512", "768x768", "512x768", "768x512", "640x640" });
-            ddlSampler.Location = new Point(59, 328);
+            ddlSampler.Location = new Point(59, 350);
             ddlSampler.Name = "ddlSampler";
             ddlSampler.Size = new Size(162, 25);
             ddlSampler.TabIndex = 25;
-            toolTip.SetToolTip(ddlSampler, "Sampler: Euler a (default, use 50+ detail level), DPM++ 2M Karras (use 20+ detail level), Heun (useful for postprocessing)");
+            toolTip.SetToolTip(ddlSampler, "Euler a (default, use 50+ detail level), DPM++ 2M (use 20+ detail level), Heun (useful for postprocessing)");
             // 
             // btContextMenuCheckpoint
             // 
@@ -137,7 +147,7 @@
             // 
             label4.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
             label4.AutoSize = true;
-            label4.Location = new Point(227, 333);
+            label4.Location = new Point(227, 355);
             label4.Name = "label4";
             label4.Size = new Size(64, 15);
             label4.TabIndex = 23;
@@ -151,7 +161,7 @@
             ddlSize.Font = new Font("Segoe UI", 10F, FontStyle.Regular, GraphicsUnit.Point);
             ddlSize.FormattingEnabled = true;
             ddlSize.Items.AddRange(new object[] { "512x512", "768x768", "512x768", "768x512", "640x640" });
-            ddlSize.Location = new Point(194, 289);
+            ddlSize.Location = new Point(194, 311);
             ddlSize.Name = "ddlSize";
             ddlSize.Size = new Size(151, 25);
             ddlSize.TabIndex = 22;
@@ -177,7 +187,7 @@
             ddInpaintingFill.DropDownStyle = ComboBoxStyle.DropDownList;
             ddInpaintingFill.Font = new Font("Segoe UI", 9.75F, FontStyle.Regular, GraphicsUnit.Point);
             ddInpaintingFill.FormattingEnabled = true;
-            ddInpaintingFill.Location = new Point(192, 230);
+            ddInpaintingFill.Location = new Point(192, 252);
             ddInpaintingFill.Name = "ddInpaintingFill";
             ddInpaintingFill.Size = new Size(153, 25);
             ddInpaintingFill.TabIndex = 19;
@@ -200,7 +210,7 @@
             tbNegative.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             tbNegative.BackColor = Color.FromArgb(255, 242, 242);
             tbNegative.Font = new Font("Segoe UI", 11F, FontStyle.Regular, GraphicsUnit.Point);
-            tbNegative.Location = new Point(3, 172);
+            tbNegative.Location = new Point(3, 194);
             tbNegative.Multiline = true;
             tbNegative.Name = "tbNegative";
             tbNegative.PlaceholderText = "Negative prompt (don't want to get)";
@@ -211,7 +221,7 @@
             // 
             cbUseInitImage.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
             cbUseInitImage.AutoSize = true;
-            cbUseInitImage.Location = new Point(3, 234);
+            cbUseInitImage.Location = new Point(3, 256);
             cbUseInitImage.Name = "cbUseInitImage";
             cbUseInitImage.Size = new Size(186, 19);
             cbUseInitImage.TabIndex = 12;
@@ -242,7 +252,7 @@
             tbPrompt.Name = "tbPrompt";
             tbPrompt.PlaceholderText = "Prompt (describe desired picture)";
             tbPrompt.ScrollBars = ScrollBars.Vertical;
-            tbPrompt.Size = new Size(342, 107);
+            tbPrompt.Size = new Size(342, 129);
             tbPrompt.TabIndex = 0;
             // 
             // numIterations
@@ -278,7 +288,7 @@
             numSteps.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
             numSteps.Font = new Font("Segoe UI", 11F, FontStyle.Regular, GraphicsUnit.Point);
             numSteps.Increment = new decimal(new int[] { 10, 0, 0, 0 });
-            numSteps.Location = new Point(297, 327);
+            numSteps.Location = new Point(297, 349);
             numSteps.Maximum = new decimal(new int[] { 200, 0, 0, 0 });
             numSteps.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
             numSteps.Name = "numSteps";
@@ -291,11 +301,11 @@
             // 
             tbSeed.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
             tbSeed.Font = new Font("Segoe UI", 11.25F, FontStyle.Regular, GraphicsUnit.Point);
-            tbSeed.Location = new Point(60, 365);
+            tbSeed.Location = new Point(60, 387);
             tbSeed.Name = "tbSeed";
-            tbSeed.Size = new Size(139, 27);
+            tbSeed.Size = new Size(105, 27);
             tbSeed.TabIndex = 7;
-            toolTip.SetToolTip(tbSeed, "Base seed (positive integer)");
+            toolTip.SetToolTip(tbSeed, "Positive integer");
             // 
             // numCfgScale
             // 
@@ -303,7 +313,7 @@
             numCfgScale.DecimalPlaces = 1;
             numCfgScale.Font = new Font("Segoe UI", 11F, FontStyle.Regular, GraphicsUnit.Point);
             numCfgScale.Increment = new decimal(new int[] { 5, 0, 0, 65536 });
-            numCfgScale.Location = new Point(126, 288);
+            numCfgScale.Location = new Point(126, 310);
             numCfgScale.Maximum = new decimal(new int[] { 50, 0, 0, 0 });
             numCfgScale.Minimum = new decimal(new int[] { 1, 0, 0, 65536 });
             numCfgScale.Name = "numCfgScale";
@@ -316,7 +326,7 @@
             // 
             label3.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
             label3.AutoSize = true;
-            label3.Location = new Point(3, 294);
+            label3.Location = new Point(3, 316);
             label3.Name = "label3";
             label3.Size = new Size(117, 15);
             label3.TabIndex = 4;
@@ -326,7 +336,7 @@
             // trackBarChangesLevel
             // 
             trackBarChangesLevel.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
-            trackBarChangesLevel.Location = new Point(0, 257);
+            trackBarChangesLevel.Location = new Point(0, 279);
             trackBarChangesLevel.Maximum = 100;
             trackBarChangesLevel.Name = "trackBarChangesLevel";
             trackBarChangesLevel.Size = new Size(348, 45);
@@ -334,41 +344,21 @@
             trackBarChangesLevel.TickStyle = TickStyle.None;
             toolTip.SetToolTip(trackBarChangesLevel, "Changes level");
             // 
+            // trackBarSeedVariationStrength
+            // 
+            trackBarSeedVariationStrength.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+            trackBarSeedVariationStrength.Location = new Point(171, 390);
+            trackBarSeedVariationStrength.Maximum = 100;
+            trackBarSeedVariationStrength.Name = "trackBarSeedVariationStrength";
+            trackBarSeedVariationStrength.Size = new Size(174, 45);
+            trackBarSeedVariationStrength.TabIndex = 27;
+            trackBarSeedVariationStrength.TickStyle = TickStyle.None;
+            toolTip.SetToolTip(trackBarSeedVariationStrength, "Seed variation strength");
+            // 
             // contextMenuCheckpoint
             // 
             contextMenuCheckpoint.Name = "contextMenuCheckpoint";
             contextMenuCheckpoint.Size = new Size(61, 4);
-            // 
-            // tbVariationSeed
-            // 
-            tbVariationSeed.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
-            tbVariationSeed.Font = new Font("Segoe UI", 11.25F, FontStyle.Regular, GraphicsUnit.Point);
-            tbVariationSeed.Location = new Point(205, 365);
-            tbVariationSeed.Name = "tbVariationSeed";
-            tbVariationSeed.Size = new Size(140, 27);
-            tbVariationSeed.TabIndex = 28;
-            toolTip.SetToolTip(tbVariationSeed, "Variation seed (positive integer)");
-            // 
-            // trackBarSeedVariationStrength
-            // 
-            trackBarSeedVariationStrength.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
-            trackBarSeedVariationStrength.Location = new Point(0, 394);
-            trackBarSeedVariationStrength.Maximum = 100;
-            trackBarSeedVariationStrength.Name = "trackBarSeedVariationStrength";
-            trackBarSeedVariationStrength.Size = new Size(348, 45);
-            trackBarSeedVariationStrength.TabIndex = 27;
-            trackBarSeedVariationStrength.TickStyle = TickStyle.None;
-            // 
-            // cbUseSeed
-            // 
-            cbUseSeed.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
-            cbUseSeed.AutoSize = true;
-            cbUseSeed.Location = new Point(3, 371);
-            cbUseSeed.Name = "cbUseSeed";
-            cbUseSeed.Size = new Size(51, 19);
-            cbUseSeed.TabIndex = 29;
-            cbUseSeed.Text = "Seed";
-            cbUseSeed.UseVisualStyleBackColor = true;
             // 
             // StableDiffusionPanel
             // 
@@ -411,7 +401,6 @@
         public ComboBox ddlSampler;
         private Label label5;
         public TrackBar trackBarChangesLevel;
-        public TextBox tbVariationSeed;
         public TrackBar trackBarSeedVariationStrength;
         public CheckBox cbUseSeed;
     }

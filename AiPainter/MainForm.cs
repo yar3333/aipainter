@@ -181,13 +181,15 @@ namespace AiPainter
                 {
                     var sdGenerationParameters = JsonSerializer.Deserialize<SdGenerationParameters>(File.ReadAllText(parametersJsonFilePath));
 
+                    panStableDiffusion.ddCheckpoint.DataSource = SdCheckpointsHelper.GetListItems(sdGenerationParameters.checkpoint);
+                    panStableDiffusion.ddCheckpoint.SelectedValue = sdGenerationParameters.checkpoint;
+                    
                     panStableDiffusion.numSteps.Value = sdGenerationParameters.steps;
                     panStableDiffusion.tbPrompt.Text = sdGenerationParameters.prompt;
                     panStableDiffusion.tbNegative.Text = sdGenerationParameters.negative;
                     panStableDiffusion.numCfgScale.Value = sdGenerationParameters.cfgScale;
                     
                     panStableDiffusion.tbSeed.Text = sdGenerationParameters.seed.ToString();
-                    panStableDiffusion.tbVariationSeed.Text = sdGenerationParameters.variationSeed.ToString();
                     panStableDiffusion.trackBarSeedVariationStrength.Value = (int)Math.Round(sdGenerationParameters.seedVariationStrength * 100m);
                     
                     panStableDiffusion.Modifiers = sdGenerationParameters.modifiers;

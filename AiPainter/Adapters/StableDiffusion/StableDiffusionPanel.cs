@@ -36,26 +36,12 @@ namespace AiPainter.Adapters.StableDiffusion
         {
             modifiersForm = new SdModifiersForm();
 
-            var checkpoints = SdCheckpointsHelper.GetNames();
-            if (!checkpoints.Contains(Program.Config.StableDiffusionCheckpoint))
-            {
-                checkpoints = new[] { Program.Config.StableDiffusionCheckpoint }.Concat(checkpoints).ToArray();
-            }
-            var checkpointItems = checkpoints.Select(x => new ListItem
-            {
-                Value = x,
-                Text = SdCheckpointsHelper.GetHumanName(x)
-            }).ToArray();
+            ddCheckpoint.DataSource = SdCheckpointsHelper.GetListItems(Program.Config.StableDiffusionCheckpoint);
             ddCheckpoint.ValueMember = "Value";
             ddCheckpoint.DisplayMember = "Text";
-            ddCheckpoint.Items.Clear();
-            // ReSharper disable once CoVariantArrayConversion
-            ddCheckpoint.Items.AddRange(checkpointItems);
-            ddCheckpoint.SelectedItem = checkpointItems.Single(x => x.Value == Program.Config.StableDiffusionCheckpoint);
+            ddCheckpoint.SelectedValue = Program.Config.StableDiffusionCheckpoint;
 
-            ddInpaintingFill.Items.Clear();
-            // ReSharper disable once CoVariantArrayConversion
-            ddInpaintingFill.Items.AddRange(Enum.GetNames<SdInpaintingFill>());
+            ddInpaintingFill.DataSource = Enum.GetNames<SdInpaintingFill>();
             ddInpaintingFill.SelectedIndex = 1;
 
             if (ddlSize.SelectedIndex == -1) ddlSize.SelectedIndex = 0;
@@ -70,10 +56,12 @@ namespace AiPainter.Adapters.StableDiffusion
                 });
             }
 
-            ddlSampler.Items.Clear();
-            ddlSampler.Items.Add("Euler a");
-            ddlSampler.Items.Add("DPM++ 2M");
-            ddlSampler.Items.Add("Heun");
+            ddlSampler.DataSource = new []
+            {
+                "Euler a",
+                "DPM++ 2M",
+                "Heun",
+            };
             ddlSampler.SelectedItem = "DPM++ 2M";
         }
 
@@ -114,8 +102,9 @@ namespace AiPainter.Adapters.StableDiffusion
             trackBarChangesLevel.Enabled = pb.Image != null;
 
             tbSeed.Enabled = cbUseSeed.Checked;
-            tbVariationSeed.Enabled = cbUseSeed.Checked;
             trackBarSeedVariationStrength.Enabled = cbUseSeed.Checked;
+            
+            trackBarChangesLevel.Enabled = cbUseInitImage.Checked;
         }
 
         private void ddCheckpoint_SelectedIndexChanged(object sender, EventArgs e)

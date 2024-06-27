@@ -27,30 +27,23 @@ static class StableDiffusionProcess
             return;
         }
 
-        var checkpoints = SdCheckpointsHelper.GetNames();
         var pathToCheckpoint = SdCheckpointsHelper.GetPath(checkpoint);
         if (!File.Exists(pathToCheckpoint))
         {
-            if (!checkpoints.Any())
+            log.WriteLine($"Can't find {pathToCheckpoint}.");
+            log.WriteLine("Please, download StableDiffusion model `sd-v1-4.ckpt` from HuggingFace site and save to that path.");
+            log.WriteLine("https://huggingface.co/CompVis/stable-diffusion-v-1-4-original");
+
+            if (MessageBox.Show
+                (
+                    $"Please, download StableDiffusion model `sd-v1-4.ckpt` from HuggingFace site and save to {pathToCheckpoint}. Open browser for HuggingFace site?",
+                    "Error",
+                    MessageBoxButtons.YesNo
+                ) == DialogResult.Yes)
             {
-                log.WriteLine($"Can't find {pathToCheckpoint}.");
-                log.WriteLine("Please, download StableDiffusion model `sd-v1-4.ckpt` from HuggingFace site and save to that path.");
-                log.WriteLine("https://huggingface.co/CompVis/stable-diffusion-v-1-4-original");
-
-                if (MessageBox.Show
-                    (
-                        $"Please, download StableDiffusion model `sd-v1-4.ckpt` from HuggingFace site and save to {pathToCheckpoint}. Open browser for HuggingFace site?",
-                        "Error",
-                        MessageBoxButtons.YesNo
-                    ) == DialogResult.Yes)
-                {
-                    ProcessHelper.OpenUrlInBrowser("https://huggingface.co/CompVis/stable-diffusion-v-1-4-original");
-                }
-                return;
+                ProcessHelper.OpenUrlInBrowser("https://huggingface.co/CompVis/stable-diffusion-v-1-4-original");
             }
-
-            checkpoint = checkpoints.First();
-            pathToCheckpoint = SdCheckpointsHelper.GetPath(checkpoint);
+            return;
         }
 
         var pyvenvCfgFilePath = Path.Join(Application.StartupPath, @"external\StableDiffusion\venv\pyvenv.cfg");

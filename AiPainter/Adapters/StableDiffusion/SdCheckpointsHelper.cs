@@ -6,15 +6,24 @@ static class SdCheckpointsHelper
 {
     private static string BasePath => Path.Join(Application.StartupPath, "stable_diffusion_checkpoints");
 
-    public static string[] GetNames()
+    static List<string> GetNames(string nameToEnsureExists)
     {
         var basePath = BasePath;
         
-        return Directory.GetFiles(basePath, "*.ckpt", SearchOption.AllDirectories)
-       .Concat(Directory.GetFiles(basePath, "*.safetensors", SearchOption.AllDirectories))
-                        .Select(x => x.Substring(basePath.Length).TrimStart('\\'))
-                        .OrderBy(GetHumanName)
-                        .ToArray();
+        var r = Directory.GetFiles(basePath, "*.ckpt", SearchOption.AllDirectories)
+        .Concat(Directory.GetFiles(basePath, "*.safetensors", SearchOption.AllDirectories))
+                         .Select(x => x.Substring(basePath.Length).TrimStart('\\'))
+                         .OrderBy(GetHumanName)
+                         .ToList();
+
+        if (!r.Contains(nameToEnsureExists)) r.Insert(0, nameToEnsureExists);
+
+        return r;
+    }
+
+    public static ListItem[] GetListItems(string nameToEnsureExists)
+    {
+        return GetNames(nameToEnsureExists).Select(x => new ListItem { Value = x, Text = GetHumanName(x) }).ToArray();
     }
 
     public static string GetPath(string name)
@@ -22,7 +31,7 @@ static class SdCheckpointsHelper
         return Path.Combine(BasePath, name);
     }
 
-    public static string GetHumanName(string name)
+    static string GetHumanName(string name)
     {
         // ReSharper disable once StringIndexOfIsCultureSpecific.1
         var n = name.IndexOf(".");

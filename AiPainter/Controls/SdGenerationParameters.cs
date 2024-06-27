@@ -10,7 +10,6 @@ class SdGenerationParameters
     public decimal cfgScale { get; set; }
     
     public long seed { get; set; }
-    public long variationSeed { get; set; }
     public decimal seedVariationStrength { get; set; }
     
     public string[] modifiers { get; set; } = null!;

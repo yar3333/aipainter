@@ -3,6 +3,7 @@ using System.Text.Json;
 using AiPainter.Helpers;
 using System.Text.RegularExpressions;
 using AiPainter.Controls;
+using System.Windows.Forms;
 
 namespace AiPainter.Adapters.StableDiffusion;
 
@@ -44,7 +45,6 @@ class ImageGeneratorSd : IImageGenerator
             cfgScale = sdPanel.numCfgScale.Value,
             
             seed = sdPanel.cbUseSeed.Checked && sdPanel.tbSeed.Text.Trim() != "" ? long.Parse(sdPanel.tbSeed.Text.Trim()) : -1,
-            variationSeed = sdPanel.cbUseSeed.Checked && sdPanel.tbVariationSeed.Text.Trim() != "" ? long.Parse(sdPanel.tbVariationSeed.Text.Trim()) : -1,
             seedVariationStrength = sdPanel.trackBarSeedVariationStrength.Value / 100m,
 
             modifiers = sdPanel.Modifiers,
@@ -84,13 +84,15 @@ class ImageGeneratorSd : IImageGenerator
 
     public void LoadParamsBackToPanel()
     {
+        sdPanel.ddCheckpoint.SelectedValue = sdGenerationParameters.checkpoint;
+        
         sdPanel.numSteps.Value = sdGenerationParameters.steps;
         sdPanel.tbPrompt.Text = sdGenerationParameters.prompt;
         sdPanel.tbNegative.Text = sdGenerationParameters.negative;
         sdPanel.numCfgScale.Value = sdGenerationParameters.cfgScale;
-        
+
+        sdPanel.cbUseSeed.Checked = sdGenerationParameters.seed > 0;
         sdPanel.tbSeed.Text = sdGenerationParameters.seed.ToString();
-        sdPanel.tbVariationSeed.Text = sdGenerationParameters.variationSeed.ToString();
         sdPanel.trackBarSeedVariationStrength.Value = (int)Math.Round(sdGenerationParameters.seedVariationStrength * 100);
         
         sdPanel.ddlSampler.SelectedItem = sdGenerationParameters.sampler;
@@ -246,7 +248,6 @@ class ImageGeneratorSd : IImageGenerator
                 steps = sdGenerationParameters.steps,
 
                 seed = sdGenerationParameters.seed,
-                subseed = sdGenerationParameters.variationSeed,
                 subseed_strength = sdGenerationParameters.seedVariationStrength,
 
                 width = sdGenerationParameters.width,
@@ -272,7 +273,6 @@ class ImageGeneratorSd : IImageGenerator
                 cfg_scale = sdGenerationParameters.cfgScale,
                 
                 seed = sdGenerationParameters.seed,
-                subseed = sdGenerationParameters.variationSeed,
                 subseed_strength = sdGenerationParameters.seedVariationStrength,
                 
                 steps = sdGenerationParameters.steps,
