@@ -35,7 +35,7 @@
             ddlSampler = new ComboBox();
             btContextMenuCheckpoint = new Button();
             label4 = new Label();
-            ddlSize = new ComboBox();
+            ddlImageSize = new ComboBox();
             lbModifiers = new ListBox();
             ddInpaintingFill = new ComboBox();
             ddCheckpoint = new ComboBox();
@@ -71,7 +71,7 @@
             collapsablePanel.Controls.Add(ddlSampler);
             collapsablePanel.Controls.Add(btContextMenuCheckpoint);
             collapsablePanel.Controls.Add(label4);
-            collapsablePanel.Controls.Add(ddlSize);
+            collapsablePanel.Controls.Add(ddlImageSize);
             collapsablePanel.Controls.Add(lbModifiers);
             collapsablePanel.Controls.Add(ddInpaintingFill);
             collapsablePanel.Controls.Add(ddCheckpoint);
@@ -154,18 +154,17 @@
             label4.Text = "Detail level";
             label4.TextAlign = ContentAlignment.MiddleRight;
             // 
-            // ddlSize
+            // ddlImageSize
             // 
-            ddlSize.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
-            ddlSize.DropDownStyle = ComboBoxStyle.DropDownList;
-            ddlSize.Font = new Font("Segoe UI", 10F, FontStyle.Regular, GraphicsUnit.Point);
-            ddlSize.FormattingEnabled = true;
-            ddlSize.Items.AddRange(new object[] { "512x512", "768x768", "512x768", "768x512", "640x640" });
-            ddlSize.Location = new Point(194, 311);
-            ddlSize.Name = "ddlSize";
-            ddlSize.Size = new Size(151, 25);
-            ddlSize.TabIndex = 22;
-            toolTip.SetToolTip(ddlSize, "Generated image size.");
+            ddlImageSize.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+            ddlImageSize.DropDownStyle = ComboBoxStyle.DropDownList;
+            ddlImageSize.Font = new Font("Segoe UI", 10F, FontStyle.Regular, GraphicsUnit.Point);
+            ddlImageSize.FormattingEnabled = true;
+            ddlImageSize.Location = new Point(194, 311);
+            ddlImageSize.Name = "ddlImageSize";
+            ddlImageSize.Size = new Size(151, 25);
+            ddlImageSize.TabIndex = 22;
+            toolTip.SetToolTip(ddlImageSize, "Generated image size.");
             // 
             // lbModifiers
             // 
@@ -295,7 +294,7 @@
             numSteps.Size = new Size(48, 27);
             numSteps.TabIndex = 1;
             toolTip.SetToolTip(numSteps, "1..200 (original name: steps)");
-            numSteps.Value = new decimal(new int[] { 20, 0, 0, 0 });
+            numSteps.Value = new decimal(new int[] { 35, 0, 0, 0 });
             // 
             // tbSeed
             // 
@@ -320,7 +319,7 @@
             numCfgScale.Size = new Size(62, 27);
             numCfgScale.TabIndex = 3;
             toolTip.SetToolTip(numCfgScale, "How hard to follow the text prompt (original name: cfg scale)");
-            numCfgScale.Value = new decimal(new int[] { 75, 0, 0, 65536 });
+            numCfgScale.Value = new decimal(new int[] { 7, 0, 0, 0 });
             // 
             // label3
             // 
@@ -394,7 +393,7 @@
         public ComboBox ddCheckpoint;
         public ComboBox ddInpaintingFill;
         private ListBox lbModifiers;
-        public ComboBox ddlSize;
+        public ComboBox ddlImageSize;
         private Label label4;
         private Button btContextMenuCheckpoint;
         private ContextMenuStrip contextMenuCheckpoint;

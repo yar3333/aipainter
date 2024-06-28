@@ -193,7 +193,7 @@ namespace AiPainter
                     panStableDiffusion.trackBarSeedVariationStrength.Value = (int)Math.Round(sdGenerationParameters.seedVariationStrength * 100m);
                     
                     panStableDiffusion.Modifiers = sdGenerationParameters.modifiers;
-                    panStableDiffusion.ddlSize.SelectedItem = sdGenerationParameters.width + "x" + sdGenerationParameters.height;
+                    panStableDiffusion.SelectImageSize(sdGenerationParameters.width, sdGenerationParameters.height);
                     panStableDiffusion.ddlSampler.SelectedItem = sdGenerationParameters.sampler;
                     panStableDiffusion.trackBarChangesLevel.Value = (int)Math.Round(sdGenerationParameters.changesLevel * 100);
                 }

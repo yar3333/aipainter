@@ -44,8 +44,6 @@ namespace AiPainter.Adapters.StableDiffusion
             ddInpaintingFill.DataSource = Enum.GetNames<SdInpaintingFill>();
             ddInpaintingFill.SelectedIndex = 1;
 
-            if (ddlSize.SelectedIndex == -1) ddlSize.SelectedIndex = 0;
-
             tbNegative.Text = Program.Config.NegativePrompt;
 
             foreach (var lora in SdLoraHelper.GetNames())
@@ -63,6 +61,9 @@ namespace AiPainter.Adapters.StableDiffusion
                 "Heun",
             };
             ddlSampler.SelectedItem = "DPM++ 2M";
+
+            ddlImageSize.DataSource = Program.Config.ImageSizes;
+            ddlImageSize.SelectedIndex = 0;
         }
 
         private void btGenerate_Click(object sender, EventArgs e)
@@ -97,7 +98,7 @@ namespace AiPainter.Adapters.StableDiffusion
 
             ddInpaintingFill.Enabled = pb.Image != null && pb.HasMask && cbUseInitImage.Checked;
 
-            ddlSize.Enabled = !(pb.Image != null && cbUseInitImage.Checked);
+            ddlImageSize.Enabled = !(pb.Image != null && cbUseInitImage.Checked);
 
             trackBarChangesLevel.Enabled = pb.Image != null;
 
@@ -105,6 +106,17 @@ namespace AiPainter.Adapters.StableDiffusion
             trackBarSeedVariationStrength.Enabled = cbUseSeed.Checked;
             
             trackBarChangesLevel.Enabled = cbUseInitImage.Checked;
+        }
+
+        public void SelectImageSize(int w, int h)
+        {
+            var imageSizeStr = w + "x" + h;
+            if (!Program.Config.ImageSizes.Contains(imageSizeStr))
+            {
+                Program.Config.ImageSizes = Program.Config.ImageSizes.Concat(new[] { imageSizeStr }).ToArray();
+                ddlImageSize.DataSource = Program.Config.ImageSizes;
+            }
+            ddlImageSize.SelectedItem = imageSizeStr;
         }
 
         private void ddCheckpoint_SelectedIndexChanged(object sender, EventArgs e)

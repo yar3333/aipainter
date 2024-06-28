@@ -48,8 +48,8 @@ class ImageGeneratorSd : IImageGenerator
             seedVariationStrength = sdPanel.trackBarSeedVariationStrength.Value / 100m,
 
             modifiers = sdPanel.Modifiers,
-            width = int.Parse(sdPanel.ddlSize.SelectedItem.ToString()!.Split("x")[0]),
-            height = int.Parse(sdPanel.ddlSize.SelectedItem.ToString()!.Split("x")[1]),
+            width = int.Parse(sdPanel.ddlImageSize.SelectedItem.ToString()!.Split("x")[0]),
+            height = int.Parse(sdPanel.ddlImageSize.SelectedItem.ToString()!.Split("x")[1]),
             sampler = sdPanel.ddlSampler.SelectedItem.ToString()!,
             changesLevel = sdPanel.trackBarChangesLevel.Value / 100.0m,
         };
@@ -115,7 +115,7 @@ class ImageGeneratorSd : IImageGenerator
 
         sdPanel.Modifiers = sdGenerationParameters.modifiers;
 
-        sdPanel.ddlSize.SelectedItem = sdGenerationParameters.width + "x" + sdGenerationParameters.height;
+        sdPanel.SelectImageSize(sdGenerationParameters.width, sdGenerationParameters.height);
 
         mainForm.FilePath = savedFilePath;
     }
