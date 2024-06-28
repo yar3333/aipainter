@@ -28,123 +28,120 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.lvModifiers = new System.Windows.Forms.ListView();
-            this.lvSelected = new System.Windows.Forms.ListView();
-            this.lbCategory = new System.Windows.Forms.ListBox();
-            this.label1 = new System.Windows.Forms.Label();
-            this.label2 = new System.Windows.Forms.Label();
-            this.label3 = new System.Windows.Forms.Label();
-            this.btOk = new System.Windows.Forms.Button();
-            this.btCancel = new System.Windows.Forms.Button();
-            this.SuspendLayout();
+            lvModifiers = new ListView();
+            lvSelected = new ListView();
+            lbCategory = new ListBox();
+            label1 = new Label();
+            label2 = new Label();
+            label3 = new Label();
+            btOk = new Button();
+            btCancel = new Button();
+            SuspendLayout();
             // 
             // lvModifiers
             // 
-            this.lvModifiers.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.lvModifiers.Location = new System.Drawing.Point(158, 27);
-            this.lvModifiers.MultiSelect = false;
-            this.lvModifiers.Name = "lvModifiers";
-            this.lvModifiers.Size = new System.Drawing.Size(548, 527);
-            this.lvModifiers.TabIndex = 0;
-            this.lvModifiers.UseCompatibleStateImageBehavior = false;
-            this.lvModifiers.DoubleClick += new System.EventHandler(this.lvModifiers_DoubleClick);
+            lvModifiers.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            lvModifiers.Location = new Point(158, 27);
+            lvModifiers.MultiSelect = false;
+            lvModifiers.Name = "lvModifiers";
+            lvModifiers.Size = new Size(548, 527);
+            lvModifiers.TabIndex = 0;
+            lvModifiers.UseCompatibleStateImageBehavior = false;
+            lvModifiers.DoubleClick += lvModifiers_DoubleClick;
             // 
             // lvSelected
             // 
-            this.lvSelected.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.lvSelected.Location = new System.Drawing.Point(712, 27);
-            this.lvSelected.MultiSelect = false;
-            this.lvSelected.Name = "lvSelected";
-            this.lvSelected.Size = new System.Drawing.Size(350, 527);
-            this.lvSelected.TabIndex = 0;
-            this.lvSelected.UseCompatibleStateImageBehavior = false;
-            this.lvSelected.DoubleClick += new System.EventHandler(this.lvSelected_DoubleClick);
+            lvSelected.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Right;
+            lvSelected.Location = new Point(712, 27);
+            lvSelected.MultiSelect = false;
+            lvSelected.Name = "lvSelected";
+            lvSelected.Size = new Size(350, 527);
+            lvSelected.TabIndex = 0;
+            lvSelected.UseCompatibleStateImageBehavior = false;
+            lvSelected.DoubleClick += lvSelected_DoubleClick;
             // 
             // lbCategory
             // 
-            this.lbCategory.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left)));
-            this.lbCategory.FormattingEnabled = true;
-            this.lbCategory.ItemHeight = 15;
-            this.lbCategory.Location = new System.Drawing.Point(12, 27);
-            this.lbCategory.Name = "lbCategory";
-            this.lbCategory.Size = new System.Drawing.Size(140, 529);
-            this.lbCategory.TabIndex = 1;
-            this.lbCategory.SelectedIndexChanged += new System.EventHandler(this.lbCategory_SelectedIndexChanged);
+            lbCategory.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left;
+            lbCategory.FormattingEnabled = true;
+            lbCategory.ItemHeight = 15;
+            lbCategory.Location = new Point(12, 27);
+            lbCategory.Name = "lbCategory";
+            lbCategory.Size = new Size(140, 529);
+            lbCategory.TabIndex = 1;
+            lbCategory.SelectedIndexChanged += lbCategory_SelectedIndexChanged;
             // 
             // label1
             // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(12, 9);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(55, 15);
-            this.label1.TabIndex = 2;
-            this.label1.Text = "Category";
+            label1.AutoSize = true;
+            label1.Location = new Point(12, 9);
+            label1.Name = "label1";
+            label1.Size = new Size(55, 15);
+            label1.TabIndex = 2;
+            label1.Text = "Category";
             // 
             // label2
             // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(158, 9);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(57, 15);
-            this.label2.TabIndex = 2;
-            this.label2.Text = "Modifiers";
+            label2.AutoSize = true;
+            label2.Location = new Point(158, 9);
+            label2.Name = "label2";
+            label2.Size = new Size(57, 15);
+            label2.TabIndex = 2;
+            label2.Text = "Modifiers";
             // 
             // label3
             // 
-            this.label3.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(712, 9);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(51, 15);
-            this.label3.TabIndex = 2;
-            this.label3.Text = "Selected";
+            label3.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            label3.AutoSize = true;
+            label3.Location = new Point(712, 9);
+            label3.Name = "label3";
+            label3.Size = new Size(51, 15);
+            label3.TabIndex = 2;
+            label3.Text = "Selected";
             // 
             // btOk
             // 
-            this.btOk.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-            this.btOk.DialogResult = System.Windows.Forms.DialogResult.OK;
-            this.btOk.Location = new System.Drawing.Point(346, 563);
-            this.btOk.Name = "btOk";
-            this.btOk.Size = new System.Drawing.Size(172, 40);
-            this.btOk.TabIndex = 3;
-            this.btOk.Text = "OK";
-            this.btOk.UseVisualStyleBackColor = true;
+            btOk.Anchor = AnchorStyles.Bottom;
+            btOk.DialogResult = DialogResult.OK;
+            btOk.Font = new Font("Segoe UI", 9.75F, FontStyle.Regular, GraphicsUnit.Point);
+            btOk.Location = new Point(346, 563);
+            btOk.Name = "btOk";
+            btOk.Size = new Size(172, 40);
+            btOk.TabIndex = 3;
+            btOk.Text = "OK";
+            btOk.UseVisualStyleBackColor = true;
             // 
             // btCancel
             // 
-            this.btCancel.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-            this.btCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.btCancel.Location = new System.Drawing.Point(562, 563);
-            this.btCancel.Name = "btCancel";
-            this.btCancel.Size = new System.Drawing.Size(172, 40);
-            this.btCancel.TabIndex = 3;
-            this.btCancel.Text = "Cancel";
-            this.btCancel.UseVisualStyleBackColor = true;
+            btCancel.Anchor = AnchorStyles.Bottom;
+            btCancel.DialogResult = DialogResult.Cancel;
+            btCancel.Font = new Font("Segoe UI", 9.75F, FontStyle.Regular, GraphicsUnit.Point);
+            btCancel.Location = new Point(562, 563);
+            btCancel.Name = "btCancel";
+            btCancel.Size = new Size(172, 40);
+            btCancel.TabIndex = 3;
+            btCancel.Text = "Cancel";
+            btCancel.UseVisualStyleBackColor = true;
             // 
             // SdModifiersForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1074, 613);
-            this.Controls.Add(this.btCancel);
-            this.Controls.Add(this.btOk);
-            this.Controls.Add(this.label3);
-            this.Controls.Add(this.label2);
-            this.Controls.Add(this.label1);
-            this.Controls.Add(this.lbCategory);
-            this.Controls.Add(this.lvSelected);
-            this.Controls.Add(this.lvModifiers);
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.SizableToolWindow;
-            this.Name = "SdModifiersForm";
-            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
-            this.Text = "StableDiffusion modifiers";
-            this.ResumeLayout(false);
-            this.PerformLayout();
-
+            AutoScaleDimensions = new SizeF(7F, 15F);
+            AutoScaleMode = AutoScaleMode.Font;
+            ClientSize = new Size(1074, 613);
+            Controls.Add(btCancel);
+            Controls.Add(btOk);
+            Controls.Add(label3);
+            Controls.Add(label2);
+            Controls.Add(label1);
+            Controls.Add(lbCategory);
+            Controls.Add(lvSelected);
+            Controls.Add(lvModifiers);
+            FormBorderStyle = FormBorderStyle.SizableToolWindow;
+            Name = "SdModifiersForm";
+            StartPosition = FormStartPosition.CenterParent;
+            Text = "StableDiffusion modifiers";
+            ResumeLayout(false);
+            PerformLayout();
         }
 
         #endregion

@@ -42,9 +42,6 @@ namespace AiPainter
             toolStripSeparator2 = new ToolStripSeparator();
             btResizeAndMoveActiveBoxToFitImage = new ToolStripButton();
             sbResize = new ToolStripSplitButton();
-            resizeTo2048ToolStripMenuItem = new ToolStripMenuItem();
-            resizeTo1024ToolStripMenuItem = new ToolStripMenuItem();
-            resizeTo512ToolStripMenuItem = new ToolStripMenuItem();
             toolStripSeparator3 = new ToolStripSeparator();
             btResetMask = new ToolStripButton();
             btDeAlpha = new ToolStripButton();
@@ -169,33 +166,11 @@ namespace AiPainter
             // sbResize
             // 
             sbResize.DisplayStyle = ToolStripItemDisplayStyle.Image;
-            sbResize.DropDownItems.AddRange(new ToolStripItem[] { resizeTo2048ToolStripMenuItem, resizeTo1024ToolStripMenuItem, resizeTo512ToolStripMenuItem });
             sbResize.Image = (Image)resources.GetObject("sbResize.Image");
             sbResize.ImageTransparentColor = Color.Magenta;
             sbResize.Name = "sbResize";
             sbResize.Size = new Size(50, 37);
             sbResize.Text = "Resize image";
-            // 
-            // resizeTo2048ToolStripMenuItem
-            // 
-            resizeTo2048ToolStripMenuItem.Name = "resizeTo2048ToolStripMenuItem";
-            resizeTo2048ToolStripMenuItem.Size = new Size(147, 22);
-            resizeTo2048ToolStripMenuItem.Text = "Resize to 2048";
-            resizeTo2048ToolStripMenuItem.Click += resizeTo2048ToolStripMenuItem_Click;
-            // 
-            // resizeTo1024ToolStripMenuItem
-            // 
-            resizeTo1024ToolStripMenuItem.Name = "resizeTo1024ToolStripMenuItem";
-            resizeTo1024ToolStripMenuItem.Size = new Size(147, 22);
-            resizeTo1024ToolStripMenuItem.Text = "Resize to 1024";
-            resizeTo1024ToolStripMenuItem.Click += resizeTo1024ToolStripMenuItem_Click;
-            // 
-            // resizeTo512ToolStripMenuItem
-            // 
-            resizeTo512ToolStripMenuItem.Name = "resizeTo512ToolStripMenuItem";
-            resizeTo512ToolStripMenuItem.Size = new Size(147, 22);
-            resizeTo512ToolStripMenuItem.Text = "Resize to 512";
-            resizeTo512ToolStripMenuItem.Click += resizeTo512ToolStripMenuItem_Click;
             // 
             // toolStripSeparator3
             // 
@@ -485,9 +460,6 @@ namespace AiPainter
         private System.ComponentModel.BackgroundWorker updateImageListWorker;
         private GenerationList panGenerationList;
         private ToolStripSplitButton sbResize;
-        private ToolStripMenuItem resizeTo2048ToolStripMenuItem;
-        private ToolStripMenuItem resizeTo1024ToolStripMenuItem;
-        private ToolStripMenuItem resizeTo512ToolStripMenuItem;
         private ToolStripSeparator toolStripSeparator4;
         private ToolStripButton btRemoveObjectFromImage;
         private ToolStripButton btRemoveBackgroundFromImage;

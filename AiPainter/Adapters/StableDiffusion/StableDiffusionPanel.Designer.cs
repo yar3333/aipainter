@@ -164,7 +164,7 @@
             ddlImageSize.Name = "ddlImageSize";
             ddlImageSize.Size = new Size(151, 25);
             ddlImageSize.TabIndex = 22;
-            toolTip.SetToolTip(ddlImageSize, "Generated image size.");
+            toolTip.SetToolTip(ddlImageSize, "Generated image size. Can be changed in \"Config.json\" file");
             // 
             // lbModifiers
             // 
@@ -213,6 +213,7 @@
             tbNegative.Multiline = true;
             tbNegative.Name = "tbNegative";
             tbNegative.PlaceholderText = "Negative prompt (don't want to get)";
+            tbNegative.ScrollBars = ScrollBars.Vertical;
             tbNegative.Size = new Size(342, 48);
             tbNegative.TabIndex = 17;
             // 

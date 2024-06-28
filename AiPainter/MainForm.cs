@@ -70,6 +70,15 @@ namespace AiPainter
                     pictureBox.Image = BitmapTools.Load(FilePath);
                 }
             }
+
+            sbResize.DropDownItems.Clear();
+            foreach (var size in Program.Config.ImageSizes.Select(x => x.Split("x").First()).Distinct().Select(x => int.Parse(x)).OrderBy(x => x))
+            {
+                sbResize.DropDownItems.Add("Resize image to " + size, null, (_, _) =>
+                {
+                    resizeImage(size);
+                });
+            }
         }
 
         private void updateImageListWorker_DoWork(object sender, System.ComponentModel.DoWorkEventArgs e)
@@ -478,21 +487,6 @@ namespace AiPainter
         private void splitContainer_Panel2_Resize(object sender, EventArgs e)
         {
             updateImages(null);
-        }
-
-        private void resizeTo2048ToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            resizeImage(2048);
-        }
-
-        private void resizeTo1024ToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            resizeImage(1024);
-        }
-
-        private void resizeTo512ToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            resizeImage(512);
         }
 
         private void resizeImage(int size)
