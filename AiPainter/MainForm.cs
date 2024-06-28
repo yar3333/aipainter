@@ -34,8 +34,8 @@ namespace AiPainter
 
         private static StoredImageList storedImageList = new(Program.Config.OutputFolder);
 
-        private LamaCleanerManager lamaCleaner = new();
-        private RemBgManager remBg = new();
+        private readonly LamaCleanerManager lamaCleaner = new();
+        private readonly RemBgManager remBg = new();
 
         private SmartImagePreview activeImagePreview = null;
 
@@ -152,7 +152,7 @@ namespace AiPainter
                     pb.Size = new Size(sz, sz);
                     pb.FilePath = storedImageList.GetAt(i).FilePath;
                     pb.Visible = true;
-                    toolTip.SetToolTip(pb.PictureBox, Path.GetFileName(pb.FilePath) + " (" + Path.GetDirectoryName(pb.FilePath) + ")\n\nClick to load image. Double click to load also original parameters from *.json file.");
+                    toolTip.SetToolTip(pb.PictureBox, Path.GetFileName(pb.FilePath) + "\n\nClick to load image. Double click to load also original parameters from *.json file.");
 
                     x += sz + 5;
                     i++;
@@ -431,7 +431,7 @@ namespace AiPainter
             Text = (string.IsNullOrEmpty(FilePath) ? "AiPainter" : Path.GetFileName(FilePath))
                  + (pictureBox.Image == null ? "" : " (" + pictureBox.Image.Width + " x " + pictureBox.Image.Height + ")")
                  + $" [Active box: X,Y = {activeBox.X},{activeBox.Y}; WxH = {activeBox.Width}x{activeBox.Height}]"
-                 + (string.IsNullOrEmpty(FilePath) ? "" : " | " + Path.GetDirectoryName(FilePath));
+                 + " | " + Path.GetFullPath(storedImageList.Folder);
 
             btClearActiveImage.Enabled = pictureBox.Image != null && pictureBox.Enabled;
             btCopyToClipboard.Enabled = pictureBox.Image != null && pictureBox.Enabled;
