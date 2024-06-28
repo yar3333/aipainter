@@ -28,54 +28,54 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.pictureBox = new System.Windows.Forms.PictureBox();
-            this.btRemove = new AiPainter.Controls.ImageButton();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.btRemove)).BeginInit();
-            this.SuspendLayout();
+            pictureBox = new PictureBox();
+            btRemove = new ImageButton();
+            ((System.ComponentModel.ISupportInitialize)pictureBox).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)btRemove).BeginInit();
+            SuspendLayout();
             // 
             // pictureBox
             // 
-            this.pictureBox.Cursor = System.Windows.Forms.Cursors.UpArrow;
-            this.pictureBox.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.pictureBox.Location = new System.Drawing.Point(0, 0);
-            this.pictureBox.Name = "pictureBox";
-            this.pictureBox.Size = new System.Drawing.Size(250, 243);
-            this.pictureBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
-            this.pictureBox.TabIndex = 0;
-            this.pictureBox.TabStop = false;
-            this.pictureBox.DoubleClick += new System.EventHandler(this.pictureBox_DoubleClick);
-            this.pictureBox.MouseEnter += new System.EventHandler(this.pictureBox_MouseEnter);
-            this.pictureBox.MouseLeave += new System.EventHandler(this.pictureBox_MouseLeave);
-            this.pictureBox.MouseMove += new System.Windows.Forms.MouseEventHandler(this.pictureBox_MouseMove);
-            this.pictureBox.MouseUp += new System.Windows.Forms.MouseEventHandler(this.pictureBox_MouseUp);
+            pictureBox.Cursor = Cursors.UpArrow;
+            pictureBox.Dock = DockStyle.Fill;
+            pictureBox.Location = new Point(0, 0);
+            pictureBox.Name = "pictureBox";
+            pictureBox.Size = new Size(250, 243);
+            pictureBox.SizeMode = PictureBoxSizeMode.Zoom;
+            pictureBox.TabIndex = 0;
+            pictureBox.TabStop = false;
+            pictureBox.DoubleClick += pictureBox_DoubleClick;
+            pictureBox.MouseDown += pictureBox_MouseDown;
+            pictureBox.MouseEnter += pictureBox_MouseEnter;
+            pictureBox.MouseLeave += pictureBox_MouseLeave;
+            pictureBox.MouseMove += pictureBox_MouseMove;
+            pictureBox.MouseUp += pictureBox_MouseUp;
             // 
             // btRemove
             // 
-            this.btRemove.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btRemove.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
-            this.btRemove.Image = global::AiPainter.Properties.Resources.remove;
-            this.btRemove.Location = new System.Drawing.Point(219, 3);
-            this.btRemove.Name = "btRemove";
-            this.btRemove.Size = new System.Drawing.Size(28, 28);
-            this.btRemove.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
-            this.btRemove.TabIndex = 3;
-            this.btRemove.TabStop = false;
-            this.btRemove.Visible = false;
-            this.btRemove.Click += new System.EventHandler(this.btRemove_Click);
+            btRemove.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            btRemove.BackgroundImageLayout = ImageLayout.None;
+            btRemove.Image = Properties.Resources.remove;
+            btRemove.Location = new Point(219, 3);
+            btRemove.Name = "btRemove";
+            btRemove.Size = new Size(28, 28);
+            btRemove.SizeMode = PictureBoxSizeMode.Zoom;
+            btRemove.TabIndex = 3;
+            btRemove.TabStop = false;
+            btRemove.Visible = false;
+            btRemove.Click += btRemove_Click;
             // 
             // SmartImagePreview
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.Controls.Add(this.btRemove);
-            this.Controls.Add(this.pictureBox);
-            this.Name = "SmartImagePreview";
-            this.Size = new System.Drawing.Size(250, 243);
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.btRemove)).EndInit();
-            this.ResumeLayout(false);
-
+            AutoScaleDimensions = new SizeF(7F, 15F);
+            AutoScaleMode = AutoScaleMode.Font;
+            Controls.Add(btRemove);
+            Controls.Add(pictureBox);
+            Name = "SmartImagePreview";
+            Size = new Size(250, 243);
+            ((System.ComponentModel.ISupportInitialize)pictureBox).EndInit();
+            ((System.ComponentModel.ISupportInitialize)btRemove).EndInit();
+            ResumeLayout(false);
         }
 
         #endregion

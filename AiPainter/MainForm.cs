@@ -37,6 +37,8 @@ namespace AiPainter
         private LamaCleanerManager lamaCleaner = new();
         private RemBgManager remBg = new();
 
+        private SmartImagePreview activeImagePreview = null;
+
         public MainForm()
         {
             InitializeComponent();
@@ -192,15 +194,15 @@ namespace AiPainter
 
                     panStableDiffusion.ddCheckpoint.DataSource = SdCheckpointsHelper.GetListItems(sdGenerationParameters.checkpoint);
                     panStableDiffusion.ddCheckpoint.SelectedValue = sdGenerationParameters.checkpoint;
-                    
+
                     panStableDiffusion.numSteps.Value = sdGenerationParameters.steps;
                     panStableDiffusion.tbPrompt.Text = sdGenerationParameters.prompt;
                     panStableDiffusion.tbNegative.Text = sdGenerationParameters.negative;
                     panStableDiffusion.numCfgScale.Value = sdGenerationParameters.cfgScale;
-                    
+
                     panStableDiffusion.tbSeed.Text = sdGenerationParameters.seed.ToString();
                     panStableDiffusion.trackBarSeedVariationStrength.Value = (int)Math.Round(sdGenerationParameters.seedVariationStrength * 100m);
-                    
+
                     panStableDiffusion.Modifiers = sdGenerationParameters.modifiers;
                     panStableDiffusion.SelectImageSize(sdGenerationParameters.width, sdGenerationParameters.height);
                     panStableDiffusion.ddlSampler.SelectedItem = sdGenerationParameters.sampler;
@@ -220,6 +222,14 @@ namespace AiPainter
 
                     updateImages(null);
                 }
+            };
+
+            pb.OnImageContextMenu = () =>
+            {
+                toolTip.Active = false;
+
+                activeImagePreview = pb;
+                contextMenuPreviewImage.Show(Cursor.Position);
             };
 
             return pb;
@@ -295,13 +305,18 @@ namespace AiPainter
             openFileDialog.Filter = "Image files (*.jpg;*.jpeg;*.png)|*.jpg;*.jpeg;*.png|All files (*.*)|*.*";
             if (openFileDialog.ShowDialog() == DialogResult.OK)
             {
-                FilePath = openFileDialog.FileName;
-                pictureBox.Image = BitmapTools.Load(FilePath);
-                pictureBox.ResetMask();
-                pictureBox.ZoomAndMoveGlobalViewToFitImage();
-                pictureBox.HistoryClear();
-                pictureBox.Refresh();
+                openImageFile(openFileDialog.FileName);
             }
+        }
+
+        private void openImageFile(string filePathToOpen)
+        {
+            FilePath = filePathToOpen;
+            pictureBox.Image = BitmapTools.Load(FilePath);
+            pictureBox.ResetMask();
+            pictureBox.ZoomAndMoveGlobalViewToFitImage();
+            pictureBox.HistoryClear();
+            pictureBox.Refresh();
         }
 
         private void splitContainer_SplitterMoved(object sender, SplitterEventArgs e)
@@ -522,6 +537,75 @@ namespace AiPainter
                     pictureBox.Refresh();
                 });
             });
+        }
+
+        private string moveImageFile(string srcFilePath, string destDir)
+        {
+            var baseFileName = Path.GetFileNameWithoutExtension(activeImagePreview.FilePath);
+            var srcDir = Path.GetDirectoryName(activeImagePreview.FilePath)!;
+
+            if (!Directory.Exists(destDir)) Directory.CreateDirectory(destDir);
+
+            var destImagePath = Path.Combine(destDir, Path.GetFileName(activeImagePreview.FilePath));
+            File.Move(activeImagePreview.FilePath, destImagePath);
+            if (File.Exists(Path.Combine(srcDir, baseFileName) + ".json"))
+            {
+                File.Move(Path.Combine(srcDir, baseFileName) + ".json", Path.Combine(destDir, baseFileName) + ".json");
+            }
+
+            return destImagePath;
+        }
+
+        private void contextMenuPreviewImage_MoveToSubfolder_Click(object sender, EventArgs e)
+        {
+            var baseFileName = Path.GetFileNameWithoutExtension(activeImagePreview.FilePath);
+            var srcDir = Path.GetDirectoryName(activeImagePreview.FilePath)!;
+
+            moveImageFile(activeImagePreview.FilePath, Path.Combine(srcDir, baseFileName));
+        }
+
+        private void contextMenuPreviewImage_MoveToSubfolderAndOpen_Click(object sender, EventArgs e)
+        {
+            var baseFileName = Path.GetFileNameWithoutExtension(activeImagePreview.FilePath);
+            var srcDir = Path.GetDirectoryName(activeImagePreview.FilePath)!;
+
+            var destImagePath = moveImageFile(activeImagePreview.FilePath, Path.Combine(srcDir, baseFileName));
+            openImageFile(destImagePath);
+        }
+
+        private void contextMenuPreviewImage_MoveToParentFolder_Click(object sender, EventArgs e)
+        {
+            var srcDir = Path.GetDirectoryName(activeImagePreview.FilePath)!;
+            var destDir = Path.GetDirectoryName(srcDir);
+            if (destDir == null) return;
+
+            moveImageFile(activeImagePreview.FilePath, destDir);
+
+            if (Directory.GetDirectories(srcDir).Length == 0 && Directory.GetFiles(srcDir).Length == 0)
+            {
+                try { Directory.Delete(srcDir); } catch { }
+            }
+        }
+
+        private void contextMenuPreviewImage_MoveToParentFolderAndOpen_Click(object sender, EventArgs e)
+        {
+            var srcDir = Path.GetDirectoryName(activeImagePreview.FilePath)!;
+            var destDir = Path.GetDirectoryName(srcDir);
+            if (destDir == null) return;
+
+            var destImagePath = moveImageFile(activeImagePreview.FilePath, Path.Combine(Path.GetDirectoryName(srcDir)!));
+
+            if (Directory.GetDirectories(srcDir).Length == 0 && Directory.GetFiles(srcDir).Length == 0)
+            {
+                try { Directory.Delete(srcDir); } catch { }
+            }
+
+            openImageFile(destImagePath);
+        }
+
+        private void contextMenuPreviewImage_Closed(object sender, ToolStripDropDownClosedEventArgs e)
+        {
+            toolTip.Active = true;
         }
     }
 }

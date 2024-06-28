@@ -13,9 +13,10 @@
         public Action? OnImageClick;
         public Action? OnImageDoubleClick;
         public Action? OnImageRemove;
+        public Action? OnImageContextMenu;
 
         public PictureBox PictureBox => pictureBox;
-        
+
         public SmartImagePreview()
         {
             InitializeComponent();
@@ -58,6 +59,14 @@
         private void pictureBox_MouseMove(object sender, MouseEventArgs e)
         {
             Cursor = btRemove.Bounds.Contains(e.Location) ? Cursors.Arrow : Cursors.UpArrow;
+        }
+
+        private void pictureBox_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Right)
+            {
+                OnImageContextMenu?.Invoke();
+            }
         }
     }
 }

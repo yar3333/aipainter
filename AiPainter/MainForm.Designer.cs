@@ -65,6 +65,11 @@ namespace AiPainter
             hPicScroll = new HScrollBar();
             toolTip = new ToolTip(components);
             updateImageListWorker = new System.ComponentModel.BackgroundWorker();
+            contextMenuPreviewImage = new ContextMenuStrip(components);
+            contextMenuPreviewImage_MoveToSubfolder = new ToolStripMenuItem();
+            contextMenuPreviewImage_MoveToSubfolderAndOpen = new ToolStripMenuItem();
+            contextMenuPreviewImage_MoveToParentFolder = new ToolStripMenuItem();
+            contextMenuPreviewImage_MoveToParentFolderAndOpen = new ToolStripMenuItem();
             controlsStateUpdater = new System.Windows.Forms.Timer(components);
             toolbar.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)splitContainer).BeginInit();
@@ -79,6 +84,7 @@ namespace AiPainter
             splitContainer2.Panel2.SuspendLayout();
             splitContainer2.SuspendLayout();
             panel1.SuspendLayout();
+            contextMenuPreviewImage.SuspendLayout();
             SuspendLayout();
             // 
             // controlsStateUpdater
@@ -397,6 +403,41 @@ namespace AiPainter
             // 
             updateImageListWorker.DoWork += updateImageListWorker_DoWork;
             // 
+            // contextMenuPreviewImage
+            // 
+            contextMenuPreviewImage.Items.AddRange(new ToolStripItem[] { contextMenuPreviewImage_MoveToSubfolder, contextMenuPreviewImage_MoveToSubfolderAndOpen, contextMenuPreviewImage_MoveToParentFolder, contextMenuPreviewImage_MoveToParentFolderAndOpen });
+            contextMenuPreviewImage.Name = "cmPreviewImageContextMenu";
+            contextMenuPreviewImage.Size = new Size(243, 114);
+            contextMenuPreviewImage.Closed += contextMenuPreviewImage_Closed;
+            // 
+            // contextMenuPreviewImage_MoveToSubfolder
+            // 
+            contextMenuPreviewImage_MoveToSubfolder.Name = "contextMenuPreviewImage_MoveToSubfolder";
+            contextMenuPreviewImage_MoveToSubfolder.Size = new Size(242, 22);
+            contextMenuPreviewImage_MoveToSubfolder.Text = "Move to subfolder";
+            contextMenuPreviewImage_MoveToSubfolder.Click += contextMenuPreviewImage_MoveToSubfolder_Click;
+            // 
+            // contextMenuPreviewImage_MoveToSubfolderAndOpen
+            // 
+            contextMenuPreviewImage_MoveToSubfolderAndOpen.Name = "contextMenuPreviewImage_MoveToSubfolderAndOpen";
+            contextMenuPreviewImage_MoveToSubfolderAndOpen.Size = new Size(242, 22);
+            contextMenuPreviewImage_MoveToSubfolderAndOpen.Text = "Move to subfolder and open";
+            contextMenuPreviewImage_MoveToSubfolderAndOpen.Click += contextMenuPreviewImage_MoveToSubfolderAndOpen_Click;
+            // 
+            // contextMenuPreviewImage_MoveToParentFolder
+            // 
+            contextMenuPreviewImage_MoveToParentFolder.Name = "contextMenuPreviewImage_MoveToParentFolder";
+            contextMenuPreviewImage_MoveToParentFolder.Size = new Size(242, 22);
+            contextMenuPreviewImage_MoveToParentFolder.Text = "Move to parent folder";
+            contextMenuPreviewImage_MoveToParentFolder.Click += contextMenuPreviewImage_MoveToParentFolder_Click;
+            // 
+            // contextMenuPreviewImage_MoveToParentFolderAndOpen
+            // 
+            contextMenuPreviewImage_MoveToParentFolderAndOpen.Name = "contextMenuPreviewImage_MoveToParentFolderAndOpen";
+            contextMenuPreviewImage_MoveToParentFolderAndOpen.Size = new Size(242, 22);
+            contextMenuPreviewImage_MoveToParentFolderAndOpen.Text = "Move to parent folder and open";
+            contextMenuPreviewImage_MoveToParentFolderAndOpen.Click += contextMenuPreviewImage_MoveToParentFolderAndOpen_Click;
+            // 
             // MainForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -426,6 +467,7 @@ namespace AiPainter
             splitContainer2.ResumeLayout(false);
             panel1.ResumeLayout(false);
             panel1.PerformLayout();
+            contextMenuPreviewImage.ResumeLayout(false);
             ResumeLayout(false);
         }
 
@@ -463,5 +505,10 @@ namespace AiPainter
         private ToolStripSeparator toolStripSeparator4;
         private ToolStripButton btRemoveObjectFromImage;
         private ToolStripButton btRemoveBackgroundFromImage;
+        private ContextMenuStrip contextMenuPreviewImage;
+        private ToolStripMenuItem contextMenuPreviewImage_MoveToSubfolderAndOpen;
+        private ToolStripMenuItem contextMenuPreviewImage_MoveToSubfolder;
+        private ToolStripMenuItem contextMenuPreviewImage_MoveToParentFolder;
+        private ToolStripMenuItem contextMenuPreviewImage_MoveToParentFolderAndOpen;
     }
 }

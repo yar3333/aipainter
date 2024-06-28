@@ -330,7 +330,7 @@ class ImageGeneratorSd : IImageGenerator
     private string getDestImageFilePath()
     {
         if (!string.IsNullOrEmpty(destDir) && !Directory.Exists(destDir)) Directory.CreateDirectory(destDir);
-        return Path.Combine(destDir, DateTime.Now.Ticks + ".png");
+        return Path.Combine(destDir, (DateTime.UtcNow.Ticks / 10000) + ".png");
     }
 
     private void saveSdGeneraqtionParameters(string resultImageFilePath, long seed)
