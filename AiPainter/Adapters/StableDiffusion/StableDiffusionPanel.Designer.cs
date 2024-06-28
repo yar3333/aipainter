@@ -287,7 +287,7 @@
             // 
             numSteps.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
             numSteps.Font = new Font("Segoe UI", 11F, FontStyle.Regular, GraphicsUnit.Point);
-            numSteps.Increment = new decimal(new int[] { 10, 0, 0, 0 });
+            numSteps.Increment = new decimal(new int[] { 5, 0, 0, 0 });
             numSteps.Location = new Point(297, 349);
             numSteps.Maximum = new decimal(new int[] { 200, 0, 0, 0 });
             numSteps.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
