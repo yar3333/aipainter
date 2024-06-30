@@ -46,9 +46,15 @@ namespace AiPainter.Adapters.StableDiffusion
 
             tbNegative.Text = Program.Config.NegativePrompt;
 
+            contextMenuCheckpoint.Items.Add("Manage models...", null, (_, _) =>
+            {
+                var form = new SdModelsForm();
+                form.ShowDialog(this);
+            });
+            contextMenuCheckpoint.Items.Add(new ToolStripSeparator());
             foreach (var lora in SdLoraHelper.GetNames())
             {
-                contextMenuCheckpoint.Items.Add("LoRA: " + SdLoraHelper.GetHumanName(lora), null, (_, args) =>
+                contextMenuCheckpoint.Items.Add("LoRA: " + SdLoraHelper.GetHumanName(lora), null, (_, _) =>
                 {
                     tbPrompt.Text = SdLoraHelper.GetPrompt(lora) + ", " + tbPrompt.Text;
                 });

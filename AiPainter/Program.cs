@@ -18,7 +18,7 @@ static class Program
         LoadConfig();
         SaveConfig();
 
-        StableDiffusionProcess.Start(Config.StableDiffusionCheckpoint);
+        StableDiffusionProcess.Start(Config.StableDiffusionCheckpoint, SdCheckpointsHelper.GetPathToVae(Config.StableDiffusionCheckpoint));
         LamaCleanerProcess.Start();
         RemBgProcess.Start();
 

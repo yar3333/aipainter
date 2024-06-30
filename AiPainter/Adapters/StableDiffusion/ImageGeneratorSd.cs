@@ -3,7 +3,6 @@ using System.Text.Json;
 using AiPainter.Helpers;
 using System.Text.RegularExpressions;
 using AiPainter.Controls;
-using System.Windows.Forms;
 
 namespace AiPainter.Adapters.StableDiffusion;
 
@@ -38,7 +37,7 @@ class ImageGeneratorSd : IImageGenerator
 
         sdGenerationParameters = new SdGenerationParameters
         {
-            checkpoint = ((ListItem)sdPanel.ddCheckpoint.SelectedItem).Value,
+            checkpointName = sdPanel.ddCheckpoint.SelectedValue.ToString()!,
             prompt = sdPanel.tbPrompt.Text.Trim(),
             negative = sdPanel.tbNegative.Text.Trim(),
             steps = (int)sdPanel.numSteps.Value,
@@ -84,7 +83,7 @@ class ImageGeneratorSd : IImageGenerator
 
     public void LoadParamsBackToPanel()
     {
-        sdPanel.ddCheckpoint.SelectedValue = sdGenerationParameters.checkpoint;
+        sdPanel.ddCheckpoint.SelectedValue = sdGenerationParameters.checkpointName;
         
         sdPanel.numSteps.Value = sdGenerationParameters.steps;
         sdPanel.tbPrompt.Text = sdGenerationParameters.prompt;
@@ -122,9 +121,19 @@ class ImageGeneratorSd : IImageGenerator
 
     public async Task RunAsync()
     {
+        var checkpointFilePath = originalImage == null || croppedMask == null
+                                     ? SdCheckpointsHelper.GetPathToMainCheckpoint(sdGenerationParameters.checkpointName)
+                                     : SdCheckpointsHelper.GetPathToInpaintCheckpoint(sdGenerationParameters.checkpointName);
+        
+        if (checkpointFilePath == null)
+        {
+            control.NotifyStepsCustomText("NOT FOUND");
+            return;
+        }
+
         if (Program.Config.UseEmbeddedStableDiffusion && StableDiffusionProcess.Loading)
         {
-            if (StableDiffusionProcess.ActiveCheckpoint != sdGenerationParameters.checkpoint)
+            if (StableDiffusionProcess.ActiveCheckpointFilePath != checkpointFilePath)
             {
                 control.NotifyStepsCustomText("Stopping...");
                 StableDiffusionProcess.Stop();
@@ -134,7 +143,7 @@ class ImageGeneratorSd : IImageGenerator
                 }
 
                 control.NotifyStepsCustomText("Starting...");
-                StableDiffusionProcess.Start(sdGenerationParameters.checkpoint);
+                StableDiffusionProcess.Start(checkpointFilePath, SdCheckpointsHelper.GetPathToVae(sdGenerationParameters.checkpointName));
             }
         }
 
@@ -148,6 +157,8 @@ class ImageGeneratorSd : IImageGenerator
 
             if (await DelayTools.WaitForExitAsync(2000) || control.IsDisposed) return;
         }
+
+        control.NotifyStepsCustomText("");
 
         if (originalImage == null)
         {
@@ -318,7 +329,7 @@ class ImageGeneratorSd : IImageGenerator
 
     private string getFullPromptText()
     {
-        var checkpointPrompt = SdCheckpointsHelper.GetConfig(sdGenerationParameters.checkpoint).prompt;
+        var checkpointPrompt = SdCheckpointsHelper.GetConfig(sdGenerationParameters.checkpointName).prompt;
 
         var r = (!string.IsNullOrWhiteSpace(checkpointPrompt) ? checkpointPrompt + "; " : "")
               + (!string.IsNullOrWhiteSpace(sdGenerationParameters.prompt) ? sdGenerationParameters.prompt + "; " : "")

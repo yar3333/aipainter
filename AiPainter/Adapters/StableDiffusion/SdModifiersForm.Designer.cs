@@ -125,8 +125,10 @@
             // 
             // SdModifiersForm
             // 
+            AcceptButton = btOk;
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
+            CancelButton = btCancel;
             ClientSize = new Size(1074, 613);
             Controls.Add(btCancel);
             Controls.Add(btOk);

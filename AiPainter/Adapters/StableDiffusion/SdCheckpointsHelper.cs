@@ -5,60 +5,84 @@ namespace AiPainter.Adapters.StableDiffusion;
 static class SdCheckpointsHelper
 {
     private static string BasePath => Path.Join(Application.StartupPath, "stable_diffusion_checkpoints");
+    private static string VaePath => Path.Join(Application.StartupPath, "stable_diffusion_vae");
 
-    static List<string> GetNames(string nameToEnsureExists)
+    public static string[] GetNames(string nameToEnsureExists)
     {
         var basePath = BasePath;
         
-        var r = Directory.GetFiles(basePath, "*.ckpt", SearchOption.AllDirectories)
-        .Concat(Directory.GetFiles(basePath, "*.safetensors", SearchOption.AllDirectories))
-                         .Select(x => x.Substring(basePath.Length).TrimStart('\\'))
-                         .OrderBy(GetHumanName)
-                         .ToList();
-
-        if (!r.Contains(nameToEnsureExists)) r.Insert(0, nameToEnsureExists);
-
-        return r;
+        return new[] { nameToEnsureExists }
+                .Concat(Directory.GetFiles(basePath, "*.ckpt", SearchOption.AllDirectories)
+                .Concat(Directory.GetFiles(basePath, "*.safetensors", SearchOption.AllDirectories))
+                .Select(x => Path.GetDirectoryName(x.Substring(basePath.Length).TrimStart('\\'))!))
+                .Distinct()
+                .OrderBy(x => x)
+                .ToArray();
     }
 
     public static ListItem[] GetListItems(string nameToEnsureExists)
     {
-        return GetNames(nameToEnsureExists).Select(x => new ListItem { Value = x, Text = GetHumanName(x) }).ToArray();
+        return GetNames(nameToEnsureExists).Select(x => new ListItem { Value = x, Text = getHumanName(x) }).ToArray();
     }
 
-    public static string GetPath(string name)
+    public static string? GetPathToMainCheckpoint(string name)
+    {
+        if (!Directory.Exists(getDirPath(name))) return null;
+
+        var models = Directory.GetFiles(getDirPath(name), "*.ckpt")
+             .Concat(Directory.GetFiles(getDirPath(name), "*.safetensors"))
+             .ToArray();
+
+        if (models.Length == 0) return null;
+        if (models.Length == 1) return models[0];
+
+        models = models.Where(x => !x.Contains("inpaint")).ToArray();
+        if (models.Length == 1) return models[0];
+        
+        return null;
+    }
+
+    public static string? GetPathToInpaintCheckpoint(string name)
+    {
+        if (!Directory.Exists(getDirPath(name))) return null;
+
+        var models = Directory.GetFiles(getDirPath(name), "*.ckpt")
+             .Concat(Directory.GetFiles(getDirPath(name), "*.safetensors"))
+             .ToArray();
+
+        if (models.Length == 0) return null;
+        if (models.Length == 1) return models[0];
+
+        models = models.Where(x => x.Contains("inpaint")).ToArray();
+        if (models.Length == 1) return models[0];
+        
+        return null;
+    }
+
+    public static string? GetPathToVae(string name)
+    {
+        var fileName = GetConfig(name).vae;
+        return !string.IsNullOrWhiteSpace(fileName) ? Path.Combine(VaePath, fileName) : null;
+    }
+
+    static string getDirPath(string name)
     {
         return Path.Combine(BasePath, name);
     }
 
-    static string GetHumanName(string name)
+    static string getHumanName(string name)
     {
-        // ReSharper disable once StringIndexOfIsCultureSpecific.1
-        var n = name.IndexOf(".");
-        var shortName = n > 0 ? name.Substring(0, n) : name;
-
-        var parts = shortName.Split('\\');
-        if (parts.Length > 1 && parts[^2] == parts[^1])
-        {
-            shortName = string.Join('\\', parts.Take(parts.Length - 1));
-        }
-
-        return shortName + " (" + Math.Round(getSize(name) / 1024.0 / 1024 / 1024, 1) + " GB)";
+        var path = GetPathToMainCheckpoint(name);
+        var size = path != null ? new FileInfo(path).Length : 0;
+        return name + " (" + Math.Round(size / 1024.0 / 1024 / 1024, 1) + " GB)";
     }
 
     public static SdCheckpointConfig GetConfig(string name)
     {
-        var dir = Path.GetDirectoryName(GetPath(name));
-        var configFilePath = Path.Combine(dir!, "config.json");
+        var configFilePath = Path.Combine(getDirPath(name), "config.json");
 
         return File.Exists(configFilePath!)
                    ? JsonSerializer.Deserialize<SdCheckpointConfig>(File.ReadAllText(configFilePath)) ?? new SdCheckpointConfig()
                    : new SdCheckpointConfig();
-    }
-
-    static long getSize(string name)
-    {
-        var path = GetPath(name);
-        return File.Exists(path) ? new FileInfo(path).Length : 0;
     }
 }

@@ -70,6 +70,7 @@ namespace AiPainter
             contextMenuPreviewImage_MoveToSubfolderAndOpen = new ToolStripMenuItem();
             contextMenuPreviewImage_MoveToParentFolder = new ToolStripMenuItem();
             contextMenuPreviewImage_MoveToParentFolderAndOpen = new ToolStripMenuItem();
+            toolStripSeparator5 = new ToolStripSeparator();
             controlsStateUpdater = new System.Windows.Forms.Timer(components);
             toolbar.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)splitContainer).BeginInit();
@@ -405,9 +406,9 @@ namespace AiPainter
             // 
             // contextMenuPreviewImage
             // 
-            contextMenuPreviewImage.Items.AddRange(new ToolStripItem[] { contextMenuPreviewImage_MoveToSubfolder, contextMenuPreviewImage_MoveToSubfolderAndOpen, contextMenuPreviewImage_MoveToParentFolder, contextMenuPreviewImage_MoveToParentFolderAndOpen });
+            contextMenuPreviewImage.Items.AddRange(new ToolStripItem[] { contextMenuPreviewImage_MoveToSubfolder, contextMenuPreviewImage_MoveToSubfolderAndOpen, toolStripSeparator5, contextMenuPreviewImage_MoveToParentFolder, contextMenuPreviewImage_MoveToParentFolderAndOpen });
             contextMenuPreviewImage.Name = "cmPreviewImageContextMenu";
-            contextMenuPreviewImage.Size = new Size(243, 114);
+            contextMenuPreviewImage.Size = new Size(243, 120);
             contextMenuPreviewImage.Closed += contextMenuPreviewImage_Closed;
             // 
             // contextMenuPreviewImage_MoveToSubfolder
@@ -437,6 +438,11 @@ namespace AiPainter
             contextMenuPreviewImage_MoveToParentFolderAndOpen.Size = new Size(242, 22);
             contextMenuPreviewImage_MoveToParentFolderAndOpen.Text = "Move to parent folder and open";
             contextMenuPreviewImage_MoveToParentFolderAndOpen.Click += contextMenuPreviewImage_MoveToParentFolderAndOpen_Click;
+            // 
+            // toolStripSeparator5
+            // 
+            toolStripSeparator5.Name = "toolStripSeparator5";
+            toolStripSeparator5.Size = new Size(239, 6);
             // 
             // MainForm
             // 
@@ -510,5 +516,6 @@ namespace AiPainter
         private ToolStripMenuItem contextMenuPreviewImage_MoveToSubfolder;
         private ToolStripMenuItem contextMenuPreviewImage_MoveToParentFolder;
         private ToolStripMenuItem contextMenuPreviewImage_MoveToParentFolderAndOpen;
+        private ToolStripSeparator toolStripSeparator5;
     }
 }

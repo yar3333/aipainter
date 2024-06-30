@@ -1,0 +1,7 @@
+{
+	"prompt": "mdjrny-v4 style",
+	"vae": "diffusion_pytorch_model.safetensors",
+	"homeUrl": "https://huggingface.co/prompthero/midjourney-v4-diffusion",
+	"downloadUrl": "https://huggingface.co/prompthero/openjourney/resolve/main/mdjrny-v4.safetensors?download=true",
+	"downloadVae": "https://huggingface.co/prompthero/openjourney/resolve/main/vae/diffusion_pytorch_model.safetensors?download=true"
+}

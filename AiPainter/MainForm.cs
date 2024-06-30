@@ -192,8 +192,8 @@ namespace AiPainter
                 {
                     var sdGenerationParameters = JsonSerializer.Deserialize<SdGenerationParameters>(File.ReadAllText(parametersJsonFilePath));
 
-                    panStableDiffusion.ddCheckpoint.DataSource = SdCheckpointsHelper.GetListItems(sdGenerationParameters.checkpoint);
-                    panStableDiffusion.ddCheckpoint.SelectedValue = sdGenerationParameters.checkpoint;
+                    panStableDiffusion.ddCheckpoint.DataSource = SdCheckpointsHelper.GetListItems(sdGenerationParameters.checkpointName);
+                    panStableDiffusion.ddCheckpoint.SelectedValue = sdGenerationParameters.checkpointName;
 
                     panStableDiffusion.numSteps.Value = sdGenerationParameters.steps;
                     panStableDiffusion.tbPrompt.Text = sdGenerationParameters.prompt;
@@ -539,15 +539,15 @@ namespace AiPainter
             });
         }
 
-        private string moveImageFile(string srcFilePath, string destDir)
+        private static string moveImageFile(string srcFilePath, string destDir)
         {
-            var baseFileName = Path.GetFileNameWithoutExtension(activeImagePreview.FilePath);
-            var srcDir = Path.GetDirectoryName(activeImagePreview.FilePath)!;
+            var baseFileName = Path.GetFileNameWithoutExtension(srcFilePath);
+            var srcDir = Path.GetDirectoryName(srcFilePath)!;
 
             if (!Directory.Exists(destDir)) Directory.CreateDirectory(destDir);
 
-            var destImagePath = Path.Combine(destDir, Path.GetFileName(activeImagePreview.FilePath));
-            File.Move(activeImagePreview.FilePath, destImagePath);
+            var destImagePath = Path.Combine(destDir, Path.GetFileName(srcFilePath));
+            File.Move(srcFilePath, destImagePath);
             if (File.Exists(Path.Combine(srcDir, baseFileName) + ".json"))
             {
                 File.Move(Path.Combine(srcDir, baseFileName) + ".json", Path.Combine(destDir, baseFileName) + ".json");

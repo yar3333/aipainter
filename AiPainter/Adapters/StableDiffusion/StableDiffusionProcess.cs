@@ -8,14 +8,14 @@ static class StableDiffusionProcess
     private static Process? process;
     
     public static bool Loading { get; private set; }
-    public static string ActiveCheckpoint { get; private set; }
+    public static string ActiveCheckpointFilePath { get; private set; }
 
     public static bool IsReady()
     {
         return ProcessHelper.IsPortOpen(Program.Config.StableDiffusionUrl);
     }
 
-    public static void Start(string checkpoint)
+    public static void Start(string checkpointFilePath, string? vaeFilePath)
     {
         var log = StableDiffusionClient.Log;
 
@@ -27,16 +27,15 @@ static class StableDiffusionProcess
             return;
         }
 
-        var pathToCheckpoint = SdCheckpointsHelper.GetPath(checkpoint);
-        if (!File.Exists(pathToCheckpoint))
+        if (!File.Exists(checkpointFilePath))
         {
-            log.WriteLine($"Can't find {pathToCheckpoint}.");
+            log.WriteLine($"Can't find {checkpointFilePath}.");
             log.WriteLine("Please, download StableDiffusion model `sd-v1-4.ckpt` from HuggingFace site and save to that path.");
             log.WriteLine("https://huggingface.co/CompVis/stable-diffusion-v-1-4-original");
 
             if (MessageBox.Show
                 (
-                    $"Please, download StableDiffusion model `sd-v1-4.ckpt` from HuggingFace site and save to {pathToCheckpoint}. Open browser for HuggingFace site?",
+                    $"Please, download StableDiffusion model `sd-v1-4.ckpt` from HuggingFace site and save to {checkpointFilePath}. Open browser for HuggingFace site?",
                     "Error",
                     MessageBoxButtons.YesNo
                 ) == DialogResult.Yes)
@@ -63,10 +62,9 @@ static class StableDiffusionProcess
 
         Loading = true;
 
-        ActiveCheckpoint = checkpoint;
+        ActiveCheckpointFilePath = checkpointFilePath;
 
-        var vaeFileName = SdCheckpointsHelper.GetConfig(checkpoint).vae;
-        var pathToVaeFile = !string.IsNullOrEmpty(vaeFileName) ? Path.Join(Application.StartupPath, @"stable_diffusion_vae", vaeFileName) : null;
+        //var pathToVaeFile = !string.IsNullOrEmpty(vaeFilePath) ? Path.Join(Application.StartupPath, @"stable_diffusion_vae", vaeFilePath) : null;
         var pathToLoraDir = Path.Join(Application.StartupPath, "stable_diffusion_lora");
         
         process = ProcessHelper.RunInBackground
@@ -75,8 +73,8 @@ static class StableDiffusionProcess
             "--api"
                 + (uri.Host != "127.0.0.1" && uri.Host.ToLowerInvariant() != "localhost" ? " --listen" : "")
                 + " --port=" + uri.Port
-                + " --ckpt=\"" + pathToCheckpoint + "\""
-                + (!string.IsNullOrEmpty(pathToVaeFile) ? " --vae-path=\"" + pathToVaeFile + "\"" : "")
+                + " --ckpt=\"" + checkpointFilePath + "\""
+                + (!string.IsNullOrEmpty(vaeFilePath) ? " --vae-path=\"" + vaeFilePath + "\"" : "")
                 + " --lora-dir=\"" + pathToLoraDir + "\"",
             
             directory: Path.Join(Application.StartupPath, @"external\StableDiffusion"),
