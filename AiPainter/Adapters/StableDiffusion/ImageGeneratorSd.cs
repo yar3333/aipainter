@@ -123,7 +123,8 @@ class ImageGeneratorSd : IImageGenerator
     {
         var checkpointFilePath = originalImage == null || croppedMask == null
                                      ? SdCheckpointsHelper.GetPathToMainCheckpoint(sdGenerationParameters.checkpointName)
-                                     : SdCheckpointsHelper.GetPathToInpaintCheckpoint(sdGenerationParameters.checkpointName);
+                                     : (SdCheckpointsHelper.GetPathToInpaintCheckpoint(sdGenerationParameters.checkpointName) 
+                                     ?? SdCheckpointsHelper.GetPathToMainCheckpoint(sdGenerationParameters.checkpointName));
         
         if (checkpointFilePath == null)
         {

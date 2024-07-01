@@ -1,6 +1,6 @@
 ﻿namespace AiPainter.Adapters.StableDiffusion
 {
-    partial class SdModelsForm
+    partial class SdCheckpointsForm
     {
         /// <summary>
         /// Required designer variable.
@@ -31,10 +31,9 @@
             btOk = new Button();
             lvModels = new ListView();
             columnHeader1 = new ColumnHeader();
-            columnHeader2 = new ColumnHeader();
             columnHeader3 = new ColumnHeader();
             columnHeader4 = new ColumnHeader();
-            columnHeader5 = new ColumnHeader();
+            bwDownloading = new System.ComponentModel.BackgroundWorker();
             SuspendLayout();
             // 
             // btOk
@@ -54,24 +53,23 @@
             // 
             lvModels.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             lvModels.CheckBoxes = true;
-            lvModels.Columns.AddRange(new ColumnHeader[] { columnHeader1, columnHeader2, columnHeader3, columnHeader4, columnHeader5 });
+            lvModels.Columns.AddRange(new ColumnHeader[] { columnHeader1, columnHeader3, columnHeader4 });
             lvModels.FullRowSelect = true;
             lvModels.GridLines = true;
+            lvModels.HeaderStyle = ColumnHeaderStyle.Nonclickable;
             lvModels.Location = new Point(12, 12);
+            lvModels.MultiSelect = false;
             lvModels.Name = "lvModels";
             lvModels.Size = new Size(776, 374);
             lvModels.TabIndex = 6;
             lvModels.UseCompatibleStateImageBehavior = false;
             lvModels.View = View.Details;
+            lvModels.ItemChecked += lvModels_ItemChecked;
             // 
             // columnHeader1
             // 
             columnHeader1.Text = "Enabled";
-            // 
-            // columnHeader2
-            // 
-            columnHeader2.Text = "Type";
-            columnHeader2.Width = 80;
+            columnHeader1.Width = 150;
             // 
             // columnHeader3
             // 
@@ -81,24 +79,26 @@
             // columnHeader4
             // 
             columnHeader4.Text = "Description";
-            columnHeader4.Width = 300;
+            columnHeader4.Width = 390;
             // 
-            // columnHeader5
+            // bwDownloading
             // 
-            columnHeader5.Text = "Link";
-            columnHeader5.Width = 100;
+            bwDownloading.WorkerSupportsCancellation = true;
+            bwDownloading.DoWork += bwDownloading_DoWork;
             // 
-            // SdModelsForm
+            // SdCheckpointsForm
             // 
             AcceptButton = btOk;
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(800, 450);
+            ControlBox = false;
             Controls.Add(lvModels);
             Controls.Add(btOk);
             FormBorderStyle = FormBorderStyle.SizableToolWindow;
-            Name = "SdModelsForm";
-            Text = "SdModelsForm";
+            Name = "SdCheckpointsForm";
+            StartPosition = FormStartPosition.CenterParent;
+            Text = "Stable Diffusion Checkpoints";
             Load += SdModelsForm_Load;
             ResumeLayout(false);
         }
@@ -107,9 +107,8 @@
         private Button btOk;
         private ListView lvModels;
         private ColumnHeader columnHeader1;
-        private ColumnHeader columnHeader2;
         private ColumnHeader columnHeader3;
         private ColumnHeader columnHeader4;
-        private ColumnHeader columnHeader5;
+        private System.ComponentModel.BackgroundWorker bwDownloading;
     }
 }

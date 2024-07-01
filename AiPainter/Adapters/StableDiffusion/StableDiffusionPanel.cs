@@ -48,7 +48,7 @@ namespace AiPainter.Adapters.StableDiffusion
 
             contextMenuCheckpoint.Items.Add("Manage models...", null, (_, _) =>
             {
-                var form = new SdModelsForm();
+                var form = new SdCheckpointsForm();
                 form.ShowDialog(this);
             });
             contextMenuCheckpoint.Items.Add(new ToolStripSeparator());
