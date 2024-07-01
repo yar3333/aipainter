@@ -202,6 +202,7 @@
             ddCheckpoint.Size = new Size(304, 23);
             ddCheckpoint.TabIndex = 18;
             toolTip.SetToolTip(ddCheckpoint, "Active StableDiffusion checkpoint (weights). Just download additional *.ckpt files and put them into `stable_diffusion_checkpoints` folder.");
+            ddCheckpoint.DropDown += ddCheckpoint_DropDown;
             ddCheckpoint.SelectedIndexChanged += ddCheckpoint_SelectedIndexChanged;
             // 
             // tbNegative

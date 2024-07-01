@@ -46,21 +46,9 @@ namespace AiPainter.Adapters.StableDiffusion
 
             tbNegative.Text = Program.Config.NegativePrompt;
 
-            contextMenuCheckpoint.Items.Add("Manage models...", null, (_, _) =>
-            {
-                var form = new SdCheckpointsForm();
-                form.ShowDialog(this);
-            });
-            contextMenuCheckpoint.Items.Add(new ToolStripSeparator());
-            foreach (var lora in SdLoraHelper.GetNames())
-            {
-                contextMenuCheckpoint.Items.Add("LoRA: " + SdLoraHelper.GetHumanName(lora), null, (_, _) =>
-                {
-                    tbPrompt.Text = SdLoraHelper.GetPrompt(lora) + ", " + tbPrompt.Text;
-                });
-            }
+            updateLoras();
 
-            ddlSampler.DataSource = new []
+            ddlSampler.DataSource = new[]
             {
                 "Euler a",
                 "DPM++ 2M",
@@ -70,6 +58,40 @@ namespace AiPainter.Adapters.StableDiffusion
 
             ddlImageSize.DataSource = Program.Config.ImageSizes;
             ddlImageSize.SelectedIndex = 0;
+        }
+
+        private void showManageCheckpointDialog()
+        {
+            var form = new SdCheckpointsForm();
+            form.ShowDialog(this);
+
+            ddCheckpoint.DataSource = SdCheckpointsHelper.GetListItems(Program.Config.StableDiffusionCheckpoint);
+        }
+
+        private void updateLoras()
+        {
+            contextMenuCheckpoint.Items.Clear();
+
+            contextMenuCheckpoint.Items.Add("Manage checkpoints...", null, (_, _) =>
+            {
+                showManageCheckpointDialog();
+            });
+
+            contextMenuCheckpoint.Items.Add(new ToolStripSeparator());
+
+            var loras = SdLoraHelper.GetNames();
+            foreach (var lora in loras)
+            {
+                contextMenuCheckpoint.Items.Add("Use LoRA: " + SdLoraHelper.GetHumanName(lora), null, (_, _) =>
+                {
+                    tbPrompt.Text = SdLoraHelper.GetPrompt(lora) + ", " + tbPrompt.Text;
+                });
+            }
+
+            if (loras.Length == 0)
+            {
+                contextMenuCheckpoint.Items.Add(new ToolStripLabel("No LoRa found"));
+            }
         }
 
         private void btGenerate_Click(object sender, EventArgs e)
@@ -110,7 +132,7 @@ namespace AiPainter.Adapters.StableDiffusion
 
             tbSeed.Enabled = cbUseSeed.Checked;
             trackBarSeedVariationStrength.Enabled = cbUseSeed.Checked;
-            
+
             trackBarChangesLevel.Enabled = cbUseInitImage.Checked;
         }
 
@@ -150,6 +172,14 @@ namespace AiPainter.Adapters.StableDiffusion
         private void btContextMenuCheckpoint_Click(object sender, EventArgs e)
         {
             contextMenuCheckpoint.Show(Cursor.Position);
+        }
+
+        private void ddCheckpoint_DropDown(object sender, EventArgs e)
+        {
+            if (ddCheckpoint.Items.Count == 0)
+            {
+
+            }
         }
     }
 }

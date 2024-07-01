@@ -97,6 +97,7 @@
             Controls.Add(btOk);
             FormBorderStyle = FormBorderStyle.SizableToolWindow;
             Name = "SdCheckpointsForm";
+            ShowInTaskbar = false;
             StartPosition = FormStartPosition.CenterParent;
             Text = "Stable Diffusion Checkpoints";
             Load += SdModelsForm_Load;
