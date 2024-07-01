@@ -30,18 +30,6 @@ static class StableDiffusionProcess
         if (!File.Exists(checkpointFilePath))
         {
             log.WriteLine($"Can't find {checkpointFilePath}.");
-            log.WriteLine("Please, download StableDiffusion model `sd-v1-4.ckpt` from HuggingFace site and save to that path.");
-            log.WriteLine("https://huggingface.co/CompVis/stable-diffusion-v-1-4-original");
-
-            if (MessageBox.Show
-                (
-                    $"Please, download StableDiffusion model `sd-v1-4.ckpt` from HuggingFace site and save to {checkpointFilePath}. Open browser for HuggingFace site?",
-                    "Error",
-                    MessageBoxButtons.YesNo
-                ) == DialogResult.Yes)
-            {
-                ProcessHelper.OpenUrlInBrowser("https://huggingface.co/CompVis/stable-diffusion-v-1-4-original");
-            }
             return;
         }
 

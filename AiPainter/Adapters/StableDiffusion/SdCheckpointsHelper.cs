@@ -14,6 +14,7 @@ static class SdCheckpointsHelper
         return new[] { nameToEnsureExists }
                 .Concat(Directory.GetFiles(basePath, "*.ckpt", SearchOption.AllDirectories)
                 .Concat(Directory.GetFiles(basePath, "*.safetensors", SearchOption.AllDirectories))
+                .Concat(Directory.GetFiles(basePath, "config.json", SearchOption.AllDirectories))
                 .Select(x => Path.GetDirectoryName(x.Substring(basePath.Length).TrimStart('\\'))!))
                 .Distinct()
                 .OrderBy(x => x)
@@ -22,41 +23,31 @@ static class SdCheckpointsHelper
 
     public static ListItem[] GetListItems(string nameToEnsureExists)
     {
-        return GetNames(nameToEnsureExists).Select(x => new ListItem { Value = x, Text = getHumanName(x) }).ToArray();
+        return GetNames(nameToEnsureExists).Where(x => GetPathToMainCheckpoint(x) != null && IsEnabled(x))
+                                           .Select(x => new ListItem { Value = x, Text = getHumanName(x) })
+                                           .ToArray();
     }
 
     public static string? GetPathToMainCheckpoint(string name)
     {
-        if (!Directory.Exists(getDirPath(name))) return null;
+        if (!Directory.Exists(GetDirPath(name))) return null;
 
-        var models = Directory.GetFiles(getDirPath(name), "*.ckpt")
-             .Concat(Directory.GetFiles(getDirPath(name), "*.safetensors"))
+        var models = Directory.GetFiles(GetDirPath(name), "*.ckpt")
+             .Concat(Directory.GetFiles(GetDirPath(name), "*.safetensors"))
              .ToArray();
 
-        if (models.Length == 0) return null;
-        if (models.Length == 1) return models[0];
-
-        models = models.Where(x => !x.Contains("inpaint")).ToArray();
-        if (models.Length == 1) return models[0];
-        
-        return null;
+        return models.Where(x => !x.Contains("inpaint")).Min();
     }
 
     public static string? GetPathToInpaintCheckpoint(string name)
     {
-        if (!Directory.Exists(getDirPath(name))) return null;
+        if (!Directory.Exists(GetDirPath(name))) return null;
 
-        var models = Directory.GetFiles(getDirPath(name), "*.ckpt")
-             .Concat(Directory.GetFiles(getDirPath(name), "*.safetensors"))
-             .ToArray();
+        var models = Directory.GetFiles(GetDirPath(name), "*.ckpt")
+                              .Concat(Directory.GetFiles(GetDirPath(name), "*.safetensors"))
+                              .ToArray();
 
-        if (models.Length == 0) return null;
-        if (models.Length == 1) return models[0];
-
-        models = models.Where(x => x.Contains("inpaint")).ToArray();
-        if (models.Length == 1) return models[0];
-        
-        return null;
+        return models.Where(x => x.Contains("inpaint")).Min();
     }
 
     public static string? GetPathToVae(string name)
@@ -65,7 +56,7 @@ static class SdCheckpointsHelper
         return !string.IsNullOrWhiteSpace(fileName) ? Path.Combine(VaePath, fileName) : null;
     }
 
-    static string getDirPath(string name)
+    public static string GetDirPath(string name)
     {
         return Path.Combine(BasePath, name);
     }
@@ -79,10 +70,32 @@ static class SdCheckpointsHelper
 
     public static SdCheckpointConfig GetConfig(string name)
     {
-        var configFilePath = Path.Combine(getDirPath(name), "config.json");
+        var configFilePath = Path.Combine(GetDirPath(name), "config.json");
 
-        return File.Exists(configFilePath!)
+        return File.Exists(configFilePath)
                    ? JsonSerializer.Deserialize<SdCheckpointConfig>(File.ReadAllText(configFilePath)) ?? new SdCheckpointConfig()
                    : new SdCheckpointConfig();
+    }
+
+    public static string GetStatus(string name)
+    {
+        var mainFile = GetPathToMainCheckpoint(name);
+        var inpaintFile = GetPathToInpaintCheckpoint(name);
+        var mainUrl = GetConfig(name).downloadUrl;
+        var inpaintUrl = GetConfig(name).downloadInpaintUrl;
+        return        (mainFile    != null ? "main file"    : (!string.IsNullOrWhiteSpace(mainUrl)    ? "main URL"    : "no main"))
+            + " | " + (inpaintFile != null ? "inpaint file" : (!string.IsNullOrWhiteSpace(inpaintUrl) ? "inpaint URL" : "no inpaint"));
+    }
+
+    public static bool IsEnabled(string name)
+    {
+        return !File.Exists(Path.Combine(GetDirPath(name), "_disabled"));
+    }
+
+    public static void SetEnabled(string name, bool enabled)
+    {
+        var filePath = Path.Combine(GetDirPath(name), "_disabled");
+        if (enabled && File.Exists(filePath)) File.Delete(filePath);
+        if (!enabled && !File.Exists(filePath)) File.WriteAllText(filePath, "");
     }
 }
