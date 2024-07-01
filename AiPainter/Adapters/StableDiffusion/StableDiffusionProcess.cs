@@ -8,18 +8,19 @@ static class StableDiffusionProcess
     private static Process? process;
     
     public static bool Loading { get; private set; }
-    public static string ActiveCheckpointFilePath { get; private set; }
+    public static string ActiveCheckpointFilePath { get; private set; } = "";
+    public static string ActiveVaeFilePath { get; private set; } = "";
 
     public static bool IsReady()
     {
         return ProcessHelper.IsPortOpen(Program.Config.StableDiffusionUrl);
     }
 
-    public static void Start(string checkpointFilePath, string? vaeFilePath)
+    public static void Start(string? checkpointFilePath, string? vaeFilePath)
     {
         var log = StableDiffusionClient.Log;
 
-        if (!Program.Config.UseEmbeddedStableDiffusion) return;
+        if (!Program.Config.UseEmbeddedStableDiffusion || checkpointFilePath == null) return;
 
         if (ProcessHelper.IsPortOpen(Program.Config.StableDiffusionUrl))
         {
@@ -51,8 +52,8 @@ static class StableDiffusionProcess
         Loading = true;
 
         ActiveCheckpointFilePath = checkpointFilePath;
+        ActiveVaeFilePath = vaeFilePath ?? "";
 
-        //var pathToVaeFile = !string.IsNullOrEmpty(vaeFilePath) ? Path.Join(Application.StartupPath, @"stable_diffusion_vae", vaeFilePath) : null;
         var pathToLoraDir = Path.Join(Application.StartupPath, "stable_diffusion_lora");
         
         process = ProcessHelper.RunInBackground

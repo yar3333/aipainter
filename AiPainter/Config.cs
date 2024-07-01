@@ -6,7 +6,8 @@ class Config
 
     public bool UseEmbeddedStableDiffusion { get; set; } = true;
     public string StableDiffusionUrl { get; set; } = "http://127.0.0.1:7860/";
-    public string StableDiffusionCheckpoint { get; set; } = "sd-v1-5-pruned-emaonly.safetensors";
+    public string StableDiffusionCheckpoint { get; set; } = "StableDiffusion-v1.5";
+    public string StableDiffusionVae { get; set; } = "";
     
     public bool UseEmbeddedLamaCleaner { get; set; } = true;
     public string LamaCleanerUrl { get; set; } = "http://127.0.0.1:9595/";
@@ -27,11 +28,5 @@ class Config
         "1024x512",
         "1024x768",
         "1024x1024",
-    };
-
-    public Dictionary<string, string> VaeUrls = new()
-    {
-        { "vae-ft-ema-560000-ema-pruned.safetensors", "https://huggingface.co/stabilityai/sd-vae-ft-ema-original/resolve/main/vae-ft-ema-560000-ema-pruned.safetensors?download=true" },
-        { "vae-ft-mse-840000-ema-pruned.safetensors", "https://huggingface.co/stabilityai/sd-vae-ft-mse-original/resolve/main/vae-ft-mse-840000-ema-pruned.safetensors?download=true" },
     };
 }

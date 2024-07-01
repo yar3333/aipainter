@@ -24,8 +24,8 @@ namespace AiPainter.Adapters.StableDiffusion
             {
                 var filePath = SdCheckpointsHelper.GetPathToMainCheckpoint(name);
                 if (!string.IsNullOrEmpty(filePath) && File.Exists(filePath)
-                 || !string.IsNullOrEmpty(SdCheckpointsHelper.GetConfig(name).downloadUrl)
-                 || !string.IsNullOrEmpty(SdCheckpointsHelper.GetConfig(name).downloadInpaintUrl))
+                 || !string.IsNullOrEmpty(SdCheckpointsHelper.GetConfig(name).mainCheckpointUrl)
+                 || !string.IsNullOrEmpty(SdCheckpointsHelper.GetConfig(name).inpaintCheckpointUrl))
                 {
                     var item = new ListViewItem(new[]
                     {
@@ -57,7 +57,7 @@ namespace AiPainter.Adapters.StableDiffusion
                 foreach (var name in checkedNames)
                 {
                     {
-                        var url = SdCheckpointsHelper.GetConfig(name).downloadUrl;
+                        var url = SdCheckpointsHelper.GetConfig(name).mainCheckpointUrl;
                         if (!string.IsNullOrWhiteSpace(url) && SdCheckpointsHelper.GetPathToMainCheckpoint(name) == null)
                         {
                             var uri = new Uri(url);
@@ -68,7 +68,7 @@ namespace AiPainter.Adapters.StableDiffusion
                             {
                                 downloadFile(name, url, fileName, "main").Wait();
                             }
-                            catch (AggregateException e)
+                            catch (AggregateException)
                             {
                                 updateStatus(name);
                                 Invoke(() => btOk.Enabled = true);
@@ -77,7 +77,7 @@ namespace AiPainter.Adapters.StableDiffusion
                         }
                     }                   
                     {
-                        var url = SdCheckpointsHelper.GetConfig(name).downloadInpaintUrl;
+                        var url = SdCheckpointsHelper.GetConfig(name).inpaintCheckpointUrl;
                         if (!string.IsNullOrWhiteSpace(url) && SdCheckpointsHelper.GetPathToInpaintCheckpoint(name) == null)
                         {
                             var uri = new Uri(url);
@@ -88,7 +88,7 @@ namespace AiPainter.Adapters.StableDiffusion
                             {
                                 downloadFile(name, url, fileName, "inpaint").Wait();
                             }
-                            catch (AggregateException e)
+                            catch (AggregateException)
                             {
                                 updateStatus(name);
                                 Invoke(() => btOk.Enabled = true);
@@ -120,13 +120,8 @@ namespace AiPainter.Adapters.StableDiffusion
         {
             Invoke(() => btOk.Enabled = false);
 
-            using var client = new HttpClient();
-            client.Timeout = TimeSpan.FromHours(10);
-
-            var tempDestFile = Path.GetTempFileName();
-            await using var file = new FileStream(tempDestFile, FileMode.Create, FileAccess.Write, FileShare.None);
             var cancelationTokenSource = new CancellationTokenSource();
-            var fileName = await client.DownloadAsync(url, file, (size, total) =>
+            await DownloadTools.DownloadFileAsync(url, fileNameIfNotDetected, SdCheckpointsHelper.GetDirPath(name), cancelationTokenSource.Token, (size, total) =>
             {
                 updateStatus(name, statusPrefix + ": " + (total != null ? Math.Round(size / (double)total * 100) + "%" : size + " bytes"));
 
@@ -134,12 +129,7 @@ namespace AiPainter.Adapters.StableDiffusion
                 {
                     cancelationTokenSource.Cancel();
                 }
-            }, cancelationTokenSource.Token);
-            file.Close();
-
-            if (string.IsNullOrWhiteSpace(fileName)) fileName = fileNameIfNotDetected;
-
-            File.Move(tempDestFile, Path.Combine(SdCheckpointsHelper.GetDirPath(name), fileName));
+            });
 
             Invoke(() =>
             {
@@ -147,6 +137,8 @@ namespace AiPainter.Adapters.StableDiffusion
                 btOk.Enabled = true;
             });
         }
+
+
 
         private void updateStatus(string name, string? text = null)
         {

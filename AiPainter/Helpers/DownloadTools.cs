@@ -1,6 +1,25 @@
 ﻿namespace AiPainter.Helpers;
 
-public static class HttpClientExtensions
+public static class DownloadTools
+{
+    public static async Task DownloadFileAsync(string url, string fileNameIfNotDetected, string destDir, CancellationToken cancellationToken, Action<long, long?> progress)
+    {
+        using var client = new HttpClient();
+        client.Timeout = TimeSpan.FromHours(10);
+
+        var tempDestFile = Path.GetTempFileName();
+        await using var file = new FileStream(tempDestFile, FileMode.Create, FileAccess.Write, FileShare.None);
+            
+        var fileName = await client.DownloadAsync(url, file, progress, cancellationToken);
+        file.Close();
+
+        if (string.IsNullOrWhiteSpace(fileName)) fileName = fileNameIfNotDetected;
+
+        File.Move(tempDestFile, Path.Combine(destDir, fileName));
+    }
+}
+
+static class HttpClientExtensions
 {
     public static async Task<string?> DownloadAsync(this HttpClient client, string requestUri, Stream destination, Action<long, long?>? progress, CancellationToken cancellationToken = default)
     {
@@ -17,7 +36,7 @@ public static class HttpClientExtensions
     }
 }
 
-public static class StreamExtensions
+static class StreamExtensions
 {
     public static async Task CopyToAsync(this Stream source, Stream destination, int bufferSize, Action<long> progress, CancellationToken cancellationToken = default)
     {

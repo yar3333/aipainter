@@ -1,6 +1,5 @@
 {
 	"prompt": "",
-	"vae": "",
 	"homeUrl": "https://huggingface.co/RunDiffusion/Juggernaut-XL-v9",
-	"downloadUrl": "https://huggingface.co/RunDiffusion/Juggernaut-XL-v9/resolve/main/Juggernaut-XL_v9_RunDiffusionPhoto_v2.safetensors?download=true"
+	"mainCheckpointUrl": "https://huggingface.co/RunDiffusion/Juggernaut-XL-v9/resolve/main/Juggernaut-XL_v9_RunDiffusionPhoto_v2.safetensors?download=true"
 }

@@ -1,0 +1,4 @@
+{
+	"downloadUrl": "https://huggingface.co/stabilityai/sd-vae-ft-ema-original/resolve/main/vae-ft-ema-560000-ema-pruned.safetensors?download=true",
+	"description": "Fix eyes on small faces."
+}

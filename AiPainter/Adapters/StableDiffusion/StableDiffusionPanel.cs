@@ -149,9 +149,9 @@ namespace AiPainter.Adapters.StableDiffusion
 
         private void ddCheckpoint_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (((ListItem)ddCheckpoint.SelectedItem).Value == Program.Config.StableDiffusionCheckpoint) return;
+            if (ddCheckpoint.SelectedValue.ToString() == Program.Config.StableDiffusionCheckpoint) return;
 
-            Program.Config.StableDiffusionCheckpoint = ((ListItem)ddCheckpoint.SelectedItem).Value;
+            Program.Config.StableDiffusionCheckpoint = ddCheckpoint.SelectedValue.ToString()!;
             Program.SaveConfig();
         }
 

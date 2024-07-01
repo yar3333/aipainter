@@ -1,6 +1,5 @@
 {
 	"prompt": "",
-	"vae": "",
 	"homeUrl": "https://civitai.com/models/46422/juggernaut",
-	"downloadUrl": "https://civitai.com/api/download/models/274039"
+	"mainCheckpointUrl": "https://civitai.com/api/download/models/274039"
 }

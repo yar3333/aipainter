@@ -4,6 +4,7 @@
 class SdGenerationParameters
 {
     public string checkpointName { get; set; } = null!;
+    public string vaeName { get; set; } = null!;
     public string prompt { get; set; } = null!;
     public string negative { get; set; } = null!;
     public int steps { get; set; }

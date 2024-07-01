@@ -132,9 +132,11 @@ class ImageGeneratorSd : IImageGenerator
             return;
         }
 
+        var vaeFilePath = SdVaeHelper.GetPathToVae(sdGenerationParameters.vaeName) ?? "";
+
         if (Program.Config.UseEmbeddedStableDiffusion && StableDiffusionProcess.Loading)
         {
-            if (StableDiffusionProcess.ActiveCheckpointFilePath != checkpointFilePath)
+            if (StableDiffusionProcess.ActiveCheckpointFilePath != checkpointFilePath || StableDiffusionProcess.ActiveVaeFilePath != vaeFilePath)
             {
                 control.NotifyStepsCustomText("Stopping...");
                 StableDiffusionProcess.Stop();
@@ -144,7 +146,7 @@ class ImageGeneratorSd : IImageGenerator
                 }
 
                 control.NotifyStepsCustomText("Starting...");
-                StableDiffusionProcess.Start(checkpointFilePath, SdCheckpointsHelper.GetPathToVae(sdGenerationParameters.checkpointName));
+                StableDiffusionProcess.Start(checkpointFilePath, vaeFilePath);
             }
         }
 
