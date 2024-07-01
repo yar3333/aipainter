@@ -6,7 +6,8 @@ public static class HttpClientExtensions
     {
         using var response = await client.GetAsync(requestUri, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
         var contentLength = response.Content.Headers.ContentLength;
-        var fileName = response.Content.Headers.ContentDisposition?.FileName;
+        var fileName = response.Content.Headers.ContentDisposition?.FileNameStar
+                    ?? response.Content.Headers.ContentDisposition?.FileName;
 
         await using var download = await response.Content.ReadAsStreamAsync(cancellationToken);
         

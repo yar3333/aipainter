@@ -8,6 +8,8 @@ namespace AiPainter.Adapters.StableDiffusion
         private string[] checkpointNames = null;
         private string[] checkedNames = {};
 
+        private bool ignoreCheckedChange = true;
+
         public SdCheckpointsForm()
         {
             InitializeComponent();
@@ -17,6 +19,7 @@ namespace AiPainter.Adapters.StableDiffusion
         {
             checkpointNames = SdCheckpointsHelper.GetNames("").Where(x => x != "").ToArray();
 
+            ignoreCheckedChange = true;
             foreach (var name in checkpointNames)
             {
                 var filePath = SdCheckpointsHelper.GetPathToMainCheckpoint(name);
@@ -37,6 +40,7 @@ namespace AiPainter.Adapters.StableDiffusion
                     if (item.Checked) checkedNames = checkedNames.Concat(new[] { name }).ToArray();
                 }
             }
+            ignoreCheckedChange = false;
 
             bwDownloading.RunWorkerAsync();
         }
@@ -46,7 +50,7 @@ namespace AiPainter.Adapters.StableDiffusion
             bwDownloading.CancelAsync();
         }
 
-        private void bwDownloading_DoWork(object sender, DoWorkEventArgs e)
+        private void bwDownloading_DoWork(object sender, DoWorkEventArgs _)
         {
             while (!bwDownloading.CancellationPending)
             {
@@ -64,7 +68,7 @@ namespace AiPainter.Adapters.StableDiffusion
                             {
                                 downloadFile(name, url, fileName, "main").Wait();
                             }
-                            catch (AggregateException)
+                            catch (AggregateException e)
                             {
                                 updateStatus(name);
                                 Invoke(() => btOk.Enabled = true);
@@ -84,7 +88,7 @@ namespace AiPainter.Adapters.StableDiffusion
                             {
                                 downloadFile(name, url, fileName, "inpaint").Wait();
                             }
-                            catch (AggregateException)
+                            catch (AggregateException e)
                             {
                                 updateStatus(name);
                                 Invoke(() => btOk.Enabled = true);
@@ -109,7 +113,7 @@ namespace AiPainter.Adapters.StableDiffusion
                 if (checkedNames.Contains(e.Item.Name)) checkedNames = checkedNames.Where(x => x != e.Item.Name).ToArray();
             }
 
-            SdCheckpointsHelper.SetEnabled(e.Item.Name, e.Item.Checked);
+            if (!ignoreCheckedChange) SdCheckpointsHelper.SetEnabled(e.Item.Name, e.Item.Checked);
         }
 
         private async Task downloadFile(string name, string url, string fileNameIfNotDetected, string statusPrefix)
@@ -131,6 +135,7 @@ namespace AiPainter.Adapters.StableDiffusion
                     cancelationTokenSource.Cancel();
                 }
             }, cancelationTokenSource.Token);
+            file.Close();
 
             if (string.IsNullOrWhiteSpace(fileName)) fileName = fileNameIfNotDetected;
 
