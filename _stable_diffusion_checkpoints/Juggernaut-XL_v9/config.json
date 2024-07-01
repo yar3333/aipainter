@@ -1,7 +1,6 @@
 {
 	"prompt": "",
-	"vae": "diffusion_pytorch_model.fp16.safetensors",
+	"vae": "",
 	"homeUrl": "https://huggingface.co/RunDiffusion/Juggernaut-XL-v9",
-	"downloadUrl": "https://huggingface.co/RunDiffusion/Juggernaut-XL-v9/resolve/main/Juggernaut-XL_v9_RunDiffusionPhoto_v2.safetensors?download=true",
-	"downloadVaeUrl": "https://huggingface.co/RunDiffusion/Juggernaut-XL-v9/resolve/main/vae/diffusion_pytorch_model.fp16.safetensors?download=true"
+	"downloadUrl": "https://huggingface.co/RunDiffusion/Juggernaut-XL-v9/resolve/main/Juggernaut-XL_v9_RunDiffusionPhoto_v2.safetensors?download=true"
 }

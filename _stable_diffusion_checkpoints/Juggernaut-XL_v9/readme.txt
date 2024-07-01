@@ -18,3 +18,7 @@ VAE is already Baked In HiRes: 4xNMKD-Siax_200k with 15 Steps and 0.3 Denoise + 
     Still Mid Shot Photo
     Full Body Photo
     Skin Details
+
+
+
+"downloadVaeUrl": "https://huggingface.co/RunDiffusion/Juggernaut-XL-v9/resolve/main/vae/diffusion_pytorch_model.fp16.safetensors?download=true"

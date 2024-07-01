@@ -10,3 +10,6 @@ URL: https://huggingface.co/prompthero/midjourney-v4-diffusion
 
 
 Prompt examples: https://prompthero.com/openjourney-prompts
+
+
+"downloadVae": "https://huggingface.co/prompthero/openjourney/resolve/main/vae/diffusion_pytorch_model.safetensors?download=true"

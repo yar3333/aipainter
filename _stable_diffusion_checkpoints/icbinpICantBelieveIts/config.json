@@ -1,7 +1,6 @@
 {
 	"prompt": "",
-	"vae": "vae-ft-mse-840000-ema-pruned_fp16.pt",
+	"vae": "vvae-ft-mse-840000-ema-pruned.safetensors",
 	"homeUrl": "https://civitai.com/models/28059",
-	"downloadUrl": "https://huggingface.co/sam749/ICBINP-New-Year/resolve/main/icbinpICantBelieveIts_newYear.safetensors?download=true",
-	"downloadVaeUrl": "https://huggingface.co/sam749/ICBINP-New-Year/resolve/main/vae/diffusion_pytorch_model.fp16.safetensors?download=true"
+	"downloadUrl": "https://huggingface.co/sam749/ICBINP-New-Year/resolve/main/icbinpICantBelieveIts_newYear.safetensors?download=true"
 }

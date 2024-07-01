@@ -28,4 +28,10 @@ class Config
         "1024x768",
         "1024x1024",
     };
+
+    public Dictionary<string, string> VaeUrls = new()
+    {
+        { "vae-ft-ema-560000-ema-pruned.safetensors", "https://huggingface.co/stabilityai/sd-vae-ft-ema-original/resolve/main/vae-ft-ema-560000-ema-pruned.safetensors?download=true" },
+        { "vae-ft-mse-840000-ema-pruned.safetensors", "https://huggingface.co/stabilityai/sd-vae-ft-mse-original/resolve/main/vae-ft-mse-840000-ema-pruned.safetensors?download=true" },
+    };
 }
