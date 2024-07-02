@@ -46,7 +46,7 @@ namespace AiPainter.Adapters.StableDiffusion
 
             tbNegative.Text = Program.Config.NegativePrompt;
 
-            updateLoras();
+            updateCheckpointContextMenu();
 
             ddlSampler.DataSource = new[]
             {
@@ -68,7 +68,7 @@ namespace AiPainter.Adapters.StableDiffusion
             ddCheckpoint.DataSource = SdCheckpointsHelper.GetListItems(Program.Config.StableDiffusionCheckpoint);
         }
 
-        private void updateLoras()
+        private void updateCheckpointContextMenu()
         {
             contextMenuCheckpoint.Items.Clear();
 
@@ -76,6 +76,23 @@ namespace AiPainter.Adapters.StableDiffusion
             {
                 showManageCheckpointDialog();
             });
+            
+            contextMenuCheckpoint.Items.Add(new ToolStripSeparator());
+
+            contextMenuCheckpoint.Items.AddRange(SdVaeHelper.GetMenuItems(Program.Config.StableDiffusionVae, vaeName =>
+            {
+                if (vaeName != "" && SdVaeHelper.GetPathToVae(vaeName) == null)
+                {
+                    var form = new SdVaeForm(vaeName);
+                    form.ShowDialog(this);
+                }
+                if (vaeName == "" || SdVaeHelper.GetPathToVae(vaeName) != null)
+                {
+                    Program.Config.StableDiffusionVae = vaeName;
+                    Program.SaveConfig();
+                    updateCheckpointContextMenu();
+                }
+            }));
 
             contextMenuCheckpoint.Items.Add(new ToolStripSeparator());
 

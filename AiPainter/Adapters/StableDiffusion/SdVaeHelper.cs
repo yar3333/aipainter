@@ -10,7 +10,7 @@ static class SdVaeHelper
     {
         var basePath = BasePath;
         
-        return new[] { nameToEnsureExists }
+        return new[] { "", nameToEnsureExists }
                 .Concat(Directory.GetFiles(basePath, "*.ckpt", SearchOption.AllDirectories)
                 .Concat(Directory.GetFiles(basePath, "*.safetensors", SearchOption.AllDirectories))
                 .Concat(Directory.GetFiles(basePath, "*.pt", SearchOption.AllDirectories))
@@ -21,11 +21,17 @@ static class SdVaeHelper
                 .ToArray();
     }
 
-    public static ListItem[] GetListItems(string nameToEnsureExists)
+    public static ToolStripItem[] GetMenuItems(string selectedName, Action<string> onClick)
     {
-        return GetNames(nameToEnsureExists).Where(x => GetPathToVae(x) != null && IsEnabled(x))
-                                           .Select(x => new ListItem { Value = x, Text = getHumanName(x) })
-                                           .ToArray();
+        // ReSharper disable once CoVariantArrayConversion
+        return GetNames(selectedName).Where(IsEnabled)
+                                     .Select(x => new ToolStripMenuItem(x != "" ? "Use VAE: " + getHumanName(x) : "Use VAE: default", null, (_, _) => onClick(x))
+                                     {
+                                         Name = x,
+                                         Checked = x == selectedName,
+                                         ToolTipText = x != "" ? GetConfig(x).description : "No improved rendering"
+                                     })
+                                     .ToArray();
     }
 
     public static string? GetPathToVae(string name)
