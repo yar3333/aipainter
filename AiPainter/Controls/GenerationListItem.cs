@@ -83,7 +83,7 @@
             }
         }
 
-        public void NotifyGenerateFail()
+        public void NotifyGenerateFail(string text)
         {
             InProcess = false;
             
@@ -91,7 +91,7 @@
             {
                 Invoke(() =>
                 {
-                    pbIterations.CustomText = "ERROR";
+                    pbIterations.CustomText = text;
                 });
             }
         }

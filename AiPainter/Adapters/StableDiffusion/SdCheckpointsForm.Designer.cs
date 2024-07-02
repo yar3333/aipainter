@@ -33,9 +33,10 @@
             columnHeader1 = new ColumnHeader();
             columnHeader2 = new ColumnHeader();
             columnHeader3 = new ColumnHeader();
-            columnHeader4 = new ColumnHeader();
             columnHeader5 = new ColumnHeader();
+            columnHeader6 = new ColumnHeader();
             bwDownloading = new System.ComponentModel.BackgroundWorker();
+            columnHeader4 = new ColumnHeader();
             SuspendLayout();
             // 
             // btOk
@@ -55,7 +56,7 @@
             // 
             lvModels.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             lvModels.CheckBoxes = true;
-            lvModels.Columns.AddRange(new ColumnHeader[] { columnHeader1, columnHeader2, columnHeader3, columnHeader4, columnHeader5 });
+            lvModels.Columns.AddRange(new ColumnHeader[] { columnHeader1, columnHeader2, columnHeader3, columnHeader4, columnHeader5, columnHeader6 });
             lvModels.FullRowSelect = true;
             lvModels.GridLines = true;
             lvModels.HeaderStyle = ColumnHeaderStyle.Nonclickable;
@@ -72,7 +73,7 @@
             // columnHeader1
             // 
             columnHeader1.Text = "Enabled";
-            columnHeader1.Width = 50;
+            columnHeader1.Width = 35;
             // 
             // columnHeader2
             // 
@@ -84,20 +85,25 @@
             columnHeader3.Text = "Inpaint file";
             columnHeader3.TextAlign = HorizontalAlignment.Center;
             // 
-            // columnHeader4
-            // 
-            columnHeader4.Text = "Name";
-            columnHeader4.Width = 180;
-            // 
             // columnHeader5
             // 
-            columnHeader5.Text = "Description";
-            columnHeader5.Width = 390;
+            columnHeader5.Text = "Name";
+            columnHeader5.Width = 180;
+            // 
+            // columnHeader6
+            // 
+            columnHeader6.Text = "Link";
+            columnHeader6.Width = 350;
             // 
             // bwDownloading
             // 
             bwDownloading.WorkerSupportsCancellation = true;
             bwDownloading.DoWork += bwDownloading_DoWork;
+            // 
+            // columnHeader4
+            // 
+            columnHeader4.Text = "VAE file";
+            columnHeader4.TextAlign = HorizontalAlignment.Center;
             // 
             // SdCheckpointsForm
             // 
@@ -121,10 +127,11 @@
         private Button btOk;
         private ListView lvModels;
         private ColumnHeader columnHeader1;
-        private ColumnHeader columnHeader4;
         private ColumnHeader columnHeader5;
+        private ColumnHeader columnHeader6;
         private System.ComponentModel.BackgroundWorker bwDownloading;
         private ColumnHeader columnHeader2;
         private ColumnHeader columnHeader3;
+        private ColumnHeader columnHeader4;
     }
 }

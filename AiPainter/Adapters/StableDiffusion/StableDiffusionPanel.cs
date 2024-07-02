@@ -166,11 +166,17 @@ namespace AiPainter.Adapters.StableDiffusion
             ddlImageSize.SelectedItem = imageSizeStr;
         }
 
+        public void SetVaeName(string name)
+        {
+            Program.Config.StableDiffusionVae = name;
+            updateCheckpointContextMenu();
+        }
+
         private void ddCheckpoint_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (ddCheckpoint.SelectedValue.ToString() == Program.Config.StableDiffusionCheckpoint) return;
+            if ((ddCheckpoint.SelectedValue?.ToString() ?? "") == Program.Config.StableDiffusionCheckpoint) return;
 
-            Program.Config.StableDiffusionCheckpoint = ddCheckpoint.SelectedValue.ToString()!;
+            Program.Config.StableDiffusionCheckpoint = ddCheckpoint.SelectedValue?.ToString() ?? "";
             Program.SaveConfig();
         }
 

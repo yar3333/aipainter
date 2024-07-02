@@ -33,7 +33,7 @@ namespace AiPainter.Adapters.StableDiffusion
             {
                 try
                 {
-                    DownloadTools.DownloadFileAsync(url, Path.GetFileName(new Uri(url).LocalPath), SdVaeHelper.GetDirPath(vaeName), cancelationTokenSource.Token, (size, total) =>
+                    DownloadTools.DownloadFileAsync(url, Path.GetFileName(new Uri(url).LocalPath), null, SdVaeHelper.GetDirPath(vaeName), cancelationTokenSource.Token, (size, total) =>
                     {
                         Invoke(() =>
                         {

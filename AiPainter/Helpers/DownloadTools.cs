@@ -2,8 +2,10 @@
 
 public static class DownloadTools
 {
-    public static async Task DownloadFileAsync(string url, string fileNameIfNotDetected, string destDir, CancellationToken cancellationToken, Action<long, long?> progress)
+    public static async Task DownloadFileAsync(string url, string fileNameIfNotDetected, Func<string, string>? preprocessFileName, string destDir, CancellationToken cancellationToken, Action<long, long?> progress)
     {
+        if (preprocessFileName == null) preprocessFileName = s => s;        
+        
         using var client = new HttpClient();
         client.Timeout = TimeSpan.FromHours(10);
 
@@ -14,6 +16,7 @@ public static class DownloadTools
         file.Close();
 
         if (string.IsNullOrWhiteSpace(fileName)) fileName = fileNameIfNotDetected;
+        fileName = preprocessFileName(fileName);
 
         File.Move(tempDestFile, Path.Combine(destDir, fileName));
     }

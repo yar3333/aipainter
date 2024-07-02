@@ -37,6 +37,7 @@ class ImageGeneratorSd : IImageGenerator
         sdGenerationParameters = new SdGenerationParameters
         {
             checkpointName = sdPanel.ddCheckpoint.SelectedValue.ToString()!,
+            vaeName = Program.Config.StableDiffusionVae,
             prompt = sdPanel.tbPrompt.Text.Trim(),
             negative = sdPanel.tbNegative.Text.Trim(),
             steps = (int)sdPanel.numSteps.Value,
@@ -81,7 +82,9 @@ class ImageGeneratorSd : IImageGenerator
 
     public void LoadParamsBackToPanel()
     {
+        sdPanel.ddCheckpoint.DataSource = SdCheckpointsHelper.GetListItems(sdGenerationParameters.checkpointName);
         sdPanel.ddCheckpoint.SelectedValue = sdGenerationParameters.checkpointName;
+        sdPanel.SetVaeName(sdGenerationParameters.vaeName);
         
         sdPanel.numSteps.Value = sdGenerationParameters.steps;
         sdPanel.tbPrompt.Text = sdGenerationParameters.prompt;
@@ -125,11 +128,13 @@ class ImageGeneratorSd : IImageGenerator
         
         if (checkpointFilePath == null)
         {
-            control.NotifyStepsCustomText("NOT FOUND");
+            control.NotifyGenerateFail("NOT FOUND");
             return;
         }
 
-        var vaeFilePath = SdVaeHelper.GetPathToVae(sdGenerationParameters.vaeName) ?? "";
+        var vaeFilePath = SdVaeHelper.GetPathToVae(sdGenerationParameters.vaeName) 
+                       ?? SdCheckpointsHelper.GetPathToVae(sdGenerationParameters.checkpointName) 
+                       ?? "";
 
         if (Program.Config.UseEmbeddedStableDiffusion && StableDiffusionProcess.Loading)
         {
@@ -319,7 +324,7 @@ class ImageGeneratorSd : IImageGenerator
         if (ev == null)
         {
             control.NotifyProgress(sdGenerationParameters.steps);
-            control.NotifyGenerateFail();
+            control.NotifyGenerateFail("ERROR");
             return;
         }
 

@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel;
+using System.Text.RegularExpressions;
 using AiPainter.Helpers;
 
 namespace AiPainter.Adapters.StableDiffusion
@@ -31,6 +32,7 @@ namespace AiPainter.Adapters.StableDiffusion
                     item.UseItemStyleForSubItems = false;
                     item.SubItems.Add(SdCheckpointsHelper.GetStatusMain(name));
                     item.SubItems.Add(SdCheckpointsHelper.GetStatusInpaint(name));
+                    item.SubItems.Add(SdCheckpointsHelper.GetStatusVae(name));
                     item.SubItems.Add(name);
                     item.SubItems.Add(SdCheckpointsHelper.GetConfig(name).homeUrl, Color.Blue, Color.White, item.Font);
 
@@ -66,7 +68,7 @@ namespace AiPainter.Adapters.StableDiffusion
                             var fileName = uri.LocalPath.EndsWith(".ckpt") || uri.LocalPath.EndsWith(".safetensors")
                                                 ? Path.GetFileName(uri.LocalPath)
                                                 : "main.safetensors";
-                            downloadFile(name, url, fileName, text => updateStatus(name, text, null));
+                            downloadFile(name, url, fileName, null, text => updateStatus(name, text, null, null));
                         }
                     }
                     
@@ -80,7 +82,23 @@ namespace AiPainter.Adapters.StableDiffusion
                             var fileName = uri.LocalPath.EndsWith(".ckpt") || uri.LocalPath.EndsWith(".safetensors")
                                                 ? Path.GetFileName(uri.LocalPath)
                                                 : "inpaint.safetensors";
-                            downloadFile(name, url, fileName, text => updateStatus(name, null, text));
+                            downloadFile(name, url, fileName, null, text => updateStatus(name, null, text, null));
+                        }
+                    }
+                    
+                    if (bwDownloading.CancellationPending) break;
+                    
+                    {
+                        var url = SdCheckpointsHelper.GetConfig(name).vaeUrl;
+                        if (!string.IsNullOrWhiteSpace(url) && SdCheckpointsHelper.GetPathToVae(name) == null)
+                        {
+                            var uri = new Uri(url);
+                            
+                            var fileName = uri.LocalPath.EndsWith(".ckpt") || uri.LocalPath.EndsWith(".safetensors") || uri.LocalPath.EndsWith(".pt")
+                                                ? prepareVaeFileName(Path.GetFileName(uri.LocalPath))
+                                                : "vae.pt";
+                            
+                            downloadFile(name, url, fileName, prepareVaeFileName, text => updateStatus(name, null, null, text));
                         }
                     }
 
@@ -106,7 +124,7 @@ namespace AiPainter.Adapters.StableDiffusion
             if (!ignoreCheckedChange) SdCheckpointsHelper.SetEnabled(e.Item.Name, e.Item.Checked);
         }
 
-        private void downloadFile(string name, string url, string fileNameIfNotDetected, Action<string> progress)
+        private void downloadFile(string name, string url, string fileNameIfNotDetected, Func<string, string>? preprocessFileName, Action<string> progress)
         {
             Invoke(() => btOk.Enabled = false);
 
@@ -114,7 +132,7 @@ namespace AiPainter.Adapters.StableDiffusion
 
             try
             {
-                DownloadTools.DownloadFileAsync(url, fileNameIfNotDetected, SdCheckpointsHelper.GetDirPath(name), cancelationTokenSource.Token, (size, total) =>
+                DownloadTools.DownloadFileAsync(url, fileNameIfNotDetected, preprocessFileName, SdCheckpointsHelper.GetDirPath(name), cancelationTokenSource.Token, (size, total) =>
                 {
                     progress(total != null ? Math.Round(size / (double)total * 100) + "%" : size + " bytes");
 
@@ -131,14 +149,14 @@ namespace AiPainter.Adapters.StableDiffusion
 
             Invoke(() =>
             {
-                updateStatus(name, null, null);
+                updateStatus(name, null, null, null);
                 btOk.Enabled = true;
             });
         }
 
 
 
-        private void updateStatus(string name, string? textMain, string? textInapint)
+        private void updateStatus(string name, string? textMain, string? textInapint, string? textVae)
         {
             Invoke(() =>
             {
@@ -150,6 +168,9 @@ namespace AiPainter.Adapters.StableDiffusion
 
                     textInapint ??= SdCheckpointsHelper.GetStatusInpaint(name);
                     if (item.SubItems[2].Text != textInapint) item.SubItems[2].Text = textInapint;
+                    
+                    textVae ??= SdCheckpointsHelper.GetStatusVae(name);
+                    if (item.SubItems[3].Text != textVae) item.SubItems[3].Text = textVae;
                 }
             });
         }
@@ -163,6 +184,13 @@ namespace AiPainter.Adapters.StableDiffusion
             {
                 ProcessHelper.OpenUrlInBrowser(hit.SubItem.Text);
             }
+        }
+
+        private string prepareVaeFileName(string fileName)
+        {
+            return !Regex.IsMatch(fileName, @"\bvae\b")
+                            ? Path.GetFileNameWithoutExtension(fileName) + "-vae" + Path.GetExtension(fileName)
+                            : fileName;
         }
     }
 }

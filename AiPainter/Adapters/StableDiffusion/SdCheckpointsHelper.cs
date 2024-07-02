@@ -1,4 +1,5 @@
 ﻿using System.Text.Json;
+using System.Text.RegularExpressions;
 
 namespace AiPainter.Adapters.StableDiffusion;
 
@@ -25,7 +26,7 @@ static class SdCheckpointsHelper
 
     public static ListItem[] GetListItems(string nameToEnsureExists)
     {
-        return GetNames(nameToEnsureExists).Where(x => GetPathToMainCheckpoint(x) != null && IsEnabled(x))
+        return GetNames(nameToEnsureExists).Where(x => x == nameToEnsureExists || (GetPathToMainCheckpoint(x) != null && IsEnabled(x)))
                                            .Select(x => new ListItem { Value = x, Text = getHumanName(x) })
                                            .ToArray();
     }
@@ -38,7 +39,9 @@ static class SdCheckpointsHelper
              .Concat(Directory.GetFiles(GetDirPath(name), "*.safetensors"))
              .ToArray();
 
-        return models.Where(x => !x.ToLowerInvariant().Contains("inpaint")).Min();
+        return models.Where(x => !Path.GetFileNameWithoutExtension(x).ToLowerInvariant().Contains("inpaint") 
+                              && !Regex.IsMatch(Path.GetFileNameWithoutExtension(x), @"\bvae\b", RegexOptions.IgnoreCase))
+                     .Min();
     }
 
     public static string? GetPathToInpaintCheckpoint(string name)
@@ -46,10 +49,24 @@ static class SdCheckpointsHelper
         if (!Directory.Exists(GetDirPath(name))) return null;
 
         var models = Directory.GetFiles(GetDirPath(name), "*.ckpt")
-                              .Concat(Directory.GetFiles(GetDirPath(name), "*.safetensors"))
-                              .ToArray();
+             .Concat(Directory.GetFiles(GetDirPath(name), "*.safetensors"))
+             .ToArray();
 
-        return models.Where(x => x.ToLowerInvariant().Contains("inpaint")).Min();
+        return models.Where(x => Path.GetFileNameWithoutExtension(x).ToLowerInvariant().Contains("inpaint") 
+                              && !Regex.IsMatch(Path.GetFileNameWithoutExtension(x), @"\bvae\b", RegexOptions.IgnoreCase))
+                     .Min();
+    }
+
+    public static string? GetPathToVae(string name)
+    {
+        if (!Directory.Exists(GetDirPath(name))) return null;
+
+        var models = Directory.GetFiles(GetDirPath(name), "*.ckpt")
+             .Concat(Directory.GetFiles(GetDirPath(name), "*.safetensors"))
+             .Concat(Directory.GetFiles(GetDirPath(name), "*.pt"))
+             .ToArray();
+
+        return models.Where(x => Regex.IsMatch(Path.GetFileNameWithoutExtension(x), @"\bvae\b", RegexOptions.IgnoreCase)).Min();
     }
 
     public static string GetDirPath(string name)
@@ -76,17 +93,24 @@ static class SdCheckpointsHelper
 
     public static string GetStatusMain(string name)
     {
-        var mainFile = GetPathToMainCheckpoint(name);
-        var mainUrl = GetConfig(name).mainCheckpointUrl;
-        return mainFile != null ? "+" : (!string.IsNullOrWhiteSpace(mainUrl) ? "URL" : "");
+        var file = GetPathToMainCheckpoint(name);
+        var url = GetConfig(name).mainCheckpointUrl;
+        return file != null ? "+" : (!string.IsNullOrWhiteSpace(url) ? "URL" : "");
 
     }
 
     public static string GetStatusInpaint(string name)
     {
-        var inpaintFile = GetPathToInpaintCheckpoint(name);
-        var inpaintUrl = GetConfig(name).inpaintCheckpointUrl;
-        return inpaintFile != null ? "+" : (!string.IsNullOrWhiteSpace(inpaintUrl) ? "URL" : "");
+        var file = GetPathToInpaintCheckpoint(name);
+        var url = GetConfig(name).inpaintCheckpointUrl;
+        return file != null ? "+" : (!string.IsNullOrWhiteSpace(url) ? "URL" : "");
+    }
+
+    public static string GetStatusVae(string name)
+    {
+        var file = GetPathToVae(name);
+        var url = GetConfig(name).vaeUrl;
+        return file != null ? "+" : (!string.IsNullOrWhiteSpace(url) ? "URL" : "");
     }
 
     public static bool IsEnabled(string name)

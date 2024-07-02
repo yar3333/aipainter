@@ -1,6 +1,4 @@
-﻿using AiPainter.Adapters.StableDiffusion;
-
-namespace AiPainter.Controls
+﻿namespace AiPainter.Controls
 {
     public partial class GenerationList : UserControl
     {
