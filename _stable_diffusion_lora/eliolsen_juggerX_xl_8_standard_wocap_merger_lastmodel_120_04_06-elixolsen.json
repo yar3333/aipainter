@@ -1,5 +1,6 @@
 {
-	"name": "eliolsen_juggerX_xl_8_standard_wocap_merger_lastmodel_120_04_06-elixolsen",
+	"name": "Elizabeth Olsen SDXL",
 	"prompt": "elixolsen",
-	"weight": 0.95
+	"homeUrl": "https://civitai.com/models/122518?modelVersionId=562325",
+	"downloadUrl": "https://civitai.com/api/download/models/562325?type=Model&format=SafeTensor"
 }

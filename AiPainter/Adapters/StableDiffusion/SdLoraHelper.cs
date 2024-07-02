@@ -1,5 +1,4 @@
-﻿using System.Globalization;
-using System.Text.Json;
+﻿using System.Text.Json;
 
 namespace AiPainter.Adapters.StableDiffusion;
 
@@ -24,27 +23,24 @@ static class SdLoraHelper
         if (string.IsNullOrEmpty(name)) return "";
 
         var config = GetConfig(name);
-        return "<lora:" + (!string.IsNullOrEmpty(config.name) ? config.name : Path.GetFileNameWithoutExtension(name))
-                  + ":" + config.weight.ToString(CultureInfo.InvariantCulture) + ">"
-                  + config.prompt;
+        return "<lora:" + Path.GetFileNameWithoutExtension(name) + ":0.9>" + config.prompt;
     }
 
     public static string GetHumanName(string? name)
     {
-        if (string.IsNullOrEmpty(name)) return "";
-        
-        // ReSharper disable once StringIndexOfIsCultureSpecific.1
-        var n = name.IndexOf(".");
-        if (n > 0) name = name.Substring(0, n);
-        return name;
+        return string.IsNullOrEmpty(name) ? "" : GetConfig(name).name;
     }
 
     public static SdLoraConfig GetConfig(string name)
     {
         var configFilePath = Path.Combine(BasePath, Path.GetFileNameWithoutExtension(name) + ".json");
 
-        return File.Exists(configFilePath)
-                   ? JsonSerializer.Deserialize<SdLoraConfig>(File.ReadAllText(configFilePath)) ?? new SdLoraConfig()
-                   : new SdLoraConfig();
+        var r = File.Exists(configFilePath) 
+                    ? JsonSerializer.Deserialize<SdLoraConfig>(File.ReadAllText(configFilePath)) ?? new SdLoraConfig()
+                    : new SdLoraConfig();
+
+        if (string.IsNullOrWhiteSpace(r.name)) r.name = Path.GetFileNameWithoutExtension(name);
+
+        return r;
     }
 }

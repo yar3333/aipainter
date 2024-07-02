@@ -16,6 +16,7 @@ class Config
     public string RemBgUrl { get; set; } = "http://127.0.0.1:9696/";
 
     public string NegativePrompt { get; set; } = "[deformed | disfigured], poorly drawn, [bad : wrong] anatomy, [extra | missing | floating | disconnected] limb, (mutated hands and fingers), blurry";
+    public List<string> NegativePrompts { get; set; } = new();
 
     public string[] ImageSizes { get; set; } =
     {

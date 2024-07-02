@@ -47,9 +47,9 @@ class ImageGeneratorSd : IImageGenerator
             seedVariationStrength = sdPanel.trackBarSeedVariationStrength.Value / 100m,
 
             modifiers = sdPanel.Modifiers,
-            width = int.Parse(sdPanel.ddlImageSize.SelectedItem.ToString()!.Split("x")[0]),
-            height = int.Parse(sdPanel.ddlImageSize.SelectedItem.ToString()!.Split("x")[1]),
-            sampler = sdPanel.ddlSampler.SelectedItem.ToString()!,
+            width = int.Parse(sdPanel.ddImageSize.SelectedItem.ToString()!.Split("x")[0]),
+            height = int.Parse(sdPanel.ddImageSize.SelectedItem.ToString()!.Split("x")[1]),
+            sampler = sdPanel.ddSampler.SelectedItem.ToString()!,
             changesLevel = sdPanel.trackBarChangesLevel.Value / 100.0m,
         };
 
@@ -95,7 +95,7 @@ class ImageGeneratorSd : IImageGenerator
         sdPanel.tbSeed.Text = sdGenerationParameters.seed.ToString();
         sdPanel.trackBarSeedVariationStrength.Value = (int)Math.Round(sdGenerationParameters.seedVariationStrength * 100);
         
-        sdPanel.ddlSampler.SelectedItem = sdGenerationParameters.sampler;
+        sdPanel.ddSampler.SelectedItem = sdGenerationParameters.sampler;
         sdPanel.trackBarChangesLevel.Value = (int)Math.Round(sdGenerationParameters.changesLevel * 100);
 
         sdPanel.numIterations.Value = originalCount;

@@ -208,7 +208,7 @@ namespace AiPainter
 
                     panStableDiffusion.Modifiers = sdGenerationParameters.modifiers;
                     panStableDiffusion.SelectImageSize(sdGenerationParameters.width, sdGenerationParameters.height);
-                    panStableDiffusion.ddlSampler.SelectedItem = sdGenerationParameters.sampler;
+                    panStableDiffusion.ddSampler.SelectedItem = sdGenerationParameters.sampler;
                     panStableDiffusion.trackBarChangesLevel.Value = (int)Math.Round(sdGenerationParameters.changesLevel * 100);
                 }
             };
@@ -604,6 +604,11 @@ namespace AiPainter
             }
 
             openImageFile(destImagePath);
+        }
+
+        private void contextMenuPreviewImage_ShowInExplorer_Click(object sender, EventArgs e)
+        {
+            ProcessHelper.ShowFileInExplorer(activeImagePreview.FilePath);
         }
 
         private void contextMenuPreviewImage_Closed(object sender, ToolStripDropDownClosedEventArgs e)

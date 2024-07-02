@@ -2,7 +2,8 @@
 
 class SdLoraConfig
 {
-    public string name { get; set; } = "";
+    public string name{ get; set; } = "";
     public string prompt { get; set; } = "";
-    public double weight { get; set; } = 0.95;
+    public string homeUrl { get; set; } = "";
+    public string downloadUrl { get; set; } = "";
 }

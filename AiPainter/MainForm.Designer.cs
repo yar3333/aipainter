@@ -66,11 +66,13 @@ namespace AiPainter
             toolTip = new ToolTip(components);
             updateImageListWorker = new System.ComponentModel.BackgroundWorker();
             contextMenuPreviewImage = new ContextMenuStrip(components);
+            contextMenuPreviewImage_ShowInExplorer = new ToolStripMenuItem();
+            toolStripSeparator6 = new ToolStripSeparator();
             contextMenuPreviewImage_MoveToSubfolder = new ToolStripMenuItem();
             contextMenuPreviewImage_MoveToSubfolderAndOpen = new ToolStripMenuItem();
+            toolStripSeparator5 = new ToolStripSeparator();
             contextMenuPreviewImage_MoveToParentFolder = new ToolStripMenuItem();
             contextMenuPreviewImage_MoveToParentFolderAndOpen = new ToolStripMenuItem();
-            toolStripSeparator5 = new ToolStripSeparator();
             controlsStateUpdater = new System.Windows.Forms.Timer(components);
             toolbar.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)splitContainer).BeginInit();
@@ -310,8 +312,8 @@ namespace AiPainter
             // splitContainer.Panel2
             // 
             splitContainer.Panel2.Resize += splitContainer_Panel2_Resize;
-            splitContainer.Size = new Size(924, 667);
-            splitContainer.SplitterDistance = 523;
+            splitContainer.Size = new Size(924, 757);
+            splitContainer.SplitterDistance = 593;
             splitContainer.TabIndex = 2;
             splitContainer.SplitterMoved += splitContainer_SplitterMoved;
             // 
@@ -328,7 +330,7 @@ namespace AiPainter
             // splitContainer1.Panel2
             // 
             splitContainer1.Panel2.Controls.Add(splitContainer2);
-            splitContainer1.Size = new Size(924, 523);
+            splitContainer1.Size = new Size(924, 593);
             splitContainer1.SplitterDistance = 308;
             splitContainer1.TabIndex = 4;
             splitContainer1.SplitterMoved += splitContainer1_SplitterMoved;
@@ -340,7 +342,7 @@ namespace AiPainter
             pictureBox.Image = null;
             pictureBox.Location = new Point(0, 0);
             pictureBox.Name = "pictureBox";
-            pictureBox.Size = new Size(308, 523);
+            pictureBox.Size = new Size(308, 593);
             pictureBox.TabIndex = 3;
             // 
             // splitContainer2
@@ -356,7 +358,7 @@ namespace AiPainter
             // splitContainer2.Panel2
             // 
             splitContainer2.Panel2.Controls.Add(panGenerationList);
-            splitContainer2.Size = new Size(612, 523);
+            splitContainer2.Size = new Size(612, 593);
             splitContainer2.SplitterDistance = 351;
             splitContainer2.TabIndex = 0;
             // 
@@ -368,7 +370,7 @@ namespace AiPainter
             panel1.Dock = DockStyle.Fill;
             panel1.Location = new Point(0, 0);
             panel1.Name = "panel1";
-            panel1.Size = new Size(351, 523);
+            panel1.Size = new Size(351, 593);
             panel1.TabIndex = 2;
             // 
             // panStableDiffusion
@@ -378,7 +380,7 @@ namespace AiPainter
             panStableDiffusion.Dock = DockStyle.Top;
             panStableDiffusion.Location = new Point(0, 0);
             panStableDiffusion.Name = "panStableDiffusion";
-            panStableDiffusion.Size = new Size(351, 478);
+            panStableDiffusion.Size = new Size(351, 569);
             panStableDiffusion.TabIndex = 6;
             // 
             // panGenerationList
@@ -389,13 +391,13 @@ namespace AiPainter
             panGenerationList.Dock = DockStyle.Fill;
             panGenerationList.Location = new Point(0, 0);
             panGenerationList.Name = "panGenerationList";
-            panGenerationList.Size = new Size(257, 523);
+            panGenerationList.Size = new Size(257, 593);
             panGenerationList.TabIndex = 0;
             // 
             // hPicScroll
             // 
             hPicScroll.Dock = DockStyle.Bottom;
-            hPicScroll.Location = new Point(0, 710);
+            hPicScroll.Location = new Point(0, 800);
             hPicScroll.Name = "hPicScroll";
             hPicScroll.Size = new Size(924, 30);
             hPicScroll.TabIndex = 0;
@@ -406,10 +408,22 @@ namespace AiPainter
             // 
             // contextMenuPreviewImage
             // 
-            contextMenuPreviewImage.Items.AddRange(new ToolStripItem[] { contextMenuPreviewImage_MoveToSubfolder, contextMenuPreviewImage_MoveToSubfolderAndOpen, toolStripSeparator5, contextMenuPreviewImage_MoveToParentFolder, contextMenuPreviewImage_MoveToParentFolderAndOpen });
+            contextMenuPreviewImage.Items.AddRange(new ToolStripItem[] { contextMenuPreviewImage_ShowInExplorer, toolStripSeparator6, contextMenuPreviewImage_MoveToSubfolder, contextMenuPreviewImage_MoveToSubfolderAndOpen, toolStripSeparator5, contextMenuPreviewImage_MoveToParentFolder, contextMenuPreviewImage_MoveToParentFolderAndOpen });
             contextMenuPreviewImage.Name = "cmPreviewImageContextMenu";
-            contextMenuPreviewImage.Size = new Size(243, 120);
+            contextMenuPreviewImage.Size = new Size(243, 126);
             contextMenuPreviewImage.Closed += contextMenuPreviewImage_Closed;
+            // 
+            // contextMenuPreviewImage_ShowInExplorer
+            // 
+            contextMenuPreviewImage_ShowInExplorer.Name = "contextMenuPreviewImage_ShowInExplorer";
+            contextMenuPreviewImage_ShowInExplorer.Size = new Size(242, 22);
+            contextMenuPreviewImage_ShowInExplorer.Text = "Show in Explorer";
+            contextMenuPreviewImage_ShowInExplorer.Click += contextMenuPreviewImage_ShowInExplorer_Click;
+            // 
+            // toolStripSeparator6
+            // 
+            toolStripSeparator6.Name = "toolStripSeparator6";
+            toolStripSeparator6.Size = new Size(239, 6);
             // 
             // contextMenuPreviewImage_MoveToSubfolder
             // 
@@ -425,6 +439,11 @@ namespace AiPainter
             contextMenuPreviewImage_MoveToSubfolderAndOpen.Text = "Move to subfolder and open";
             contextMenuPreviewImage_MoveToSubfolderAndOpen.Click += contextMenuPreviewImage_MoveToSubfolderAndOpen_Click;
             // 
+            // toolStripSeparator5
+            // 
+            toolStripSeparator5.Name = "toolStripSeparator5";
+            toolStripSeparator5.Size = new Size(239, 6);
+            // 
             // contextMenuPreviewImage_MoveToParentFolder
             // 
             contextMenuPreviewImage_MoveToParentFolder.Name = "contextMenuPreviewImage_MoveToParentFolder";
@@ -439,17 +458,12 @@ namespace AiPainter
             contextMenuPreviewImage_MoveToParentFolderAndOpen.Text = "Move to parent folder and open";
             contextMenuPreviewImage_MoveToParentFolderAndOpen.Click += contextMenuPreviewImage_MoveToParentFolderAndOpen_Click;
             // 
-            // toolStripSeparator5
-            // 
-            toolStripSeparator5.Name = "toolStripSeparator5";
-            toolStripSeparator5.Size = new Size(239, 6);
-            // 
             // MainForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             BackgroundImageLayout = ImageLayout.Center;
-            ClientSize = new Size(924, 740);
+            ClientSize = new Size(924, 830);
             Controls.Add(hPicScroll);
             Controls.Add(splitContainer);
             Controls.Add(toolbar);
@@ -517,5 +531,7 @@ namespace AiPainter
         private ToolStripMenuItem contextMenuPreviewImage_MoveToParentFolder;
         private ToolStripMenuItem contextMenuPreviewImage_MoveToParentFolderAndOpen;
         private ToolStripSeparator toolStripSeparator5;
+        private ToolStripMenuItem contextMenuPreviewImage_ShowInExplorer;
+        private ToolStripSeparator toolStripSeparator6;
     }
 }

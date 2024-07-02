@@ -32,10 +32,12 @@
             collapsablePanel = new Controls.CollapsablePanel();
             cbUseSeed = new CheckBox();
             label5 = new Label();
-            ddlSampler = new ComboBox();
+            ddSampler = new ComboBox();
+            btContextMenuNegativePrompt = new Button();
+            btContextMenuPrompt = new Button();
             btContextMenuCheckpoint = new Button();
             label4 = new Label();
-            ddlImageSize = new ComboBox();
+            ddImageSize = new ComboBox();
             lbModifiers = new ListBox();
             ddCheckpoint = new ComboBox();
             tbNegative = new TextBox();
@@ -52,6 +54,8 @@
             trackBarSeedVariationStrength = new TrackBar();
             toolTip = new ToolTip(components);
             contextMenuCheckpoint = new ContextMenuStrip(components);
+            contextMenuPrompt = new ContextMenuStrip(components);
+            contextMenuNegativePrompt = new ContextMenuStrip(components);
             collapsablePanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)numIterations).BeginInit();
             ((System.ComponentModel.ISupportInitialize)numSteps).BeginInit();
@@ -67,10 +71,12 @@
             collapsablePanel.Caption = "StableDiffusion";
             collapsablePanel.Controls.Add(cbUseSeed);
             collapsablePanel.Controls.Add(label5);
-            collapsablePanel.Controls.Add(ddlSampler);
+            collapsablePanel.Controls.Add(ddSampler);
+            collapsablePanel.Controls.Add(btContextMenuNegativePrompt);
+            collapsablePanel.Controls.Add(btContextMenuPrompt);
             collapsablePanel.Controls.Add(btContextMenuCheckpoint);
             collapsablePanel.Controls.Add(label4);
-            collapsablePanel.Controls.Add(ddlImageSize);
+            collapsablePanel.Controls.Add(ddImageSize);
             collapsablePanel.Controls.Add(lbModifiers);
             collapsablePanel.Controls.Add(ddCheckpoint);
             collapsablePanel.Controls.Add(tbNegative);
@@ -116,18 +122,42 @@
             label5.Text = "Sampler";
             label5.TextAlign = ContentAlignment.MiddleRight;
             // 
-            // ddlSampler
+            // ddSampler
             // 
-            ddlSampler.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
-            ddlSampler.DropDownStyle = ComboBoxStyle.DropDownList;
-            ddlSampler.Font = new Font("Segoe UI", 10F, FontStyle.Regular, GraphicsUnit.Point);
-            ddlSampler.FormattingEnabled = true;
-            ddlSampler.Items.AddRange(new object[] { "512x512", "768x768", "512x768", "768x512", "640x640" });
-            ddlSampler.Location = new Point(59, 350);
-            ddlSampler.Name = "ddlSampler";
-            ddlSampler.Size = new Size(162, 25);
-            ddlSampler.TabIndex = 25;
-            toolTip.SetToolTip(ddlSampler, "Euler a (default, use 50+ detail level), DPM++ 2M (use 20+ detail level), Heun (useful for postprocessing)");
+            ddSampler.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+            ddSampler.DropDownStyle = ComboBoxStyle.DropDownList;
+            ddSampler.Font = new Font("Segoe UI", 10F, FontStyle.Regular, GraphicsUnit.Point);
+            ddSampler.FormattingEnabled = true;
+            ddSampler.Items.AddRange(new object[] { "512x512", "768x768", "512x768", "768x512", "640x640" });
+            ddSampler.Location = new Point(59, 350);
+            ddSampler.Name = "ddSampler";
+            ddSampler.Size = new Size(162, 25);
+            ddSampler.TabIndex = 25;
+            toolTip.SetToolTip(ddSampler, "Euler a (default, use 50+ detail level), DPM++ 2M (use 20+ detail level), Heun (useful for postprocessing)");
+            // 
+            // btContextMenuNegativePrompt
+            // 
+            btContextMenuNegativePrompt.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+            btContextMenuNegativePrompt.Font = new Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point);
+            btContextMenuNegativePrompt.Location = new Point(313, 194);
+            btContextMenuNegativePrompt.Name = "btContextMenuNegativePrompt";
+            btContextMenuNegativePrompt.Size = new Size(32, 25);
+            btContextMenuNegativePrompt.TabIndex = 24;
+            btContextMenuNegativePrompt.Text = ">>";
+            btContextMenuNegativePrompt.UseVisualStyleBackColor = true;
+            btContextMenuNegativePrompt.Click += btContextMenuNegativePrompt_Click;
+            // 
+            // btContextMenuPrompt
+            // 
+            btContextMenuPrompt.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            btContextMenuPrompt.Font = new Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point);
+            btContextMenuPrompt.Location = new Point(313, 59);
+            btContextMenuPrompt.Name = "btContextMenuPrompt";
+            btContextMenuPrompt.Size = new Size(32, 25);
+            btContextMenuPrompt.TabIndex = 24;
+            btContextMenuPrompt.Text = ">>";
+            btContextMenuPrompt.UseVisualStyleBackColor = true;
+            btContextMenuPrompt.Click += btContextMenuPrompt_Click;
             // 
             // btContextMenuCheckpoint
             // 
@@ -152,17 +182,17 @@
             label4.Text = "Detail level";
             label4.TextAlign = ContentAlignment.MiddleRight;
             // 
-            // ddlImageSize
+            // ddImageSize
             // 
-            ddlImageSize.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
-            ddlImageSize.DropDownStyle = ComboBoxStyle.DropDownList;
-            ddlImageSize.Font = new Font("Segoe UI", 10F, FontStyle.Regular, GraphicsUnit.Point);
-            ddlImageSize.FormattingEnabled = true;
-            ddlImageSize.Location = new Point(194, 311);
-            ddlImageSize.Name = "ddlImageSize";
-            ddlImageSize.Size = new Size(151, 25);
-            ddlImageSize.TabIndex = 22;
-            toolTip.SetToolTip(ddlImageSize, "Generated image size. Can be changed in \"Config.json\" file");
+            ddImageSize.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+            ddImageSize.DropDownStyle = ComboBoxStyle.DropDownList;
+            ddImageSize.Font = new Font("Segoe UI", 10F, FontStyle.Regular, GraphicsUnit.Point);
+            ddImageSize.FormattingEnabled = true;
+            ddImageSize.Location = new Point(194, 311);
+            ddImageSize.Name = "ddImageSize";
+            ddImageSize.Size = new Size(151, 25);
+            ddImageSize.TabIndex = 22;
+            toolTip.SetToolTip(ddImageSize, "Generated image size. Can be changed in \"Config.json\" file");
             // 
             // lbModifiers
             // 
@@ -201,7 +231,7 @@
             tbNegative.Name = "tbNegative";
             tbNegative.PlaceholderText = "Negative prompt (don't want to get)";
             tbNegative.ScrollBars = ScrollBars.Vertical;
-            tbNegative.Size = new Size(342, 48);
+            tbNegative.Size = new Size(304, 48);
             tbNegative.TabIndex = 17;
             // 
             // cbUseInitImage
@@ -239,7 +269,7 @@
             tbPrompt.Name = "tbPrompt";
             tbPrompt.PlaceholderText = "Prompt (describe desired picture)";
             tbPrompt.ScrollBars = ScrollBars.Vertical;
-            tbPrompt.Size = new Size(342, 129);
+            tbPrompt.Size = new Size(304, 129);
             tbPrompt.TabIndex = 0;
             // 
             // numIterations
@@ -347,6 +377,17 @@
             contextMenuCheckpoint.Name = "contextMenuCheckpoint";
             contextMenuCheckpoint.Size = new Size(61, 4);
             // 
+            // contextMenuPrompt
+            // 
+            contextMenuPrompt.Name = "contextMenuCheckpoint";
+            contextMenuPrompt.Size = new Size(61, 4);
+            // 
+            // contextMenuNegativePrompt
+            // 
+            contextMenuNegativePrompt.MinimumSize = new Size(200, 0);
+            contextMenuNegativePrompt.Name = "contextMenuCheckpoint";
+            contextMenuNegativePrompt.Size = new Size(200, 4);
+            // 
             // StableDiffusionPanel
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -380,14 +421,18 @@
         public TextBox tbNegative;
         public ComboBox ddCheckpoint;
         private ListBox lbModifiers;
-        public ComboBox ddlImageSize;
+        public ComboBox ddImageSize;
         private Label label4;
         private Button btContextMenuCheckpoint;
         private ContextMenuStrip contextMenuCheckpoint;
-        public ComboBox ddlSampler;
+        public ComboBox ddSampler;
         private Label label5;
         public TrackBar trackBarChangesLevel;
         public TrackBar trackBarSeedVariationStrength;
         public CheckBox cbUseSeed;
+        private Button btContextMenuNegativePrompt;
+        private Button btContextMenuPrompt;
+        private ContextMenuStrip contextMenuPrompt;
+        private ContextMenuStrip contextMenuNegativePrompt;
     }
 }

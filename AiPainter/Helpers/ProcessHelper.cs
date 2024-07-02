@@ -62,6 +62,16 @@ static class ProcessHelper
         );
     }
 
+    public static void ShowFileInExplorer(string filePath)
+    {
+        Process.Start("explorer.exe", "/select, \"" + filePath +"\"");
+    }
+
+    public static void ShowFolderInExplorer(string folderPath)
+    {
+        Process.Start(new ProcessStartInfo("explorer.exe", folderPath));
+    }
+
     public static bool IsPortOpen(string url)
     {
         var uri = new Uri(url);

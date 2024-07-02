@@ -1,11 +1,17 @@
 Anything V3
+===========
 
 Welcome to Anything V3 - a latent diffusion model for weebs.
 This model is intended to produce high-quality, highly detailed anime style with just a few prompts.
 Like other anime-style Stable Diffusion models, it also supports danbooru tags to generate images.
 
-e.g. 1girl, white hair, golden eyes, beautiful eyes, detail, flower meadow, cumulonimbus clouds, lighting, detailed sky, garden
+E.g. 1girl, white hair, golden eyes, beautiful eyes, detail, flower meadow, cumulonimbus clouds, lighting, detailed sky, garden
 
+See https://danbooru.donmai.us/tags
+
+
+Examples
+--------
 
 Anime Girl: Anime Girl
 

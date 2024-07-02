@@ -1,4 +1,5 @@
 ﻿using AiPainter.Controls;
+using AiPainter.Helpers;
 
 namespace AiPainter.Adapters.StableDiffusion
 {
@@ -43,18 +44,16 @@ namespace AiPainter.Adapters.StableDiffusion
 
             tbNegative.Text = Program.Config.NegativePrompt;
 
-            updateCheckpointContextMenu();
-
-            ddlSampler.DataSource = new[]
+            ddSampler.DataSource = new[]
             {
                 "Euler a",
                 "DPM++ 2M",
                 "Heun",
             };
-            ddlSampler.SelectedItem = "DPM++ 2M";
+            ddSampler.SelectedItem = "DPM++ 2M";
 
-            ddlImageSize.DataSource = Program.Config.ImageSizes;
-            ddlImageSize.SelectedIndex = 0;
+            ddImageSize.DataSource = Program.Config.ImageSizes;
+            ddImageSize.SelectedIndex = 0;
         }
 
         private void showManageCheckpointDialog()
@@ -65,51 +64,16 @@ namespace AiPainter.Adapters.StableDiffusion
             ddCheckpoint.DataSource = SdCheckpointsHelper.GetListItems(Program.Config.StableDiffusionCheckpoint);
         }
 
-        private void updateCheckpointContextMenu()
-        {
-            contextMenuCheckpoint.Items.Clear();
-
-            contextMenuCheckpoint.Items.Add("Manage checkpoints...", null, (_, _) =>
-            {
-                showManageCheckpointDialog();
-            });
-            
-            contextMenuCheckpoint.Items.Add(new ToolStripSeparator());
-
-            contextMenuCheckpoint.Items.AddRange(SdVaeHelper.GetMenuItems(Program.Config.StableDiffusionVae, vaeName =>
-            {
-                if (vaeName != "" && SdVaeHelper.GetPathToVae(vaeName) == null)
-                {
-                    var form = new SdVaeForm(vaeName);
-                    form.ShowDialog(this);
-                }
-                if (vaeName == "" || SdVaeHelper.GetPathToVae(vaeName) != null)
-                {
-                    Program.Config.StableDiffusionVae = vaeName;
-                    Program.SaveConfig();
-                    updateCheckpointContextMenu();
-                }
-            }));
-
-            contextMenuCheckpoint.Items.Add(new ToolStripSeparator());
-
-            var loras = SdLoraHelper.GetNames();
-            foreach (var lora in loras)
-            {
-                contextMenuCheckpoint.Items.Add("Use LoRA: " + SdLoraHelper.GetHumanName(lora), null, (_, _) =>
-                {
-                    tbPrompt.Text = SdLoraHelper.GetPrompt(lora) + ", " + tbPrompt.Text;
-                });
-            }
-
-            if (loras.Length == 0)
-            {
-                contextMenuCheckpoint.Items.Add(new ToolStripLabel("No LoRa found"));
-            }
-        }
-
         private void btGenerate_Click(object sender, EventArgs e)
         {
+            if (tbNegative.Text != "" && Program.Config.NegativePrompts.FirstOrDefault() != tbNegative.Text)
+            {
+                Program.Config.NegativePrompts.Remove(tbNegative.Text);
+                Program.Config.NegativePrompts.Insert(0, tbNegative.Text);
+                Program.Config.NegativePrompts = Program.Config.NegativePrompts.Take(10).ToList();
+                Program.SaveConfig();
+            }
+
             if (tbPrompt.Text.Trim() == "") { tbPrompt.Focus(); return; }
 
             if (string.IsNullOrEmpty(ddCheckpoint.SelectedValue?.ToString()))
@@ -145,7 +109,7 @@ namespace AiPainter.Adapters.StableDiffusion
                 cbUseInitImage.Enabled = true;
             }
 
-            ddlImageSize.Enabled = !(pb.Image != null && cbUseInitImage.Checked);
+            ddImageSize.Enabled = !(pb.Image != null && cbUseInitImage.Checked);
 
             trackBarChangesLevel.Enabled = pb.Image != null;
 
@@ -161,15 +125,14 @@ namespace AiPainter.Adapters.StableDiffusion
             if (!Program.Config.ImageSizes.Contains(imageSizeStr))
             {
                 Program.Config.ImageSizes = Program.Config.ImageSizes.Concat(new[] { imageSizeStr }).ToArray();
-                ddlImageSize.DataSource = Program.Config.ImageSizes;
+                ddImageSize.DataSource = Program.Config.ImageSizes;
             }
-            ddlImageSize.SelectedItem = imageSizeStr;
+            ddImageSize.SelectedItem = imageSizeStr;
         }
 
         public void SetVaeName(string name)
         {
             Program.Config.StableDiffusionVae = name;
-            updateCheckpointContextMenu();
         }
 
         private void ddCheckpoint_SelectedIndexChanged(object sender, EventArgs e)
@@ -194,17 +157,91 @@ namespace AiPainter.Adapters.StableDiffusion
             Height = collapsablePanel.Height;
         }
 
-        private void btContextMenuCheckpoint_Click(object sender, EventArgs e)
-        {
-            contextMenuCheckpoint.Show(Cursor.Position);
-        }
-
         private void ddCheckpoint_DropDown(object sender, EventArgs e)
         {
             if (ddCheckpoint.Items.Count == 0 || ddCheckpoint.Items.Count == 1 && string.IsNullOrEmpty(((ListItem)ddCheckpoint.Items[0]).Value))
             {
                 showManageCheckpointDialog();
             }
+        }
+
+        private void btContextMenuCheckpoint_Click(object sender, EventArgs e)
+        {
+            contextMenuCheckpoint.Items.Clear();
+
+            contextMenuCheckpoint.Items.Add("Manage checkpoints...", null, (_, _) =>
+            {
+                showManageCheckpointDialog();
+            });
+            
+            contextMenuCheckpoint.Items.Add("Show in Explorer", null, (_, _) =>
+            {
+                if (!string.IsNullOrEmpty(ddCheckpoint.SelectedValue?.ToString()))
+                {
+                    ProcessHelper.ShowFolderInExplorer(SdCheckpointsHelper.GetDirPath(ddCheckpoint.SelectedValue.ToString()!));
+                }
+            });
+
+            contextMenuCheckpoint.Items.Add(new ToolStripSeparator());
+
+            contextMenuCheckpoint.Items.AddRange(SdVaeHelper.GetMenuItems(Program.Config.StableDiffusionVae, vaeName =>
+            {
+                if (vaeName != "" && SdVaeHelper.GetPathToVae(vaeName) == null)
+                {
+                    var form = new SdVaeForm(vaeName);
+                    form.ShowDialog(this);
+                }
+                if (vaeName == "" || SdVaeHelper.GetPathToVae(vaeName) != null)
+                {
+                    Program.Config.StableDiffusionVae = vaeName;
+                    Program.SaveConfig();
+                }
+            }));
+
+            contextMenuCheckpoint.Show(Cursor.Position);
+        }
+
+        private void btContextMenuPrompt_Click(object sender, EventArgs e)
+        {
+            contextMenuPrompt.Items.Clear();
+
+            var loras = SdLoraHelper.GetNames();
+            foreach (var lora in loras)
+            {
+                contextMenuPrompt.Items.Add("Use LoRA: " + SdLoraHelper.GetHumanName(lora), null, (_, _) =>
+                {
+                    tbPrompt.Text = SdLoraHelper.GetPrompt(lora) + ", " + tbPrompt.Text;
+                });
+            }
+
+            if (loras.Length == 0)
+            {
+                contextMenuPrompt.Items.Add(new ToolStripLabel("No LoRa found"));
+            }
+
+            //contextMenuPrompt.Items.Add(new ToolStripSeparator());
+            
+            contextMenuPrompt.Show(Cursor.Position);
+        }
+
+        private void btContextMenuNegativePrompt_Click(object sender, EventArgs e)
+        {
+            contextMenuNegativePrompt.Items.Clear();
+
+            foreach (var negativePrompt in Program.Config.NegativePrompts)
+            {
+                contextMenuNegativePrompt.Items.Add(negativePrompt, null, (_, _) =>
+                {
+                    tbNegative.Text = negativePrompt;
+                });
+            }
+
+            if (Program.Config.NegativePrompts.Count == 0)
+            {
+                contextMenuNegativePrompt.Items.Add(new ToolStripLabel("No saved prompts"));
+            }
+            
+            contextMenuNegativePrompt.Show(Cursor.Position);
         }
     }
 }
