@@ -41,9 +41,6 @@ namespace AiPainter.Adapters.StableDiffusion
             ddCheckpoint.DisplayMember = "Text";
             ddCheckpoint.SelectedValue = Program.Config.StableDiffusionCheckpoint;
 
-            ddInpaintingFill.DataSource = Enum.GetNames<SdInpaintingFill>();
-            ddInpaintingFill.SelectedIndex = 1;
-
             tbNegative.Text = Program.Config.NegativePrompt;
 
             updateCheckpointContextMenu();
@@ -140,8 +137,6 @@ namespace AiPainter.Adapters.StableDiffusion
             {
                 cbUseInitImage.Enabled = true;
             }
-
-            ddInpaintingFill.Enabled = pb.Image != null && pb.HasMask && cbUseInitImage.Checked;
 
             ddlImageSize.Enabled = !(pb.Image != null && cbUseInitImage.Checked);
 

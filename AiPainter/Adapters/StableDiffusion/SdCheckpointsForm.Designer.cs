@@ -31,8 +31,10 @@
             btOk = new Button();
             lvModels = new ListView();
             columnHeader1 = new ColumnHeader();
+            columnHeader2 = new ColumnHeader();
             columnHeader3 = new ColumnHeader();
             columnHeader4 = new ColumnHeader();
+            columnHeader5 = new ColumnHeader();
             bwDownloading = new System.ComponentModel.BackgroundWorker();
             SuspendLayout();
             // 
@@ -53,7 +55,7 @@
             // 
             lvModels.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             lvModels.CheckBoxes = true;
-            lvModels.Columns.AddRange(new ColumnHeader[] { columnHeader1, columnHeader3, columnHeader4 });
+            lvModels.Columns.AddRange(new ColumnHeader[] { columnHeader1, columnHeader2, columnHeader3, columnHeader4, columnHeader5 });
             lvModels.FullRowSelect = true;
             lvModels.GridLines = true;
             lvModels.HeaderStyle = ColumnHeaderStyle.Nonclickable;
@@ -65,21 +67,32 @@
             lvModels.UseCompatibleStateImageBehavior = false;
             lvModels.View = View.Details;
             lvModels.ItemChecked += lvModels_ItemChecked;
+            lvModels.MouseClick += lvModels_MouseClick;
             // 
             // columnHeader1
             // 
             columnHeader1.Text = "Enabled";
-            columnHeader1.Width = 150;
+            columnHeader1.Width = 50;
+            // 
+            // columnHeader2
+            // 
+            columnHeader2.Text = "Main file";
+            columnHeader2.TextAlign = HorizontalAlignment.Center;
             // 
             // columnHeader3
             // 
-            columnHeader3.Text = "Name";
-            columnHeader3.Width = 200;
+            columnHeader3.Text = "Inpaint file";
+            columnHeader3.TextAlign = HorizontalAlignment.Center;
             // 
             // columnHeader4
             // 
-            columnHeader4.Text = "Description";
-            columnHeader4.Width = 390;
+            columnHeader4.Text = "Name";
+            columnHeader4.Width = 180;
+            // 
+            // columnHeader5
+            // 
+            columnHeader5.Text = "Description";
+            columnHeader5.Width = 390;
             // 
             // bwDownloading
             // 
@@ -108,8 +121,10 @@
         private Button btOk;
         private ListView lvModels;
         private ColumnHeader columnHeader1;
-        private ColumnHeader columnHeader3;
         private ColumnHeader columnHeader4;
+        private ColumnHeader columnHeader5;
         private System.ComponentModel.BackgroundWorker bwDownloading;
+        private ColumnHeader columnHeader2;
+        private ColumnHeader columnHeader3;
     }
 }

@@ -6,9 +6,11 @@ namespace AiPainter.Adapters.StableDiffusion
     public partial class SdCheckpointsForm : Form
     {
         private string[] checkpointNames = null;
-        private string[] checkedNames = {};
+        private string[] checkedNames = { };
 
         private bool ignoreCheckedChange = true;
+
+        private ListViewItem.ListViewSubItem? mSelected = null;
 
         public SdCheckpointsForm()
         {
@@ -27,14 +29,16 @@ namespace AiPainter.Adapters.StableDiffusion
                  || !string.IsNullOrEmpty(SdCheckpointsHelper.GetConfig(name).mainCheckpointUrl)
                  || !string.IsNullOrEmpty(SdCheckpointsHelper.GetConfig(name).inpaintCheckpointUrl))
                 {
-                    var item = new ListViewItem(new[]
-                    {
-                        SdCheckpointsHelper.GetStatus(name),
-                        name,
-                        SdCheckpointsHelper.GetConfig(name).description,
-                    });
+                    var item = new ListViewItem();
+                    item.UseItemStyleForSubItems = false;
+                    item.SubItems.Add(SdCheckpointsHelper.GetStatusMain(name));
+                    item.SubItems.Add(SdCheckpointsHelper.GetStatusInpaint(name));
+                    item.SubItems.Add(name);
+                    item.SubItems.Add(SdCheckpointsHelper.GetConfig(name).homeUrl, Color.Blue, Color.White, item.Font);
+
                     item.Name = name;
                     item.Checked = SdCheckpointsHelper.IsEnabled(name) && SdCheckpointsHelper.GetPathToMainCheckpoint(name) != null;
+
                     lvModels.Items.Add(item);
 
                     if (item.Checked) checkedNames = checkedNames.Concat(new[] { name }).ToArray();
@@ -66,16 +70,16 @@ namespace AiPainter.Adapters.StableDiffusion
                                                 : "main.safetensors";
                             try
                             {
-                                downloadFile(name, url, fileName, "main").Wait();
+                                downloadFile(name, url, fileName, text => updateStatus(name, text, null)).Wait();
                             }
                             catch (AggregateException)
                             {
-                                updateStatus(name);
+                                updateStatus(name, null, null);
                                 Invoke(() => btOk.Enabled = true);
                                 break;
                             }
                         }
-                    }                   
+                    }
                     {
                         var url = SdCheckpointsHelper.GetConfig(name).inpaintCheckpointUrl;
                         if (!string.IsNullOrWhiteSpace(url) && SdCheckpointsHelper.GetPathToInpaintCheckpoint(name) == null)
@@ -86,11 +90,11 @@ namespace AiPainter.Adapters.StableDiffusion
                                                 : "inpaint.safetensors";
                             try
                             {
-                                downloadFile(name, url, fileName, "inpaint").Wait();
+                                downloadFile(name, url, fileName, text => updateStatus(name, null, text)).Wait();
                             }
                             catch (AggregateException)
                             {
-                                updateStatus(name);
+                                updateStatus(name, null, null);
                                 Invoke(() => btOk.Enabled = true);
                                 break;
                             }
@@ -116,14 +120,14 @@ namespace AiPainter.Adapters.StableDiffusion
             if (!ignoreCheckedChange) SdCheckpointsHelper.SetEnabled(e.Item.Name, e.Item.Checked);
         }
 
-        private async Task downloadFile(string name, string url, string fileNameIfNotDetected, string statusPrefix)
+        private async Task downloadFile(string name, string url, string fileNameIfNotDetected, Action<string> progress)
         {
             Invoke(() => btOk.Enabled = false);
 
             var cancelationTokenSource = new CancellationTokenSource();
             await DownloadTools.DownloadFileAsync(url, fileNameIfNotDetected, SdCheckpointsHelper.GetDirPath(name), cancelationTokenSource.Token, (size, total) =>
             {
-                updateStatus(name, statusPrefix + ": " + (total != null ? Math.Round(size / (double)total * 100) + "%" : size + " bytes"));
+                progress((total != null ? Math.Round(size / (double)total * 100) + "%" : size + " bytes"));
 
                 if (bwDownloading.CancellationPending || !checkedNames.Contains(name))
                 {
@@ -133,24 +137,38 @@ namespace AiPainter.Adapters.StableDiffusion
 
             Invoke(() =>
             {
-                updateStatus(name);
+                updateStatus(name, null, null);
                 btOk.Enabled = true;
             });
         }
 
 
 
-        private void updateStatus(string name, string? text = null)
+        private void updateStatus(string name, string? textMain, string? textInapint)
         {
             Invoke(() =>
             {
                 var item = lvModels.Items.Cast<ListViewItem>().FirstOrDefault(x => x.Name == name);
                 if (item != null)
                 {
-                    text ??= SdCheckpointsHelper.GetStatus(name);
-                    if (item.SubItems[0].Text != text) item.SubItems[0].Text = text;
+                    textMain ??= SdCheckpointsHelper.GetStatusMain(name);
+                    if (item.SubItems[1].Text != textMain) item.SubItems[1].Text = textMain;
+
+                    textInapint ??= SdCheckpointsHelper.GetStatusMain(name);
+                    if (item.SubItems[2].Text != textInapint) item.SubItems[2].Text = textInapint;
                 }
             });
+        }
+
+        private void lvModels_MouseClick(object sender, MouseEventArgs e)
+        {
+            if (e.Button != MouseButtons.Left) return;
+            
+            var hit = lvModels.HitTest(e.Location);
+            if (hit.Item != null && hit.SubItem == hit.Item.SubItems[4])
+            {
+                ProcessHelper.OpenUrlInBrowser(hit.SubItem.Text);
+            }
         }
     }
 }

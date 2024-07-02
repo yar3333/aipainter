@@ -19,7 +19,6 @@ class ImageGeneratorSd : IImageGenerator
     private readonly Rectangle activeBox;
     private readonly Bitmap? originalImage;
     private readonly Bitmap? croppedMask;
-    private readonly SdInpaintingFill inpaintingFill;
 
     private readonly string? savedFilePath;
     private readonly Primitive[] savedMask;
@@ -55,7 +54,6 @@ class ImageGeneratorSd : IImageGenerator
 
         if (sdPanel.cbUseInitImage.Checked)
         {
-            inpaintingFill = Enum.Parse<SdInpaintingFill>((string)sdPanel.ddInpaintingFill.SelectedItem);
             activeBox = pictureBox.ActiveBox;
             originalImage = BitmapTools.Clone(pictureBox.Image!);
             croppedMask = pictureBox.GetMaskCropped(Color.Black, Color.White);
@@ -106,7 +104,6 @@ class ImageGeneratorSd : IImageGenerator
             pictureBox.HistoryAddCurrentState();
 
             pictureBox.ActiveBox = activeBox;
-            sdPanel.ddInpaintingFill.SelectedItem = inpaintingFill.ToString();
             pictureBox.Image = BitmapTools.Clone(originalImage);
             pictureBox.LoadMask(savedMask);
             pictureBox.Refresh();
@@ -292,7 +289,7 @@ class ImageGeneratorSd : IImageGenerator
                 steps = sdGenerationParameters.steps,
                 init_images = new[] { BitmapTools.GetBase64String(initImage) },
                 mask = maskImage != null ? BitmapTools.GetBase64String(maskImage) : null,
-                inpainting_fill = inpaintingFill,
+                //inpainting_fill = SdInpaintingFill.original,
                 width = initImage.Width,
                 height = initImage.Height,
                 sampler_index = sdGenerationParameters.sampler,

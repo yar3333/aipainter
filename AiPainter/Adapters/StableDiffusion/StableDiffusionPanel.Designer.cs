@@ -37,7 +37,6 @@
             label4 = new Label();
             ddlImageSize = new ComboBox();
             lbModifiers = new ListBox();
-            ddInpaintingFill = new ComboBox();
             ddCheckpoint = new ComboBox();
             tbNegative = new TextBox();
             cbUseInitImage = new CheckBox();
@@ -73,7 +72,6 @@
             collapsablePanel.Controls.Add(label4);
             collapsablePanel.Controls.Add(ddlImageSize);
             collapsablePanel.Controls.Add(lbModifiers);
-            collapsablePanel.Controls.Add(ddInpaintingFill);
             collapsablePanel.Controls.Add(ddCheckpoint);
             collapsablePanel.Controls.Add(tbNegative);
             collapsablePanel.Controls.Add(cbUseInitImage);
@@ -179,18 +177,6 @@
             lbModifiers.TabIndex = 20;
             toolTip.SetToolTip(lbModifiers, "Modifiers (style names, will be added to prompt)");
             lbModifiers.Click += lbModifiers_Click;
-            // 
-            // ddInpaintingFill
-            // 
-            ddInpaintingFill.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
-            ddInpaintingFill.DropDownStyle = ComboBoxStyle.DropDownList;
-            ddInpaintingFill.Font = new Font("Segoe UI", 9.75F, FontStyle.Regular, GraphicsUnit.Point);
-            ddInpaintingFill.FormattingEnabled = true;
-            ddInpaintingFill.Location = new Point(192, 252);
-            ddInpaintingFill.Name = "ddInpaintingFill";
-            ddInpaintingFill.Size = new Size(153, 25);
-            ddInpaintingFill.TabIndex = 19;
-            toolTip.SetToolTip(ddInpaintingFill, "Inpaint type (preparing masked area)");
             // 
             // ddCheckpoint
             // 
@@ -393,7 +379,6 @@
         private ToolTip toolTip;
         public TextBox tbNegative;
         public ComboBox ddCheckpoint;
-        public ComboBox ddInpaintingFill;
         private ListBox lbModifiers;
         public ComboBox ddlImageSize;
         private Label label4;

@@ -9,9 +9,12 @@ static class SdCheckpointsHelper
     public static string[] GetNames(string nameToEnsureExists)
     {
         var basePath = BasePath;
+
+        var r = !string.IsNullOrEmpty(nameToEnsureExists)
+                    ? new[] { nameToEnsureExists }
+                    : new string[] {};
         
-        return new[] { nameToEnsureExists }
-                .Concat(Directory.GetFiles(basePath, "*.ckpt", SearchOption.AllDirectories)
+        return r.Concat(Directory.GetFiles(basePath, "*.ckpt", SearchOption.AllDirectories)
                 .Concat(Directory.GetFiles(basePath, "*.safetensors", SearchOption.AllDirectories))
                 .Concat(Directory.GetFiles(basePath, "config.json", SearchOption.AllDirectories))
                 .Select(x => Path.GetDirectoryName(x.Substring(basePath.Length).TrimStart('\\'))!))
@@ -70,14 +73,19 @@ static class SdCheckpointsHelper
                    : new SdCheckpointConfig();
     }
 
-    public static string GetStatus(string name)
+    public static string GetStatusMain(string name)
     {
         var mainFile = GetPathToMainCheckpoint(name);
-        var inpaintFile = GetPathToInpaintCheckpoint(name);
         var mainUrl = GetConfig(name).mainCheckpointUrl;
+        return mainFile != null ? "+" : (!string.IsNullOrWhiteSpace(mainUrl) ? "URL" : "");
+
+    }
+
+    public static string GetStatusInpaint(string name)
+    {
+        var inpaintFile = GetPathToInpaintCheckpoint(name);
         var inpaintUrl = GetConfig(name).inpaintCheckpointUrl;
-        return        (mainFile    != null ? "main file"    : (!string.IsNullOrWhiteSpace(mainUrl)    ? "main URL"    : "no main"))
-            + " | " + (inpaintFile != null ? "inpaint file" : (!string.IsNullOrWhiteSpace(inpaintUrl) ? "inpaint URL" : "no inpaint"));
+        return inpaintFile != null ? "+" : (!string.IsNullOrWhiteSpace(inpaintUrl) ? "URL" : "");
     }
 
     public static bool IsEnabled(string name)
