@@ -111,6 +111,13 @@ namespace AiPainter.Adapters.StableDiffusion
         private void btGenerate_Click(object sender, EventArgs e)
         {
             if (tbPrompt.Text.Trim() == "") { tbPrompt.Focus(); return; }
+
+            if (string.IsNullOrEmpty(ddCheckpoint.SelectedValue?.ToString()))
+            {
+                ddCheckpoint.DroppedDown = true;
+                return;
+            }
+
             OnGenerate();
         }
 
@@ -188,9 +195,9 @@ namespace AiPainter.Adapters.StableDiffusion
 
         private void ddCheckpoint_DropDown(object sender, EventArgs e)
         {
-            if (ddCheckpoint.Items.Count == 0)
+            if (ddCheckpoint.Items.Count == 0 || ddCheckpoint.Items.Count == 1 && string.IsNullOrEmpty(((ListItem)ddCheckpoint.Items[0]).Value))
             {
-
+                showManageCheckpointDialog();
             }
         }
     }
