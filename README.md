@@ -23,15 +23,14 @@ Digital AI painter. Features:
 
  * Windows 8+ (x64)
  * NVIDIA video card (>4GB RAM, CUDA 11.4)
- * 16 GB disk space
+ * 20 GB disk space
 
 Tested on NVIDIA 3060.
  
 
 ## Using
 
- * download precompiled AiPainter from [mega.nz](https://mega.nz/file/4s9g1J4I#3aTgiSDkXFZUZy2G4pUXwPCdzKIze_EmGzdnmua-SNQ)
- * or from torrent (magnet:?xt=urn:btih:d6f6af47f4e9ba9d1db9a4d2fcebb86e58401b61&dn=aipainter-1.3.0.zip)
+ * download precompiled AiPainter from [mega.nz](https://mega.nz/file/ltEH3BpI#GFZV2CWzSvV9ocypA2_wVMacgdtqkYIQb9gZDs3yD3A)
  * unpack
  * run `AiPainter.exe`
 
