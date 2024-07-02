@@ -144,7 +144,7 @@ namespace AiPainter.Adapters.StableDiffusion
             }
             catch (AggregateException e)
             {
-                Program.Log.WriteLine("Downbloading " + url + " ERROR: " + e.Message);
+                Program.Log.WriteLine("Downloading " + url + " ERROR: " + e.Message);
             }
 
             Invoke(() =>
@@ -180,7 +180,7 @@ namespace AiPainter.Adapters.StableDiffusion
             if (e.Button != MouseButtons.Left) return;
             
             var hit = lvModels.HitTest(e.Location);
-            if (hit.Item != null && hit.SubItem == hit.Item.SubItems[4])
+            if (hit.Item != null && hit.SubItem == hit.Item.SubItems[5])
             {
                 ProcessHelper.OpenUrlInBrowser(hit.SubItem.Text);
             }

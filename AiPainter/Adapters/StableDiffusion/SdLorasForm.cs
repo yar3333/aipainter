@@ -1,0 +1,147 @@
+﻿using System.ComponentModel;
+using AiPainter.Helpers;
+
+namespace AiPainter.Adapters.StableDiffusion
+{
+    public partial class SdLorasForm : Form
+    {
+        private string[] modelNames = null;
+        private string[] checkedNames = {};
+
+        private bool ignoreCheckedChange = true;
+
+        public SdLorasForm()
+        {
+            InitializeComponent();
+        }
+
+        private void SdLorasForm_Load(object sender, EventArgs e)
+        {
+            modelNames = SdLoraHelper.GetNames();
+
+            ignoreCheckedChange = true;
+            foreach (var name in modelNames)
+            {
+                var filePath = SdLoraHelper.GetPathToModel(name);
+                if (!string.IsNullOrEmpty(filePath) && File.Exists(filePath)
+                 || !string.IsNullOrEmpty(SdLoraHelper.GetConfig(name).downloadUrl))
+                {
+                    var item = new ListViewItem();
+                    item.UseItemStyleForSubItems = false;
+                    item.SubItems.Add(SdLoraHelper.GetStatus(name));
+                    item.SubItems.Add(SdLoraHelper.GetHumanName(name));
+                    item.SubItems.Add(SdLoraHelper.GetConfig(name).homeUrl, Color.Blue, Color.White, item.Font);
+
+                    item.Name = name;
+                    item.Checked = SdLoraHelper.IsEnabled(name) && SdLoraHelper.GetPathToModel(name) != null;
+
+                    lvModels.Items.Add(item);
+
+                    if (item.Checked) checkedNames = checkedNames.Concat(new[] { name }).ToArray();
+                }
+            }
+            ignoreCheckedChange = false;
+
+            bwDownloading.RunWorkerAsync();
+        }
+
+        private void btOk_Click(object sender, EventArgs e)
+        {
+            bwDownloading.CancelAsync();
+        }
+
+        private void bwDownloading_DoWork(object sender, DoWorkEventArgs _)
+        {
+            while (!bwDownloading.CancellationPending)
+            {
+                foreach (var name in checkedNames)
+                {
+                    var url = SdLoraHelper.GetConfig(name).downloadUrl;
+                    if (!string.IsNullOrWhiteSpace(url) && SdLoraHelper.GetPathToModel(name) == null)
+                    {
+                        var uri = new Uri(url);
+                        var fileName = uri.LocalPath.EndsWith(".ckpt") || uri.LocalPath.EndsWith(".safetensors") || uri.LocalPath.EndsWith(".pt")
+                                            ? Path.GetFileName(uri.LocalPath)
+                                            : name + ".safetensors";
+                        downloadFile(name, url, fileName, null, text => updateStatus(name, text));
+                    }
+
+                    if (bwDownloading.CancellationPending) break;
+                }
+
+                if (bwDownloading.CancellationPending) break;
+                Thread.Sleep(500);
+            }
+        }
+
+        private void lvModels_ItemChecked(object sender, ItemCheckedEventArgs e)
+        {
+            if (e.Item.Checked)
+            {
+                if (!checkedNames.Contains(e.Item.Name)) checkedNames = checkedNames.Concat(new[] { e.Item.Name }).OrderBy(x => x).ToArray();
+            }
+            else
+            {
+                if (checkedNames.Contains(e.Item.Name)) checkedNames = checkedNames.Where(x => x != e.Item.Name).ToArray();
+            }
+
+            if (!ignoreCheckedChange) SdLoraHelper.SetEnabled(e.Item.Name, e.Item.Checked);
+        }
+
+        private void downloadFile(string name, string url, string fileNameIfNotDetected, Func<string, string>? preprocessFileName, Action<string> progress)
+        {
+            Invoke(() => btOk.Enabled = false);
+
+            var cancelationTokenSource = new CancellationTokenSource();
+
+            try
+            {
+                DownloadTools.DownloadFileAsync(url, fileNameIfNotDetected, preprocessFileName, SdLoraHelper.GetDir(), cancelationTokenSource.Token, (size, total) =>
+                {
+                    progress(total != null ? Math.Round(size / (double)total * 100) + "%" : size + " bytes");
+
+                    if (bwDownloading.CancellationPending || !checkedNames.Contains(name))
+                    {
+                        cancelationTokenSource.Cancel();
+                    }
+                }).Wait();
+            }
+            catch (AggregateException e)
+            {
+                Program.Log.WriteLine("Downloading " + url + " ERROR: " + e.Message);
+            }
+
+            Invoke(() =>
+            {
+                updateStatus(name, null);
+                btOk.Enabled = true;
+            });
+        }
+
+
+
+        private void updateStatus(string name, string? text)
+        {
+            Invoke(() =>
+            {
+                var item = lvModels.Items.Cast<ListViewItem>().FirstOrDefault(x => x.Name == name);
+                if (item != null)
+                {
+                    text ??= SdLoraHelper.GetStatus(name);
+                    if (item.SubItems[1].Text != text) item.SubItems[1].Text = text;
+                }
+            });
+        }
+
+        private void lvModels_MouseClick(object sender, MouseEventArgs e)
+        {
+            if (e.Button != MouseButtons.Left) return;
+            
+            var hit = lvModels.HitTest(e.Location);
+            if (hit.Item != null && hit.SubItem == hit.Item.SubItems[3])
+            {
+                ProcessHelper.OpenUrlInBrowser(hit.SubItem.Text);
+            }
+        }
+    }
+}

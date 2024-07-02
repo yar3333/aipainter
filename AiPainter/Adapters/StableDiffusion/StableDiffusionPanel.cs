@@ -205,7 +205,15 @@ namespace AiPainter.Adapters.StableDiffusion
         {
             contextMenuPrompt.Items.Clear();
 
-            var loras = SdLoraHelper.GetNames();
+            contextMenuPrompt.Items.Add("Manage LoRAs...", null, (_, _) =>
+            {
+                var form = new SdLorasForm();
+                form.ShowDialog(this);
+            });
+            
+            contextMenuPrompt.Items.Add(new ToolStripSeparator());
+            
+            var loras = SdLoraHelper.GetNames().Where(x => SdLoraHelper.GetPathToModel(x) != null).ToArray();
             foreach (var lora in loras)
             {
                 contextMenuPrompt.Items.Add("Use LoRA: " + SdLoraHelper.GetHumanName(lora), null, (_, _) =>
@@ -218,8 +226,6 @@ namespace AiPainter.Adapters.StableDiffusion
             {
                 contextMenuPrompt.Items.Add(new ToolStripLabel("No LoRa found"));
             }
-
-            //contextMenuPrompt.Items.Add(new ToolStripSeparator());
             
             contextMenuPrompt.Show(Cursor.Position);
         }

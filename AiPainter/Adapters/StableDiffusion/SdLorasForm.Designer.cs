@@ -1,6 +1,6 @@
 ﻿namespace AiPainter.Adapters.StableDiffusion
 {
-    partial class SdCheckpointsForm
+    partial class SdLorasForm
     {
         /// <summary>
         /// Required designer variable.
@@ -34,8 +34,6 @@
             columnHeader2 = new ColumnHeader();
             columnHeader3 = new ColumnHeader();
             columnHeader4 = new ColumnHeader();
-            columnHeader5 = new ColumnHeader();
-            columnHeader6 = new ColumnHeader();
             bwDownloading = new System.ComponentModel.BackgroundWorker();
             SuspendLayout();
             // 
@@ -44,7 +42,7 @@
             btOk.Anchor = AnchorStyles.Bottom;
             btOk.DialogResult = DialogResult.OK;
             btOk.Font = new Font("Segoe UI", 9.75F, FontStyle.Regular, GraphicsUnit.Point);
-            btOk.Location = new Point(316, 398);
+            btOk.Location = new Point(252, 398);
             btOk.Name = "btOk";
             btOk.Size = new Size(172, 40);
             btOk.TabIndex = 5;
@@ -56,14 +54,14 @@
             // 
             lvModels.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             lvModels.CheckBoxes = true;
-            lvModels.Columns.AddRange(new ColumnHeader[] { columnHeader1, columnHeader2, columnHeader3, columnHeader4, columnHeader5, columnHeader6 });
+            lvModels.Columns.AddRange(new ColumnHeader[] { columnHeader1, columnHeader2, columnHeader3, columnHeader4 });
             lvModels.FullRowSelect = true;
             lvModels.GridLines = true;
             lvModels.HeaderStyle = ColumnHeaderStyle.Nonclickable;
             lvModels.Location = new Point(12, 12);
             lvModels.MultiSelect = false;
             lvModels.Name = "lvModels";
-            lvModels.Size = new Size(776, 374);
+            lvModels.Size = new Size(649, 374);
             lvModels.TabIndex = 6;
             lvModels.UseCompatibleStateImageBehavior = false;
             lvModels.View = View.Details;
@@ -77,49 +75,39 @@
             // 
             // columnHeader2
             // 
-            columnHeader2.Text = "Main file";
+            columnHeader2.Text = "File";
             columnHeader2.TextAlign = HorizontalAlignment.Center;
             // 
             // columnHeader3
             // 
-            columnHeader3.Text = "Inpaint file";
-            columnHeader3.TextAlign = HorizontalAlignment.Center;
+            columnHeader3.Text = "Name";
+            columnHeader3.Width = 180;
             // 
             // columnHeader4
             // 
-            columnHeader4.Text = "VAE file";
-            columnHeader4.TextAlign = HorizontalAlignment.Center;
-            // 
-            // columnHeader5
-            // 
-            columnHeader5.Text = "Name";
-            columnHeader5.Width = 180;
-            // 
-            // columnHeader6
-            // 
-            columnHeader6.Text = "Link";
-            columnHeader6.Width = 350;
+            columnHeader4.Text = "Link";
+            columnHeader4.Width = 350;
             // 
             // bwDownloading
             // 
             bwDownloading.WorkerSupportsCancellation = true;
             bwDownloading.DoWork += bwDownloading_DoWork;
             // 
-            // SdCheckpointsForm
+            // SdLorasForm
             // 
             AcceptButton = btOk;
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(800, 450);
+            ClientSize = new Size(673, 450);
             ControlBox = false;
             Controls.Add(lvModels);
             Controls.Add(btOk);
             FormBorderStyle = FormBorderStyle.SizableToolWindow;
-            Name = "SdCheckpointsForm";
+            Name = "SdLorasForm";
             ShowInTaskbar = false;
             StartPosition = FormStartPosition.CenterParent;
-            Text = "Stable Diffusion Checkpoints (image generation models)";
-            Load += SdModelsForm_Load;
+            Text = "Stable Diffusion LoRA (additional mini-checkpoints)";
+            Load += SdLorasForm_Load;
             ResumeLayout(false);
         }
 
@@ -127,11 +115,9 @@
         private Button btOk;
         private ListView lvModels;
         private ColumnHeader columnHeader1;
-        private ColumnHeader columnHeader5;
-        private ColumnHeader columnHeader6;
+        private ColumnHeader columnHeader4;
         private System.ComponentModel.BackgroundWorker bwDownloading;
         private ColumnHeader columnHeader2;
         private ColumnHeader columnHeader3;
-        private ColumnHeader columnHeader4;
     }
 }
