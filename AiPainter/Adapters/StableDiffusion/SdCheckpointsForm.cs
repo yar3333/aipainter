@@ -6,11 +6,9 @@ namespace AiPainter.Adapters.StableDiffusion
     public partial class SdCheckpointsForm : Form
     {
         private string[] checkpointNames = null;
-        private string[] checkedNames = { };
+        private string[] checkedNames = {};
 
         private bool ignoreCheckedChange = true;
-
-        private ListViewItem.ListViewSubItem? mSelected = null;
 
         public SdCheckpointsForm()
         {
@@ -68,18 +66,12 @@ namespace AiPainter.Adapters.StableDiffusion
                             var fileName = uri.LocalPath.EndsWith(".ckpt") || uri.LocalPath.EndsWith(".safetensors")
                                                 ? Path.GetFileName(uri.LocalPath)
                                                 : "main.safetensors";
-                            try
-                            {
-                                downloadFile(name, url, fileName, text => updateStatus(name, text, null)).Wait();
-                            }
-                            catch (AggregateException)
-                            {
-                                updateStatus(name, null, null);
-                                Invoke(() => btOk.Enabled = true);
-                                break;
-                            }
+                            downloadFile(name, url, fileName, text => updateStatus(name, text, null));
                         }
                     }
+                    
+                    if (bwDownloading.CancellationPending) break;
+                    
                     {
                         var url = SdCheckpointsHelper.GetConfig(name).inpaintCheckpointUrl;
                         if (!string.IsNullOrWhiteSpace(url) && SdCheckpointsHelper.GetPathToInpaintCheckpoint(name) == null)
@@ -88,20 +80,14 @@ namespace AiPainter.Adapters.StableDiffusion
                             var fileName = uri.LocalPath.EndsWith(".ckpt") || uri.LocalPath.EndsWith(".safetensors")
                                                 ? Path.GetFileName(uri.LocalPath)
                                                 : "inpaint.safetensors";
-                            try
-                            {
-                                downloadFile(name, url, fileName, text => updateStatus(name, null, text)).Wait();
-                            }
-                            catch (AggregateException)
-                            {
-                                updateStatus(name, null, null);
-                                Invoke(() => btOk.Enabled = true);
-                                break;
-                            }
+                            downloadFile(name, url, fileName, text => updateStatus(name, null, text));
                         }
                     }
+
+                    if (bwDownloading.CancellationPending) break;
                 }
 
+                if (bwDownloading.CancellationPending) break;
                 Thread.Sleep(500);
             }
         }
@@ -120,20 +106,28 @@ namespace AiPainter.Adapters.StableDiffusion
             if (!ignoreCheckedChange) SdCheckpointsHelper.SetEnabled(e.Item.Name, e.Item.Checked);
         }
 
-        private async Task downloadFile(string name, string url, string fileNameIfNotDetected, Action<string> progress)
+        private void downloadFile(string name, string url, string fileNameIfNotDetected, Action<string> progress)
         {
             Invoke(() => btOk.Enabled = false);
 
             var cancelationTokenSource = new CancellationTokenSource();
-            await DownloadTools.DownloadFileAsync(url, fileNameIfNotDetected, SdCheckpointsHelper.GetDirPath(name), cancelationTokenSource.Token, (size, total) =>
-            {
-                progress((total != null ? Math.Round(size / (double)total * 100) + "%" : size + " bytes"));
 
-                if (bwDownloading.CancellationPending || !checkedNames.Contains(name))
+            try
+            {
+                DownloadTools.DownloadFileAsync(url, fileNameIfNotDetected, SdCheckpointsHelper.GetDirPath(name), cancelationTokenSource.Token, (size, total) =>
                 {
-                    cancelationTokenSource.Cancel();
-                }
-            });
+                    progress(total != null ? Math.Round(size / (double)total * 100) + "%" : size + " bytes");
+
+                    if (bwDownloading.CancellationPending || !checkedNames.Contains(name))
+                    {
+                        cancelationTokenSource.Cancel();
+                    }
+                }).Wait();
+            }
+            catch (AggregateException e)
+            {
+                Program.Log.WriteLine("Downbloading " + url + " ERROR: " + e.Message);
+            }
 
             Invoke(() =>
             {

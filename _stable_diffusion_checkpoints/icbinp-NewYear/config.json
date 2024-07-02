@@ -1,0 +1,6 @@
+{
+	"prompt": "",
+	"homeUrl": "https://civitai.com/models/28059?modelVersionId=306898",
+	"mainCheckpointUrl": "https://huggingface.co/sam749/ICBINP-New-Year/resolve/main/icbinpICantBelieveIts_newYear.safetensors?download=true",
+	"inpaintCheckpointUrl": "https://civitai.com/api/download/models/306943?type=Model&format=SafeTensor&size=pruned&fp=fp16"
+}

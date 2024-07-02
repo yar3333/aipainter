@@ -27,6 +27,7 @@ static class HttpClientExtensions
         var contentLength = response.Content.Headers.ContentLength;
         var fileName = response.Content.Headers.ContentDisposition?.FileNameStar
                     ?? response.Content.Headers.ContentDisposition?.FileName;
+        fileName = fileName?.Trim('"', '\'');
 
         await using var download = await response.Content.ReadAsStreamAsync(cancellationToken);
         

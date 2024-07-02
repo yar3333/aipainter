@@ -38,7 +38,7 @@ static class SdCheckpointsHelper
              .Concat(Directory.GetFiles(GetDirPath(name), "*.safetensors"))
              .ToArray();
 
-        return models.Where(x => !x.Contains("inpaint")).Min();
+        return models.Where(x => !x.ToLowerInvariant().Contains("inpaint")).Min();
     }
 
     public static string? GetPathToInpaintCheckpoint(string name)
@@ -49,7 +49,7 @@ static class SdCheckpointsHelper
                               .Concat(Directory.GetFiles(GetDirPath(name), "*.safetensors"))
                               .ToArray();
 
-        return models.Where(x => x.Contains("inpaint")).Min();
+        return models.Where(x => x.ToLowerInvariant().Contains("inpaint")).Min();
     }
 
     public static string GetDirPath(string name)
