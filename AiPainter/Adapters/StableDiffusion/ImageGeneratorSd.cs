@@ -141,24 +141,33 @@ class ImageGeneratorSd : IImageGenerator
                 {
                     if (await DelayTools.WaitForExitAsync(500) || control.IsDisposed) return;
                 }
+            }
+        }
 
-                control.NotifyStepsCustomText("Starting...");
-                StableDiffusionProcess.Start(checkpointFilePath, vaeFilePath);
+        var waitTextShown = false;
+
+        if (Program.Config.UseEmbeddedStableDiffusion && !StableDiffusionProcess.Loading)
+        {
+            waitTextShown = true;
+            control.NotifyStepsCustomText("Starting...");
+            StableDiffusionProcess.Start(checkpointFilePath, vaeFilePath);
+            while (!StableDiffusionProcess.IsReady())
+            {
+                if (await DelayTools.WaitForExitAsync(500) || control.IsDisposed) return;
             }
         }
 
         if (!StableDiffusionProcess.IsReady())
         {
+            waitTextShown = true;
             control.NotifyStepsCustomText("Waiting ready...");
             while (!StableDiffusionProcess.IsReady())
             {
                 if (await DelayTools.WaitForExitAsync(500) || control.IsDisposed) return;
             }
-
-            if (await DelayTools.WaitForExitAsync(2000) || control.IsDisposed) return;
         }
 
-        control.NotifyStepsCustomText("");
+        if (!waitTextShown) control.NotifyProgress(0);
 
         if (originalImage == null)
         {

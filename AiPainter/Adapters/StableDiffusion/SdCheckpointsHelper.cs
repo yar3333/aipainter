@@ -59,6 +59,7 @@ static class SdCheckpointsHelper
 
     static string getHumanName(string name)
     {
+        if (string.IsNullOrEmpty(name)) return "<Select Checkpoint>";
         var path = GetPathToMainCheckpoint(name);
         var size = path != null ? new FileInfo(path).Length : 0;
         return name + " (" + Math.Round(size / 1024.0 / 1024 / 1024, 1) + " GB)";

@@ -148,7 +148,7 @@ namespace AiPainter.Adapters.StableDiffusion
                     textMain ??= SdCheckpointsHelper.GetStatusMain(name);
                     if (item.SubItems[1].Text != textMain) item.SubItems[1].Text = textMain;
 
-                    textInapint ??= SdCheckpointsHelper.GetStatusMain(name);
+                    textInapint ??= SdCheckpointsHelper.GetStatusInpaint(name);
                     if (item.SubItems[2].Text != textInapint) item.SubItems[2].Text = textInapint;
                 }
             });
