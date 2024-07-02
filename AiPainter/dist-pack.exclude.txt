@@ -2,8 +2,15 @@ AiPainter\images
 AiPainter\logs
 AiPainter\Config.json
 
-AiPainter\stable_diffusion_checkpoints\_ext
-AiPainter\stable_diffusion_vae\*.ckpt
+AiPainter\stable_diffusion_checkpoints\**\*.ckpt
+AiPainter\stable_diffusion_checkpoints\**\*.pt
+AiPainter\stable_diffusion_checkpoints\**\*.safetensors
+AiPainter\stable_diffusion_lora\*.ckpt
+AiPainter\stable_diffusion_lora\*.pt
+AiPainter\stable_diffusion_lora\*.safetensors
+AiPainter\stable_diffusion_vae\**\*.ckpt
+AiPainter\stable_diffusion_vae\**\*.pt
+AiPainter\stable_diffusion_vae\**\*.safetensors
 
 AiPainter\external\_stuff\python-3.10.6\readme.txt
 
