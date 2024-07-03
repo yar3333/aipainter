@@ -1,5 +1,6 @@
 using System.Drawing.Imaging;
 using System.Text.Json;
+using System.Windows.Forms;
 using AiPainter.Adapters.LamaCleaner;
 using AiPainter.Adapters.RemBg;
 using AiPainter.Adapters.StableDiffusion;

@@ -88,7 +88,7 @@ static class StableDiffusionClient
             {
                 try
                 {
-                    var r = await getAsync<SdGenerationProgess>("sdapi/v1/progress");
+                    var r = await getAsync<SdGenerationProgess>("sdapi/v1/progress", false);
                     if (r.state?.sampling_step > 0) onProgress(r.state.sampling_step);
                 }
                 catch (Exception e)
@@ -111,13 +111,12 @@ static class StableDiffusionClient
         return JsonSerializer.Deserialize<T>(await raw.Content.ReadAsStringAsync())!;
     }
 
-    private static async Task<T> getAsync<T>(string url)
+    private static async Task<T> getAsync<T>(string url, bool isLog)
     {
-        using var httpClient = new HttpClient(new LoggerHttpClientHandler(Log))
-        {
-            BaseAddress = new Uri(Program.Config.StableDiffusionUrl),
-            Timeout = TimeSpan.FromMinutes(10)
-        };
+        using var httpClient = isLog ? new HttpClient(new LoggerHttpClientHandler(Log)) : new HttpClient();
+        httpClient.BaseAddress = new Uri(Program.Config.StableDiffusionUrl);
+        httpClient.Timeout = TimeSpan.FromMinutes(10);
+        
         var raw = await httpClient.GetAsync(url);
         return JsonSerializer.Deserialize<T>(await raw.Content.ReadAsStringAsync())!;
     }
