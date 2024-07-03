@@ -3,6 +3,8 @@ call dist-build.cmd
 
 @pushd dist
 
+@if EXIST aipainter.zip DEL /F aipainter.zip
+
 7z a ^
 	-x@..\dist-pack.exclude.txt ^
 	-xr!.gitignore ^

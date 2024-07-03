@@ -2,44 +2,22 @@ AiPainter\images
 AiPainter\logs
 AiPainter\Config.json
 
-AiPainter\stable_diffusion_checkpoints\**\*.ckpt
-AiPainter\stable_diffusion_checkpoints\**\*.pt
-AiPainter\stable_diffusion_checkpoints\**\*.safetensors
+AiPainter\stable_diffusion_checkpoints\*\*.ckpt
+AiPainter\stable_diffusion_checkpoints\*\*.pt
+AiPainter\stable_diffusion_checkpoints\*\*.safetensors
+
+AiPainter\stable_diffusion_checkpoints\*\*\*.ckpt
+AiPainter\stable_diffusion_checkpoints\*\*\*.pt
+AiPainter\stable_diffusion_checkpoints\*\*\*.safetensors
+
+AiPainter\stable_diffusion_checkpoints\*\*\*\*.ckpt
+AiPainter\stable_diffusion_checkpoints\*\*\*\*.pt
+AiPainter\stable_diffusion_checkpoints\*\*\*\*.safetensors
+
 AiPainter\stable_diffusion_lora\*.ckpt
 AiPainter\stable_diffusion_lora\*.pt
 AiPainter\stable_diffusion_lora\*.safetensors
-AiPainter\stable_diffusion_vae\**\*.ckpt
-AiPainter\stable_diffusion_vae\**\*.pt
-AiPainter\stable_diffusion_vae\**\*.safetensors
 
-AiPainter\external\_stuff\python-3.10.6\readme.txt
-
-AiPainter\external\_stuff\cudnn-windows-x86_64-8.4.1.50_cuda11.6\include
-AiPainter\external\_stuff\cudnn-windows-x86_64-8.4.1.50_cuda11.6\lib 
-AiPainter\external\_stuff\cudnn-windows-x86_64-8.4.1.50_cuda11.6\readme.txt 
-
-AiPainter\external\_stuff\TensorRT-8.4.2.4\bin
-AiPainter\external\_stuff\TensorRT-8.4.2.4\data
-AiPainter\external\_stuff\TensorRT-8.4.2.4\doc
-AiPainter\external\_stuff\TensorRT-8.4.2.4\graphsurgeon
-AiPainter\external\_stuff\TensorRT-8.4.2.4\include
-AiPainter\external\_stuff\TensorRT-8.4.2.4\onnx_graphsurgeon
-AiPainter\external\_stuff\TensorRT-8.4.2.4\python
-AiPainter\external\_stuff\TensorRT-8.4.2.4\samples
-AiPainter\external\_stuff\TensorRT-8.4.2.4\uff
-AiPainter\external\_stuff\TensorRT-8.4.2.4\readme.txt
-
-AiPainter\external\_stuff\NVIDIA GPU Computing Toolkit_CUDA_v11.4\compute-sanitizer\
-AiPainter\external\_stuff\NVIDIA GPU Computing Toolkit_CUDA_v11.4\extras\
-AiPainter\external\_stuff\NVIDIA GPU Computing Toolkit_CUDA_v11.4\include\
-AiPainter\external\_stuff\NVIDIA GPU Computing Toolkit_CUDA_v11.4\lib\
-AiPainter\external\_stuff\NVIDIA GPU Computing Toolkit_CUDA_v11.4\libnvvp\
-AiPainter\external\_stuff\NVIDIA GPU Computing Toolkit_CUDA_v11.4\nvml\
-AiPainter\external\_stuff\NVIDIA GPU Computing Toolkit_CUDA_v11.4\nvvm\
-AiPainter\external\_stuff\NVIDIA GPU Computing Toolkit_CUDA_v11.4\nvvm-prev\
-AiPainter\external\_stuff\NVIDIA GPU Computing Toolkit_CUDA_v11.4\src\
-AiPainter\external\_stuff\NVIDIA GPU Computing Toolkit_CUDA_v11.4\tools\
-AiPainter\external\_stuff\NVIDIA GPU Computing Toolkit_CUDA_v11.4\DOCS
-AiPainter\external\_stuff\NVIDIA GPU Computing Toolkit_CUDA_v11.4\README
-AiPainter\external\_stuff\NVIDIA GPU Computing Toolkit_CUDA_v11.4\readme.txt
-AiPainter\external\_stuff\NVIDIA GPU Computing Toolkit_CUDA_v11.4\version.json
+AiPainter\stable_diffusion_vae\*\*.ckpt
+AiPainter\stable_diffusion_vae\*\*.pt
+AiPainter\stable_diffusion_vae\*\*.safetensors
