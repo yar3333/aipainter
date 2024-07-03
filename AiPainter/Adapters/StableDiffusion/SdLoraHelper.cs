@@ -6,6 +6,8 @@ static class SdLoraHelper
 {
     private static string BasePath => Path.Join(Application.StartupPath, "stable_diffusion_lora");
 
+    private static readonly Dictionary<string, SdLoraConfig> configCache = new();
+
     public static string[] GetNames()
     {
         var basePath = BasePath;
@@ -31,7 +33,7 @@ static class SdLoraHelper
 
     public static string GetHumanName(string name)
     {
-        return GetConfig(name).name;
+        return name;
     }
 
     public static string GetDir()
@@ -57,14 +59,16 @@ static class SdLoraHelper
 
     public static SdLoraConfig GetConfig(string name)
     {
+        if (configCache.ContainsKey(name)) return configCache[name];
+
         var configFilePath = Path.Combine(BasePath, name + ".json");
 
         var r = File.Exists(configFilePath) 
                     ? JsonSerializer.Deserialize<SdLoraConfig>(File.ReadAllText(configFilePath)) ?? new SdLoraConfig()
                     : new SdLoraConfig();
 
-        if (string.IsNullOrWhiteSpace(r.name)) r.name = name;
-
+        configCache[name] = r;
+        
         return r;
     }
 

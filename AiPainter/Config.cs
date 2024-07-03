@@ -30,4 +30,6 @@ class Config
         "1024x768",
         "1024x1024",
     };
+
+    public string CivitaiApiKey { get; set; } = "";
 }

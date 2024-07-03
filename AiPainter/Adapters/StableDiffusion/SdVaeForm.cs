@@ -33,17 +33,21 @@ namespace AiPainter.Adapters.StableDiffusion
             {
                 try
                 {
-                    DownloadTools.DownloadFileAsync(url, Path.GetFileName(new Uri(url).LocalPath), null, SdVaeHelper.GetDirPath(vaeName), cancelationTokenSource.Token, (size, total) =>
+                    DownloadTools.DownloadFileAsync(url, SdVaeHelper.GetDirPath(vaeName), new DownloadFileOptions
                     {
-                        Invoke(() =>
+                        FileNameIfNotDetected = Path.GetFileName(new Uri(url).LocalPath),
+                        Progress = (size, total) =>
                         {
-                            progressBar.Style = total != null ? ProgressBarStyle.Blocks : ProgressBarStyle.Marquee;
-                            if (total != null)
+                            Invoke(() =>
                             {
-                                progressBar.Value = (int)Math.Round(size / (double)total * 100);
-                            }
-                        });
-                    }).Wait();
+                                progressBar.Style = total != null ? ProgressBarStyle.Blocks : ProgressBarStyle.Marquee;
+                                if (total != null)
+                                {
+                                    progressBar.Value = (int)Math.Round(size / (double)total * 100);
+                                }
+                            });
+                        }
+                    }, cancelationTokenSource.Token).Wait();
                 }
                 catch (AggregateException)
                 {

@@ -35,6 +35,9 @@
             columnHeader3 = new ColumnHeader();
             columnHeader4 = new ColumnHeader();
             bwDownloading = new System.ComponentModel.BackgroundWorker();
+            label1 = new Label();
+            tbCivitaiApiKey = new TextBox();
+            linkLabel1 = new LinkLabel();
             SuspendLayout();
             // 
             // btOk
@@ -58,10 +61,10 @@
             lvModels.FullRowSelect = true;
             lvModels.GridLines = true;
             lvModels.HeaderStyle = ColumnHeaderStyle.Nonclickable;
-            lvModels.Location = new Point(12, 12);
+            lvModels.Location = new Point(12, 50);
             lvModels.MultiSelect = false;
             lvModels.Name = "lvModels";
-            lvModels.Size = new Size(649, 374);
+            lvModels.Size = new Size(649, 336);
             lvModels.TabIndex = 6;
             lvModels.UseCompatibleStateImageBehavior = false;
             lvModels.View = View.Details;
@@ -93,6 +96,36 @@
             bwDownloading.WorkerSupportsCancellation = true;
             bwDownloading.DoWork += bwDownloading_DoWork;
             // 
+            // label1
+            // 
+            label1.AutoSize = true;
+            label1.Location = new Point(12, 15);
+            label1.Name = "label1";
+            label1.Size = new Size(315, 15);
+            label1.TabIndex = 7;
+            label1.Text = "Downloading some models require API key for Civitai.com";
+            // 
+            // tbCivitaiApiKey
+            // 
+            tbCivitaiApiKey.Location = new Point(333, 12);
+            tbCivitaiApiKey.Name = "tbCivitaiApiKey";
+            tbCivitaiApiKey.PlaceholderText = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
+            tbCivitaiApiKey.Size = new Size(212, 23);
+            tbCivitaiApiKey.TabIndex = 8;
+            tbCivitaiApiKey.TextChanged += tbCivitaiApiKey_TextChanged;
+            // 
+            // linkLabel1
+            // 
+            linkLabel1.AutoSize = true;
+            linkLabel1.Location = new Point(551, 15);
+            linkLabel1.Name = "linkLabel1";
+            linkLabel1.Size = new Size(91, 15);
+            linkLabel1.TabIndex = 9;
+            linkLabel1.TabStop = true;
+            linkLabel1.Text = "visit Civitai.com";
+            linkLabel1.UseMnemonic = false;
+            linkLabel1.LinkClicked += linkLabel1_LinkClicked;
+            // 
             // SdLorasForm
             // 
             AcceptButton = btOk;
@@ -100,6 +133,9 @@
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(673, 450);
             ControlBox = false;
+            Controls.Add(linkLabel1);
+            Controls.Add(tbCivitaiApiKey);
+            Controls.Add(label1);
             Controls.Add(lvModels);
             Controls.Add(btOk);
             FormBorderStyle = FormBorderStyle.SizableToolWindow;
@@ -109,6 +145,7 @@
             Text = "Stable Diffusion LoRA (additional mini-checkpoints)";
             Load += SdLorasForm_Load;
             ResumeLayout(false);
+            PerformLayout();
         }
 
         #endregion
@@ -119,5 +156,8 @@
         private System.ComponentModel.BackgroundWorker bwDownloading;
         private ColumnHeader columnHeader2;
         private ColumnHeader columnHeader3;
+        private Label label1;
+        private TextBox tbCivitaiApiKey;
+        private LinkLabel linkLabel1;
     }
 }

@@ -1,0 +1,5 @@
+{
+	"homeUrl": "https://civitai.com/models/257749?modelVersionId=290640",
+	"mainCheckpointUrl": "https://civitai.com/api/download/models/290640?type=Model&format=SafeTensor&size=pruned&fp=fp16",
+	"vaeUrl": "https://civitai.com/api/download/models/290640?type=VAE&format=SafeTensor"
+}

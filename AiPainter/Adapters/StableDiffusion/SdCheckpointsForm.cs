@@ -68,7 +68,10 @@ namespace AiPainter.Adapters.StableDiffusion
                             var fileName = uri.LocalPath.EndsWith(".ckpt") || uri.LocalPath.EndsWith(".safetensors")
                                                 ? Path.GetFileName(uri.LocalPath)
                                                 : "main.safetensors";
-                            downloadFile(name, url, fileName, null, text => updateStatus(name, text, null, null));
+                            downloadFile(name, url, text => updateStatus(name, text, null, null), new DownloadFileOptions
+                            {
+                                FileNameIfNotDetected = fileName
+                            });
                         }
                     }
                     
@@ -82,7 +85,10 @@ namespace AiPainter.Adapters.StableDiffusion
                             var fileName = uri.LocalPath.EndsWith(".ckpt") || uri.LocalPath.EndsWith(".safetensors")
                                                 ? Path.GetFileName(uri.LocalPath)
                                                 : "inpaint.safetensors";
-                            downloadFile(name, url, fileName, null, text => updateStatus(name, null, text, null));
+                            downloadFile(name, url, text => updateStatus(name, null, text, null), new DownloadFileOptions
+                            {
+                                FileNameIfNotDetected = fileName
+                            });
                         }
                     }
                     
@@ -98,7 +104,11 @@ namespace AiPainter.Adapters.StableDiffusion
                                                 ? prepareVaeFileName(Path.GetFileName(uri.LocalPath))
                                                 : "vae.pt";
                             
-                            downloadFile(name, url, fileName, prepareVaeFileName, text => updateStatus(name, null, null, text));
+                            downloadFile(name, url, text => updateStatus(name, null, null, text), new DownloadFileOptions
+                            {
+                                FileNameIfNotDetected = fileName,
+                                PreprocessFileName = prepareVaeFileName
+                            });
                         }
                     }
 
@@ -124,7 +134,7 @@ namespace AiPainter.Adapters.StableDiffusion
             if (!ignoreCheckedChange) SdCheckpointsHelper.SetEnabled(e.Item.Name, e.Item.Checked);
         }
 
-        private void downloadFile(string name, string url, string fileNameIfNotDetected, Func<string, string>? preprocessFileName, Action<string> progress)
+        private void downloadFile(string name, string url, Action<string> progress, DownloadFileOptions options)
         {
             Invoke(() => btOk.Enabled = false);
 
@@ -132,15 +142,20 @@ namespace AiPainter.Adapters.StableDiffusion
 
             try
             {
-                DownloadTools.DownloadFileAsync(url, fileNameIfNotDetected, preprocessFileName, SdCheckpointsHelper.GetDirPath(name), cancelationTokenSource.Token, (size, total) =>
+                DownloadTools.DownloadFileAsync(url, SdCheckpointsHelper.GetDirPath(name), new DownloadFileOptions
                 {
-                    progress(total != null ? Math.Round(size / (double)total * 100) + "%" : size + " bytes");
-
-                    if (bwDownloading.CancellationPending || !checkedNames.Contains(name))
+                    FileNameIfNotDetected = options.FileNameIfNotDetected,
+                    PreprocessFileName = options.PreprocessFileName,
+                    Progress = (size, total) =>
                     {
-                        cancelationTokenSource.Cancel();
+                        progress(total != null ? Math.Round(size / (double)total * 100) + "%" : size + " bytes");
+
+                        if (bwDownloading.CancellationPending || !checkedNames.Contains(name))
+                        {
+                            cancelationTokenSource.Cancel();
+                        }
                     }
-                }).Wait();
+                }, cancelationTokenSource.Token).Wait();
             }
             catch (AggregateException e)
             {

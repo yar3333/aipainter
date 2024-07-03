@@ -1,22 +1,39 @@
-﻿namespace AiPainter.Helpers;
+﻿using System.Net.Http.Headers;
+
+namespace AiPainter.Helpers;
+
+public class DownloadFileOptions
+{
+    public string? FileNameIfNotDetected;
+    public Func<string, string>? PreprocessFileName;
+    public string? AuthorizationBearer;
+    public Action<long, long?>? Progress;
+
+    public DownloadFileOptions Clone()
+    {
+        return (DownloadFileOptions)MemberwiseClone();
+    }    
+}
 
 public static class DownloadTools
 {
-    public static async Task DownloadFileAsync(string url, string fileNameIfNotDetected, Func<string, string>? preprocessFileName, string destDir, CancellationToken cancellationToken, Action<long, long?> progress)
+    public static async Task DownloadFileAsync(string url, string destDir, DownloadFileOptions options, CancellationToken cancellationToken)
     {
-        if (preprocessFileName == null) preprocessFileName = s => s;        
-        
         using var client = new HttpClient();
         client.Timeout = TimeSpan.FromHours(10);
+        if (!string.IsNullOrEmpty(options.AuthorizationBearer))
+        {
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", options.AuthorizationBearer);
+        }
 
         var tempDestFile = Path.GetTempFileName();
         await using var file = new FileStream(tempDestFile, FileMode.Create, FileAccess.Write, FileShare.None);
             
-        var fileName = await client.DownloadAsync(url, file, progress, cancellationToken);
+        var fileName = await client.DownloadAsync(url, file, options.Progress, cancellationToken);
         file.Close();
 
-        if (string.IsNullOrWhiteSpace(fileName)) fileName = fileNameIfNotDetected;
-        fileName = preprocessFileName(fileName);
+        if (string.IsNullOrWhiteSpace(fileName)) fileName = options.FileNameIfNotDetected;
+        if (options.PreprocessFileName != null) fileName = options.PreprocessFileName(fileName);
 
         File.Move(tempDestFile, Path.Combine(destDir, fileName));
     }
