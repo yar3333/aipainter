@@ -53,7 +53,7 @@ namespace AiPainter.Adapters.StableDiffusion
             ddSampler.SelectedItem = "DPM++ 2M";
 
             ddImageSize.DataSource = Program.Config.ImageSizes;
-            ddImageSize.SelectedIndex = 0;
+            ddImageSize.Text = Program.Config.ImageSizes.FirstOrDefault() ?? "512x512";
         }
 
         private void showManageCheckpointDialog()
@@ -66,13 +66,9 @@ namespace AiPainter.Adapters.StableDiffusion
 
         private void btGenerate_Click(object sender, EventArgs e)
         {
-            if (tbNegative.Text != "" && Program.Config.NegativePrompts.FirstOrDefault() != tbNegative.Text)
-            {
-                Program.Config.NegativePrompts.Remove(tbNegative.Text);
-                Program.Config.NegativePrompts.Insert(0, tbNegative.Text);
-                Program.Config.NegativePrompts = Program.Config.NegativePrompts.Take(10).ToList();
-                Program.SaveConfig();
-            }
+            ddImageSize.Text = getNormalizedImageSize();
+
+            saveSelectedValuesToMainConfig();
 
             if (tbPrompt.Text.Trim() == "") { tbPrompt.Focus(); return; }
 
@@ -85,11 +81,68 @@ namespace AiPainter.Adapters.StableDiffusion
             OnGenerate();
         }
 
+        private void saveSelectedValuesToMainConfig()
+        {
+            var needSave = false;
+
+            if ((ddCheckpoint.SelectedValue?.ToString() ?? "") != Program.Config.StableDiffusionCheckpoint)
+            {
+                needSave = true;
+                Program.Config.StableDiffusionCheckpoint = ddCheckpoint.SelectedValue?.ToString() ?? "";
+            }
+            
+            if (tbNegative.Text != "" && Program.Config.NegativePrompts.FirstOrDefault() != tbNegative.Text)
+            {
+                needSave = true;
+                Program.Config.NegativePrompts.Remove(tbNegative.Text);
+                Program.Config.NegativePrompts.Insert(0, tbNegative.Text);
+                Program.Config.NegativePrompts = Program.Config.NegativePrompts.Take(10).ToList();
+            }
+
+            if (!Program.Config.ImageSizes.Contains(ddImageSize.Text))
+            {
+                needSave = true;
+                Program.Config.ImageSizes.Insert(0, ddImageSize.Text);
+                Program.Config.ImageSizes = Program.Config.ImageSizes.Take(20).ToList();
+            }
+            
+            if (needSave) Program.SaveConfig();
+        }
+
+        private string getNormalizedImageSize()
+        {
+            var s = ddImageSize.Text
+                               .Replace(" ", "")
+                               .Replace("-", "")
+                               .Replace("+", "")
+                               .Replace("\t", "")
+                               .Replace("X", "x")
+                               .Replace("х", "x") // cyrillic
+                               .Replace(",", "x")
+                               .Replace(";", "x")
+                               .Replace("*", "x")
+                               .Trim('x');
+            
+            var parts = s.Split('x');
+            if (parts.Length != 2) return "512x512";
+
+            if (!int.TryParse(parts[0], out var w) || w <= 0) return "512x512";
+            if (!int.TryParse(parts[1], out var h) || h <= 0) return "512x512";
+
+            return w + "x" + h;
+        }
+
         private void btReset_Click(object sender, EventArgs e)
         {
-            var parameters = new SdGenerationRequest();
-            numCfgScale.Value = parameters.cfg_scale;
-            numSteps.Value = parameters.steps;
+            cbUseInitImage.Checked = false;
+            trackBarChangesLevel.Value = 0;
+            numCfgScale.Value = 7.0m;
+            ddImageSize.Text = "512x512";
+            ddSampler.SelectedItem = 0;
+            numSteps.Value = 35;
+            cbUseSeed.Checked = false;
+            trackBarSeedVariationStrength.Value = 0;
+            Modifiers = new string[] {};
         }
 
         public void UpdateState(SmartPictureBox pb)
@@ -119,28 +172,14 @@ namespace AiPainter.Adapters.StableDiffusion
             trackBarChangesLevel.Enabled = cbUseInitImage.Checked;
         }
 
-        public void SelectImageSize(int w, int h)
+        public void SetImageSize(int w, int h)
         {
-            var imageSizeStr = w + "x" + h;
-            if (!Program.Config.ImageSizes.Contains(imageSizeStr))
-            {
-                Program.Config.ImageSizes = Program.Config.ImageSizes.Concat(new[] { imageSizeStr }).ToArray();
-                ddImageSize.DataSource = Program.Config.ImageSizes;
-            }
-            ddImageSize.SelectedItem = imageSizeStr;
+            ddImageSize.Text = w + "x" + h;
         }
 
         public void SetVaeName(string name)
         {
             Program.Config.StableDiffusionVae = name;
-        }
-
-        private void ddCheckpoint_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            if ((ddCheckpoint.SelectedValue?.ToString() ?? "") == Program.Config.StableDiffusionCheckpoint) return;
-
-            Program.Config.StableDiffusionCheckpoint = ddCheckpoint.SelectedValue?.ToString() ?? "";
-            Program.SaveConfig();
         }
 
         private void lbModifiers_Click(object sender, EventArgs e)
@@ -213,7 +252,7 @@ namespace AiPainter.Adapters.StableDiffusion
             
             contextMenuPrompt.Items.Add(new ToolStripSeparator());
             
-            var loras = SdLoraHelper.GetNames().Where(x => SdLoraHelper.GetPathToModel(x) != null).ToArray();
+            var loras = SdLoraHelper.GetNames().Where(x => SdLoraHelper.GetPathToModel(x) != null && SdLoraHelper.IsEnabled(x)).ToArray();
             foreach (var lora in loras)
             {
                 contextMenuPrompt.Items.Add("Use LoRA: " + SdLoraHelper.GetHumanName(lora), null, (_, _) =>
@@ -224,7 +263,7 @@ namespace AiPainter.Adapters.StableDiffusion
 
             if (loras.Length == 0)
             {
-                contextMenuPrompt.Items.Add(new ToolStripLabel("No LoRa found"));
+                contextMenuPrompt.Items.Add(new ToolStripLabel("No enabled LoRA found"));
             }
             
             contextMenuPrompt.Show(Cursor.Position);

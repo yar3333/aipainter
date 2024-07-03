@@ -114,7 +114,7 @@ class ImageGeneratorSd : IImageGenerator
 
         sdPanel.Modifiers = sdGenerationParameters.modifiers;
 
-        sdPanel.SelectImageSize(sdGenerationParameters.width, sdGenerationParameters.height);
+        sdPanel.SetImageSize(sdGenerationParameters.width, sdGenerationParameters.height);
 
         mainForm.FilePath = savedFilePath;
     }

@@ -18,7 +18,7 @@ class Config
     public string NegativePrompt { get; set; } = "[deformed | disfigured], poorly drawn, [bad : wrong] anatomy, [extra | missing | floating | disconnected] limb, (mutated hands and fingers), blurry";
     public List<string> NegativePrompts { get; set; } = new();
 
-    public string[] ImageSizes { get; set; } =
+    public List<string> ImageSizes { get; set; } = new()
     {
         "512x512",
         "512x768",

@@ -359,7 +359,7 @@ namespace AiPainter
             // 
             splitContainer2.Panel2.Controls.Add(panGenerationList);
             splitContainer2.Size = new Size(612, 593);
-            splitContainer2.SplitterDistance = 351;
+            splitContainer2.SplitterDistance = 426;
             splitContainer2.TabIndex = 0;
             // 
             // panel1
@@ -370,7 +370,7 @@ namespace AiPainter
             panel1.Dock = DockStyle.Fill;
             panel1.Location = new Point(0, 0);
             panel1.Name = "panel1";
-            panel1.Size = new Size(351, 593);
+            panel1.Size = new Size(426, 593);
             panel1.TabIndex = 2;
             // 
             // panStableDiffusion
@@ -379,8 +379,9 @@ namespace AiPainter
             panStableDiffusion.AutoSizeMode = AutoSizeMode.GrowAndShrink;
             panStableDiffusion.Dock = DockStyle.Top;
             panStableDiffusion.Location = new Point(0, 0);
+            panStableDiffusion.MinimumSize = new Size(426, 0);
             panStableDiffusion.Name = "panStableDiffusion";
-            panStableDiffusion.Size = new Size(351, 569);
+            panStableDiffusion.Size = new Size(426, 569);
             panStableDiffusion.TabIndex = 6;
             // 
             // panGenerationList
@@ -391,7 +392,7 @@ namespace AiPainter
             panGenerationList.Dock = DockStyle.Fill;
             panGenerationList.Location = new Point(0, 0);
             panGenerationList.Name = "panGenerationList";
-            panGenerationList.Size = new Size(257, 593);
+            panGenerationList.Size = new Size(182, 593);
             panGenerationList.TabIndex = 0;
             // 
             // hPicScroll

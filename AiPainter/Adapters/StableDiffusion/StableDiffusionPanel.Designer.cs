@@ -31,6 +31,7 @@
             components = new System.ComponentModel.Container();
             collapsablePanel = new Controls.CollapsablePanel();
             cbUseSeed = new CheckBox();
+            label1 = new Label();
             label5 = new Label();
             ddSampler = new ComboBox();
             btContextMenuNegativePrompt = new Button();
@@ -70,6 +71,7 @@
             collapsablePanel.BackColor = SystemColors.Control;
             collapsablePanel.Caption = "StableDiffusion";
             collapsablePanel.Controls.Add(cbUseSeed);
+            collapsablePanel.Controls.Add(label1);
             collapsablePanel.Controls.Add(label5);
             collapsablePanel.Controls.Add(ddSampler);
             collapsablePanel.Controls.Add(btContextMenuNegativePrompt);
@@ -94,7 +96,7 @@
             collapsablePanel.IsCollapsed = false;
             collapsablePanel.Location = new Point(0, 0);
             collapsablePanel.Name = "collapsablePanel";
-            collapsablePanel.Size = new Size(348, 549);
+            collapsablePanel.Size = new Size(426, 549);
             collapsablePanel.TabIndex = 4;
             collapsablePanel.Load += collapsablePanel_Load;
             collapsablePanel.Resize += collapsablePanel_Resize;
@@ -111,10 +113,19 @@
             toolTip.SetToolTip(cbUseSeed, "Positive integer");
             cbUseSeed.UseVisualStyleBackColor = true;
             // 
+            // label1
+            // 
+            label1.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+            label1.Location = new Point(216, 316);
+            label1.Name = "label1";
+            label1.Size = new Size(50, 15);
+            label1.TabIndex = 26;
+            label1.Text = "Size";
+            label1.TextAlign = ContentAlignment.MiddleRight;
+            // 
             // label5
             // 
             label5.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
-            label5.AutoSize = true;
             label5.Location = new Point(3, 355);
             label5.Name = "label5";
             label5.Size = new Size(50, 15);
@@ -139,7 +150,7 @@
             // 
             btContextMenuNegativePrompt.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
             btContextMenuNegativePrompt.Font = new Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point);
-            btContextMenuNegativePrompt.Location = new Point(313, 194);
+            btContextMenuNegativePrompt.Location = new Point(391, 212);
             btContextMenuNegativePrompt.Name = "btContextMenuNegativePrompt";
             btContextMenuNegativePrompt.Size = new Size(32, 25);
             btContextMenuNegativePrompt.TabIndex = 24;
@@ -151,7 +162,7 @@
             // 
             btContextMenuPrompt.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             btContextMenuPrompt.Font = new Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point);
-            btContextMenuPrompt.Location = new Point(313, 59);
+            btContextMenuPrompt.Location = new Point(391, 59);
             btContextMenuPrompt.Name = "btContextMenuPrompt";
             btContextMenuPrompt.Size = new Size(32, 25);
             btContextMenuPrompt.TabIndex = 24;
@@ -163,7 +174,7 @@
             // 
             btContextMenuCheckpoint.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             btContextMenuCheckpoint.Font = new Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point);
-            btContextMenuCheckpoint.Location = new Point(313, 28);
+            btContextMenuCheckpoint.Location = new Point(391, 28);
             btContextMenuCheckpoint.Name = "btContextMenuCheckpoint";
             btContextMenuCheckpoint.Size = new Size(32, 25);
             btContextMenuCheckpoint.TabIndex = 24;
@@ -174,10 +185,9 @@
             // label4
             // 
             label4.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
-            label4.AutoSize = true;
             label4.Location = new Point(227, 355);
             label4.Name = "label4";
-            label4.Size = new Size(64, 15);
+            label4.Size = new Size(78, 15);
             label4.TabIndex = 23;
             label4.Text = "Detail level";
             label4.TextAlign = ContentAlignment.MiddleRight;
@@ -185,13 +195,13 @@
             // ddImageSize
             // 
             ddImageSize.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
-            ddImageSize.DropDownStyle = ComboBoxStyle.DropDownList;
-            ddImageSize.Font = new Font("Segoe UI", 10F, FontStyle.Regular, GraphicsUnit.Point);
+            ddImageSize.Font = new Font("Segoe UI", 11.25F, FontStyle.Regular, GraphicsUnit.Point);
             ddImageSize.FormattingEnabled = true;
-            ddImageSize.Location = new Point(194, 311);
+            ddImageSize.Location = new Point(272, 309);
             ddImageSize.Name = "ddImageSize";
-            ddImageSize.Size = new Size(151, 25);
+            ddImageSize.Size = new Size(151, 28);
             ddImageSize.TabIndex = 22;
+            ddImageSize.Text = "512x512";
             toolTip.SetToolTip(ddImageSize, "Generated image size. Can be changed in \"Config.json\" file");
             // 
             // lbModifiers
@@ -203,7 +213,7 @@
             lbModifiers.Location = new Point(3, 428);
             lbModifiers.Name = "lbModifiers";
             lbModifiers.SelectionMode = SelectionMode.None;
-            lbModifiers.Size = new Size(342, 64);
+            lbModifiers.Size = new Size(420, 64);
             lbModifiers.TabIndex = 20;
             toolTip.SetToolTip(lbModifiers, "Modifiers (style names, will be added to prompt)");
             lbModifiers.Click += lbModifiers_Click;
@@ -215,30 +225,28 @@
             ddCheckpoint.FormattingEnabled = true;
             ddCheckpoint.Location = new Point(3, 29);
             ddCheckpoint.Name = "ddCheckpoint";
-            ddCheckpoint.Size = new Size(304, 23);
+            ddCheckpoint.Size = new Size(382, 23);
             ddCheckpoint.TabIndex = 18;
             toolTip.SetToolTip(ddCheckpoint, "Active checkpoint (image generation model)");
             ddCheckpoint.DropDown += ddCheckpoint_DropDown;
-            ddCheckpoint.SelectedIndexChanged += ddCheckpoint_SelectedIndexChanged;
             // 
             // tbNegative
             // 
             tbNegative.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             tbNegative.BackColor = Color.FromArgb(255, 242, 242);
             tbNegative.Font = new Font("Segoe UI", 11F, FontStyle.Regular, GraphicsUnit.Point);
-            tbNegative.Location = new Point(3, 194);
+            tbNegative.Location = new Point(3, 212);
             tbNegative.Multiline = true;
             tbNegative.Name = "tbNegative";
             tbNegative.PlaceholderText = "Negative prompt (don't want to get)";
             tbNegative.ScrollBars = ScrollBars.Vertical;
-            tbNegative.Size = new Size(304, 48);
+            tbNegative.Size = new Size(382, 48);
             tbNegative.TabIndex = 17;
             // 
             // cbUseInitImage
             // 
             cbUseInitImage.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
-            cbUseInitImage.AutoSize = true;
-            cbUseInitImage.Location = new Point(3, 256);
+            cbUseInitImage.Location = new Point(3, 274);
             cbUseInitImage.Name = "cbUseInitImage";
             cbUseInitImage.Size = new Size(186, 19);
             cbUseInitImage.TabIndex = 12;
@@ -249,7 +257,7 @@
             // 
             btReset.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
             btReset.Font = new Font("Segoe UI", 9.75F, FontStyle.Regular, GraphicsUnit.Point);
-            btReset.Location = new Point(249, 498);
+            btReset.Location = new Point(327, 498);
             btReset.Name = "btReset";
             btReset.Size = new Size(96, 39);
             btReset.TabIndex = 11;
@@ -269,7 +277,7 @@
             tbPrompt.Name = "tbPrompt";
             tbPrompt.PlaceholderText = "Prompt (describe desired picture)";
             tbPrompt.ScrollBars = ScrollBars.Vertical;
-            tbPrompt.Size = new Size(304, 129);
+            tbPrompt.Size = new Size(382, 147);
             tbPrompt.TabIndex = 0;
             // 
             // numIterations
@@ -294,7 +302,7 @@
             btGenerate.ForeColor = Color.White;
             btGenerate.Location = new Point(68, 498);
             btGenerate.Name = "btGenerate";
-            btGenerate.Size = new Size(176, 39);
+            btGenerate.Size = new Size(254, 39);
             btGenerate.TabIndex = 8;
             btGenerate.Text = "Add to generation queue";
             btGenerate.UseVisualStyleBackColor = false;
@@ -305,7 +313,7 @@
             numSteps.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
             numSteps.Font = new Font("Segoe UI", 11F, FontStyle.Regular, GraphicsUnit.Point);
             numSteps.Increment = new decimal(new int[] { 5, 0, 0, 0 });
-            numSteps.Location = new Point(297, 349);
+            numSteps.Location = new Point(311, 349);
             numSteps.Maximum = new decimal(new int[] { 200, 0, 0, 0 });
             numSteps.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
             numSteps.Name = "numSteps";
@@ -320,7 +328,7 @@
             tbSeed.Font = new Font("Segoe UI", 11.25F, FontStyle.Regular, GraphicsUnit.Point);
             tbSeed.Location = new Point(60, 387);
             tbSeed.Name = "tbSeed";
-            tbSeed.Size = new Size(105, 27);
+            tbSeed.Size = new Size(123, 27);
             tbSeed.TabIndex = 7;
             toolTip.SetToolTip(tbSeed, "Positive integer");
             // 
@@ -353,10 +361,10 @@
             // trackBarChangesLevel
             // 
             trackBarChangesLevel.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
-            trackBarChangesLevel.Location = new Point(0, 279);
+            trackBarChangesLevel.Location = new Point(186, 274);
             trackBarChangesLevel.Maximum = 100;
             trackBarChangesLevel.Name = "trackBarChangesLevel";
-            trackBarChangesLevel.Size = new Size(348, 45);
+            trackBarChangesLevel.Size = new Size(237, 45);
             trackBarChangesLevel.TabIndex = 27;
             trackBarChangesLevel.TickStyle = TickStyle.None;
             toolTip.SetToolTip(trackBarChangesLevel, "Changes level");
@@ -364,10 +372,10 @@
             // trackBarSeedVariationStrength
             // 
             trackBarSeedVariationStrength.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
-            trackBarSeedVariationStrength.Location = new Point(171, 390);
+            trackBarSeedVariationStrength.Location = new Point(186, 390);
             trackBarSeedVariationStrength.Maximum = 100;
             trackBarSeedVariationStrength.Name = "trackBarSeedVariationStrength";
-            trackBarSeedVariationStrength.Size = new Size(174, 45);
+            trackBarSeedVariationStrength.Size = new Size(237, 45);
             trackBarSeedVariationStrength.TabIndex = 27;
             trackBarSeedVariationStrength.TickStyle = TickStyle.None;
             toolTip.SetToolTip(trackBarSeedVariationStrength, "Seed variation strength");
@@ -379,8 +387,9 @@
             // 
             // contextMenuPrompt
             // 
+            contextMenuPrompt.MinimumSize = new Size(220, 0);
             contextMenuPrompt.Name = "contextMenuCheckpoint";
-            contextMenuPrompt.Size = new Size(61, 4);
+            contextMenuPrompt.Size = new Size(220, 26);
             // 
             // contextMenuNegativePrompt
             // 
@@ -393,8 +402,9 @@
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             Controls.Add(collapsablePanel);
+            MinimumSize = new Size(426, 0);
             Name = "StableDiffusionPanel";
-            Size = new Size(348, 552);
+            Size = new Size(426, 552);
             collapsablePanel.ResumeLayout(false);
             collapsablePanel.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)numIterations).EndInit();
@@ -434,5 +444,6 @@
         private Button btContextMenuPrompt;
         private ContextMenuStrip contextMenuPrompt;
         private ContextMenuStrip contextMenuNegativePrompt;
+        private Label label1;
     }
 }
