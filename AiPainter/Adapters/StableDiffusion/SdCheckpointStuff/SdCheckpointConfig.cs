@@ -1,6 +1,6 @@
-﻿using System.Text.Json.Nodes;
+﻿using AiPainter.Adapters.StableDiffusion.SdApiClientStuff;
 
-namespace AiPainter.Adapters.StableDiffusion;
+namespace AiPainter.Adapters.StableDiffusion.SdCheckpointStuff;
 
 class SdCheckpointConfig
 {
@@ -10,7 +10,7 @@ class SdCheckpointConfig
     public string? inpaintCheckpointUrl { get; set; }
     public string? vaeUrl { get; set; }
     public string? description { get; set; }
-    public JsonObject? overrideSettings { get; set; }
+    public SdSettings? overrideSettings { get; set; }
 
     public bool isNeedAuthToDownload = false;
 }

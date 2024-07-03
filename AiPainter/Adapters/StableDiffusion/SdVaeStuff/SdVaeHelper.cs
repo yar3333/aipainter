@@ -1,6 +1,6 @@
 ﻿using System.Text.Json;
 
-namespace AiPainter.Adapters.StableDiffusion;
+namespace AiPainter.Adapters.StableDiffusion.SdVaeStuff;
 
 static class SdVaeHelper
 {
@@ -9,7 +9,7 @@ static class SdVaeHelper
     public static string[] GetNames(string nameToEnsureExists)
     {
         var basePath = BasePath;
-        
+
         return new[] { "", nameToEnsureExists }
                 .Concat(Directory.GetFiles(basePath, "*.ckpt", SearchOption.AllDirectories)
                 .Concat(Directory.GetFiles(basePath, "*.safetensors", SearchOption.AllDirectories))
@@ -71,7 +71,7 @@ static class SdVaeHelper
     {
         var file = GetPathToVae(name);
         var url = GetConfig(name).downloadUrl;
-        return file != null ? "file" : (!string.IsNullOrWhiteSpace(url) ? "URL" : "-");
+        return file != null ? "file" : !string.IsNullOrWhiteSpace(url) ? "URL" : "-";
     }
 
     public static bool IsEnabled(string name)

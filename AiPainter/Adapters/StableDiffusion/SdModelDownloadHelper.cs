@@ -1,4 +1,6 @@
-﻿namespace AiPainter.Adapters.StableDiffusion;
+﻿using AiPainter.Adapters.StableDiffusion.SdCheckpointStuff;
+
+namespace AiPainter.Adapters.StableDiffusion;
 
 static class SdModelDownloadHelper
 {

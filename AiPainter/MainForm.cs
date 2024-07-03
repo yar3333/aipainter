@@ -4,6 +4,7 @@ using System.Windows.Forms;
 using AiPainter.Adapters.LamaCleaner;
 using AiPainter.Adapters.RemBg;
 using AiPainter.Adapters.StableDiffusion;
+using AiPainter.Adapters.StableDiffusion.SdCheckpointStuff;
 using AiPainter.Controls;
 using AiPainter.Helpers;
 
@@ -46,7 +47,7 @@ namespace AiPainter
 
             panStableDiffusion.OnGenerate = () =>
             {
-                panGenerationList.AddGeneration(new ImageGeneratorSd(panStableDiffusion, pictureBox, this));
+                panGenerationList.AddGeneration(new SdImageGenerator(panStableDiffusion, pictureBox, this));
             };
 
             updateImageListWorker.RunWorkerAsync();

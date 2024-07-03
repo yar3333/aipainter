@@ -1,22 +1,22 @@
 ﻿using System.Text.Json;
 using System.Text.RegularExpressions;
 
-namespace AiPainter.Adapters.StableDiffusion;
+namespace AiPainter.Adapters.StableDiffusion.SdCheckpointStuff;
 
 static class SdCheckpointsHelper
 {
     private static string BasePath => Path.Join(Application.StartupPath, "stable_diffusion_checkpoints");
 
     private static readonly Dictionary<string, SdCheckpointConfig> configCache = new();
-    
+
     public static string[] GetNames(string nameToEnsureExists)
     {
         var basePath = BasePath;
 
         var r = !string.IsNullOrEmpty(nameToEnsureExists)
                     ? new[] { nameToEnsureExists }
-                    : new string[] {};
-        
+                    : new string[] { };
+
         return r.Concat(Directory.GetFiles(basePath, "*.ckpt", SearchOption.AllDirectories)
                 .Concat(Directory.GetFiles(basePath, "*.safetensors", SearchOption.AllDirectories))
                 .Concat(Directory.GetFiles(basePath, "config.json", SearchOption.AllDirectories))
@@ -28,7 +28,7 @@ static class SdCheckpointsHelper
 
     public static ListItem[] GetListItems(string nameToEnsureExists)
     {
-        return GetNames(nameToEnsureExists).Where(x => x == nameToEnsureExists || (GetPathToMainCheckpoint(x) != null && IsEnabled(x)))
+        return GetNames(nameToEnsureExists).Where(x => x == nameToEnsureExists || GetPathToMainCheckpoint(x) != null && IsEnabled(x))
                                            .Select(x => new ListItem { Value = x, Text = getHumanName(x) })
                                            .ToArray();
     }
@@ -41,7 +41,7 @@ static class SdCheckpointsHelper
              .Concat(Directory.GetFiles(GetDirPath(name), "*.safetensors"))
              .ToArray();
 
-        return models.Where(x => !Path.GetFileNameWithoutExtension(x).ToLowerInvariant().Contains("inpaint") 
+        return models.Where(x => !Path.GetFileNameWithoutExtension(x).ToLowerInvariant().Contains("inpaint")
                               && !IsFilePathLikeVae(x))
                      .Min();
     }
@@ -54,7 +54,7 @@ static class SdCheckpointsHelper
              .Concat(Directory.GetFiles(GetDirPath(name), "*.safetensors"))
              .ToArray();
 
-        return models.Where(x => Path.GetFileNameWithoutExtension(x).ToLowerInvariant().Contains("inpaint") 
+        return models.Where(x => Path.GetFileNameWithoutExtension(x).ToLowerInvariant().Contains("inpaint")
                               && !IsFilePathLikeVae(x))
                      .Min();
     }
@@ -87,15 +87,15 @@ static class SdCheckpointsHelper
     public static SdCheckpointConfig GetConfig(string name)
     {
         if (configCache.ContainsKey(name)) return configCache[name];
-        
+
         var configFilePath = Path.Combine(GetDirPath(name), "config.json");
 
         var r = File.Exists(configFilePath)
                    ? JsonSerializer.Deserialize<SdCheckpointConfig>(File.ReadAllText(configFilePath)) ?? new SdCheckpointConfig()
                    : new SdCheckpointConfig();
-        
+
         configCache[name] = r;
-        
+
         return r;
     }
 
@@ -103,7 +103,7 @@ static class SdCheckpointsHelper
     {
         var file = GetPathToMainCheckpoint(name);
         var url = GetConfig(name).mainCheckpointUrl;
-        return file != null ? "+" : (!string.IsNullOrWhiteSpace(url) ? "URL" : "");
+        return file != null ? "+" : !string.IsNullOrWhiteSpace(url) ? "URL" : "";
 
     }
 
@@ -111,14 +111,14 @@ static class SdCheckpointsHelper
     {
         var file = GetPathToInpaintCheckpoint(name);
         var url = GetConfig(name).inpaintCheckpointUrl;
-        return file != null ? "+" : (!string.IsNullOrWhiteSpace(url) ? "URL" : "");
+        return file != null ? "+" : !string.IsNullOrWhiteSpace(url) ? "URL" : "";
     }
 
     public static string GetStatusVae(string name)
     {
         var file = GetPathToVae(name);
         var url = GetConfig(name).vaeUrl;
-        return file != null ? "+" : (!string.IsNullOrWhiteSpace(url) ? "URL" : "");
+        return file != null ? "+" : !string.IsNullOrWhiteSpace(url) ? "URL" : "";
     }
 
     public static bool IsEnabled(string name)

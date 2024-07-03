@@ -1,6 +1,6 @@
 ﻿using System.Text.Json;
 
-namespace AiPainter.Adapters.StableDiffusion;
+namespace AiPainter.Adapters.StableDiffusion.SdLoraStuff;
 
 static class SdLoraHelper
 {
@@ -11,8 +11,8 @@ static class SdLoraHelper
     public static string[] GetNames()
     {
         var basePath = BasePath;
-        
-        return new string[]{}
+
+        return new string[] { }
            .Concat(Directory.GetFiles(basePath, "*.safetensors"))
            .Concat(Directory.GetFiles(basePath, "*.ckpt"))
            .Concat(Directory.GetFiles(basePath, "*.pt"))
@@ -53,7 +53,7 @@ static class SdLoraHelper
     public static string GetStatus(string name)
     {
         return GetPathToModel(name) != null
-                   ? "+" 
+                   ? "+"
                    : !string.IsNullOrEmpty(GetConfig(name).downloadUrl) ? "URL" : "";
     }
 
@@ -63,12 +63,12 @@ static class SdLoraHelper
 
         var configFilePath = Path.Combine(BasePath, name + ".json");
 
-        var r = File.Exists(configFilePath) 
+        var r = File.Exists(configFilePath)
                     ? JsonSerializer.Deserialize<SdLoraConfig>(File.ReadAllText(configFilePath)) ?? new SdLoraConfig()
                     : new SdLoraConfig();
 
         configCache[name] = r;
-        
+
         return r;
     }
 

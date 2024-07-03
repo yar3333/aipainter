@@ -1,4 +1,4 @@
-﻿namespace AiPainter.Adapters.StableDiffusion;
+﻿namespace AiPainter.Adapters.StableDiffusion.SdVaeStuff;
 
 class SdVaeConfig
 {

@@ -1,4 +1,6 @@
-﻿namespace AiPainter.Controls;
+﻿using AiPainter.Controls;
+
+namespace AiPainter;
 
 public interface IImageGenerator
 {
@@ -6,9 +8,9 @@ public interface IImageGenerator
     string GetBasePromptText();
     int GetStepsMax();
     string GetTooltip();
-    
+
     void SetControl(GenerationListItem control);
-    
+
     Task RunAsync();
 
     void LoadParamsBackToPanel();

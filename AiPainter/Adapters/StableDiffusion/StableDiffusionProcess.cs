@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using AiPainter.Adapters.StableDiffusion.SdApiClientStuff;
 using AiPainter.Helpers;
 
 namespace AiPainter.Adapters.StableDiffusion;
@@ -18,7 +19,7 @@ static class StableDiffusionProcess
 
     public static void Start(string? checkpointFilePath, string? vaeFilePath)
     {
-        var log = StableDiffusionClient.Log;
+        var log = SdApiClient.Log;
 
         if (!Program.Config.UseEmbeddedStableDiffusion || checkpointFilePath == null) return;
 

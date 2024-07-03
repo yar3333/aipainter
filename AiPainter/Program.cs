@@ -2,6 +2,8 @@ using System.Text.Json;
 using AiPainter.Adapters.LamaCleaner;
 using AiPainter.Adapters.RemBg;
 using AiPainter.Adapters.StableDiffusion;
+using AiPainter.Adapters.StableDiffusion.SdCheckpointStuff;
+using AiPainter.Adapters.StableDiffusion.SdVaeStuff;
 using AiPainter.Helpers;
 
 namespace AiPainter;

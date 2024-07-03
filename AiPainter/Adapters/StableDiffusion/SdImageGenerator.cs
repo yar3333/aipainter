@@ -3,10 +3,13 @@ using System.Text.Json;
 using AiPainter.Helpers;
 using System.Text.RegularExpressions;
 using AiPainter.Controls;
+using AiPainter.Adapters.StableDiffusion.SdApiClientStuff;
+using AiPainter.Adapters.StableDiffusion.SdCheckpointStuff;
+using AiPainter.Adapters.StableDiffusion.SdVaeStuff;
 
 namespace AiPainter.Adapters.StableDiffusion;
 
-class ImageGeneratorSd : IImageGenerator
+class SdImageGenerator : IImageGenerator
 {
     private readonly StableDiffusionPanel sdPanel;
     private readonly SmartPictureBox pictureBox;
@@ -26,7 +29,7 @@ class ImageGeneratorSd : IImageGenerator
 
     private GenerationListItem control = null;
 
-    public ImageGeneratorSd(StableDiffusionPanel sdPanel, SmartPictureBox pictureBox, MainForm mainForm)
+    public SdImageGenerator(StableDiffusionPanel sdPanel, SmartPictureBox pictureBox, MainForm mainForm)
     {
         this.sdPanel = sdPanel;
         this.pictureBox = pictureBox;
@@ -192,7 +195,7 @@ class ImageGeneratorSd : IImageGenerator
                     }
                     catch (Exception ee)
                     {
-                        StableDiffusionClient.Log.WriteLine(ee.ToString());
+                        SdApiClient.Log.WriteLine(ee.ToString());
                     }
                 }
             );
@@ -221,7 +224,7 @@ class ImageGeneratorSd : IImageGenerator
                     }
                     catch (Exception ee)
                     {
-                        StableDiffusionClient.Log.WriteLine(ee.ToString());
+                        SdApiClient.Log.WriteLine(ee.ToString());
                     }
                 }
             );
@@ -230,7 +233,7 @@ class ImageGeneratorSd : IImageGenerator
 
     public void Cancel()
     {
-        Task.Run(StableDiffusionClient.Cancel);
+        Task.Run(SdApiClient.Cancel);
     }
 
     private void saveImageBasedOnOriginalImage(Bitmap image, long seed)
@@ -265,7 +268,7 @@ class ImageGeneratorSd : IImageGenerator
     {
         if (initImage == null)
         {
-            var parameters = new SdGenerationRequest
+            var parameters = new SdTxt2ImgRequest
             {
                 prompt = getFullPromptText(),
                 negative_prompt = sdGenerationParameters.negative,
@@ -284,7 +287,7 @@ class ImageGeneratorSd : IImageGenerator
                 override_settings = SdCheckpointsHelper.GetConfig(sdGenerationParameters.checkpointName).overrideSettings,
             };
 
-            StableDiffusionClient.txt2img
+            SdApiClient.txt2img
             (
                 parameters,
                 onProgress: step => control.NotifyProgress(step),
@@ -293,7 +296,7 @@ class ImageGeneratorSd : IImageGenerator
         }
         else
         {
-            var parameters = new SdInpaintRequest
+            var parameters = new SdImg2ImgRequest
             {
                 prompt = getFullPromptText(),
                 negative_prompt = sdGenerationParameters.negative,
@@ -315,7 +318,7 @@ class ImageGeneratorSd : IImageGenerator
                 override_settings = SdCheckpointsHelper.GetConfig(sdGenerationParameters.checkpointName).overrideSettings,
             };
 
-            StableDiffusionClient.img2img
+            SdApiClient.img2img
             (
                 parameters,
                 onProgress: step => control.NotifyProgress(step),
@@ -368,6 +371,6 @@ class ImageGeneratorSd : IImageGenerator
         var t = sdGenerationParameters.ShallowCopy();
         t.seed = seed;
         var resultJsonFilePath = Path.Join(Path.GetDirectoryName(resultImageFilePath), Path.GetFileNameWithoutExtension(resultImageFilePath)) + ".json";
-        File.WriteAllText(resultJsonFilePath, JsonSerializer.Serialize(t, new JsonSerializerOptions { WriteIndented = true }));
+        File.WriteAllText(resultJsonFilePath, JsonSerializer.Serialize(t, new JsonSerializerOptions { PropertyNamingPolicy = null, WriteIndented = true }));
     }
 }

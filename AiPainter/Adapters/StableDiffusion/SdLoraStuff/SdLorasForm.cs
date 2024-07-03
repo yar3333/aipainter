@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel;
 using System.IO;
+using AiPainter.Adapters.StableDiffusion.SdLoraStuff;
 using AiPainter.Helpers;
 
 namespace AiPainter.Adapters.StableDiffusion

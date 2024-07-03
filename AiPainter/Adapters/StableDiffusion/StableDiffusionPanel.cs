@@ -1,4 +1,7 @@
-﻿using AiPainter.Controls;
+﻿using AiPainter.Adapters.StableDiffusion.SdCheckpointStuff;
+using AiPainter.Adapters.StableDiffusion.SdLoraStuff;
+using AiPainter.Adapters.StableDiffusion.SdVaeStuff;
+using AiPainter.Controls;
 using AiPainter.Helpers;
 
 namespace AiPainter.Adapters.StableDiffusion

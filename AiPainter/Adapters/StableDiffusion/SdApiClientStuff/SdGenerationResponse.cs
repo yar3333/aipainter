@@ -1,13 +1,12 @@
 ﻿using System.Text.Json;
 using System.Text.Json.Nodes;
 
-namespace AiPainter.Adapters.StableDiffusion;
+namespace AiPainter.Adapters.StableDiffusion.SdApiClientStuff;
 
 [Serializable]
 class SdGenerationResponse
 {
     public string[]? images { get; set; } = null; // data:image/png;base64,iVBOR....
-    public SdGenerationRequest parameters { get; set; } = null!;
     public string info { get; set; } = null!;
     public SdGenerationInfo infoParsed => JsonSerializer.Deserialize<SdGenerationInfo>(info)!;
 }
@@ -16,12 +15,12 @@ class SdGenerationResponse
 class SdGenerationInfo
 {
     public string prompt { get; set; } = "";
-    public string[] all_prompts { get; set; } = {};
+    public string[] all_prompts { get; set; } = { };
     public string negative_prompt { get; set; } = "";
     public long seed { get; set; }
-    public long[] all_seeds { get; set; } = {};
+    public long[] all_seeds { get; set; } = { };
     public long subseed { get; set; }
-    public long[] all_subseeds { get; set; } = {};
+    public long[] all_subseeds { get; set; } = { };
     public decimal subseed_strength { get; set; }
     public int width { get; set; }
     public int height { get; set; }

@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using AiPainter.Adapters.StableDiffusion.SdVaeStuff;
 using AiPainter.Helpers;
 
 namespace AiPainter.Adapters.StableDiffusion

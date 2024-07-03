@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
+using AiPainter.Adapters.StableDiffusion.SdCheckpointStuff;
 using AiPainter.Helpers;
 
 namespace AiPainter.Adapters.StableDiffusion
