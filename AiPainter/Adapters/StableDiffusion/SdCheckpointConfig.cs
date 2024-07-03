@@ -1,4 +1,6 @@
-﻿namespace AiPainter.Adapters.StableDiffusion;
+﻿using System.Text.Json.Nodes;
+
+namespace AiPainter.Adapters.StableDiffusion;
 
 class SdCheckpointConfig
 {
@@ -8,4 +10,7 @@ class SdCheckpointConfig
     public string? inpaintCheckpointUrl { get; set; }
     public string? vaeUrl { get; set; }
     public string? description { get; set; }
+    public JsonObject? overrideSettings { get; set; }
+
+    public bool isNeedAuthToDownload = false;
 }

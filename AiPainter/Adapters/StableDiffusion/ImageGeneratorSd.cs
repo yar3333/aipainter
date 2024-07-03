@@ -280,6 +280,8 @@ class ImageGeneratorSd : IImageGenerator
                 
                 sampler_index = sdGenerationParameters.sampler,
                 s_noise = sdGenerationParameters.changesLevel,
+
+                override_settings = SdCheckpointsHelper.GetConfig(sdGenerationParameters.checkpointName).overrideSettings,
             };
 
             StableDiffusionClient.txt2img
@@ -296,18 +298,21 @@ class ImageGeneratorSd : IImageGenerator
                 prompt = getFullPromptText(),
                 negative_prompt = sdGenerationParameters.negative,
                 cfg_scale = sdGenerationParameters.cfgScale,
+                steps = sdGenerationParameters.steps,
                 
                 seed = sdGenerationParameters.seed,
                 subseed_strength = sdGenerationParameters.seedVariationStrength,
                 
-                steps = sdGenerationParameters.steps,
                 init_images = new[] { BitmapTools.GetBase64String(initImage) },
                 mask = maskImage != null ? BitmapTools.GetBase64String(maskImage) : null,
-                //inpainting_fill = SdInpaintingFill.original,
+                
                 width = initImage.Width,
                 height = initImage.Height,
+                
                 sampler_index = sdGenerationParameters.sampler,
                 s_noise = sdGenerationParameters.changesLevel,
+
+                override_settings = SdCheckpointsHelper.GetConfig(sdGenerationParameters.checkpointName).overrideSettings,
             };
 
             StableDiffusionClient.img2img

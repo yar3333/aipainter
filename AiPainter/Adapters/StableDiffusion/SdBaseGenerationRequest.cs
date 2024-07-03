@@ -50,6 +50,9 @@ class SdBaseGenerationRequest
     public decimal s_noise { get; set; } = 1; // best is 1
     public decimal s_tmax { get; set; } = 0; // not much effect to generation
     public decimal s_tmin { get; set; } = 0; // not much effect to generation
+
+    public object? override_settings { get; set; } = null;
+    public bool? override_settings_restore_afterwards { get; set; } = null;
 }
 
 [Serializable]

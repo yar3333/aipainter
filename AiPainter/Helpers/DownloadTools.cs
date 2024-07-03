@@ -5,7 +5,7 @@ namespace AiPainter.Helpers;
 public class DownloadFileOptions
 {
     public string? FileNameIfNotDetected;
-    public Func<string, string>? PreprocessFileName;
+    public Func<string?, string>? PreprocessFileName;
     public string? AuthorizationBearer;
     public Action<long, long?>? Progress;
 
@@ -17,7 +17,7 @@ public class DownloadFileOptions
 
 public static class DownloadTools
 {
-    public static async Task DownloadFileAsync(string url, string destDir, DownloadFileOptions options, CancellationToken cancellationToken)
+    public static async Task<string> DownloadFileAsync(string url, string destDir, DownloadFileOptions options, CancellationToken cancellationToken)
     {
         using var client = new HttpClient();
         client.Timeout = TimeSpan.FromHours(10);
@@ -35,7 +35,10 @@ public static class DownloadTools
         if (string.IsNullOrWhiteSpace(fileName)) fileName = options.FileNameIfNotDetected;
         if (options.PreprocessFileName != null) fileName = options.PreprocessFileName(fileName);
 
-        File.Move(tempDestFile, Path.Combine(destDir, fileName));
+        var resultFilePath = Path.Combine(destDir, fileName);
+        File.Move(tempDestFile, resultFilePath);
+
+        return resultFilePath;
     }
 }
 

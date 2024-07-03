@@ -6,7 +6,7 @@ namespace AiPainter.Adapters.StableDiffusion
 {
     public partial class SdLorasForm : Form
     {
-        private string[] modelNames = null;
+        //private string[] modelNames = null;
         private string[] checkedNames = {};
 
         private bool ignoreCheckedChange = true;
@@ -22,7 +22,7 @@ namespace AiPainter.Adapters.StableDiffusion
         {
             tbCivitaiApiKey.Text = Program.Config.CivitaiApiKey;
 
-            modelNames = SdLoraHelper.GetNames();
+            var modelNames = SdLoraHelper.GetNames();
 
             ignoreCheckedChange = true;
             foreach (var name in modelNames)
@@ -79,40 +79,26 @@ namespace AiPainter.Adapters.StableDiffusion
 
             if (SdLoraHelper.GetConfig(name).isNeedAuthToDownload && (string.IsNullOrEmpty(Program.Config.CivitaiApiKey) || isProvidedKeyInvalid)) return;
 
-            var uri = new Uri(url);
-            var fileName = uri.LocalPath.EndsWith(".safetensors")
-                        || uri.LocalPath.EndsWith(".ckpt")
-                        || uri.LocalPath.EndsWith(".pt")
-                               ? Path.GetFileName(uri.LocalPath)
-                               : name + ".safetensors";
-
-            downloadFile(name, url, text => updateStatus(name, text), new DownloadFileOptions
+            var resultFilePath = downloadFile(name, url, text => updateStatus(name, text), new DownloadFileOptions
             {
-                FileNameIfNotDetected = fileName,
+                FileNameIfNotDetected = SdModelDownloadHelper.GetModelFileNameFromUrl(url, name + ".safetensors"),
                 PreprocessFileName = x => name + Path.GetExtension(x),
                 AuthorizationBearer = SdLoraHelper.GetConfig(name).isNeedAuthToDownload ? Program.Config.CivitaiApiKey : null,
             });
 
-            var resultFilePath = SdLoraHelper.GetPathToModel(name);
-            if (resultFilePath != null && new FileInfo(resultFilePath).Length < 1024 * 1024)
+            SdModelDownloadHelper.AnalyzeDownloadedModel(resultFilePath, () =>
             {
-                var text = File.ReadAllText(resultFilePath);
-                File.Delete(resultFilePath);
-
-                if (text.Contains("\"error\":\"Unauthorized\""))
+                if (!SdLoraHelper.GetConfig(name).isNeedAuthToDownload)
                 {
-                    if (!SdLoraHelper.GetConfig(name).isNeedAuthToDownload)
-                    {
-                        SdLoraHelper.GetConfig(name).isNeedAuthToDownload = true;
-                        updateStatus(name, "need API key");
-                    }
-                    else
-                    {
-                        updateStatus(name, "invalid API key");
-                        isProvidedKeyInvalid = true;
-                    }
+                    SdLoraHelper.GetConfig(name).isNeedAuthToDownload = true;
+                    updateStatus(name, "need API key");
                 }
-            }
+                else
+                {
+                    updateStatus(name, "invalid API key");
+                    isProvidedKeyInvalid = true;
+                }
+            });
         }
 
         private void lvModels_ItemChecked(object sender, ItemCheckedEventArgs e)
@@ -129,12 +115,13 @@ namespace AiPainter.Adapters.StableDiffusion
             if (!ignoreCheckedChange) SdLoraHelper.SetEnabled(e.Item.Name, e.Item.Checked);
         }
 
-        private void downloadFile(string name, string url, Action<string> progress, DownloadFileOptions options)
+        private string? downloadFile(string name, string url, Action<string> progress, DownloadFileOptions options)
         {
             Invoke(() => btOk.Enabled = false);
 
             var cancelationTokenSource = new CancellationTokenSource();
 
+            string? resultFilePath = null;
             try
             {
                 var newOptions = options.Clone();
@@ -148,7 +135,7 @@ namespace AiPainter.Adapters.StableDiffusion
                     }
                 };
 
-                DownloadTools.DownloadFileAsync(url, SdLoraHelper.GetDir(), newOptions, cancelationTokenSource.Token).Wait();
+                resultFilePath = DownloadTools.DownloadFileAsync(url, SdLoraHelper.GetDir(), newOptions, cancelationTokenSource.Token).Result;
             }
             catch (AggregateException e)
             {
@@ -160,9 +147,9 @@ namespace AiPainter.Adapters.StableDiffusion
                 updateStatus(name, null);
                 btOk.Enabled = true;
             });
+
+            return resultFilePath;
         }
-
-
 
         private void updateStatus(string name, string? text)
         {

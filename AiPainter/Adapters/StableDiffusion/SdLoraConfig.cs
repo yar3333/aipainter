@@ -6,5 +6,5 @@ class SdLoraConfig
     public string homeUrl { get; set; } = "";
     public string downloadUrl { get; set; } = "";
 
-    public bool isNeedAuthToDownload { get; set; } = false;
+    public bool isNeedAuthToDownload = false;
 }

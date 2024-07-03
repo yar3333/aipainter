@@ -213,11 +213,22 @@ namespace AiPainter.Adapters.StableDiffusion
                 showManageCheckpointDialog();
             });
             
+            contextMenuCheckpoint.Items.Add(new ToolStripSeparator());
+            
             contextMenuCheckpoint.Items.Add("Show in Explorer", null, (_, _) =>
             {
                 if (!string.IsNullOrEmpty(ddCheckpoint.SelectedValue?.ToString()))
                 {
                     ProcessHelper.ShowFolderInExplorer(SdCheckpointsHelper.GetDirPath(ddCheckpoint.SelectedValue.ToString()!));
+                }
+            });
+
+            contextMenuCheckpoint.Items.Add("Visit home page", null, (_, _) =>
+            {
+                if (!string.IsNullOrEmpty(ddCheckpoint.SelectedValue?.ToString()))
+                {
+                    var config = SdCheckpointsHelper.GetConfig(ddCheckpoint.SelectedValue.ToString()!);
+                    if (!string.IsNullOrEmpty(config.homeUrl)) ProcessHelper.OpenUrlInBrowser(config.homeUrl);
                 }
             });
 

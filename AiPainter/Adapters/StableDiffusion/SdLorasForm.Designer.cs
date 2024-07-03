@@ -45,7 +45,7 @@
             btOk.Anchor = AnchorStyles.Bottom;
             btOk.DialogResult = DialogResult.OK;
             btOk.Font = new Font("Segoe UI", 9.75F, FontStyle.Regular, GraphicsUnit.Point);
-            btOk.Location = new Point(252, 398);
+            btOk.Location = new Point(357, 481);
             btOk.Name = "btOk";
             btOk.Size = new Size(172, 40);
             btOk.TabIndex = 5;
@@ -64,7 +64,7 @@
             lvModels.Location = new Point(12, 50);
             lvModels.MultiSelect = false;
             lvModels.Name = "lvModels";
-            lvModels.Size = new Size(649, 336);
+            lvModels.Size = new Size(858, 419);
             lvModels.TabIndex = 6;
             lvModels.UseCompatibleStateImageBehavior = false;
             lvModels.View = View.Details;
@@ -80,16 +80,17 @@
             // 
             columnHeader2.Text = "File";
             columnHeader2.TextAlign = HorizontalAlignment.Center;
+            columnHeader2.Width = 100;
             // 
             // columnHeader3
             // 
             columnHeader3.Text = "Name";
-            columnHeader3.Width = 180;
+            columnHeader3.Width = 250;
             // 
             // columnHeader4
             // 
             columnHeader4.Text = "Link";
-            columnHeader4.Width = 350;
+            columnHeader4.Width = 440;
             // 
             // bwDownloading
             // 
@@ -131,7 +132,7 @@
             AcceptButton = btOk;
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(673, 450);
+            ClientSize = new Size(882, 533);
             ControlBox = false;
             Controls.Add(linkLabel1);
             Controls.Add(tbCivitaiApiKey);

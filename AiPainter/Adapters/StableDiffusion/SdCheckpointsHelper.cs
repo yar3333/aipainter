@@ -7,6 +7,8 @@ static class SdCheckpointsHelper
 {
     private static string BasePath => Path.Join(Application.StartupPath, "stable_diffusion_checkpoints");
 
+    private static readonly Dictionary<string, SdCheckpointConfig> configCache = new();
+    
     public static string[] GetNames(string nameToEnsureExists)
     {
         var basePath = BasePath;
@@ -84,11 +86,17 @@ static class SdCheckpointsHelper
 
     public static SdCheckpointConfig GetConfig(string name)
     {
+        if (configCache.ContainsKey(name)) return configCache[name];
+        
         var configFilePath = Path.Combine(GetDirPath(name), "config.json");
 
-        return File.Exists(configFilePath)
+        var r = File.Exists(configFilePath)
                    ? JsonSerializer.Deserialize<SdCheckpointConfig>(File.ReadAllText(configFilePath)) ?? new SdCheckpointConfig()
                    : new SdCheckpointConfig();
+        
+        configCache[name] = r;
+        
+        return r;
     }
 
     public static string GetStatusMain(string name)
