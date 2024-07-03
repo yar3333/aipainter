@@ -1,6 +1,5 @@
 using System.Text.Json;
 using AiPainter.Adapters.LamaCleaner;
-using AiPainter.Adapters.RemBg;
 using AiPainter.Adapters.StableDiffusion;
 using AiPainter.Adapters.StableDiffusion.SdCheckpointStuff;
 using AiPainter.Adapters.StableDiffusion.SdVaeStuff;
@@ -22,12 +21,10 @@ static class Program
 
         StableDiffusionProcess.Start(SdCheckpointsHelper.GetPathToMainCheckpoint(Config.StableDiffusionCheckpoint), SdVaeHelper.GetPathToVae(Config.StableDiffusionVae));
         LamaCleanerProcess.Start();
-        RemBgProcess.Start();
 
         ApplicationConfiguration.Initialize();
         Application.Run(new MainForm());
 
-        RemBgProcess.Stop();
         LamaCleanerProcess.Stop();
         StableDiffusionProcess.Stop();
     }

@@ -1,8 +1,6 @@
 using System.Drawing.Imaging;
 using System.Text.Json;
-using System.Windows.Forms;
 using AiPainter.Adapters.LamaCleaner;
-using AiPainter.Adapters.RemBg;
 using AiPainter.Adapters.StableDiffusion;
 using AiPainter.Adapters.StableDiffusion.SdCheckpointStuff;
 using AiPainter.Controls;
@@ -37,7 +35,6 @@ namespace AiPainter
         private static StoredImageList storedImageList = new(Program.Config.OutputFolder);
 
         private readonly LamaCleanerManager lamaCleaner = new();
-        private readonly RemBgManager remBg = new();
 
         private SmartImagePreview activeImagePreview = null;
 
@@ -427,9 +424,8 @@ namespace AiPainter
         {
             panStableDiffusion.UpdateState(pictureBox);
             lamaCleaner.UpdateState(pictureBox, btRemoveObjectFromImage);
-            remBg.UpdateState(pictureBox, btRemoveBackgroundFromImage);
 
-            pictureBox.Enabled = !lamaCleaner.InProcess && !remBg.InProcess;
+            pictureBox.Enabled = !lamaCleaner.InProcess;
 
             var activeBox = pictureBox.ActiveBox;
 
@@ -521,19 +517,6 @@ namespace AiPainter
         private void btRemoveObjectFromImage_Click(object sender, EventArgs e)
         {
             lamaCleaner.Run(pictureBox, image =>
-            {
-                Invoke(() =>
-                {
-                    pictureBox.Image = image;
-                    pictureBox.ResetMask();
-                    pictureBox.Refresh();
-                });
-            });
-        }
-
-        private void btRemoveBackgroundFromImage_Click(object sender, EventArgs e)
-        {
-            remBg.Run(pictureBox, image =>
             {
                 Invoke(() =>
                 {

@@ -4,8 +4,7 @@ Digital AI painter. Features:
  
  * generate pictures by text description (generate via [StableDiffusion](https://github.com/AUTOMATIC1111/stable-diffusion-webui));
  * regenerate specified areas of image (inpaint via [StableDiffusion](https://github.com/AUTOMATIC1111/stable-diffusion-webui));
- * remove specified objects from pictures (inpaint via [lama-cleaner](https://github.com/Sanster/lama-cleaner));
- * remove background from pictures (via [rembg](https://github.com/danielgatis/rembg)).
+ * remove specified objects from pictures (inpaint via [lama-cleaner](https://github.com/Sanster/lama-cleaner)).
 
 ![screenshot-01](screenshots/screenshot-01.jpg)
 ![screenshot-02](screenshots/screenshot-02.jpg)

@@ -35,19 +35,6 @@ static class StableDiffusionProcess
             return;
         }
 
-        var pyvenvCfgFilePath = Path.Join(Application.StartupPath, @"external\StableDiffusion\venv\pyvenv.cfg");
-        if (File.Exists(pyvenvCfgFilePath))
-        {
-            File.WriteAllLines(pyvenvCfgFilePath, File.ReadAllLines(pyvenvCfgFilePath).Select(x =>
-            {
-                if (x.TrimStart().StartsWith("home = "))
-                {
-                    return "home = " + Path.Join(Application.StartupPath, @"external\_stuff\python-3.10.6");
-                }
-                return x;
-            }));
-        }
-
         var uri = new Uri(Program.Config.StableDiffusionUrl);
 
         Loading = true;
@@ -68,20 +55,6 @@ static class StableDiffusionProcess
                 + " --lora-dir=\"" + pathToLoraDir + "\"",
             
             directory: Path.Join(Application.StartupPath, @"external\StableDiffusion"),
-            
-            env: new Dictionary<string, string?>
-            {
-                //{
-                //    "PATH", 
-                //    Path.Join(Application.StartupPath, @"external\_stuff\python-3.10.6") + ";" 
-                //  + Path.Join(Application.StartupPath, @"external\_stuff\python-3.10.6\Scripts") + ";" 
-                //  + Environment.GetEnvironmentVariable("PATH")
-                //},
-                //{ "PYTHON", null },
-                //{ "GIT", null },
-                //{ "VENV_DIR", null },
-                //{ "COMMANDLINE_ARGS", null },
-            },
             
             logFunc: s => log.WriteLine("[process] " + s),
             

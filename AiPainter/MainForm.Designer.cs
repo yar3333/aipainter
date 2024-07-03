@@ -54,7 +54,6 @@ namespace AiPainter
             toolStripSeparator4 = new ToolStripSeparator();
             btAbout = new ToolStripButton();
             btRemoveObjectFromImage = new ToolStripButton();
-            btRemoveBackgroundFromImage = new ToolStripButton();
             splitContainer = new SplitContainer();
             splitContainer1 = new SplitContainer();
             pictureBox = new SmartPictureBox();
@@ -100,7 +99,7 @@ namespace AiPainter
             // 
             toolbar.AutoSize = false;
             toolbar.ImageScalingSize = new Size(34, 34);
-            toolbar.Items.AddRange(new ToolStripItem[] { btClearActiveImage, btLoad, btSave, btSaveAs, btCopyToClipboard, toolStripSeparator2, btResizeAndMoveActiveBoxToFitImage, sbResize, toolStripSeparator3, btResetMask, btDeAlpha, btRestorePrevMask, toolStripSeparator1, btLeft, btDown, btUp, btRight, toolStripSeparator4, btAbout, btRemoveObjectFromImage, btRemoveBackgroundFromImage });
+            toolbar.Items.AddRange(new ToolStripItem[] { btClearActiveImage, btLoad, btSave, btSaveAs, btCopyToClipboard, toolStripSeparator2, btResizeAndMoveActiveBoxToFitImage, sbResize, toolStripSeparator3, btResetMask, btDeAlpha, btRestorePrevMask, toolStripSeparator1, btLeft, btDown, btUp, btRight, toolStripSeparator4, btAbout, btRemoveObjectFromImage });
             toolbar.Location = new Point(0, 0);
             toolbar.Name = "toolbar";
             toolbar.Size = new Size(1150, 40);
@@ -287,16 +286,6 @@ namespace AiPainter
             btRemoveObjectFromImage.Text = "toolStripButton1";
             btRemoveObjectFromImage.ToolTipText = "Remove masked object from image";
             btRemoveObjectFromImage.Click += btRemoveObjectFromImage_Click;
-            // 
-            // btRemoveBackgroundFromImage
-            // 
-            btRemoveBackgroundFromImage.DisplayStyle = ToolStripItemDisplayStyle.Image;
-            btRemoveBackgroundFromImage.Image = (Image)resources.GetObject("btRemoveBackgroundFromImage.Image");
-            btRemoveBackgroundFromImage.ImageTransparentColor = Color.Magenta;
-            btRemoveBackgroundFromImage.Name = "btRemoveBackgroundFromImage";
-            btRemoveBackgroundFromImage.Size = new Size(38, 37);
-            btRemoveBackgroundFromImage.Text = "Remove background from image";
-            btRemoveBackgroundFromImage.Click += btRemoveBackgroundFromImage_Click;
             // 
             // splitContainer
             // 
@@ -525,7 +514,6 @@ namespace AiPainter
         private ToolStripSplitButton sbResize;
         private ToolStripSeparator toolStripSeparator4;
         private ToolStripButton btRemoveObjectFromImage;
-        private ToolStripButton btRemoveBackgroundFromImage;
         private ContextMenuStrip contextMenuPreviewImage;
         private ToolStripMenuItem contextMenuPreviewImage_MoveToSubfolderAndOpen;
         private ToolStripMenuItem contextMenuPreviewImage_MoveToSubfolder;
