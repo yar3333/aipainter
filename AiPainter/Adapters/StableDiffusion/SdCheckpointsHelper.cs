@@ -40,7 +40,7 @@ static class SdCheckpointsHelper
              .ToArray();
 
         return models.Where(x => !Path.GetFileNameWithoutExtension(x).ToLowerInvariant().Contains("inpaint") 
-                              && !Regex.IsMatch(Path.GetFileNameWithoutExtension(x), @"\bvae\b", RegexOptions.IgnoreCase))
+                              && !IsFilePathLikeVae(x))
                      .Min();
     }
 
@@ -53,7 +53,7 @@ static class SdCheckpointsHelper
              .ToArray();
 
         return models.Where(x => Path.GetFileNameWithoutExtension(x).ToLowerInvariant().Contains("inpaint") 
-                              && !Regex.IsMatch(Path.GetFileNameWithoutExtension(x), @"\bvae\b", RegexOptions.IgnoreCase))
+                              && !IsFilePathLikeVae(x))
                      .Min();
     }
 
@@ -66,7 +66,7 @@ static class SdCheckpointsHelper
              .Concat(Directory.GetFiles(GetDirPath(name), "*.pt"))
              .ToArray();
 
-        return models.Where(x => Regex.IsMatch(Path.GetFileNameWithoutExtension(x), @"\bvae\b", RegexOptions.IgnoreCase)).Min();
+        return models.Where(IsFilePathLikeVae).Min();
     }
 
     public static string GetDirPath(string name)
@@ -123,5 +123,10 @@ static class SdCheckpointsHelper
         var filePath = Path.Combine(GetDirPath(name), "_disabled");
         if (enabled && File.Exists(filePath)) File.Delete(filePath);
         if (!enabled && !File.Exists(filePath)) File.WriteAllText(filePath, "");
+    }
+
+    public static bool IsFilePathLikeVae(string filePath)
+    {
+        return Regex.IsMatch(Path.GetFileNameWithoutExtension(filePath), @"(?:\b|_)vae(?:\b|_)", RegexOptions.IgnoreCase);
     }
 }

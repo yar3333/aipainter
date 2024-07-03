@@ -203,7 +203,7 @@ namespace AiPainter.Adapters.StableDiffusion
 
         private string prepareVaeFileName(string fileName)
         {
-            return !Regex.IsMatch(fileName, @"\bvae\b")
+            return !SdCheckpointsHelper.IsFilePathLikeVae(fileName)
                             ? Path.GetFileNameWithoutExtension(fileName) + "-vae" + Path.GetExtension(fileName)
                             : fileName;
         }
