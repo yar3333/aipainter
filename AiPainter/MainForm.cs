@@ -108,7 +108,9 @@ namespace AiPainter
                         {
                             lock (storedImageList)
                             {
-                                if (hPicScroll.Value == Math.Max(0, hPicScroll.Maximum - hPicScroll.LargeChange + 1))
+                                var panImages = splitContainer.Panel2;
+                                
+                                if (hPicScroll.Value == Math.Max(0, hPicScroll.Maximum - hPicScroll.LargeChange + 1) && !panImages.ClientRectangle.Contains(panImages.PointToClient(Cursor.Position)))
                                 {
                                     hPicScroll.Maximum = Math.Max(0, storedImageList.Count - 1);
                                     hPicScroll.Value = Math.Max(0, hPicScroll.Maximum - hPicScroll.LargeChange + 1);
