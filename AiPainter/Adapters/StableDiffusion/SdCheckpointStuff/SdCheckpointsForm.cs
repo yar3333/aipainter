@@ -7,7 +7,6 @@ namespace AiPainter.Adapters.StableDiffusion
 {
     public partial class SdCheckpointsForm : Form
     {
-        //private string[] modelNames = null;
         private string[] checkedNames = { };
 
         private bool ignoreCheckedChange = true;
@@ -261,6 +260,7 @@ namespace AiPainter.Adapters.StableDiffusion
         private void btImportFromCivitai_Click(object sender, EventArgs e)
         {
             var form = new ImportFromCivitaiForm();
+            form.tabs.SelectedTab = form.tabCheckpoint;
             form.ShowDialog(this);
             updateList();
         }

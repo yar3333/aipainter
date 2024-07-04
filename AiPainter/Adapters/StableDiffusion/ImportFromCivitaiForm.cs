@@ -1,20 +1,14 @@
 ﻿using AiPainter.Helpers;
-using System.Net.Http.Headers;
-using System.Net.Http.Json;
-using System.Text.Json;
-using System.Text.Json.Nodes;
-using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
 using AiPainter.Adapters.StableDiffusion.SdApiClientStuff;
 using AiPainter.Adapters.StableDiffusion.SdCheckpointStuff;
-
+using AiPainter.Adapters.StableDiffusion.SdLoraStuff;
+using AiPainter.SiteClients.CivitaiClientStuff;
 
 namespace AiPainter.Adapters.StableDiffusion
 {
     public partial class ImportFromCivitaiForm : Form
     {
-        private static readonly Log Log = new("civitai");
-
         private string? modelId;
         private string? versionId;
 
@@ -25,31 +19,17 @@ namespace AiPainter.Adapters.StableDiffusion
 
         private void ImportFromCivitaiForm_Load(object sender, EventArgs e)
         {
-            tbCivitaiApiKey.Text = Program.Config.CivitaiApiKey;
-
+            labUrlError.Text = "";
             labCheckpointNameError.Text = "";
-
-            tabCheckpoint.Enabled = false;
-            tabLora.Enabled = false;
-        }
-
-        private void linkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
-        {
-            ProcessHelper.OpenUrlInBrowser("https://civitai.com/user/account");
+            labLoraNameError.Text = "";
         }
 
         private void btImport_Click(object sender, EventArgs e)
         {
+            labUrlError.Text = "";
+
             var url = tbUrl.Text;
             if (string.IsNullOrWhiteSpace(url)) { tbUrl.Focus(); return; }
-
-            if (string.IsNullOrWhiteSpace(tbCivitaiApiKey.Text)) { tbCivitaiApiKey.Focus(); return; }
-
-            if (Program.Config.CivitaiApiKey != tbCivitaiApiKey.Text)
-            {
-                Program.Config.CivitaiApiKey = tbCivitaiApiKey.Text;
-                Program.SaveConfig();
-            }
 
             var uri = new Uri(url);
 
@@ -57,6 +37,7 @@ namespace AiPainter.Adapters.StableDiffusion
             if (m1.Success)
             {
                 btImport.Enabled = false;
+                tabs.Enabled = false;
                 modelId = m1.Groups[1].Value;
                 versionId = m1.Groups[2].Value;
                 importModel();
@@ -67,7 +48,8 @@ namespace AiPainter.Adapters.StableDiffusion
             if (m2.Success)
             {
                 btImport.Enabled = false;
-                modelId = m1.Groups[1].Value;
+                tabs.Enabled = false;
+                modelId = m2.Groups[1].Value;
                 versionId = null;
                 importModel();
                 return;
@@ -80,91 +62,143 @@ namespace AiPainter.Adapters.StableDiffusion
         {
             Task.Run(async () =>
             {
-                var model = await getAsync<JsonObject>("models/" + modelId);
-
-                if (versionId == null)
+                try
                 {
-                    versionId = model["modelVersions"]?.AsArray()[0]?.AsObject()["id"]?.ToString();
-                    if (versionId == null) return;
+                    await importModelInner();
                 }
-
-                var version = await getAsync<JsonObject>("model-versions/" + versionId);
+                catch (Exception e)
+                {
+                    Invoke(() =>
+                    {
+                        labUrlError.Text = e.Message;
+                    });
+                }
 
                 Invoke(() =>
                 {
-                    if (model != null)
-                    {
-                        switch (model["type"]?.ToString())
-                        {
-                            case "Checkpoint":
-                                importCheckpoint(model, version);
-                                break;
-
-                            case "LORA":
-                                importLora(model, version);
-                                break;
-
-                            default:
-                                tbUrl.Focus();
-                                break;
-                        }
-                    }
-                    else
-                    {
-                        tbUrl.Focus();
-                    }
-
+                    tabs.Enabled = true;
                     btImport.Enabled = true;
                 });
             });
         }
 
-        private void importCheckpoint(JsonObject model, JsonObject version)
+        private async Task importModelInner()
+        {
+            var model = await CivitaiClient.GetModelAsync(modelId!);
+
+            if (versionId == null)
+            {
+                versionId = model.modelVersions.FirstOrDefault()?.id.ToString();
+                if (versionId == null) return;
+            }
+
+            var version = model.modelVersions.Single(x => x.id.ToString() == versionId);
+
+            Invoke(() =>
+            {
+                switch (model.type)
+                {
+                    case "Checkpoint":
+                        importCheckpoint(model, version);
+                        break;
+
+                    case "LORA":
+                        importLora(model, version);
+                        break;
+
+                    default:
+                        tbUrl.Focus();
+                        break;
+                }
+            });
+        }
+
+        private void importCheckpoint(CivitaiModel model, CivitaiVersion version)
         {
             tabs.SelectedTab = tabCheckpoint;
-            tabCheckpoint.Enabled = true;
-            tabLora.Enabled = false;
 
-            tbCheckpointName.Text = DataTools.UnderscoresToCapitalisation(DataTools.SanitizeText(model["name"]?.ToString())) + "-" + DataTools.SanitizeText(version["name"]?.ToString());
+            version.name = DataTools.TrimEndString(version.name, "+ VAE");
+            version.name = DataTools.TrimEndString(version.name, "+VAE");
+
+            tbCheckpointName.Text = DataTools.UnderscoresToCapitalisation(DataTools.SanitizeText(model.name)) 
+                                  + "-" + DataTools.SanitizeText(version.name);
 
             tbCheckpointPrompt.Text = "";
-            var keywords = version["trainedWords"]?.AsArray();
-            if (keywords != null)
+            if (version.trainedWords != null)
             {
-                tbCheckpointPrompt.Text = string.Join(", ", keywords.Select(x => x?.ToString() ?? "").Where(x => x != ""));
+                tbCheckpointPrompt.Text = string.Join(", ", version.trainedWords);
             }
 
             tbCheckpointDescription.Text = "";
-            var tags = model["tags"]?.AsArray();
-            if (tags != null)
+            if (model.tags != null)
             {
-                tbCheckpointDescription.Text = string.Join(", ", tags.Select(x => x?.ToString() ?? "").Where(x => x != ""));
+                tbCheckpointDescription.Text = string.Join(", ", model.tags);
             }
 
-            var files = version["files"]?.AsArray();
-            if (files != null)
+            tbCheckpointMainUrl.Text = "";
+            tbCheckpointVaeUrl.Text = "";
+            if (version.files != null)
             {
-                foreach (var file in files)
+                foreach (var file in version.files)
                 {
-                    switch (file?.AsObject()["type"]?.ToString())
+                    switch (file.type)
                     {
                         case "Model":
-                            tbCheckpointMainUrl.Text = file.AsObject()["downloadUrl"]?.ToString() ?? "";
+                            tbCheckpointMainUrl.Text = file.downloadUrl;
                             break;
 
                         case "VAE":
-                            tbCheckpointVaeUrl.Text = file.AsObject()["downloadUrl"]?.ToString() ?? "";
+                            tbCheckpointVaeUrl.Text = file.downloadUrl;
                             break;
                     }
                 }
             }
+
+            tbCheckpointInpaintUrl.Text = "";
+            var possibleInpaintVersions = model.modelVersions.Where(x => x.name.ToLowerInvariant().Contains("inpaint")).ToArray();
+            if (possibleInpaintVersions.Length == 1)
+            {
+                tbCheckpointInpaintUrl.Text = possibleInpaintVersions[0].downloadUrl;
+            }
+
+            numCheckpointClipSkip.Value = 0;
         }
 
-        private void importLora(JsonObject model, JsonObject version)
+        private void importLora(CivitaiModel model, CivitaiVersion version)
         {
             tabs.SelectedTab = tabLora;
-            tabCheckpoint.Enabled = false;
-            tabLora.Enabled = true;
+
+            model.name = processLoraNameAndDetectForModels(model.name, out var forModelNames);
+
+            tbLoraName.Text = DataTools.UnderscoresToCapitalisation(DataTools.SanitizeText(model.name)) 
+                            + "_for_" + string.Join('_', forModelNames)
+                            + "-" + DataTools.SanitizeText(version.name);
+
+            tbLoraPrompt.Text = "";
+            if (version.trainedWords != null)
+            {
+                tbLoraPrompt.Text = string.Join(", ", version.trainedWords);
+            }
+
+            tbLoraDescription.Text = "";
+            if (model.tags != null)
+            {
+                tbLoraDescription.Text = string.Join(", ", model.tags);
+            }
+
+            tbLoraDownloadUrl.Text = "";
+            if (version.files != null)
+            {
+                foreach (var file in version.files)
+                {
+                    switch (file.type)
+                    {
+                        case "Model":
+                            tbLoraDownloadUrl.Text = file.downloadUrl;
+                            break;
+                    }
+                }
+            }
         }
 
         private void btCheckpointOk_Click(object sender, EventArgs e)
@@ -202,6 +236,7 @@ namespace AiPainter.Adapters.StableDiffusion
                 btCheckpointOk.Enabled = false;
 
                 btCheckpointOk.Text = "SUCCESS";
+                tbUrl.Text = "";
             }
             else
             {
@@ -210,47 +245,13 @@ namespace AiPainter.Adapters.StableDiffusion
 
             Task.Run(async () =>
             {
-                await Task.Delay(1000);
+                await Task.Delay(2000);
                 Invoke(() =>
                 {
                     btCheckpointOk.Enabled = true;
                     btCheckpointOk.Text = saveBtOkName;
                 });
             });
-
-        }
-
-        private static async Task<T> postAsync<T>(string url, object request)
-        {
-            using var httpClient = new HttpClient(new LoggerHttpClientHandler(Log));
-            httpClient.BaseAddress = new Uri("https://civitai.com/api/v1/");
-            httpClient.Timeout = TimeSpan.FromMinutes(1);
-            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Program.Config.CivitaiApiKey);
-
-            var raw = await httpClient.PostAsync(url, JsonContent.Create(request, null, new JsonSerializerOptions { PropertyNamingPolicy = null, DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull }));
-            return JsonSerializer.Deserialize<T>(await raw.Content.ReadAsStringAsync())!;
-        }
-
-        private static async Task<T> getAsync<T>(string url)
-        {
-            using var httpClient = new HttpClient(new LoggerHttpClientHandler(Log));
-            httpClient.BaseAddress = new Uri("https://civitai.com/api/v1/");
-            httpClient.Timeout = TimeSpan.FromMinutes(1);
-            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Program.Config.CivitaiApiKey);
-
-            var raw = await httpClient.GetAsync(url);
-            return JsonSerializer.Deserialize<T>(await raw.Content.ReadAsStringAsync())!;
-        }
-
-        private static async Task<string> getStringAsync(string url)
-        {
-            using var httpClient = new HttpClient(new LoggerHttpClientHandler(Log));
-            httpClient.BaseAddress = new Uri("https://civitai.com/api/v1/");
-            httpClient.Timeout = TimeSpan.FromMinutes(1);
-            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Program.Config.CivitaiApiKey);
-
-            var raw = await httpClient.GetAsync(url);
-            return await raw.Content.ReadAsStringAsync();
         }
 
         private void tbCheckpointName_TextChanged(object sender, EventArgs _)
@@ -263,19 +264,110 @@ namespace AiPainter.Adapters.StableDiffusion
 
             try
             {
-                if (Directory.Exists(SdCheckpointsHelper.GetDirPath(tbCheckpointName.Text.Trim())))
-                {
-                    labCheckpointNameError.Text = "already exists";
-                }
-                else
-                {
-                    labCheckpointNameError.Text = "";
-                }
+                labCheckpointNameError.Text = Directory.Exists(SdCheckpointsHelper.GetDirPath(tbCheckpointName.Text.Trim())) 
+                                                  ? "already exists" 
+                                                  : "";
             }
-            catch (Exception e)
+            catch
             {
                 labCheckpointNameError.Text = "bad name";
             }
+        }
+
+        private void linkLabel1_LinkClicked_1(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            ProcessHelper.OpenUrlInBrowser("https://civitai.com");
+        }
+
+        private void btLoraOk_Click(object sender, EventArgs e)
+        {
+            if (tbLoraName.Text.Trim() == "")
+            {
+                tbLoraName.Focus();
+                return;
+            }
+
+            if (tbLoraDownloadUrl.Text.Trim() == "")
+            {
+                tbLoraDownloadUrl.Focus();
+                return;
+            }
+
+            var config = new SdLoraConfig
+            {
+                homeUrl = "https://civitai.com/models/" + modelId + "?modelVersionId=" + versionId,
+                downloadUrl = tbLoraDownloadUrl.Text.Trim(),
+                prompt = tbLoraPrompt.Text.Trim(),
+                description = tbLoraDescription.Text.Trim(),
+            };
+
+            var saveBtOkName = btLoraOk.Text;
+            if (SdLoraHelper.SaveConfig(tbLoraName.Text.Trim(), config))
+            {
+                tbLoraName_TextChanged(null, null);
+                btLoraOk.Enabled = false;
+
+                btLoraOk.Text = "SUCCESS";
+                tbUrl.Text = "";
+            }
+            else
+            {
+                btLoraOk.Text = "ERROR";
+            }
+
+            Task.Run(async () =>
+            {
+                await Task.Delay(2000);
+                Invoke(() =>
+                {
+                    btLoraOk.Enabled = true;
+                    btLoraOk.Text = saveBtOkName;
+                });
+            });
+
+        }
+
+        private void tbLoraName_TextChanged(object sender, EventArgs e)
+        {
+            if (tbLoraName.Text.Trim() == "")
+            {
+                labLoraNameError.Text = "";
+                return;
+            }
+
+            try
+            {
+                labLoraNameError.Text = SdLoraHelper.IsConfigExist(tbLoraName.Text.Trim()) 
+                                            ? "already exists" 
+                                            : "";
+            }
+            catch
+            {
+                labLoraNameError.Text = "bad name";
+            }
+        }
+
+        private static string processLoraNameAndDetectForModels(string name, out string[] forModelNames)
+        {
+            var r = new List<string>();
+
+            if (name.StartsWith("[Pony]"))
+            {
+                name = name.Substring("[Pony]".Length).Trim();
+                r.Add("PonyXL");
+            }
+
+            if (name.StartsWith("[PonyXL]"))
+            {
+                name = name.Substring("[PonyXL]".Length).Trim();
+                r.Add("PonyXL");
+            }
+
+            if (name.Contains("Pony")) r.Add("PonyXL");
+
+            forModelNames = r.Distinct().OrderBy(x => x).ToArray();
+
+            return name;
         }
     }
 }

@@ -29,9 +29,6 @@
         private void InitializeComponent()
         {
             components = new System.ComponentModel.Container();
-            linkLabel1 = new LinkLabel();
-            tbCivitaiApiKey = new TextBox();
-            label1 = new Label();
             label2 = new Label();
             tbUrl = new TextBox();
             btImport = new Button();
@@ -55,54 +52,40 @@
             tbCheckpointPrompt = new TextBox();
             tbCheckpointName = new TextBox();
             tabLora = new TabPage();
+            btLoraOk = new Button();
+            label1 = new Label();
+            label12 = new Label();
+            labLoraNameError = new Label();
+            label14 = new Label();
+            label15 = new Label();
+            tbLoraDownloadUrl = new TextBox();
+            tbLoraDescription = new TextBox();
+            tbLoraPrompt = new TextBox();
+            tbLoraName = new TextBox();
             toolTip1 = new ToolTip(components);
+            labUrlError = new Label();
+            linkLabel1 = new LinkLabel();
             tabs.SuspendLayout();
             tabCheckpoint.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)numCheckpointClipSkip).BeginInit();
+            tabLora.SuspendLayout();
             SuspendLayout();
-            // 
-            // linkLabel1
-            // 
-            linkLabel1.AutoSize = true;
-            linkLabel1.Location = new Point(404, 21);
-            linkLabel1.Name = "linkLabel1";
-            linkLabel1.Size = new Size(91, 15);
-            linkLabel1.TabIndex = 15;
-            linkLabel1.TabStop = true;
-            linkLabel1.Text = "visit Civitai.com";
-            linkLabel1.UseMnemonic = false;
-            linkLabel1.LinkClicked += linkLabel1_LinkClicked;
-            // 
-            // tbCivitaiApiKey
-            // 
-            tbCivitaiApiKey.Location = new Point(186, 18);
-            tbCivitaiApiKey.Name = "tbCivitaiApiKey";
-            tbCivitaiApiKey.PlaceholderText = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
-            tbCivitaiApiKey.Size = new Size(212, 23);
-            tbCivitaiApiKey.TabIndex = 14;
-            // 
-            // label1
-            // 
-            label1.AutoSize = true;
-            label1.Location = new Point(12, 21);
-            label1.Name = "label1";
-            label1.Size = new Size(168, 15);
-            label1.TabIndex = 13;
-            label1.Text = "Specify API key for Civitai.com";
             // 
             // label2
             // 
             label2.AutoSize = true;
-            label2.Location = new Point(12, 68);
+            label2.Location = new Point(12, 20);
             label2.Name = "label2";
-            label2.Size = new Size(229, 15);
+            label2.Size = new Size(81, 15);
             label2.TabIndex = 13;
-            label2.Text = "Specify URL to import checkpoint or LoRA";
+            label2.Text = "URL to import";
+            toolTip1.SetToolTip(label2, "URL to import checkpoint or LoRA");
             // 
             // tbUrl
             // 
             tbUrl.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
-            tbUrl.Location = new Point(247, 65);
+            tbUrl.BackColor = Color.FromArgb(226, 241, 227);
+            tbUrl.Location = new Point(99, 17);
             tbUrl.Name = "tbUrl";
             tbUrl.PlaceholderText = "https://civitai.com/models/352581/vixons-pony-styles";
             tbUrl.Size = new Size(460, 23);
@@ -111,9 +94,9 @@
             // btImport
             // 
             btImport.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            btImport.Location = new Point(713, 65);
+            btImport.Location = new Point(565, 16);
             btImport.Name = "btImport";
-            btImport.Size = new Size(75, 23);
+            btImport.Size = new Size(75, 26);
             btImport.TabIndex = 16;
             btImport.Text = "Import";
             btImport.UseVisualStyleBackColor = true;
@@ -121,13 +104,13 @@
             // 
             // tabs
             // 
-            tabs.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            tabs.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             tabs.Controls.Add(tabCheckpoint);
             tabs.Controls.Add(tabLora);
-            tabs.Location = new Point(12, 109);
+            tabs.Location = new Point(12, 68);
             tabs.Name = "tabs";
             tabs.SelectedIndex = 0;
-            tabs.Size = new Size(776, 349);
+            tabs.Size = new Size(776, 348);
             tabs.TabIndex = 17;
             // 
             // tabCheckpoint
@@ -152,20 +135,21 @@
             tabCheckpoint.Location = new Point(4, 24);
             tabCheckpoint.Name = "tabCheckpoint";
             tabCheckpoint.Padding = new Padding(3);
-            tabCheckpoint.Size = new Size(768, 321);
+            tabCheckpoint.Size = new Size(768, 320);
             tabCheckpoint.TabIndex = 0;
             tabCheckpoint.Text = "Checkpoint";
             tabCheckpoint.UseVisualStyleBackColor = true;
             // 
             // btCheckpointOk
             // 
+            btCheckpointOk.BackColor = Color.FromArgb(226, 241, 227);
             btCheckpointOk.Font = new Font("Segoe UI", 9.75F, FontStyle.Regular, GraphicsUnit.Point);
-            btCheckpointOk.Location = new Point(300, 264);
+            btCheckpointOk.Location = new Point(300, 261);
             btCheckpointOk.Name = "btCheckpointOk";
             btCheckpointOk.Size = new Size(179, 35);
             btCheckpointOk.TabIndex = 16;
             btCheckpointOk.Text = "Add Checkpoint";
-            btCheckpointOk.UseVisualStyleBackColor = true;
+            btCheckpointOk.UseVisualStyleBackColor = false;
             btCheckpointOk.Click += btCheckpointOk_Click;
             // 
             // numCheckpointClipSkip
@@ -215,12 +199,11 @@
             // 
             // labCheckpointNameError
             // 
-            labCheckpointNameError.AutoSize = true;
             labCheckpointNameError.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point);
             labCheckpointNameError.ForeColor = Color.IndianRed;
             labCheckpointNameError.Location = new Point(523, 27);
             labCheckpointNameError.Name = "labCheckpointNameError";
-            labCheckpointNameError.Size = new Size(36, 15);
+            labCheckpointNameError.Size = new Size(239, 15);
             labCheckpointNameError.TabIndex = 13;
             labCheckpointNameError.Text = "error";
             // 
@@ -310,26 +293,148 @@
             // 
             // tabLora
             // 
+            tabLora.Controls.Add(btLoraOk);
+            tabLora.Controls.Add(label1);
+            tabLora.Controls.Add(label12);
+            tabLora.Controls.Add(labLoraNameError);
+            tabLora.Controls.Add(label14);
+            tabLora.Controls.Add(label15);
+            tabLora.Controls.Add(tbLoraDownloadUrl);
+            tabLora.Controls.Add(tbLoraDescription);
+            tabLora.Controls.Add(tbLoraPrompt);
+            tabLora.Controls.Add(tbLoraName);
             tabLora.Location = new Point(4, 24);
             tabLora.Name = "tabLora";
             tabLora.Padding = new Padding(3);
-            tabLora.Size = new Size(768, 321);
+            tabLora.Size = new Size(768, 320);
             tabLora.TabIndex = 1;
             tabLora.Text = "LoRA";
             tabLora.UseVisualStyleBackColor = true;
+            // 
+            // btLoraOk
+            // 
+            btLoraOk.BackColor = Color.FromArgb(226, 241, 227);
+            btLoraOk.Font = new Font("Segoe UI", 9.75F, FontStyle.Regular, GraphicsUnit.Point);
+            btLoraOk.Location = new Point(295, 235);
+            btLoraOk.Name = "btLoraOk";
+            btLoraOk.Size = new Size(179, 35);
+            btLoraOk.TabIndex = 24;
+            btLoraOk.Text = "Add LoRA";
+            btLoraOk.UseVisualStyleBackColor = false;
+            btLoraOk.Click += btLoraOk_Click;
+            // 
+            // label1
+            // 
+            label1.Location = new Point(6, 189);
+            label1.Name = "label1";
+            label1.Size = new Size(158, 15);
+            label1.TabIndex = 15;
+            label1.Text = "Description";
+            label1.TextAlign = ContentAlignment.MiddleRight;
+            // 
+            // label12
+            // 
+            label12.Location = new Point(6, 144);
+            label12.Name = "label12";
+            label12.Size = new Size(158, 15);
+            label12.TabIndex = 16;
+            label12.Text = "Required Prompt";
+            label12.TextAlign = ContentAlignment.MiddleRight;
+            // 
+            // labLoraNameError
+            // 
+            labLoraNameError.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point);
+            labLoraNameError.ForeColor = Color.IndianRed;
+            labLoraNameError.Location = new Point(523, 59);
+            labLoraNameError.Name = "labLoraNameError";
+            labLoraNameError.Size = new Size(239, 15);
+            labLoraNameError.TabIndex = 17;
+            labLoraNameError.Text = "error";
+            // 
+            // label14
+            // 
+            label14.Location = new Point(6, 100);
+            label14.Name = "label14";
+            label14.Size = new Size(158, 15);
+            label14.TabIndex = 18;
+            label14.Text = "Download URL";
+            label14.TextAlign = ContentAlignment.MiddleRight;
+            // 
+            // label15
+            // 
+            label15.Location = new Point(104, 59);
+            label15.Name = "label15";
+            label15.Size = new Size(60, 15);
+            label15.TabIndex = 19;
+            label15.Text = "Name";
+            label15.TextAlign = ContentAlignment.MiddleRight;
+            // 
+            // tbLoraDownloadUrl
+            // 
+            tbLoraDownloadUrl.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            tbLoraDownloadUrl.Location = new Point(170, 97);
+            tbLoraDownloadUrl.Name = "tbLoraDownloadUrl";
+            tbLoraDownloadUrl.Size = new Size(537, 23);
+            tbLoraDownloadUrl.TabIndex = 20;
+            // 
+            // tbLoraDescription
+            // 
+            tbLoraDescription.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            tbLoraDescription.Location = new Point(170, 186);
+            tbLoraDescription.Name = "tbLoraDescription";
+            tbLoraDescription.Size = new Size(537, 23);
+            tbLoraDescription.TabIndex = 21;
+            // 
+            // tbLoraPrompt
+            // 
+            tbLoraPrompt.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            tbLoraPrompt.Location = new Point(170, 141);
+            tbLoraPrompt.Name = "tbLoraPrompt";
+            tbLoraPrompt.Size = new Size(397, 23);
+            tbLoraPrompt.TabIndex = 22;
+            // 
+            // tbLoraName
+            // 
+            tbLoraName.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            tbLoraName.Location = new Point(170, 56);
+            tbLoraName.Name = "tbLoraName";
+            tbLoraName.Size = new Size(347, 23);
+            tbLoraName.TabIndex = 23;
+            tbLoraName.TextChanged += tbLoraName_TextChanged;
+            // 
+            // labUrlError
+            // 
+            labUrlError.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point);
+            labUrlError.ForeColor = Color.IndianRed;
+            labUrlError.Location = new Point(99, 43);
+            labUrlError.Name = "labUrlError";
+            labUrlError.Size = new Size(460, 15);
+            labUrlError.TabIndex = 13;
+            labUrlError.Text = "error";
+            // 
+            // linkLabel1
+            // 
+            linkLabel1.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            linkLabel1.Location = new Point(646, 18);
+            linkLabel1.Name = "linkLabel1";
+            linkLabel1.Size = new Size(138, 23);
+            linkLabel1.TabIndex = 18;
+            linkLabel1.TabStop = true;
+            linkLabel1.Text = "civitai.com";
+            linkLabel1.TextAlign = ContentAlignment.MiddleRight;
+            linkLabel1.LinkClicked += linkLabel1_LinkClicked_1;
             // 
             // ImportFromCivitaiForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(800, 470);
+            ClientSize = new Size(800, 428);
+            Controls.Add(linkLabel1);
             Controls.Add(tabs);
             Controls.Add(btImport);
-            Controls.Add(linkLabel1);
             Controls.Add(tbUrl);
-            Controls.Add(tbCivitaiApiKey);
             Controls.Add(label2);
-            Controls.Add(label1);
+            Controls.Add(labUrlError);
             FormBorderStyle = FormBorderStyle.FixedToolWindow;
             Name = "ImportFromCivitaiForm";
             ShowInTaskbar = false;
@@ -340,20 +445,18 @@
             tabCheckpoint.ResumeLayout(false);
             tabCheckpoint.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)numCheckpointClipSkip).EndInit();
+            tabLora.ResumeLayout(false);
+            tabLora.PerformLayout();
             ResumeLayout(false);
             PerformLayout();
         }
 
         #endregion
-
-        private LinkLabel linkLabel1;
-        private TextBox tbCivitaiApiKey;
-        private Label label1;
         private Label label2;
         private TextBox tbUrl;
         private Button btImport;
-        private TabControl tabs;
-        private TabPage tabCheckpoint;
+        public TabControl tabs;
+        public TabPage tabCheckpoint;
         private Label label7;
         private Label label6;
         private Label label5;
@@ -364,7 +467,7 @@
         private TextBox tbCheckpointMainUrl;
         private TextBox tbCheckpointPrompt;
         private TextBox tbCheckpointName;
-        private TabPage tabLora;
+        public TabPage tabLora;
         private Label label8;
         private Button btCheckpointOk;
         private NumericUpDown numCheckpointClipSkip;
@@ -373,5 +476,19 @@
         private Label label10;
         private TextBox tbCheckpointDescription;
         private Label labCheckpointNameError;
+        private Label label11;
+        private Label labUrlError;
+        private LinkLabel linkLabel1;
+        private Label label1;
+        private Label label12;
+        private Label label13;
+        private Label label14;
+        private Label label15;
+        private TextBox tbLoraDownloadUrl;
+        private TextBox tbLoraDescription;
+        private TextBox tbLoraPrompt;
+        private TextBox tbLoraName;
+        private Button btLoraOk;
+        private Label labLoraNameError;
     }
 }

@@ -24,4 +24,13 @@ static class DataTools
         s = Regex.Replace(s, "_[a-zA-Z]", m => m.Value.Substring(1).ToUpperInvariant());
         return s;
     }
+
+    public static string TrimEndString(string text, string end)
+    {
+        if (text.Length > end.Length && text.EndsWith(end))
+        {
+            text = text.Substring(0, text.Length - end.Length);
+        }
+        return text;
+    }
 }

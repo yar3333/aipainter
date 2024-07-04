@@ -1,0 +1,8 @@
+{
+  "homeUrl": "https://civitai.com/models/153568?modelVersionId=586871",
+  "mainCheckpointUrl": "https://civitai.com/api/download/models/586871",
+  "inpaintCheckpointUrl": "",
+  "vaeUrl": "",
+  "description": "photorealistic, base model, photo, girls, men, real, photorealim",
+  "prompt": "[realistic lighting],[photo],[photorealistic], [score_9, score_8_up, score_7_up, score_6_up, score_5_up, score_4_up]"
+}

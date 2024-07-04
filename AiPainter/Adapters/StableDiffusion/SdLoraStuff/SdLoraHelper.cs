@@ -1,4 +1,6 @@
-﻿using System.Text.Json;
+﻿using AiPainter.Adapters.StableDiffusion.SdCheckpointStuff;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace AiPainter.Adapters.StableDiffusion.SdLoraStuff;
 
@@ -82,5 +84,36 @@ static class SdLoraHelper
         var filePath = Path.Combine(BasePath, name + ".disabled");
         if (enabled && File.Exists(filePath)) File.Delete(filePath);
         if (!enabled && !File.Exists(filePath)) File.WriteAllText(filePath, "");
+    }
+
+    public static bool SaveConfig(string name, SdLoraConfig config)
+    {
+        var configFilePath = Path.Combine(BasePath, name + ".json");
+        if (!Directory.Exists(Path.GetDirectoryName(configFilePath)))
+        {
+            Directory.CreateDirectory(Path.GetDirectoryName(configFilePath)!);
+        }
+        
+        try
+        {
+            File.WriteAllText(configFilePath, JsonSerializer.Serialize(config, new JsonSerializerOptions
+            {
+                PropertyNamingPolicy = null,
+                DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+                WriteIndented = true,
+            }));
+            
+            return true;
+        }
+        catch (Exception e)
+        {
+            return false;
+        }
+    }
+
+    public static bool IsConfigExist(string name)
+    {
+        var configFilePath = Path.Combine(BasePath, name + ".json");
+        return File.Exists(configFilePath);
     }
 }

@@ -1,6 +1,11 @@
 {
-	"homeUrl": "https://civitai.com/models/372465?modelVersionId=534642",
-	"mainCheckpointUrl": "https://civitai.com/api/download/models/534642?type=Model&format=SafeTensor&size=full&fp=fp16",
-	"inpaintCheckpointUrl": "https://civitai.com/api/download/models/610021?type=Model&format=SafeTensor&size=full&fp=fp16",
-	"overrideSettings":	{ "CLIP_stop_at_last_layers":2 }
+  "homeUrl": "https://civitai.com/models/372465?modelVersionId=534642",
+  "mainCheckpointUrl": "https://civitai.com/api/download/models/534642",
+  "inpaintCheckpointUrl": "https://civitai.com/api/download/models/610021",
+  "vaeUrl": "",
+  "description": "photorealistic, porn, realism, base model, woman, girls, photography, realistic, nsfw, sfw, ponyxl",
+  "prompt": "",
+  "overrideSettings": {
+    "CLIP_stop_at_last_layers": 2
+  }
 }

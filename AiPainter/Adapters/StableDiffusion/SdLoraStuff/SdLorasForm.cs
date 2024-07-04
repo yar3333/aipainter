@@ -200,6 +200,7 @@ namespace AiPainter.Adapters.StableDiffusion
         private void btImportFromCivitai_Click(object sender, EventArgs e)
         {
             var form = new ImportFromCivitaiForm();
+            form.tabs.SelectedTab = form.tabLora;
             form.ShowDialog(this);
             updateList();
         }

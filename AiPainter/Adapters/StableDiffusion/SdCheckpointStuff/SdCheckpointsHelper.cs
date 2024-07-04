@@ -141,14 +141,14 @@ static class SdCheckpointsHelper
 
     public static bool SaveConfig(string name, SdCheckpointConfig config)
     {
+        var configFilePath = Path.Combine(GetDirPath(name), "config.json");
+        if (!Directory.Exists(Path.GetDirectoryName(configFilePath)))
+        {
+            Directory.CreateDirectory(Path.GetDirectoryName(configFilePath)!);
+        }
+        
         try
         {
-            var configFilePath = Path.Combine(GetDirPath(name), "config.json");
-            if (!Directory.Exists(Path.GetDirectoryName(configFilePath)))
-            {
-                Directory.CreateDirectory(Path.GetDirectoryName(configFilePath)!);
-            }
-
             File.WriteAllText(configFilePath, JsonSerializer.Serialize(config, new JsonSerializerOptions
             {
                 PropertyNamingPolicy = null,
