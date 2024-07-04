@@ -1,0 +1,9 @@
+{
+  "homeUrl": "https://civitai.com/models/443821?modelVersionId=595775",
+  "mainCheckpointUrl": "https://civitai.com/api/download/models/595775",
+  "inpaintCheckpointUrl": "",
+  "vaeUrl": "",
+  "description": "base model, pony xl",
+  "promptRequired": "",
+  "promptSuggested": ""
+}

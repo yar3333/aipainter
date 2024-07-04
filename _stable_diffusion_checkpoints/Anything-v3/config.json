@@ -1,7 +1,0 @@
-{
-	"prompt": "",
-	"homeUrl": "https://huggingface.co/admruul/anything-v3.0",
-	"mainCheckpointUrl": "https://huggingface.co/admruul/anything-v3.0/resolve/main/Anything-V3.0-pruned-fp16.safetensors?download=true",
-	"inpaintCheckpointUrl": "",
-	"vaeUrl": "https://huggingface.co/admruul/anything-v3.0/resolve/main/Anything-V3.0.vae.pt?download=true"
-}

@@ -1,5 +1,4 @@
 {
-	"prompt": "",
 	"homeUrl": "https://huggingface.co/runwayml/stable-diffusion-v1-5",
 	"mainCheckpointUrl": "https://huggingface.co/runwayml/stable-diffusion-v1-5/resolve/main/v1-5-pruned-emaonly.safetensors?download=true",
 	"inpaintCheckpointUrl": "https://huggingface.co/runwayml/stable-diffusion-inpainting/resolve/main/sd-v1-5-inpainting.ckpt?download=true"

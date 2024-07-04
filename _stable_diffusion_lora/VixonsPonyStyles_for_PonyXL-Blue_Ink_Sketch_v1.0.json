@@ -2,5 +2,5 @@
   "homeUrl": "https://civitai.com/models/352581?modelVersionId=441621",
   "downloadUrl": "https://civitai.com/api/download/models/441621",
   "description": "horror, neon, art, lighting, ink, gothic, style, galaxy, pony, long exposure",
-  "prompt": "1nksk3tch, sketch"
+  "promptRequired": "1nksk3tch, sketch"
 }

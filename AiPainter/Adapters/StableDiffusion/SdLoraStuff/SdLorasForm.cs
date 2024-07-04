@@ -33,6 +33,8 @@ namespace AiPainter.Adapters.StableDiffusion
         {
             ignoreCheckedChange = true;
             
+            lvModels.Items.Clear();
+            
             foreach (var name in SdLoraHelper.GetNames())
             {
                 var filePath = SdLoraHelper.GetPathToModel(name);

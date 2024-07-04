@@ -1,6 +1,0 @@
-{
-	"prompt": "",
-	"homeUrl": "https://huggingface.co/XpucT/Deliberate",
-	"mainCheckpointUrl": "https://huggingface.co/XpucT/Deliberate/resolve/main/Deliberate_v6.safetensors?download=true",
-	"inpaintCheckpointUrl": "https://huggingface.co/XpucT/Deliberate/resolve/main/Deliberate_v6-inpainting.safetensors?download=true"
-}

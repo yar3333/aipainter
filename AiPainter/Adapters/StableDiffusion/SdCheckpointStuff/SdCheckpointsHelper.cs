@@ -14,17 +14,20 @@ static class SdCheckpointsHelper
     {
         var basePath = BasePath;
 
-        var r = !string.IsNullOrEmpty(nameToEnsureExists)
-                    ? new[] { nameToEnsureExists }
-                    : new string[] { };
+        var baseName = !string.IsNullOrEmpty(nameToEnsureExists)
+                    ? new string[] { nameToEnsureExists }
+                    : new string[] {};
 
-        return r.Concat(Directory.GetFiles(basePath, "*.ckpt", SearchOption.AllDirectories)
-                .Concat(Directory.GetFiles(basePath, "*.safetensors", SearchOption.AllDirectories))
-                .Concat(Directory.GetFiles(basePath, "config.json", SearchOption.AllDirectories))
-                .Select(x => Path.GetDirectoryName(x.Substring(basePath.Length).TrimStart('\\'))!))
-                .Distinct()
-                .OrderBy(x => x)
-                .ToArray();
+        var names = Directory.GetFiles(basePath, "*.ckpt", SearchOption.AllDirectories)
+            .Concat(Directory.GetFiles(basePath, "*.safetensors", SearchOption.AllDirectories))
+            .Concat(Directory.GetFiles(basePath, "config.json", SearchOption.AllDirectories))
+            .Select(x => Path.GetDirectoryName(x.Substring(basePath.Length).TrimStart('\\'))!)
+            .ToArray();
+
+        return baseName.Concat(names)
+                       .Distinct()
+                       .OrderBy(x => x)
+                       .ToArray();
     }
 
     public static ListItem[] GetListItems(string nameToEnsureExists)

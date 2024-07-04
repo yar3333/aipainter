@@ -30,6 +30,8 @@ namespace AiPainter.Adapters.StableDiffusion
         private void updateList()
         {
             ignoreCheckedChange = true;
+
+            lvModels.Items.Clear();
             
             foreach (var name in SdCheckpointsHelper.GetNames("").Where(x => x != ""))
             {
@@ -44,6 +46,7 @@ namespace AiPainter.Adapters.StableDiffusion
                     item.SubItems.Add(SdCheckpointsHelper.GetStatusInpaint(name));
                     item.SubItems.Add(SdCheckpointsHelper.GetStatusVae(name));
                     item.SubItems.Add(name);
+                    item.SubItems.Add(SdCheckpointsHelper.GetConfig(name).description);
                     item.SubItems.Add(SdCheckpointsHelper.GetConfig(name).homeUrl, Color.Blue, Color.White, item.Font);
 
                     item.Name = name;
@@ -229,7 +232,7 @@ namespace AiPainter.Adapters.StableDiffusion
             if (e.Button != MouseButtons.Left) return;
 
             var hit = lvModels.HitTest(e.Location);
-            if (hit.Item != null && hit.SubItem == hit.Item.SubItems[5])
+            if (hit.Item != null && hit.SubItem == hit.Item.SubItems[6])
             {
                 ProcessHelper.OpenUrlInBrowser(hit.SubItem.Text);
             }

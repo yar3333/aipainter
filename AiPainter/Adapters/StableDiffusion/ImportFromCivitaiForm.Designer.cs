@@ -49,7 +49,7 @@
             label3 = new Label();
             tbCheckpointMainUrl = new TextBox();
             tbCheckpointDescription = new TextBox();
-            tbCheckpointPrompt = new TextBox();
+            tbCheckpointRequiredPrompt = new TextBox();
             tbCheckpointName = new TextBox();
             tabLora = new TabPage();
             btLoraOk = new Button();
@@ -60,11 +60,15 @@
             label15 = new Label();
             tbLoraDownloadUrl = new TextBox();
             tbLoraDescription = new TextBox();
-            tbLoraPrompt = new TextBox();
+            tbLoraRequiredPrompt = new TextBox();
             tbLoraName = new TextBox();
             toolTip1 = new ToolTip(components);
             labUrlError = new Label();
             linkLabel1 = new LinkLabel();
+            label16 = new Label();
+            tbCheckpointSuggestedPrompt = new TextBox();
+            label11 = new Label();
+            tbLoraSuggestedPrompt = new TextBox();
             tabs.SuspendLayout();
             tabCheckpoint.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)numCheckpointClipSkip).BeginInit();
@@ -110,11 +114,13 @@
             tabs.Location = new Point(12, 68);
             tabs.Name = "tabs";
             tabs.SelectedIndex = 0;
-            tabs.Size = new Size(776, 348);
+            tabs.Size = new Size(776, 380);
             tabs.TabIndex = 17;
             // 
             // tabCheckpoint
             // 
+            tabCheckpoint.Controls.Add(label16);
+            tabCheckpoint.Controls.Add(tbCheckpointSuggestedPrompt);
             tabCheckpoint.Controls.Add(btCheckpointOk);
             tabCheckpoint.Controls.Add(numCheckpointClipSkip);
             tabCheckpoint.Controls.Add(label8);
@@ -130,12 +136,12 @@
             tabCheckpoint.Controls.Add(label3);
             tabCheckpoint.Controls.Add(tbCheckpointMainUrl);
             tabCheckpoint.Controls.Add(tbCheckpointDescription);
-            tabCheckpoint.Controls.Add(tbCheckpointPrompt);
+            tabCheckpoint.Controls.Add(tbCheckpointRequiredPrompt);
             tabCheckpoint.Controls.Add(tbCheckpointName);
             tabCheckpoint.Location = new Point(4, 24);
             tabCheckpoint.Name = "tabCheckpoint";
             tabCheckpoint.Padding = new Padding(3);
-            tabCheckpoint.Size = new Size(768, 320);
+            tabCheckpoint.Size = new Size(768, 352);
             tabCheckpoint.TabIndex = 0;
             tabCheckpoint.Text = "Checkpoint";
             tabCheckpoint.UseVisualStyleBackColor = true;
@@ -144,9 +150,9 @@
             // 
             btCheckpointOk.BackColor = Color.FromArgb(226, 241, 227);
             btCheckpointOk.Font = new Font("Segoe UI", 9.75F, FontStyle.Regular, GraphicsUnit.Point);
-            btCheckpointOk.Location = new Point(300, 261);
+            btCheckpointOk.Location = new Point(300, 287);
             btCheckpointOk.Name = "btCheckpointOk";
-            btCheckpointOk.Size = new Size(179, 35);
+            btCheckpointOk.Size = new Size(179, 48);
             btCheckpointOk.TabIndex = 16;
             btCheckpointOk.Text = "Add Checkpoint";
             btCheckpointOk.UseVisualStyleBackColor = false;
@@ -154,7 +160,7 @@
             // 
             // numCheckpointClipSkip
             // 
-            numCheckpointClipSkip.Location = new Point(652, 169);
+            numCheckpointClipSkip.Location = new Point(652, 207);
             numCheckpointClipSkip.Name = "numCheckpointClipSkip";
             numCheckpointClipSkip.Size = new Size(55, 23);
             numCheckpointClipSkip.TabIndex = 15;
@@ -163,7 +169,7 @@
             // 
             // label8
             // 
-            label8.Location = new Point(576, 169);
+            label8.Location = new Point(576, 207);
             label8.Name = "label8";
             label8.Size = new Size(73, 18);
             label8.TabIndex = 13;
@@ -172,7 +178,7 @@
             // 
             // label10
             // 
-            label10.Location = new Point(6, 216);
+            label10.Location = new Point(6, 171);
             label10.Name = "label10";
             label10.Size = new Size(158, 15);
             label10.TabIndex = 13;
@@ -181,7 +187,7 @@
             // 
             // label7
             // 
-            label7.Location = new Point(6, 171);
+            label7.Location = new Point(6, 215);
             label7.Name = "label7";
             label7.Size = new Size(158, 15);
             label7.TabIndex = 13;
@@ -269,18 +275,18 @@
             // tbCheckpointDescription
             // 
             tbCheckpointDescription.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
-            tbCheckpointDescription.Location = new Point(170, 213);
+            tbCheckpointDescription.Location = new Point(170, 168);
             tbCheckpointDescription.Name = "tbCheckpointDescription";
             tbCheckpointDescription.Size = new Size(537, 23);
             tbCheckpointDescription.TabIndex = 14;
             // 
-            // tbCheckpointPrompt
+            // tbCheckpointRequiredPrompt
             // 
-            tbCheckpointPrompt.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
-            tbCheckpointPrompt.Location = new Point(170, 168);
-            tbCheckpointPrompt.Name = "tbCheckpointPrompt";
-            tbCheckpointPrompt.Size = new Size(397, 23);
-            tbCheckpointPrompt.TabIndex = 14;
+            tbCheckpointRequiredPrompt.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            tbCheckpointRequiredPrompt.Location = new Point(170, 212);
+            tbCheckpointRequiredPrompt.Name = "tbCheckpointRequiredPrompt";
+            tbCheckpointRequiredPrompt.Size = new Size(397, 23);
+            tbCheckpointRequiredPrompt.TabIndex = 14;
             // 
             // tbCheckpointName
             // 
@@ -293,6 +299,8 @@
             // 
             // tabLora
             // 
+            tabLora.Controls.Add(label11);
+            tabLora.Controls.Add(tbLoraSuggestedPrompt);
             tabLora.Controls.Add(btLoraOk);
             tabLora.Controls.Add(label1);
             tabLora.Controls.Add(label12);
@@ -301,12 +309,12 @@
             tabLora.Controls.Add(label15);
             tabLora.Controls.Add(tbLoraDownloadUrl);
             tabLora.Controls.Add(tbLoraDescription);
-            tabLora.Controls.Add(tbLoraPrompt);
+            tabLora.Controls.Add(tbLoraRequiredPrompt);
             tabLora.Controls.Add(tbLoraName);
             tabLora.Location = new Point(4, 24);
             tabLora.Name = "tabLora";
             tabLora.Padding = new Padding(3);
-            tabLora.Size = new Size(768, 320);
+            tabLora.Size = new Size(768, 352);
             tabLora.TabIndex = 1;
             tabLora.Text = "LoRA";
             tabLora.UseVisualStyleBackColor = true;
@@ -315,9 +323,9 @@
             // 
             btLoraOk.BackColor = Color.FromArgb(226, 241, 227);
             btLoraOk.Font = new Font("Segoe UI", 9.75F, FontStyle.Regular, GraphicsUnit.Point);
-            btLoraOk.Location = new Point(295, 235);
+            btLoraOk.Location = new Point(295, 272);
             btLoraOk.Name = "btLoraOk";
-            btLoraOk.Size = new Size(179, 35);
+            btLoraOk.Size = new Size(179, 48);
             btLoraOk.TabIndex = 24;
             btLoraOk.Text = "Add LoRA";
             btLoraOk.UseVisualStyleBackColor = false;
@@ -325,7 +333,7 @@
             // 
             // label1
             // 
-            label1.Location = new Point(6, 189);
+            label1.Location = new Point(6, 142);
             label1.Name = "label1";
             label1.Size = new Size(158, 15);
             label1.TabIndex = 15;
@@ -334,7 +342,7 @@
             // 
             // label12
             // 
-            label12.Location = new Point(6, 144);
+            label12.Location = new Point(6, 188);
             label12.Name = "label12";
             label12.Size = new Size(158, 15);
             label12.TabIndex = 16;
@@ -380,18 +388,18 @@
             // tbLoraDescription
             // 
             tbLoraDescription.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
-            tbLoraDescription.Location = new Point(170, 186);
+            tbLoraDescription.Location = new Point(170, 139);
             tbLoraDescription.Name = "tbLoraDescription";
             tbLoraDescription.Size = new Size(537, 23);
             tbLoraDescription.TabIndex = 21;
             // 
-            // tbLoraPrompt
+            // tbLoraRequiredPrompt
             // 
-            tbLoraPrompt.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
-            tbLoraPrompt.Location = new Point(170, 141);
-            tbLoraPrompt.Name = "tbLoraPrompt";
-            tbLoraPrompt.Size = new Size(397, 23);
-            tbLoraPrompt.TabIndex = 22;
+            tbLoraRequiredPrompt.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            tbLoraRequiredPrompt.Location = new Point(170, 185);
+            tbLoraRequiredPrompt.Name = "tbLoraRequiredPrompt";
+            tbLoraRequiredPrompt.Size = new Size(537, 23);
+            tbLoraRequiredPrompt.TabIndex = 22;
             // 
             // tbLoraName
             // 
@@ -424,11 +432,47 @@
             linkLabel1.TextAlign = ContentAlignment.MiddleRight;
             linkLabel1.LinkClicked += linkLabel1_LinkClicked_1;
             // 
+            // label16
+            // 
+            label16.Location = new Point(6, 244);
+            label16.Name = "label16";
+            label16.Size = new Size(158, 15);
+            label16.TabIndex = 17;
+            label16.Text = "Suggested Prompt";
+            label16.TextAlign = ContentAlignment.MiddleRight;
+            // 
+            // tbCheckpointSuggestedPrompt
+            // 
+            tbCheckpointSuggestedPrompt.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            tbCheckpointSuggestedPrompt.Location = new Point(170, 241);
+            tbCheckpointSuggestedPrompt.Name = "tbCheckpointSuggestedPrompt";
+            tbCheckpointSuggestedPrompt.PlaceholderText = "first phrase, second phase...";
+            tbCheckpointSuggestedPrompt.Size = new Size(537, 23);
+            tbCheckpointSuggestedPrompt.TabIndex = 18;
+            // 
+            // label11
+            // 
+            label11.Location = new Point(6, 217);
+            label11.Name = "label11";
+            label11.Size = new Size(158, 15);
+            label11.TabIndex = 25;
+            label11.Text = "Suggested Prompt";
+            label11.TextAlign = ContentAlignment.MiddleRight;
+            // 
+            // tbLoraSuggestedPrompt
+            // 
+            tbLoraSuggestedPrompt.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            tbLoraSuggestedPrompt.Location = new Point(170, 214);
+            tbLoraSuggestedPrompt.Name = "tbLoraSuggestedPrompt";
+            tbLoraSuggestedPrompt.PlaceholderText = "first phrase, second phase...";
+            tbLoraSuggestedPrompt.Size = new Size(537, 23);
+            tbLoraSuggestedPrompt.TabIndex = 26;
+            // 
             // ImportFromCivitaiForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(800, 428);
+            ClientSize = new Size(800, 473);
             Controls.Add(linkLabel1);
             Controls.Add(tabs);
             Controls.Add(btImport);
@@ -465,7 +509,7 @@
         private TextBox tbCheckpointInpaintUrl;
         private Label label3;
         private TextBox tbCheckpointMainUrl;
-        private TextBox tbCheckpointPrompt;
+        private TextBox tbCheckpointRequiredPrompt;
         private TextBox tbCheckpointName;
         public TabPage tabLora;
         private Label label8;
@@ -486,9 +530,12 @@
         private Label label15;
         private TextBox tbLoraDownloadUrl;
         private TextBox tbLoraDescription;
-        private TextBox tbLoraPrompt;
+        private TextBox tbLoraRequiredPrompt;
         private TextBox tbLoraName;
         private Button btLoraOk;
         private Label labLoraNameError;
+        private Label label16;
+        private TextBox tbCheckpointSuggestedPrompt;
+        private TextBox tbLoraSuggestedPrompt;
     }
 }

@@ -30,7 +30,7 @@ static class SdLoraHelper
         if (string.IsNullOrEmpty(name)) return "";
 
         var config = GetConfig(name);
-        return "<lora:" + name + ":0.9>" + config.prompt;
+        return "<lora:" + name + ":0.9>" + (config.promptRequired ?? "");
     }
 
     public static string GetHumanName(string name)

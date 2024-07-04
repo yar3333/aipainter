@@ -351,7 +351,7 @@ class SdImageGenerator : IImageGenerator
 
     private string getFullPromptText()
     {
-        var checkpointPrompt = SdCheckpointsHelper.GetConfig(sdGenerationParameters.checkpointName).prompt;
+        var checkpointPrompt = SdCheckpointsHelper.GetConfig(sdGenerationParameters.checkpointName).promptRequired;
 
         var r = (!string.IsNullOrWhiteSpace(checkpointPrompt) ? checkpointPrompt + "; " : "")
               + (!string.IsNullOrWhiteSpace(sdGenerationParameters.prompt) ? sdGenerationParameters.prompt + "; " : "")

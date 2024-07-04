@@ -123,10 +123,13 @@ namespace AiPainter.Adapters.StableDiffusion
             tbCheckpointName.Text = DataTools.UnderscoresToCapitalisation(DataTools.SanitizeText(model.name)) 
                                   + "-" + DataTools.SanitizeText(version.name);
 
-            tbCheckpointPrompt.Text = "";
+            tbCheckpointRequiredPrompt.Text = "";
+            tbCheckpointRequiredPrompt.Text = "";
             if (version.trainedWords != null)
             {
-                tbCheckpointPrompt.Text = string.Join(", ", version.trainedWords);
+                DataTools.ParsePhrases(string.Join(", ", version.trainedWords), out var reqWords, out var sugWords);
+                tbCheckpointRequiredPrompt.Text = reqWords;
+                tbCheckpointSuggestedPrompt.Text = sugWords;
             }
 
             tbCheckpointDescription.Text = "";
@@ -135,30 +138,19 @@ namespace AiPainter.Adapters.StableDiffusion
                 tbCheckpointDescription.Text = string.Join(", ", model.tags);
             }
 
-            tbCheckpointMainUrl.Text = "";
-            tbCheckpointVaeUrl.Text = "";
-            if (version.files != null)
-            {
-                foreach (var file in version.files)
-                {
-                    switch (file.type)
-                    {
-                        case "Model":
-                            tbCheckpointMainUrl.Text = file.downloadUrl;
-                            break;
+            tbCheckpointMainUrl.Text = GetBestModelDownloadUrl(version.files, "Pruned Model")
+                                    ?? GetBestModelDownloadUrl(version.files, "Model")
+                                    ?? "";
 
-                        case "VAE":
-                            tbCheckpointVaeUrl.Text = file.downloadUrl;
-                            break;
-                    }
-                }
-            }
+            tbCheckpointVaeUrl.Text = GetBestModelDownloadUrl(version.files, "VAE");
 
             tbCheckpointInpaintUrl.Text = "";
             var possibleInpaintVersions = model.modelVersions.Where(x => x.name.ToLowerInvariant().Contains("inpaint")).ToArray();
             if (possibleInpaintVersions.Length == 1)
             {
-                tbCheckpointInpaintUrl.Text = possibleInpaintVersions[0].downloadUrl;
+                tbCheckpointInpaintUrl.Text = GetBestModelDownloadUrl(possibleInpaintVersions[0].files, "Pruned Model")
+                                           ?? GetBestModelDownloadUrl(possibleInpaintVersions[0].files, "Model")
+                                           ?? "";
             }
 
             numCheckpointClipSkip.Value = 0;
@@ -174,10 +166,13 @@ namespace AiPainter.Adapters.StableDiffusion
                             + "_for_" + string.Join('_', forModelNames)
                             + "-" + DataTools.SanitizeText(version.name);
 
-            tbLoraPrompt.Text = "";
+            tbLoraRequiredPrompt.Text = "";
+            tbLoraSuggestedPrompt.Text = "";
             if (version.trainedWords != null)
             {
-                tbLoraPrompt.Text = string.Join(", ", version.trainedWords);
+                DataTools.ParsePhrases(string.Join(", ", version.trainedWords), out var reqWords, out var sugWords);
+                tbLoraRequiredPrompt.Text = reqWords;
+                tbLoraSuggestedPrompt.Text = sugWords;
             }
 
             tbLoraDescription.Text = "";
@@ -186,19 +181,19 @@ namespace AiPainter.Adapters.StableDiffusion
                 tbLoraDescription.Text = string.Join(", ", model.tags);
             }
 
-            tbLoraDownloadUrl.Text = "";
-            if (version.files != null)
-            {
-                foreach (var file in version.files)
-                {
-                    switch (file.type)
-                    {
-                        case "Model":
-                            tbLoraDownloadUrl.Text = file.downloadUrl;
-                            break;
-                    }
-                }
-            }
+            tbLoraDownloadUrl.Text = GetBestModelDownloadUrl(version.files, "Pruned Model") 
+                                  ?? GetBestModelDownloadUrl(version.files, "Model") 
+                                  ?? "";
+        }
+
+        private static string? GetBestModelDownloadUrl(CivitaiFile[]? files, string type)
+        {
+            if (files == null) return null;
+
+            return files.FirstOrDefault(x => x.type == type && x.metadata?.format == "SafeTensor" && x.metadata?.size == "pruned")?.downloadUrl
+                ?? files.FirstOrDefault(x => x.type == type && x.metadata?.format == "SafeTensor")?.downloadUrl
+                ?? files.FirstOrDefault(x => x.type == type && x.metadata?.format == "PickleTensor" && x.metadata?.size == "pruned")?.downloadUrl
+                ?? files.FirstOrDefault(x => x.type == type && x.metadata?.format == "PickleTensor")?.downloadUrl;
         }
 
         private void btCheckpointOk_Click(object sender, EventArgs e)
@@ -221,7 +216,8 @@ namespace AiPainter.Adapters.StableDiffusion
                 mainCheckpointUrl = tbCheckpointMainUrl.Text.Trim(),
                 inpaintCheckpointUrl = tbCheckpointInpaintUrl.Text.Trim(),
                 vaeUrl = tbCheckpointVaeUrl.Text.Trim(),
-                prompt = tbCheckpointPrompt.Text.Trim(),
+                promptRequired = tbCheckpointRequiredPrompt.Text.Trim(),
+                promptSuggested = tbCheckpointSuggestedPrompt.Text.Trim(),
                 description = tbCheckpointDescription.Text.Trim(),
                 overrideSettings = numCheckpointClipSkip.Value == 0 ? null : new SdSettings
                 {
@@ -297,7 +293,8 @@ namespace AiPainter.Adapters.StableDiffusion
             {
                 homeUrl = "https://civitai.com/models/" + modelId + "?modelVersionId=" + versionId,
                 downloadUrl = tbLoraDownloadUrl.Text.Trim(),
-                prompt = tbLoraPrompt.Text.Trim(),
+                promptRequired = tbLoraRequiredPrompt.Text.Trim(),
+                promptSuggested = tbLoraSuggestedPrompt.Text.Trim(),
                 description = tbLoraDescription.Text.Trim(),
             };
 

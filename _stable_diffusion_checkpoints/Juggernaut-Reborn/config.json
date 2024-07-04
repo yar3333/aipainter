@@ -1,5 +1,9 @@
 {
-	"prompt": "",
-	"homeUrl": "https://civitai.com/models/46422?modelVersionId=274039",
-	"mainCheckpointUrl": "https://civitai.com/api/download/models/274039?type=Model&format=SafeTensor&size=pruned&fp=fp16"
+  "homeUrl": "https://civitai.com/models/46422?modelVersionId=274039",
+  "mainCheckpointUrl": "https://civitai.com/api/download/models/274039",
+  "inpaintCheckpointUrl": "",
+  "vaeUrl": "",
+  "description": "photorealistic, nude, base model, woman, game character, photorealism, realistic, nsfw",
+  "promptRequired": "",
+  "promptSuggested": ""
 }
