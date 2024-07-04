@@ -1,4 +1,5 @@
 ﻿using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
 
 namespace AiPainter.Adapters.StableDiffusion.SdCheckpointStuff;
@@ -136,5 +137,30 @@ static class SdCheckpointsHelper
     public static bool IsFilePathLikeVae(string filePath)
     {
         return Regex.IsMatch(Path.GetFileNameWithoutExtension(filePath), @"(?:\b|_)vae(?:\b|_)", RegexOptions.IgnoreCase);
+    }
+
+    public static bool SaveConfig(string name, SdCheckpointConfig config)
+    {
+        try
+        {
+            var configFilePath = Path.Combine(GetDirPath(name), "config.json");
+            if (!Directory.Exists(Path.GetDirectoryName(configFilePath)))
+            {
+                Directory.CreateDirectory(Path.GetDirectoryName(configFilePath)!);
+            }
+
+            File.WriteAllText(configFilePath, JsonSerializer.Serialize(config, new JsonSerializerOptions
+            {
+                PropertyNamingPolicy = null,
+                DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+                WriteIndented = true,
+            }));
+            
+            return true;
+        }
+        catch (Exception e)
+        {
+            return false;
+        }
     }
 }

@@ -75,7 +75,7 @@ static class SdApiClient
     public static void Cancel()
     {
         if (!inProcess) return;
-        try { postAsync<object>("/sdapi/v1/interrupt", new object()).Wait(); }
+        try { postAsync<object>("sdapi/v1/interrupt", new object()).Wait(); }
         catch { }
     }
 

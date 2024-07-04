@@ -38,6 +38,7 @@
             label1 = new Label();
             tbCivitaiApiKey = new TextBox();
             linkLabel1 = new LinkLabel();
+            btImportFromCivitai = new Button();
             SuspendLayout();
             // 
             // btOk
@@ -127,6 +128,17 @@
             linkLabel1.UseMnemonic = false;
             linkLabel1.LinkClicked += linkLabel1_LinkClicked;
             // 
+            // btImportFromCivitai
+            // 
+            btImportFromCivitai.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            btImportFromCivitai.Location = new Point(776, 10);
+            btImportFromCivitai.Name = "btImportFromCivitai";
+            btImportFromCivitai.Size = new Size(94, 30);
+            btImportFromCivitai.TabIndex = 14;
+            btImportFromCivitai.Text = "Import...";
+            btImportFromCivitai.UseVisualStyleBackColor = true;
+            btImportFromCivitai.Click += btImportFromCivitai_Click;
+            // 
             // SdLorasForm
             // 
             AcceptButton = btOk;
@@ -134,6 +146,7 @@
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(882, 533);
             ControlBox = false;
+            Controls.Add(btImportFromCivitai);
             Controls.Add(linkLabel1);
             Controls.Add(tbCivitaiApiKey);
             Controls.Add(label1);
@@ -160,5 +173,6 @@
         private Label label1;
         private TextBox tbCivitaiApiKey;
         private LinkLabel linkLabel1;
+        private Button btImportFromCivitai;
     }
 }

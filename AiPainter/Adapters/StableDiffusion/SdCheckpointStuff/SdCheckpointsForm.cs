@@ -23,10 +23,16 @@ namespace AiPainter.Adapters.StableDiffusion
         {
             tbCivitaiApiKey.Text = Program.Config.CivitaiApiKey;
 
-            var modelNames = SdCheckpointsHelper.GetNames("").Where(x => x != "").ToArray();
+            updateList();
 
+            bwDownloading.RunWorkerAsync();
+        }
+
+        private void updateList()
+        {
             ignoreCheckedChange = true;
-            foreach (var name in modelNames)
+            
+            foreach (var name in SdCheckpointsHelper.GetNames("").Where(x => x != ""))
             {
                 var filePath = SdCheckpointsHelper.GetPathToMainCheckpoint(name);
                 if (!string.IsNullOrEmpty(filePath) && File.Exists(filePath)
@@ -49,9 +55,8 @@ namespace AiPainter.Adapters.StableDiffusion
                     if (item.Checked) checkedNames = checkedNames.Concat(new[] { name }).ToArray();
                 }
             }
+            
             ignoreCheckedChange = false;
-
-            bwDownloading.RunWorkerAsync();
         }
 
         private void btOk_Click(object sender, EventArgs e)
@@ -88,7 +93,7 @@ namespace AiPainter.Adapters.StableDiffusion
             if (string.IsNullOrWhiteSpace(url)) return;
 
             if (SdCheckpointsHelper.GetConfig(name).isNeedAuthToDownload && (string.IsNullOrEmpty(Program.Config.CivitaiApiKey) || isProvidedKeyInvalid)) return;
-            
+
             var resultFilePath = downloadFile(name, url, status => updateStatus(name, status, null, null), new DownloadFileOptions
             {
                 FileNameIfNotDetected = SdModelDownloadHelper.GetModelFileNameFromUrl(url, "main.safetensors"),
@@ -106,13 +111,13 @@ namespace AiPainter.Adapters.StableDiffusion
             if (string.IsNullOrWhiteSpace(url)) return;
 
             if (SdCheckpointsHelper.GetConfig(name).isNeedAuthToDownload && (string.IsNullOrEmpty(Program.Config.CivitaiApiKey) || isProvidedKeyInvalid)) return;
-            
+
             var resultFilePath = downloadFile(name, url, status => updateStatus(name, null, status, null), new DownloadFileOptions
             {
                 FileNameIfNotDetected = SdModelDownloadHelper.GetModelFileNameFromUrl(url, "inpaint.safetensors"),
                 AuthorizationBearer = SdModelDownloadHelper.GetCheckpointAuthorizationBearer(name),
             });
-            
+
             analyzeDownloadedModel(name, resultFilePath, status => updateStatus(name, null, status, null));
         }
 
@@ -124,7 +129,7 @@ namespace AiPainter.Adapters.StableDiffusion
             if (string.IsNullOrWhiteSpace(url)) return;
 
             if (SdCheckpointsHelper.GetConfig(name).isNeedAuthToDownload && (string.IsNullOrEmpty(Program.Config.CivitaiApiKey) || isProvidedKeyInvalid)) return;
-            
+
             var resultFilePath = downloadFile(name, url, status => updateStatus(name, null, null, status), new DownloadFileOptions
             {
                 FileNameIfNotDetected = prepareVaeFileName(SdModelDownloadHelper.GetModelFileNameFromUrl(url, "vae.pt")),
@@ -185,7 +190,7 @@ namespace AiPainter.Adapters.StableDiffusion
                         cancelationTokenSource.Cancel();
                     }
                 };
-                resultFilePath = DownloadTools.DownloadFileAsync(url, SdCheckpointsHelper.GetDirPath(name), newOptions,cancelationTokenSource.Token).Result;
+                resultFilePath = DownloadTools.DownloadFileAsync(url, SdCheckpointsHelper.GetDirPath(name), newOptions, cancelationTokenSource.Token).Result;
             }
             catch (AggregateException e)
             {
@@ -251,6 +256,13 @@ namespace AiPainter.Adapters.StableDiffusion
         private void linkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
             ProcessHelper.OpenUrlInBrowser("https://civitai.com/user/account");
+        }
+
+        private void btImportFromCivitai_Click(object sender, EventArgs e)
+        {
+            var form = new ImportFromCivitaiForm();
+            form.ShowDialog(this);
+            updateList();
         }
     }
 }

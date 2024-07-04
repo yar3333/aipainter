@@ -1,10 +1,9 @@
 using System.Text.Json;
-using System.Text.Json.Nodes;
 using AiPainter.Helpers;
 
 namespace AiPainter;
 
-class Log : IDisposable
+public class Log : IDisposable
 {
     private readonly StreamWriter streamWriter;
 

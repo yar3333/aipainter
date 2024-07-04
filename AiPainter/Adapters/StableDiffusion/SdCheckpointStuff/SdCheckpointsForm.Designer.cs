@@ -40,6 +40,7 @@
             linkLabel1 = new LinkLabel();
             tbCivitaiApiKey = new TextBox();
             label1 = new Label();
+            btImportFromCivitai = new Button();
             SuspendLayout();
             // 
             // btOk
@@ -138,6 +139,17 @@
             label1.TabIndex = 10;
             label1.Text = "Downloading some models require API key for Civitai.com";
             // 
+            // btImportFromCivitai
+            // 
+            btImportFromCivitai.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            btImportFromCivitai.Location = new Point(694, 9);
+            btImportFromCivitai.Name = "btImportFromCivitai";
+            btImportFromCivitai.Size = new Size(94, 30);
+            btImportFromCivitai.TabIndex = 13;
+            btImportFromCivitai.Text = "Import...";
+            btImportFromCivitai.UseVisualStyleBackColor = true;
+            btImportFromCivitai.Click += btImportFromCivitai_Click;
+            // 
             // SdCheckpointsForm
             // 
             AcceptButton = btOk;
@@ -145,6 +157,7 @@
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(800, 450);
             ControlBox = false;
+            Controls.Add(btImportFromCivitai);
             Controls.Add(linkLabel1);
             Controls.Add(tbCivitaiApiKey);
             Controls.Add(label1);
@@ -173,5 +186,6 @@
         private LinkLabel linkLabel1;
         private TextBox tbCivitaiApiKey;
         private Label label1;
+        private Button btImportFromCivitai;
     }
 }

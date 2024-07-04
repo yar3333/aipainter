@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel;
 using System.IO;
+using System.Linq;
 using AiPainter.Adapters.StableDiffusion.SdLoraStuff;
 using AiPainter.Helpers;
 
@@ -8,7 +9,7 @@ namespace AiPainter.Adapters.StableDiffusion
     public partial class SdLorasForm : Form
     {
         //private string[] modelNames = null;
-        private string[] checkedNames = {};
+        private string[] checkedNames = { };
 
         private bool ignoreCheckedChange = true;
 
@@ -22,11 +23,17 @@ namespace AiPainter.Adapters.StableDiffusion
         private void SdLorasForm_Load(object sender, EventArgs e)
         {
             tbCivitaiApiKey.Text = Program.Config.CivitaiApiKey;
+            
+            updateList();
 
-            var modelNames = SdLoraHelper.GetNames();
+            bwDownloading.RunWorkerAsync();
+        }
 
+        private void updateList()
+        {
             ignoreCheckedChange = true;
-            foreach (var name in modelNames)
+            
+            foreach (var name in SdLoraHelper.GetNames())
             {
                 var filePath = SdLoraHelper.GetPathToModel(name);
                 if (!string.IsNullOrEmpty(filePath) && File.Exists(filePath)
@@ -46,9 +53,8 @@ namespace AiPainter.Adapters.StableDiffusion
                     if (item.Checked) checkedNames = checkedNames.Concat(new[] { name }).ToArray();
                 }
             }
+            
             ignoreCheckedChange = false;
-
-            bwDownloading.RunWorkerAsync();
         }
 
         private void btOk_Click(object sender, EventArgs e)
@@ -189,6 +195,13 @@ namespace AiPainter.Adapters.StableDiffusion
                 Program.Config.CivitaiApiKey = tbCivitaiApiKey.Text;
                 Program.SaveConfig();
             }
+        }
+
+        private void btImportFromCivitai_Click(object sender, EventArgs e)
+        {
+            var form = new ImportFromCivitaiForm();
+            form.ShowDialog(this);
+            updateList();
         }
     }
 }
