@@ -133,14 +133,8 @@ namespace AiPainter.Adapters.StableDiffusion
             }
 
             tbCheckpointMainUrl.Text = ImportModelHelper.GetBestModelDownloadUrl(version.files, "Model");
+            tbCheckpointInpaintUrl.Text = ImportModelHelper.GetInpaintDownloadUrl(model, version);
             tbCheckpointVaeUrl.Text = ImportModelHelper.GetBestModelDownloadUrl(version.files, "VAE");
-
-            tbCheckpointInpaintUrl.Text = "";
-            var possibleInpaintVersions = model.modelVersions.Where(x => x.name.ToLowerInvariant().Contains("inpaint")).ToArray();
-            if (possibleInpaintVersions.Length == 1)
-            {
-                tbCheckpointInpaintUrl.Text = ImportModelHelper.GetBestModelDownloadUrl(possibleInpaintVersions[0].files, "Model");
-            }
 
             numCheckpointClipSkip.Value = 0;
         }

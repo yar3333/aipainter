@@ -31,6 +31,17 @@ static class ImportModelHelper
                    : SanitizeText(versionName);
     }
 
+    public static string GetInpaintDownloadUrl(CivitaiModel model, CivitaiVersion version)
+    {
+        var vv1 = model.modelVersions.Where(x => x.name.ToLowerInvariant().Contains("inpaint")).ToArray();
+        if (vv1.Length == 1) return GetBestModelDownloadUrl(vv1[0].files, "Model");
+
+        var vv2 = vv1.Where(x => x.name.ToLowerInvariant().StartsWith(version.name.ToLowerInvariant() + "-inpaint")).ToArray();
+        if (vv2.Length == 1) return GetBestModelDownloadUrl(vv2[0].files, "Model");
+
+        return "";
+    }
+
     private static string processLoraNameAndDetectForModels(string name, out string[] forModelNames)
     {
         var r = new List<string>();
