@@ -1,0 +1,9 @@
+{
+  "homeUrl": "https://civitai.com/models/4201?modelVersionId=245598",
+  "mainCheckpointUrl": "https://civitai.com/api/download/models/245598",
+  "inpaintCheckpointUrl": "https://civitai.com/api/download/models/245627",
+  "vaeUrl": "",
+  "description": "photorealistic, anatomical, base model, cgi, realistic, semi-realistic",
+  "promptRequired": "",
+  "promptSuggested": ""
+}

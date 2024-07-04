@@ -7,12 +7,16 @@ static class ImportModelHelper
 {
     public static string GetCheckpointName(string modelName, string versionName)
     {
-        versionName = TrimEndString(versionName, "+ VAE");
-        versionName = TrimEndString(versionName, "+VAE");
-        versionName = Regex.Replace(versionName, @"^V(\d)", "v$1");
-
         return UnderscoresToCapitalisation(SanitizeText(modelName))
-                              + "-" + SanitizeText(versionName);
+                              + "-" + SanitizeText(trimCheckpointVersionName(versionName));
+    }
+
+    private static string trimCheckpointVersionName(string versionName)
+    {
+        versionName = Regex.Replace(versionName, @"\s*[+]\s*VAE$", "");
+        versionName = Regex.Replace(versionName, @"\s*[(]VAE[)]$", "");
+        versionName = Regex.Replace(versionName, @"^V(\d)", "v$1");
+        return versionName;
     }
 
     public static string GetLoraName(string modelName, string versionName)
@@ -38,6 +42,14 @@ static class ImportModelHelper
 
         var vv2 = vv1.Where(x => x.name.ToLowerInvariant().StartsWith(version.name.ToLowerInvariant() + "-inpaint")).ToArray();
         if (vv2.Length == 1) return GetBestModelDownloadUrl(vv2[0].files, "Model");
+
+        var trimmedVn = trimCheckpointVersionName(version.name).ToLowerInvariant();
+        
+        var vv3 = vv1.Where(x => x.name.ToLowerInvariant().StartsWith(trimmedVn + "-inpaint")).ToArray();
+        if (vv3.Length == 1) return GetBestModelDownloadUrl(vv3[0].files, "Model");
+        
+        var vv4 = vv1.Where(x => x.name.ToLowerInvariant().StartsWith(trimmedVn + " inpaint")).ToArray();
+        if (vv4.Length == 1) return GetBestModelDownloadUrl(vv4[0].files, "Model");
 
         return "";
     }
@@ -91,7 +103,9 @@ static class ImportModelHelper
 
     private static string? GetBestModelDownloadUrlInner(CivitaiFile[]? files, string type)
     {
-        return files?.FirstOrDefault(x => x.type == type && x.metadata?.format == "SafeTensor")?.downloadUrl
+        return files?.FirstOrDefault(x => x.type == type && x.metadata?.format == "SafeTensor"   && x.metadata?.size == "pruned")?.downloadUrl
+            ?? files?.FirstOrDefault(x => x.type == type && x.metadata?.format == "SafeTensor")?.downloadUrl
+            ?? files?.FirstOrDefault(x => x.type == type && x.metadata?.format == "PickleTensor" && x.metadata?.size == "pruned")?.downloadUrl
             ?? files?.FirstOrDefault(x => x.type == type && x.metadata?.format == "PickleTensor")?.downloadUrl;
     }
 
@@ -99,7 +113,7 @@ static class ImportModelHelper
     {
         if (s == null) return "";
         s = s.Replace("'", "");
-        s = Regex.Replace(s, "[^-_a-zA-Z0-9.]+", "_");
+        s = Regex.Replace(s, "[^_a-zA-Z0-9.]+", "_");
         s = Regex.Replace(s, "_+", "_");
         s = s.Trim('_');
         return s;
@@ -109,14 +123,5 @@ static class ImportModelHelper
     {
         s = Regex.Replace(s, "_[a-zA-Z]", m => m.Value.Substring(1).ToUpperInvariant());
         return s;
-    }
-
-    private static string TrimEndString(string text, string end)
-    {
-        if (text.Length > end.Length && text.EndsWith(end))
-        {
-            text = text.Substring(0, text.Length - end.Length);
-        }
-        return text;
     }
 }

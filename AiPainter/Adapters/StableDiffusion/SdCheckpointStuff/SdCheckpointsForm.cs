@@ -169,7 +169,11 @@ namespace AiPainter.Adapters.StableDiffusion.SdCheckpointStuff
 
         private string? downloadFile(string name, string url, Action<string> progress, DownloadFileOptions options)
         {
-            Invoke(() => btOk.Enabled = false);
+            Invoke(() =>
+            {
+                btOk.Enabled = false;
+                btImportFromCivitai.Enabled = false;
+            });
 
             var cancelationTokenSource = new CancellationTokenSource();
 
@@ -197,6 +201,7 @@ namespace AiPainter.Adapters.StableDiffusion.SdCheckpointStuff
             {
                 updateStatus(name, null, null, null);
                 btOk.Enabled = true;
+                btImportFromCivitai.Enabled = true;
             });
 
             return resultFilePath;

@@ -102,6 +102,7 @@ namespace AiPainter.Adapters.StableDiffusion
                 {
                     case "Checkpoint":       importCheckpoint(model, version); break;
                     case "LORA":             importLora(model, version); break;
+                    case "LoCon":            importLora(model, version); break;
                     case "TextualInversion": importEmbedding(model, version); break;
                     default:
                         labUrlError.Text = "unsupported model type: " + model.type;

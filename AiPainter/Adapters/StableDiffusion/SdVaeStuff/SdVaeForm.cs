@@ -1,16 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-using AiPainter.Adapters.StableDiffusion.SdVaeStuff;
-using AiPainter.Helpers;
+﻿using AiPainter.Helpers;
 
-namespace AiPainter.Adapters.StableDiffusion
+namespace AiPainter.Adapters.StableDiffusion.SdVaeStuff
 {
     public partial class SdVaeForm : Form
     {

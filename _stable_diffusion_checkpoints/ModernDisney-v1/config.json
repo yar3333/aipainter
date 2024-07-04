@@ -1,0 +1,9 @@
+{
+  "homeUrl": "https://civitai.com/models/24?modelVersionId=26",
+  "mainCheckpointUrl": "https://civitai.com/api/download/models/26",
+  "inpaintCheckpointUrl": "",
+  "vaeUrl": "",
+  "description": "disney, 3d, style",
+  "promptRequired": "modern disney style",
+  "promptSuggested": ""
+}
