@@ -1,0 +1,3 @@
+*.safetensors
+*.ckpt
+*.pt

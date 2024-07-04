@@ -23,7 +23,7 @@ static class SdModelDownloadHelper
     public static void AnalyzeDownloadedModel(string? resultFilePath, Action onAuthErrorFound)
     {
         if (resultFilePath == null) return;
-        if (new FileInfo(resultFilePath).Length > 1024 * 1024) return;
+        if (new FileInfo(resultFilePath).Length > 2048) return;
             
         var text = File.ReadAllText(resultFilePath);
         File.Delete(resultFilePath);
