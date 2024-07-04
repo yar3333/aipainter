@@ -1,0 +1,9 @@
+{
+  "homeUrl": "https://civitai.com/models/1265?modelVersionId=1344",
+  "mainCheckpointUrl": "https://civitai.com/api/download/models/1344",
+  "inpaintCheckpointUrl": "",
+  "vaeUrl": "",
+  "description": "photorealistic, analog, style, photography",
+  "promptRequired": "analog style",
+  "promptSuggested": ""
+}

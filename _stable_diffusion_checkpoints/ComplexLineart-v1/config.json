@@ -1,0 +1,9 @@
+{
+  "homeUrl": "https://civitai.com/models/65?modelVersionId=74",
+  "mainCheckpointUrl": "https://civitai.com/api/download/models/74",
+  "inpaintCheckpointUrl": "",
+  "vaeUrl": "",
+  "description": "drawing, lineart, style, illustration",
+  "promptRequired": "ComplexLA style",
+  "promptSuggested": ""
+}

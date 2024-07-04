@@ -1,0 +1,9 @@
+{
+  "homeUrl": "https://civitai.com/models/20?modelVersionId=20",
+  "mainCheckpointUrl": "https://civitai.com/api/download/models/20",
+  "inpaintCheckpointUrl": "",
+  "vaeUrl": "",
+  "description": "style",
+  "promptRequired": "SKSKS app icon",
+  "promptSuggested": ""
+}

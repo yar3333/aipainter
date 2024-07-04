@@ -100,18 +100,9 @@ namespace AiPainter.Adapters.StableDiffusion
             {
                 switch (model.type)
                 {
-                    case "Checkpoint":
-                        importCheckpoint(model, version);
-                        break;
-
-                    case "LORA":
-                        importLora(model, version);
-                        break;
-
-                    case "TextualInversion":
-                        importEmbedding(model, version);
-                        break;
-
+                    case "Checkpoint":       importCheckpoint(model, version); break;
+                    case "LORA":             importLora(model, version); break;
+                    case "TextualInversion": importEmbedding(model, version); break;
                     default:
                         labUrlError.Text = "unsupported model type: " + model.type;
                         tbUrl.Focus();
@@ -124,17 +115,13 @@ namespace AiPainter.Adapters.StableDiffusion
         {
             tabs.SelectedTab = tabCheckpoint;
 
-            version.name = DataTools.TrimEndString(version.name, "+ VAE");
-            version.name = DataTools.TrimEndString(version.name, "+VAE");
-
-            tbCheckpointName.Text = DataTools.UnderscoresToCapitalisation(DataTools.SanitizeText(model.name))
-                                  + "-" + DataTools.SanitizeText(version.name);
+            tbCheckpointName.Text = ImportModelHelper.GetCheckpointName(model.name, version.name);
 
             tbCheckpointRequiredPrompt.Text = "";
             tbCheckpointRequiredPrompt.Text = "";
             if (version.trainedWords != null)
             {
-                DataTools.ParsePhrases(string.Join(", ", version.trainedWords), out var reqWords, out var sugWords);
+                ImportModelHelper.ParsePhrases(string.Join(", ", version.trainedWords), out var reqWords, out var sugWords);
                 tbCheckpointRequiredPrompt.Text = reqWords;
                 tbCheckpointSuggestedPrompt.Text = sugWords;
             }
@@ -145,19 +132,14 @@ namespace AiPainter.Adapters.StableDiffusion
                 tbCheckpointDescription.Text = string.Join(", ", model.tags);
             }
 
-            tbCheckpointMainUrl.Text = GetBestModelDownloadUrl(version.files, "Pruned Model")
-                                    ?? GetBestModelDownloadUrl(version.files, "Model")
-                                    ?? "";
-
-            tbCheckpointVaeUrl.Text = GetBestModelDownloadUrl(version.files, "VAE");
+            tbCheckpointMainUrl.Text = ImportModelHelper.GetBestModelDownloadUrl(version.files, "Model");
+            tbCheckpointVaeUrl.Text = ImportModelHelper.GetBestModelDownloadUrl(version.files, "VAE");
 
             tbCheckpointInpaintUrl.Text = "";
             var possibleInpaintVersions = model.modelVersions.Where(x => x.name.ToLowerInvariant().Contains("inpaint")).ToArray();
             if (possibleInpaintVersions.Length == 1)
             {
-                tbCheckpointInpaintUrl.Text = GetBestModelDownloadUrl(possibleInpaintVersions[0].files, "Pruned Model")
-                                           ?? GetBestModelDownloadUrl(possibleInpaintVersions[0].files, "Model")
-                                           ?? "";
+                tbCheckpointInpaintUrl.Text = ImportModelHelper.GetBestModelDownloadUrl(possibleInpaintVersions[0].files, "Model");
             }
 
             numCheckpointClipSkip.Value = 0;
@@ -167,17 +149,13 @@ namespace AiPainter.Adapters.StableDiffusion
         {
             tabs.SelectedTab = tabLora;
 
-            model.name = processLoraNameAndDetectForModels(model.name, out var forModelNames);
-
-            tbLoraName.Text = DataTools.UnderscoresToCapitalisation(DataTools.SanitizeText(model.name))
-                            + "_for_" + string.Join('_', forModelNames)
-                            + "-" + DataTools.SanitizeText(version.name);
+            tbLoraName.Text = ImportModelHelper.GetLoraName(model.name, version.name);
 
             tbLoraRequiredPrompt.Text = "";
             tbLoraSuggestedPrompt.Text = "";
             if (version.trainedWords != null)
             {
-                DataTools.ParsePhrases(string.Join(", ", version.trainedWords), out var reqWords, out var sugWords);
+                ImportModelHelper.ParsePhrases(string.Join(", ", version.trainedWords), out var reqWords, out var sugWords);
                 tbLoraRequiredPrompt.Text = reqWords;
                 tbLoraSuggestedPrompt.Text = sugWords;
             }
@@ -188,18 +166,14 @@ namespace AiPainter.Adapters.StableDiffusion
                 tbLoraDescription.Text = string.Join(", ", model.tags);
             }
 
-            tbLoraDownloadUrl.Text = GetBestModelDownloadUrl(version.files, "Pruned Model")
-                                  ?? GetBestModelDownloadUrl(version.files, "Model")
-                                  ?? "";
+            tbLoraDownloadUrl.Text = ImportModelHelper.GetBestModelDownloadUrl(version.files, "Model");
         }
 
         private void importEmbedding(CivitaiModel model, CivitaiVersion version)
         {
             tabs.SelectedTab = tabEmbedding;
 
-            tbEmbeddingName.Text = model.name != version.name
-                                       ? DataTools.SanitizeText(model.name) + "_" + DataTools.SanitizeText(version.name)
-                                       : DataTools.SanitizeText(version.name);
+            tbEmbeddingName.Text = ImportModelHelper.GetEmbeddingName(model.name, version.name);
 
             tbEmbeddingDescription.Text = "";
             if (model.tags != null)
@@ -207,24 +181,13 @@ namespace AiPainter.Adapters.StableDiffusion
                 tbEmbeddingDescription.Text = string.Join(", ", model.tags);
             }
 
-            tbEmbeddingDownloadUrl.Text = GetBestModelDownloadUrl(version.files, "Pruned Model")
-                                       ?? GetBestModelDownloadUrl(version.files, "Model")
-                                       ?? "";
+            tbEmbeddingDownloadUrl.Text = ImportModelHelper.GetBestModelDownloadUrl(version.files, "Model");
 
             cbEmbeddingIsNegative.Checked = model.name.ToLowerInvariant().Contains("negative")
                 || (model.tags?.Contains("negative") ?? false)
                 || (model.tags?.Contains("negative embedding") ?? false);
         }
 
-        private static string? GetBestModelDownloadUrl(CivitaiFile[]? files, string type)
-        {
-            if (files == null) return null;
-
-            return files.FirstOrDefault(x => x.type == type && x.metadata?.format == "SafeTensor" && x.metadata?.size == "pruned")?.downloadUrl
-                ?? files.FirstOrDefault(x => x.type == type && x.metadata?.format == "SafeTensor")?.downloadUrl
-                ?? files.FirstOrDefault(x => x.type == type && x.metadata?.format == "PickleTensor" && x.metadata?.size == "pruned")?.downloadUrl
-                ?? files.FirstOrDefault(x => x.type == type && x.metadata?.format == "PickleTensor")?.downloadUrl;
-        }
 
         private void btCheckpointOk_Click(object sender, EventArgs e)
         {
@@ -367,29 +330,6 @@ namespace AiPainter.Adapters.StableDiffusion
             {
                 labLoraNameError.Text = "bad name";
             }
-        }
-
-        private static string processLoraNameAndDetectForModels(string name, out string[] forModelNames)
-        {
-            var r = new List<string>();
-
-            if (name.StartsWith("[Pony]"))
-            {
-                name = name.Substring("[Pony]".Length).Trim();
-                r.Add("PonyXL");
-            }
-
-            if (name.StartsWith("[PonyXL]"))
-            {
-                name = name.Substring("[PonyXL]".Length).Trim();
-                r.Add("PonyXL");
-            }
-
-            if (name.Contains("Pony")) r.Add("PonyXL");
-
-            forModelNames = r.Distinct().OrderBy(x => x).ToArray();
-
-            return name;
         }
 
         private void tbEmbeddingName_TextChanged(object sender, EventArgs e)
