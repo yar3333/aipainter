@@ -1,9 +1,8 @@
 ﻿using System;
 using System.ComponentModel;
-using AiPainter.Adapters.StableDiffusion.SdCheckpointStuff;
 using AiPainter.Helpers;
 
-namespace AiPainter.Adapters.StableDiffusion
+namespace AiPainter.Adapters.StableDiffusion.SdCheckpointStuff
 {
     public partial class SdCheckpointsForm : Form
     {
@@ -32,7 +31,7 @@ namespace AiPainter.Adapters.StableDiffusion
             ignoreCheckedChange = true;
 
             lvModels.Items.Clear();
-            
+
             foreach (var name in SdCheckpointsHelper.GetNames("").Where(x => x != ""))
             {
                 var filePath = SdCheckpointsHelper.GetPathToMainCheckpoint(name);
@@ -57,13 +56,8 @@ namespace AiPainter.Adapters.StableDiffusion
                     if (item.Checked) checkedNames = checkedNames.Concat(new[] { name }).ToArray();
                 }
             }
-            
-            ignoreCheckedChange = false;
-        }
 
-        private void btOk_Click(object sender, EventArgs e)
-        {
-            bwDownloading.CancelAsync();
+            ignoreCheckedChange = false;
         }
 
         private void bwDownloading_DoWork(object sender, DoWorkEventArgs _)
@@ -262,10 +256,15 @@ namespace AiPainter.Adapters.StableDiffusion
 
         private void btImportFromCivitai_Click(object sender, EventArgs e)
         {
-            var form = new ImportFromCivitaiForm();
+            var form = new AddImportModelForm();
             form.tabs.SelectedTab = form.tabCheckpoint;
             form.ShowDialog(this);
             updateList();
+        }
+
+        private void SdCheckpointsForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            bwDownloading.CancelAsync();
         }
     }
 }

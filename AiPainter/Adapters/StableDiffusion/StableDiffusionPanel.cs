@@ -1,4 +1,5 @@
 ﻿using AiPainter.Adapters.StableDiffusion.SdCheckpointStuff;
+using AiPainter.Adapters.StableDiffusion.SdEmbeddingStuff;
 using AiPainter.Adapters.StableDiffusion.SdLoraStuff;
 using AiPainter.Adapters.StableDiffusion.SdVaeStuff;
 using AiPainter.Controls;
@@ -64,7 +65,10 @@ namespace AiPainter.Adapters.StableDiffusion
             var form = new SdCheckpointsForm();
             form.ShowDialog(this);
 
-            ddCheckpoint.DataSource = SdCheckpointsHelper.GetListItems(Program.Config.StableDiffusionCheckpoint);
+            var saveName = ddCheckpoint.SelectedValue?.ToString() ?? "";
+            ddCheckpoint.DataSource = SdCheckpointsHelper.GetListItems(saveName);
+            ddCheckpoint.SelectedValue = saveName;
+
         }
 
         private void btGenerate_Click(object sender, EventArgs e)
@@ -93,7 +97,7 @@ namespace AiPainter.Adapters.StableDiffusion
                 needSave = true;
                 Program.Config.StableDiffusionCheckpoint = ddCheckpoint.SelectedValue?.ToString() ?? "";
             }
-            
+
             if (tbNegative.Text != "" && Program.Config.NegativePrompts.FirstOrDefault() != tbNegative.Text)
             {
                 needSave = true;
@@ -108,7 +112,7 @@ namespace AiPainter.Adapters.StableDiffusion
                 Program.Config.ImageSizes.Insert(0, ddImageSize.Text);
                 Program.Config.ImageSizes = Program.Config.ImageSizes.Take(20).ToList();
             }
-            
+
             if (needSave) Program.SaveConfig();
         }
 
@@ -125,7 +129,7 @@ namespace AiPainter.Adapters.StableDiffusion
                                .Replace(";", "x")
                                .Replace("*", "x")
                                .Trim('x');
-            
+
             var parts = s.Split('x');
             if (parts.Length != 2) return "512x512";
 
@@ -145,7 +149,7 @@ namespace AiPainter.Adapters.StableDiffusion
             numSteps.Value = 35;
             cbUseSeed.Checked = false;
             trackBarSeedVariationStrength.Value = 0;
-            Modifiers = new string[] {};
+            Modifiers = new string[] { };
         }
 
         public void UpdateState(SmartPictureBox pb)
@@ -207,18 +211,18 @@ namespace AiPainter.Adapters.StableDiffusion
             }
         }
 
-        private void btContextMenuCheckpoint_Click(object sender, EventArgs e)
+        private void btCheckpoint_Click(object sender, EventArgs e)
         {
-            contextMenuCheckpoint.Items.Clear();
+            cmCheckpointMenu.Items.Clear();
 
-            contextMenuCheckpoint.Items.Add("Manage checkpoints...", null, (_, _) =>
+            cmCheckpointMenu.Items.Add("Manage checkpoints...", null, (_, _) =>
             {
                 showManageCheckpointDialog();
             });
-            
-            contextMenuCheckpoint.Items.Add(new ToolStripSeparator());
-            
-            contextMenuCheckpoint.Items.Add("Show in Explorer", null, (_, _) =>
+
+            cmCheckpointMenu.Items.Add(new ToolStripSeparator());
+
+            cmCheckpointMenu.Items.Add("Show in Explorer", null, (_, _) =>
             {
                 if (!string.IsNullOrEmpty(ddCheckpoint.SelectedValue?.ToString()))
                 {
@@ -226,7 +230,7 @@ namespace AiPainter.Adapters.StableDiffusion
                 }
             });
 
-            contextMenuCheckpoint.Items.Add("Visit home page", null, (_, _) =>
+            cmCheckpointMenu.Items.Add("Visit home page", null, (_, _) =>
             {
                 if (!string.IsNullOrEmpty(ddCheckpoint.SelectedValue?.ToString()))
                 {
@@ -235,9 +239,9 @@ namespace AiPainter.Adapters.StableDiffusion
                 }
             });
 
-            contextMenuCheckpoint.Items.Add(new ToolStripSeparator());
+            cmCheckpointMenu.Items.Add(new ToolStripSeparator());
 
-            contextMenuCheckpoint.Items.AddRange(SdVaeHelper.GetMenuItems(Program.Config.StableDiffusionVae, vaeName =>
+            cmCheckpointMenu.Items.AddRange(SdVaeHelper.GetMenuItems(Program.Config.StableDiffusionVae, vaeName =>
             {
                 if (vaeName != "" && SdVaeHelper.GetPathToVae(vaeName) == null)
                 {
@@ -251,45 +255,45 @@ namespace AiPainter.Adapters.StableDiffusion
                 }
             }));
 
-            contextMenuCheckpoint.Show(Cursor.Position);
+            cmCheckpointMenu.Show(Cursor.Position);
         }
 
-        private void btContextMenuPrompt_Click(object sender, EventArgs e)
+        private void btLoras_Click(object sender, EventArgs e)
         {
-            contextMenuPrompt.Items.Clear();
+            cmLorasMenu.Items.Clear();
 
-            contextMenuPrompt.Items.Add("Manage LoRAs...", null, (_, _) =>
+            cmLorasMenu.Items.Add("Manage LoRAs...", null, (_, _) =>
             {
                 var form = new SdLorasForm();
                 form.ShowDialog(this);
             });
-            
-            contextMenuPrompt.Items.Add(new ToolStripSeparator());
-            
-            var loras = SdLoraHelper.GetNames().Where(x => SdLoraHelper.GetPathToModel(x) != null && SdLoraHelper.IsEnabled(x)).ToArray();
-            foreach (var lora in loras)
+
+            cmLorasMenu.Items.Add(new ToolStripSeparator());
+
+            var models = SdLoraHelper.GetNames().Where(x => SdLoraHelper.GetPathToModel(x) != null && SdLoraHelper.IsEnabled(x)).ToArray();
+            foreach (var name in models)
             {
-                contextMenuPrompt.Items.Add("Use LoRA: " + SdLoraHelper.GetHumanName(lora), null, (_, _) =>
+                cmLorasMenu.Items.Add(SdLoraHelper.GetHumanName(name), null, (_, _) =>
                 {
-                    tbPrompt.Text = SdLoraHelper.GetPrompt(lora) + ", " + tbPrompt.Text;
+                    tbPrompt.Text = SdLoraHelper.GetPrompt(name) + ", " + tbPrompt.Text;
                 });
             }
 
-            if (loras.Length == 0)
+            if (models.Length == 0)
             {
-                contextMenuPrompt.Items.Add(new ToolStripLabel("No enabled LoRA found"));
+                cmLorasMenu.Items.Add(new ToolStripLabel("No enabled LoRA found"));
             }
-            
-            contextMenuPrompt.Show(Cursor.Position);
+
+            cmLorasMenu.Show(Cursor.Position);
         }
 
-        private void btContextMenuNegativePrompt_Click(object sender, EventArgs e)
+        private void btNegativePromptHistory_Click(object sender, EventArgs e)
         {
-            contextMenuNegativePrompt.Items.Clear();
+            cmNegativePromptHistoryMenu.Items.Clear();
 
             foreach (var negativePrompt in Program.Config.NegativePrompts)
             {
-                contextMenuNegativePrompt.Items.Add(negativePrompt, null, (_, _) =>
+                cmNegativePromptHistoryMenu.Items.Add(negativePrompt, null, (_, _) =>
                 {
                     tbNegative.Text = negativePrompt;
                 });
@@ -297,10 +301,58 @@ namespace AiPainter.Adapters.StableDiffusion
 
             if (Program.Config.NegativePrompts.Count == 0)
             {
-                contextMenuNegativePrompt.Items.Add(new ToolStripLabel("No saved prompts"));
+                cmNegativePromptHistoryMenu.Items.Add(new ToolStripLabel("No saved prompts"));
             }
-            
-            contextMenuNegativePrompt.Show(Cursor.Position);
+
+            cmNegativePromptHistoryMenu.Show(Cursor.Position);
+        }
+
+        private void btEmbeddings_Click(object sender, EventArgs e)
+        {
+            var models = SdEmbeddingHelper.GetNames()
+                                          .Where(x => SdEmbeddingHelper.GetPathToModel(x) != null 
+                                                   && SdEmbeddingHelper.IsEnabled(x)
+                                                   && !SdEmbeddingHelper.GetConfig(x).isNegative)
+                                          .ToArray();
+            fillEmbeddingContextMenu(cmEmbeddingsMenu, tbPrompt, models);
+        }
+
+        private void btNegativeEmbeddings_Click(object sender, EventArgs e)
+        {
+            var models = SdEmbeddingHelper.GetNames()
+                                          .Where(x => SdEmbeddingHelper.GetPathToModel(x) != null 
+                                                   && SdEmbeddingHelper.IsEnabled(x)
+                                                   && SdEmbeddingHelper.GetConfig(x).isNegative)
+                                          .ToArray();
+            fillEmbeddingContextMenu(cmNegativeEmbeddingsMenu, tbNegative, models);
+        }
+
+        private void fillEmbeddingContextMenu(ContextMenuStrip menu, TextBox tb, string[] models)
+        {
+            menu.Items.Clear();
+
+            menu.Items.Add("Manage Embeddings...", null, (_, _) =>
+            {
+                var form = new SdEmbeddingForm();
+                form.ShowDialog(this);
+            });
+
+            menu.Items.Add(new ToolStripSeparator());
+
+            foreach (var name in models)
+            {
+                menu.Items.Add(SdEmbeddingHelper.GetHumanName(name), null, (_, _) =>
+                {
+                    tb.Text = (tb.Text + ", (" + name + ":1.2), ").TrimStart(' ', ',');
+                });
+            }
+
+            if (models.Length == 0)
+            {
+                menu.Items.Add(new ToolStripLabel("No enabled Embeddings found"));
+            }
+
+            menu.Show(Cursor.Position);
         }
     }
 }

@@ -34,9 +34,11 @@
             label1 = new Label();
             label5 = new Label();
             ddSampler = new ComboBox();
-            btContextMenuNegativePrompt = new Button();
-            btContextMenuPrompt = new Button();
-            btContextMenuCheckpoint = new Button();
+            btEmbeddings = new Button();
+            btNegativeEmbeddings = new Button();
+            btNegativePromptHistory = new Button();
+            btLoras = new Button();
+            btCheckpoint = new Button();
             label4 = new Label();
             ddImageSize = new ComboBox();
             lbModifiers = new ListBox();
@@ -54,9 +56,11 @@
             trackBarChangesLevel = new TrackBar();
             trackBarSeedVariationStrength = new TrackBar();
             toolTip = new ToolTip(components);
-            contextMenuCheckpoint = new ContextMenuStrip(components);
-            contextMenuPrompt = new ContextMenuStrip(components);
-            contextMenuNegativePrompt = new ContextMenuStrip(components);
+            cmCheckpointMenu = new ContextMenuStrip(components);
+            cmLorasMenu = new ContextMenuStrip(components);
+            cmNegativePromptHistoryMenu = new ContextMenuStrip(components);
+            cmEmbeddingsMenu = new ContextMenuStrip(components);
+            cmNegativeEmbeddingsMenu = new ContextMenuStrip(components);
             collapsablePanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)numIterations).BeginInit();
             ((System.ComponentModel.ISupportInitialize)numSteps).BeginInit();
@@ -74,9 +78,11 @@
             collapsablePanel.Controls.Add(label1);
             collapsablePanel.Controls.Add(label5);
             collapsablePanel.Controls.Add(ddSampler);
-            collapsablePanel.Controls.Add(btContextMenuNegativePrompt);
-            collapsablePanel.Controls.Add(btContextMenuPrompt);
-            collapsablePanel.Controls.Add(btContextMenuCheckpoint);
+            collapsablePanel.Controls.Add(btEmbeddings);
+            collapsablePanel.Controls.Add(btNegativeEmbeddings);
+            collapsablePanel.Controls.Add(btNegativePromptHistory);
+            collapsablePanel.Controls.Add(btLoras);
+            collapsablePanel.Controls.Add(btCheckpoint);
             collapsablePanel.Controls.Add(label4);
             collapsablePanel.Controls.Add(ddImageSize);
             collapsablePanel.Controls.Add(lbModifiers);
@@ -146,41 +152,69 @@
             ddSampler.TabIndex = 25;
             toolTip.SetToolTip(ddSampler, "Euler a (default, use 50+ detail level), DPM++ 2M (use 20+ detail level), Heun (useful for postprocessing)");
             // 
-            // btContextMenuNegativePrompt
+            // btEmbeddings
             // 
-            btContextMenuNegativePrompt.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-            btContextMenuNegativePrompt.Font = new Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point);
-            btContextMenuNegativePrompt.Location = new Point(391, 212);
-            btContextMenuNegativePrompt.Name = "btContextMenuNegativePrompt";
-            btContextMenuNegativePrompt.Size = new Size(32, 25);
-            btContextMenuNegativePrompt.TabIndex = 24;
-            btContextMenuNegativePrompt.Text = ">>";
-            btContextMenuNegativePrompt.UseVisualStyleBackColor = true;
-            btContextMenuNegativePrompt.Click += btContextMenuNegativePrompt_Click;
+            btEmbeddings.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            btEmbeddings.Font = new Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point);
+            btEmbeddings.Location = new Point(391, 90);
+            btEmbeddings.Name = "btEmbeddings";
+            btEmbeddings.Size = new Size(32, 25);
+            btEmbeddings.TabIndex = 24;
+            btEmbeddings.Text = "E>";
+            toolTip.SetToolTip(btEmbeddings, "Embeddings");
+            btEmbeddings.UseVisualStyleBackColor = true;
+            btEmbeddings.Click += btEmbeddings_Click;
             // 
-            // btContextMenuPrompt
+            // btNegativeEmbeddings
             // 
-            btContextMenuPrompt.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            btContextMenuPrompt.Font = new Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point);
-            btContextMenuPrompt.Location = new Point(391, 59);
-            btContextMenuPrompt.Name = "btContextMenuPrompt";
-            btContextMenuPrompt.Size = new Size(32, 25);
-            btContextMenuPrompt.TabIndex = 24;
-            btContextMenuPrompt.Text = ">>";
-            btContextMenuPrompt.UseVisualStyleBackColor = true;
-            btContextMenuPrompt.Click += btContextMenuPrompt_Click;
+            btNegativeEmbeddings.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+            btNegativeEmbeddings.Font = new Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point);
+            btNegativeEmbeddings.Location = new Point(391, 234);
+            btNegativeEmbeddings.Name = "btNegativeEmbeddings";
+            btNegativeEmbeddings.Size = new Size(32, 25);
+            btNegativeEmbeddings.TabIndex = 24;
+            btNegativeEmbeddings.Text = "E>";
+            toolTip.SetToolTip(btNegativeEmbeddings, "Negative Embeddings");
+            btNegativeEmbeddings.UseVisualStyleBackColor = true;
+            btNegativeEmbeddings.Click += btNegativeEmbeddings_Click;
             // 
-            // btContextMenuCheckpoint
+            // btNegativePromptHistory
             // 
-            btContextMenuCheckpoint.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            btContextMenuCheckpoint.Font = new Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point);
-            btContextMenuCheckpoint.Location = new Point(391, 28);
-            btContextMenuCheckpoint.Name = "btContextMenuCheckpoint";
-            btContextMenuCheckpoint.Size = new Size(32, 25);
-            btContextMenuCheckpoint.TabIndex = 24;
-            btContextMenuCheckpoint.Text = ">>";
-            btContextMenuCheckpoint.UseVisualStyleBackColor = true;
-            btContextMenuCheckpoint.Click += btContextMenuCheckpoint_Click;
+            btNegativePromptHistory.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+            btNegativePromptHistory.Font = new Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point);
+            btNegativePromptHistory.Location = new Point(391, 203);
+            btNegativePromptHistory.Name = "btNegativePromptHistory";
+            btNegativePromptHistory.Size = new Size(32, 25);
+            btNegativePromptHistory.TabIndex = 24;
+            btNegativePromptHistory.Text = "H>";
+            toolTip.SetToolTip(btNegativePromptHistory, "Negative Prompts History");
+            btNegativePromptHistory.UseVisualStyleBackColor = true;
+            btNegativePromptHistory.Click += btNegativePromptHistory_Click;
+            // 
+            // btLoras
+            // 
+            btLoras.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            btLoras.Font = new Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point);
+            btLoras.Location = new Point(391, 59);
+            btLoras.Name = "btLoras";
+            btLoras.Size = new Size(32, 25);
+            btLoras.TabIndex = 24;
+            btLoras.Text = "L>";
+            toolTip.SetToolTip(btLoras, "LoRA models");
+            btLoras.UseVisualStyleBackColor = true;
+            btLoras.Click += btLoras_Click;
+            // 
+            // btCheckpoint
+            // 
+            btCheckpoint.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            btCheckpoint.Font = new Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point);
+            btCheckpoint.Location = new Point(391, 28);
+            btCheckpoint.Name = "btCheckpoint";
+            btCheckpoint.Size = new Size(32, 25);
+            btCheckpoint.TabIndex = 24;
+            btCheckpoint.Text = ">>";
+            btCheckpoint.UseVisualStyleBackColor = true;
+            btCheckpoint.Click += btCheckpoint_Click;
             // 
             // label4
             // 
@@ -235,12 +269,12 @@
             tbNegative.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             tbNegative.BackColor = Color.FromArgb(255, 242, 242);
             tbNegative.Font = new Font("Segoe UI", 11F, FontStyle.Regular, GraphicsUnit.Point);
-            tbNegative.Location = new Point(3, 212);
+            tbNegative.Location = new Point(3, 203);
             tbNegative.Multiline = true;
             tbNegative.Name = "tbNegative";
             tbNegative.PlaceholderText = "Negative prompt (don't want to get)";
             tbNegative.ScrollBars = ScrollBars.Vertical;
-            tbNegative.Size = new Size(382, 48);
+            tbNegative.Size = new Size(382, 57);
             tbNegative.TabIndex = 17;
             // 
             // cbUseInitImage
@@ -277,7 +311,7 @@
             tbPrompt.Name = "tbPrompt";
             tbPrompt.PlaceholderText = "Prompt (describe desired picture)";
             tbPrompt.ScrollBars = ScrollBars.Vertical;
-            tbPrompt.Size = new Size(382, 147);
+            tbPrompt.Size = new Size(382, 138);
             tbPrompt.TabIndex = 0;
             // 
             // numIterations
@@ -380,22 +414,34 @@
             trackBarSeedVariationStrength.TickStyle = TickStyle.None;
             toolTip.SetToolTip(trackBarSeedVariationStrength, "Seed variation strength");
             // 
-            // contextMenuCheckpoint
+            // cmCheckpointMenu
             // 
-            contextMenuCheckpoint.Name = "contextMenuCheckpoint";
-            contextMenuCheckpoint.Size = new Size(61, 4);
+            cmCheckpointMenu.Name = "contextMenuCheckpoint";
+            cmCheckpointMenu.Size = new Size(61, 4);
             // 
-            // contextMenuPrompt
+            // cmLorasMenu
             // 
-            contextMenuPrompt.MinimumSize = new Size(220, 0);
-            contextMenuPrompt.Name = "contextMenuCheckpoint";
-            contextMenuPrompt.Size = new Size(220, 26);
+            cmLorasMenu.MinimumSize = new Size(220, 0);
+            cmLorasMenu.Name = "contextMenuCheckpoint";
+            cmLorasMenu.Size = new Size(220, 4);
             // 
-            // contextMenuNegativePrompt
+            // cmNegativePromptHistoryMenu
             // 
-            contextMenuNegativePrompt.MinimumSize = new Size(200, 0);
-            contextMenuNegativePrompt.Name = "contextMenuCheckpoint";
-            contextMenuNegativePrompt.Size = new Size(200, 4);
+            cmNegativePromptHistoryMenu.MinimumSize = new Size(200, 0);
+            cmNegativePromptHistoryMenu.Name = "contextMenuCheckpoint";
+            cmNegativePromptHistoryMenu.Size = new Size(200, 4);
+            // 
+            // cmEmbeddingsMenu
+            // 
+            cmEmbeddingsMenu.MinimumSize = new Size(220, 0);
+            cmEmbeddingsMenu.Name = "contextMenuCheckpoint";
+            cmEmbeddingsMenu.Size = new Size(220, 4);
+            // 
+            // cmNegativeEmbeddingsMenu
+            // 
+            cmNegativeEmbeddingsMenu.MinimumSize = new Size(200, 0);
+            cmNegativeEmbeddingsMenu.Name = "contextMenuCheckpoint";
+            cmNegativeEmbeddingsMenu.Size = new Size(200, 4);
             // 
             // StableDiffusionPanel
             // 
@@ -433,17 +479,21 @@
         private ListBox lbModifiers;
         public ComboBox ddImageSize;
         private Label label4;
-        private Button btContextMenuCheckpoint;
-        private ContextMenuStrip contextMenuCheckpoint;
+        private Button btCheckpoint;
+        private ContextMenuStrip cmCheckpointMenu;
         public ComboBox ddSampler;
         private Label label5;
         public TrackBar trackBarChangesLevel;
         public TrackBar trackBarSeedVariationStrength;
         public CheckBox cbUseSeed;
-        private Button btContextMenuNegativePrompt;
-        private Button btContextMenuPrompt;
-        private ContextMenuStrip contextMenuPrompt;
-        private ContextMenuStrip contextMenuNegativePrompt;
+        private Button btNegativePromptHistory;
+        private Button btLoras;
+        private ContextMenuStrip cmLorasMenu;
+        private ContextMenuStrip cmNegativePromptHistoryMenu;
         private Label label1;
+        private Button btNegativeEmbeddings;
+        private Button btEmbeddings;
+        private ContextMenuStrip cmEmbeddingsMenu;
+        private ContextMenuStrip cmNegativeEmbeddingsMenu;
     }
 }

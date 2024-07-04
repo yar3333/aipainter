@@ -1,4 +1,4 @@
-﻿namespace AiPainter.Adapters.StableDiffusion
+﻿namespace AiPainter.Adapters.StableDiffusion.SdLoraStuff
 {
     partial class SdLorasForm
     {
@@ -34,6 +34,7 @@
             columnHeader2 = new ColumnHeader();
             columnHeader3 = new ColumnHeader();
             columnHeader4 = new ColumnHeader();
+            columnHeader5 = new ColumnHeader();
             bwDownloading = new System.ComponentModel.BackgroundWorker();
             label1 = new Label();
             tbCivitaiApiKey = new TextBox();
@@ -46,26 +47,25 @@
             btOk.Anchor = AnchorStyles.Bottom;
             btOk.DialogResult = DialogResult.OK;
             btOk.Font = new Font("Segoe UI", 9.75F, FontStyle.Regular, GraphicsUnit.Point);
-            btOk.Location = new Point(357, 481);
+            btOk.Location = new Point(485, 571);
             btOk.Name = "btOk";
             btOk.Size = new Size(172, 40);
             btOk.TabIndex = 5;
             btOk.Text = "OK";
             btOk.UseVisualStyleBackColor = true;
-            btOk.Click += btOk_Click;
             // 
             // lvModels
             // 
             lvModels.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             lvModels.CheckBoxes = true;
-            lvModels.Columns.AddRange(new ColumnHeader[] { columnHeader1, columnHeader2, columnHeader3, columnHeader4 });
+            lvModels.Columns.AddRange(new ColumnHeader[] { columnHeader1, columnHeader2, columnHeader3, columnHeader4, columnHeader5 });
             lvModels.FullRowSelect = true;
             lvModels.GridLines = true;
             lvModels.HeaderStyle = ColumnHeaderStyle.Nonclickable;
             lvModels.Location = new Point(12, 50);
             lvModels.MultiSelect = false;
             lvModels.Name = "lvModels";
-            lvModels.Size = new Size(858, 419);
+            lvModels.Size = new Size(1114, 509);
             lvModels.TabIndex = 6;
             lvModels.UseCompatibleStateImageBehavior = false;
             lvModels.View = View.Details;
@@ -86,12 +86,17 @@
             // columnHeader3
             // 
             columnHeader3.Text = "Name";
-            columnHeader3.Width = 250;
+            columnHeader3.Width = 330;
             // 
             // columnHeader4
             // 
-            columnHeader4.Text = "Link";
-            columnHeader4.Width = 440;
+            columnHeader4.Text = "Description";
+            columnHeader4.Width = 430;
+            // 
+            // columnHeader5
+            // 
+            columnHeader5.Text = "Link";
+            columnHeader5.Width = 190;
             // 
             // bwDownloading
             // 
@@ -131,7 +136,7 @@
             // btImportFromCivitai
             // 
             btImportFromCivitai.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            btImportFromCivitai.Location = new Point(776, 10);
+            btImportFromCivitai.Location = new Point(1032, 10);
             btImportFromCivitai.Name = "btImportFromCivitai";
             btImportFromCivitai.Size = new Size(94, 30);
             btImportFromCivitai.TabIndex = 14;
@@ -144,8 +149,7 @@
             AcceptButton = btOk;
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(882, 533);
-            ControlBox = false;
+            ClientSize = new Size(1138, 623);
             Controls.Add(btImportFromCivitai);
             Controls.Add(linkLabel1);
             Controls.Add(tbCivitaiApiKey);
@@ -157,6 +161,7 @@
             ShowInTaskbar = false;
             StartPosition = FormStartPosition.CenterParent;
             Text = "Stable Diffusion LoRA (additional mini-checkpoints)";
+            FormClosing += SdLorasForm_FormClosing;
             Load += SdLorasForm_Load;
             ResumeLayout(false);
             PerformLayout();
@@ -174,5 +179,6 @@
         private TextBox tbCivitaiApiKey;
         private LinkLabel linkLabel1;
         private Button btImportFromCivitai;
+        private ColumnHeader columnHeader5;
     }
 }

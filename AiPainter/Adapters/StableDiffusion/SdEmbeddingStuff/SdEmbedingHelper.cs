@@ -1,13 +1,13 @@
 ﻿using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace AiPainter.Adapters.StableDiffusion.SdLoraStuff;
+namespace AiPainter.Adapters.StableDiffusion.SdEmbeddingStuff;
 
-static class SdLoraHelper
+static class SdEmbeddingHelper
 {
-    private static string BasePath => Path.Join(Application.StartupPath, "stable_diffusion_lora");
+    private static string BasePath => Path.Join(Application.StartupPath, "stable_diffusion_embeddings");
 
-    private static readonly Dictionary<string, SdLoraConfig> configCache = new();
+    private static readonly Dictionary<string, SdEmbeddingConfig> configCache = new();
 
     public static string[] GetNames()
     {
@@ -22,14 +22,6 @@ static class SdLoraHelper
            .Distinct()
            .OrderBy(GetHumanName)
            .ToArray();
-    }
-
-    public static string GetPrompt(string name)
-    {
-        if (string.IsNullOrEmpty(name)) return "";
-
-        var config = GetConfig(name);
-        return "<lora:" + name + ":0.9>" + (config.promptRequired ?? "");
     }
 
     public static string GetHumanName(string name)
@@ -58,15 +50,15 @@ static class SdLoraHelper
                    : !string.IsNullOrEmpty(GetConfig(name).downloadUrl) ? "URL" : "";
     }
 
-    public static SdLoraConfig GetConfig(string name)
+    public static SdEmbeddingConfig GetConfig(string name)
     {
         if (configCache.ContainsKey(name)) return configCache[name];
 
         var configFilePath = Path.Combine(BasePath, name + ".json");
 
         var r = File.Exists(configFilePath)
-                    ? JsonSerializer.Deserialize<SdLoraConfig>(File.ReadAllText(configFilePath)) ?? new SdLoraConfig()
-                    : new SdLoraConfig();
+                    ? JsonSerializer.Deserialize<SdEmbeddingConfig>(File.ReadAllText(configFilePath)) ?? new SdEmbeddingConfig()
+                    : new SdEmbeddingConfig();
 
         configCache[name] = r;
 
@@ -85,7 +77,7 @@ static class SdLoraHelper
         if (!enabled && !File.Exists(filePath)) File.WriteAllText(filePath, "");
     }
 
-    public static bool SaveConfig(string name, SdLoraConfig config)
+    public static bool SaveConfig(string name, SdEmbeddingConfig config)
     {
         var configFilePath = Path.Combine(BasePath, name + ".json");
         if (!Directory.Exists(Path.GetDirectoryName(configFilePath)))

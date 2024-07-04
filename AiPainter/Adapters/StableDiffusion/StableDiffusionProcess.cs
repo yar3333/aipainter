@@ -43,6 +43,7 @@ static class StableDiffusionProcess
         ActiveVaeFilePath = vaeFilePath ?? "";
 
         var pathToLoraDir = Path.Join(Application.StartupPath, "stable_diffusion_lora");
+        var pathToEmbeddingsDir = Path.Join(Application.StartupPath, "stable_diffusion_embeddings");
         
         process = ProcessHelper.RunInBackground
         (
@@ -52,7 +53,8 @@ static class StableDiffusionProcess
                 + " --port=" + uri.Port
                 + " --ckpt=\"" + checkpointFilePath + "\""
                 + (!string.IsNullOrEmpty(vaeFilePath) ? " --vae-path=\"" + vaeFilePath + "\"" : "")
-                + " --lora-dir=\"" + pathToLoraDir + "\"",
+                + " --lora-dir=\"" + pathToLoraDir + "\""
+                + " --embeddings-dir=\"" + pathToEmbeddingsDir + "\"",
             
             directory: Path.Join(Application.StartupPath, @"external\StableDiffusion"),
             

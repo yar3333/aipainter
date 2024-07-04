@@ -1,9 +1,9 @@
 ﻿using System.ComponentModel;
 using AiPainter.Helpers;
 
-namespace AiPainter.Adapters.StableDiffusion.SdLoraStuff
+namespace AiPainter.Adapters.StableDiffusion.SdEmbeddingStuff
 {
-    public partial class SdLorasForm : Form
+    public partial class SdEmbeddingForm : Form
     {
         //private string[] modelNames = null;
         private string[] checkedNames = { };
@@ -12,7 +12,7 @@ namespace AiPainter.Adapters.StableDiffusion.SdLoraStuff
 
         private bool isProvidedKeyInvalid = false;
 
-        public SdLorasForm()
+        public SdEmbeddingForm()
         {
             InitializeComponent();
         }
@@ -32,21 +32,21 @@ namespace AiPainter.Adapters.StableDiffusion.SdLoraStuff
 
             lvModels.Items.Clear();
 
-            foreach (var name in SdLoraHelper.GetNames())
+            foreach (var name in SdEmbeddingHelper.GetNames())
             {
-                var filePath = SdLoraHelper.GetPathToModel(name);
+                var filePath = SdEmbeddingHelper.GetPathToModel(name);
                 if (!string.IsNullOrEmpty(filePath) && File.Exists(filePath)
-                 || !string.IsNullOrEmpty(SdLoraHelper.GetConfig(name).downloadUrl))
+                 || !string.IsNullOrEmpty(SdEmbeddingHelper.GetConfig(name).downloadUrl))
                 {
                     var item = new ListViewItem();
                     item.UseItemStyleForSubItems = false;
-                    item.SubItems.Add(SdLoraHelper.GetStatus(name));
-                    item.SubItems.Add(SdLoraHelper.GetHumanName(name));
-                    item.SubItems.Add(SdLoraHelper.GetConfig(name).description);
-                    item.SubItems.Add(SdLoraHelper.GetConfig(name).homeUrl, Color.Blue, Color.White, item.Font);
+                    item.SubItems.Add(SdEmbeddingHelper.GetStatus(name));
+                    item.SubItems.Add(SdEmbeddingHelper.GetHumanName(name));
+                    item.SubItems.Add(SdEmbeddingHelper.GetConfig(name).description);
+                    item.SubItems.Add(SdEmbeddingHelper.GetConfig(name).homeUrl, Color.Blue, Color.White, item.Font);
 
                     item.Name = name;
-                    item.Checked = SdLoraHelper.IsEnabled(name) && SdLoraHelper.GetPathToModel(name) != null;
+                    item.Checked = SdEmbeddingHelper.IsEnabled(name) && SdEmbeddingHelper.GetPathToModel(name) != null;
 
                     lvModels.Items.Add(item);
 
@@ -74,25 +74,25 @@ namespace AiPainter.Adapters.StableDiffusion.SdLoraStuff
 
         private void downloadModel(string name)
         {
-            if (SdLoraHelper.GetPathToModel(name) != null) return;
+            if (SdEmbeddingHelper.GetPathToModel(name) != null) return;
 
-            var url = SdLoraHelper.GetConfig(name).downloadUrl;
+            var url = SdEmbeddingHelper.GetConfig(name).downloadUrl;
             if (string.IsNullOrWhiteSpace(url)) return;
 
-            if (SdLoraHelper.GetConfig(name).isNeedAuthToDownload && (string.IsNullOrEmpty(Program.Config.CivitaiApiKey) || isProvidedKeyInvalid)) return;
+            if (SdEmbeddingHelper.GetConfig(name).isNeedAuthToDownload && (string.IsNullOrEmpty(Program.Config.CivitaiApiKey) || isProvidedKeyInvalid)) return;
 
             var resultFilePath = downloadFile(name, url, text => updateStatus(name, text), new DownloadFileOptions
             {
                 FileNameIfNotDetected = SdModelDownloadHelper.GetModelFileNameFromUrl(url, name + ".safetensors"),
                 PreprocessFileName = x => name + Path.GetExtension(x),
-                AuthorizationBearer = SdLoraHelper.GetConfig(name).isNeedAuthToDownload ? Program.Config.CivitaiApiKey : null,
+                AuthorizationBearer = SdEmbeddingHelper.GetConfig(name).isNeedAuthToDownload ? Program.Config.CivitaiApiKey : null,
             });
 
             SdModelDownloadHelper.AnalyzeDownloadedModel(resultFilePath, () =>
             {
-                if (!SdLoraHelper.GetConfig(name).isNeedAuthToDownload)
+                if (!SdEmbeddingHelper.GetConfig(name).isNeedAuthToDownload)
                 {
-                    SdLoraHelper.GetConfig(name).isNeedAuthToDownload = true;
+                    SdEmbeddingHelper.GetConfig(name).isNeedAuthToDownload = true;
                     updateStatus(name, "need API key");
                 }
                 else
@@ -114,7 +114,7 @@ namespace AiPainter.Adapters.StableDiffusion.SdLoraStuff
                 if (checkedNames.Contains(e.Item.Name)) checkedNames = checkedNames.Where(x => x != e.Item.Name).ToArray();
             }
 
-            if (!ignoreCheckedChange) SdLoraHelper.SetEnabled(e.Item.Name, e.Item.Checked);
+            if (!ignoreCheckedChange) SdEmbeddingHelper.SetEnabled(e.Item.Name, e.Item.Checked);
         }
 
         private string? downloadFile(string name, string url, Action<string> progress, DownloadFileOptions options)
@@ -137,7 +137,7 @@ namespace AiPainter.Adapters.StableDiffusion.SdLoraStuff
                     }
                 };
 
-                resultFilePath = DownloadTools.DownloadFileAsync(url, SdLoraHelper.GetDir(), newOptions, cancelationTokenSource.Token).Result;
+                resultFilePath = DownloadTools.DownloadFileAsync(url, SdEmbeddingHelper.GetDir(), newOptions, cancelationTokenSource.Token).Result;
             }
             catch (AggregateException e)
             {
@@ -160,7 +160,7 @@ namespace AiPainter.Adapters.StableDiffusion.SdLoraStuff
                 var item = lvModels.Items.Cast<ListViewItem>().FirstOrDefault(x => x.Name == name);
                 if (item != null)
                 {
-                    text ??= SdLoraHelper.GetStatus(name);
+                    text ??= SdEmbeddingHelper.GetStatus(name);
                     if (item.SubItems[1].Text != text) item.SubItems[1].Text = text;
                 }
             });
@@ -195,12 +195,12 @@ namespace AiPainter.Adapters.StableDiffusion.SdLoraStuff
         private void btImportFromCivitai_Click(object sender, EventArgs e)
         {
             var form = new AddImportModelForm();
-            form.tabs.SelectedTab = form.tabLora;
+            form.tabs.SelectedTab = form.tabEmbedding;
             form.ShowDialog(this);
             updateList();
         }
 
-        private void SdLorasForm_FormClosing(object sender, FormClosingEventArgs e)
+        private void SdEmbeddingForm_FormClosing(object sender, FormClosingEventArgs e)
         {
             bwDownloading.CancelAsync();
         }

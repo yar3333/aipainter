@@ -4,15 +4,16 @@ using AiPainter.Adapters.StableDiffusion.SdApiClientStuff;
 using AiPainter.Adapters.StableDiffusion.SdCheckpointStuff;
 using AiPainter.Adapters.StableDiffusion.SdLoraStuff;
 using AiPainter.SiteClients.CivitaiClientStuff;
+using AiPainter.Adapters.StableDiffusion.SdEmbeddingStuff;
 
 namespace AiPainter.Adapters.StableDiffusion
 {
-    public partial class ImportFromCivitaiForm : Form
+    public partial class AddImportModelForm : Form
     {
         private string? modelId;
         private string? versionId;
 
-        public ImportFromCivitaiForm()
+        public AddImportModelForm()
         {
             InitializeComponent();
         }
@@ -22,6 +23,7 @@ namespace AiPainter.Adapters.StableDiffusion
             labUrlError.Text = "";
             labCheckpointNameError.Text = "";
             labLoraNameError.Text = "";
+            labEmbeddingNameError.Text = "";
         }
 
         private void btImport_Click(object sender, EventArgs e)
@@ -106,7 +108,12 @@ namespace AiPainter.Adapters.StableDiffusion
                         importLora(model, version);
                         break;
 
+                    case "TextualInversion":
+                        importEmbedding(model, version);
+                        break;
+
                     default:
+                        labUrlError.Text = "unsupported model type: " + model.type;
                         tbUrl.Focus();
                         break;
                 }
@@ -120,7 +127,7 @@ namespace AiPainter.Adapters.StableDiffusion
             version.name = DataTools.TrimEndString(version.name, "+ VAE");
             version.name = DataTools.TrimEndString(version.name, "+VAE");
 
-            tbCheckpointName.Text = DataTools.UnderscoresToCapitalisation(DataTools.SanitizeText(model.name)) 
+            tbCheckpointName.Text = DataTools.UnderscoresToCapitalisation(DataTools.SanitizeText(model.name))
                                   + "-" + DataTools.SanitizeText(version.name);
 
             tbCheckpointRequiredPrompt.Text = "";
@@ -162,7 +169,7 @@ namespace AiPainter.Adapters.StableDiffusion
 
             model.name = processLoraNameAndDetectForModels(model.name, out var forModelNames);
 
-            tbLoraName.Text = DataTools.UnderscoresToCapitalisation(DataTools.SanitizeText(model.name)) 
+            tbLoraName.Text = DataTools.UnderscoresToCapitalisation(DataTools.SanitizeText(model.name))
                             + "_for_" + string.Join('_', forModelNames)
                             + "-" + DataTools.SanitizeText(version.name);
 
@@ -181,9 +188,32 @@ namespace AiPainter.Adapters.StableDiffusion
                 tbLoraDescription.Text = string.Join(", ", model.tags);
             }
 
-            tbLoraDownloadUrl.Text = GetBestModelDownloadUrl(version.files, "Pruned Model") 
-                                  ?? GetBestModelDownloadUrl(version.files, "Model") 
+            tbLoraDownloadUrl.Text = GetBestModelDownloadUrl(version.files, "Pruned Model")
+                                  ?? GetBestModelDownloadUrl(version.files, "Model")
                                   ?? "";
+        }
+
+        private void importEmbedding(CivitaiModel model, CivitaiVersion version)
+        {
+            tabs.SelectedTab = tabEmbedding;
+
+            tbEmbeddingName.Text = model.name != version.name
+                                       ? DataTools.SanitizeText(model.name) + "_" + DataTools.SanitizeText(version.name)
+                                       : DataTools.SanitizeText(version.name);
+
+            tbEmbeddingDescription.Text = "";
+            if (model.tags != null)
+            {
+                tbEmbeddingDescription.Text = string.Join(", ", model.tags);
+            }
+
+            tbEmbeddingDownloadUrl.Text = GetBestModelDownloadUrl(version.files, "Pruned Model")
+                                       ?? GetBestModelDownloadUrl(version.files, "Model")
+                                       ?? "";
+
+            cbEmbeddingIsNegative.Checked = model.name.ToLowerInvariant().Contains("negative")
+                || (model.tags?.Contains("negative") ?? false)
+                || (model.tags?.Contains("negative embedding") ?? false);
         }
 
         private static string? GetBestModelDownloadUrl(CivitaiFile[]? files, string type)
@@ -260,9 +290,7 @@ namespace AiPainter.Adapters.StableDiffusion
 
             try
             {
-                labCheckpointNameError.Text = Directory.Exists(SdCheckpointsHelper.GetDirPath(tbCheckpointName.Text.Trim())) 
-                                                  ? "already exists" 
-                                                  : "";
+                labCheckpointNameError.Text = Directory.Exists(SdCheckpointsHelper.GetDirPath(tbCheckpointName.Text.Trim())) ? "already exists" : "";
             }
             catch
             {
@@ -321,7 +349,6 @@ namespace AiPainter.Adapters.StableDiffusion
                     btLoraOk.Text = saveBtOkName;
                 });
             });
-
         }
 
         private void tbLoraName_TextChanged(object sender, EventArgs e)
@@ -334,9 +361,7 @@ namespace AiPainter.Adapters.StableDiffusion
 
             try
             {
-                labLoraNameError.Text = SdLoraHelper.IsConfigExist(tbLoraName.Text.Trim()) 
-                                            ? "already exists" 
-                                            : "";
+                labLoraNameError.Text = SdLoraHelper.IsConfigExist(tbLoraName.Text.Trim()) ? "already exists" : "";
             }
             catch
             {
@@ -365,6 +390,71 @@ namespace AiPainter.Adapters.StableDiffusion
             forModelNames = r.Distinct().OrderBy(x => x).ToArray();
 
             return name;
+        }
+
+        private void tbEmbeddingName_TextChanged(object sender, EventArgs e)
+        {
+            if (tbEmbeddingName.Text.Trim() == "")
+            {
+                labEmbeddingNameError.Text = "";
+                return;
+            }
+
+            try
+            {
+                labEmbeddingNameError.Text = SdEmbeddingHelper.IsConfigExist(tbEmbeddingName.Text.Trim()) ? "already exists" : "";
+            }
+            catch
+            {
+                labEmbeddingNameError.Text = "bad name";
+            }
+        }
+
+        private void btEmbeddingOk_Click(object sender, EventArgs e)
+        {
+            if (tbEmbeddingName.Text.Trim() == "")
+            {
+                tbEmbeddingName.Focus();
+                return;
+            }
+
+            if (tbEmbeddingDownloadUrl.Text.Trim() == "")
+            {
+                tbEmbeddingDownloadUrl.Focus();
+                return;
+            }
+
+            var config = new SdEmbeddingConfig
+            {
+                homeUrl = "https://civitai.com/models/" + modelId + "?modelVersionId=" + versionId,
+                downloadUrl = tbEmbeddingDownloadUrl.Text.Trim(),
+                description = tbEmbeddingDescription.Text.Trim(),
+                isNegative = cbEmbeddingIsNegative.Checked,
+            };
+
+            var saveBtOkName = btEmbeddingOk.Text;
+            if (SdEmbeddingHelper.SaveConfig(tbEmbeddingName.Text.Trim(), config))
+            {
+                tbEmbeddingName_TextChanged(null, null);
+                btEmbeddingOk.Enabled = false;
+
+                btEmbeddingOk.Text = "SUCCESS";
+                tbUrl.Text = "";
+            }
+            else
+            {
+                btEmbeddingOk.Text = "ERROR";
+            }
+
+            Task.Run(async () =>
+            {
+                await Task.Delay(2000);
+                Invoke(() =>
+                {
+                    btEmbeddingOk.Enabled = true;
+                    btEmbeddingOk.Text = saveBtOkName;
+                });
+            });
         }
     }
 }
