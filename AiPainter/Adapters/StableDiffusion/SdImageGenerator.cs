@@ -49,7 +49,6 @@ class SdImageGenerator : IImageGenerator
             seed = sdPanel.cbUseSeed.Checked && sdPanel.tbSeed.Text.Trim() != "" ? long.Parse(sdPanel.tbSeed.Text.Trim()) : -1,
             seedVariationStrength = sdPanel.trackBarSeedVariationStrength.Value / 100m,
 
-            modifiers = sdPanel.Modifiers,
             width = int.Parse(sdPanel.ddImageSize.SelectedItem.ToString()!.Split("x")[0]),
             height = int.Parse(sdPanel.ddImageSize.SelectedItem.ToString()!.Split("x")[1]),
             sampler = sdPanel.ddSampler.SelectedItem.ToString()!,
@@ -114,8 +113,6 @@ class SdImageGenerator : IImageGenerator
             pictureBox.LoadMask(savedMask);
             pictureBox.Refresh();
         }
-
-        sdPanel.Modifiers = sdGenerationParameters.modifiers;
 
         sdPanel.SetImageSize(sdGenerationParameters.width, sdGenerationParameters.height);
 
@@ -355,8 +352,7 @@ class SdImageGenerator : IImageGenerator
         var checkpointPrompt = SdCheckpointsHelper.GetConfig(sdGenerationParameters.checkpointName).promptRequired;
 
         var r = (!string.IsNullOrWhiteSpace(checkpointPrompt) ? checkpointPrompt + "; " : "")
-              + (!string.IsNullOrWhiteSpace(sdGenerationParameters.prompt) ? sdGenerationParameters.prompt + "; " : "")
-              + (sdGenerationParameters.modifiers.Any() ? "; " + string.Join(", ", sdGenerationParameters.modifiers) : "");
+              + (!string.IsNullOrWhiteSpace(sdGenerationParameters.prompt) ? sdGenerationParameters.prompt + "; " : "");
 
         return r.Trim(' ', ',', ';');
     }

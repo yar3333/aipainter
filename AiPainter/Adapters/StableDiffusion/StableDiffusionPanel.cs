@@ -9,44 +9,23 @@ namespace AiPainter.Adapters.StableDiffusion
 {
     public partial class StableDiffusionPanel : UserControl
     {
-        private SdModifiersForm modifiersForm = null!;
-
         public Action OnGenerate = null!;
-
-        public string[] Modifiers
-        {
-            get => lbModifiers.Items.OfType<string>().Where(x => x != "Modifiers. Click to select.").ToArray();
-            set
-            {
-                lbModifiers.Items.Clear();
-                // ReSharper disable once CoVariantArrayConversion
-                lbModifiers.Items.AddRange(value);
-
-                if (!value.Any())
-                {
-                    lbModifiers.Items.Add("Modifiers. Click to select.");
-                }
-            }
-        }
 
         public StableDiffusionPanel()
         {
             InitializeComponent();
-            Modifiers = new string[] { };
         }
 
         public bool IsTextboxInFocus => collapsablePanel.ActiveControl is TextBox;
 
         private void collapsablePanel_Load(object sender, EventArgs e)
         {
-            modifiersForm = new SdModifiersForm();
-
             ddCheckpoint.DataSource = SdCheckpointsHelper.GetListItems(Program.Config.StableDiffusionCheckpoint);
             ddCheckpoint.ValueMember = "Value";
             ddCheckpoint.DisplayMember = "Text";
             ddCheckpoint.SelectedValue = Program.Config.StableDiffusionCheckpoint;
 
-            tbNegative.Text = Program.Config.NegativePrompt;
+            tbNegative.Text = Program.Config.NegativePrompts.FirstOrDefault() ?? "";
 
             ddSampler.DataSource = new[]
             {
@@ -98,11 +77,12 @@ namespace AiPainter.Adapters.StableDiffusion
                 Program.Config.StableDiffusionCheckpoint = ddCheckpoint.SelectedValue?.ToString() ?? "";
             }
 
-            if (tbNegative.Text != "" && Program.Config.NegativePrompts.FirstOrDefault() != tbNegative.Text)
+            var negativeText = tbNegative.Text.Trim(' ', ',', ';', '\r', '\n');
+            if (negativeText != "" && Program.Config.NegativePrompts.FirstOrDefault() != negativeText)
             {
                 needSave = true;
-                Program.Config.NegativePrompts.Remove(tbNegative.Text);
-                Program.Config.NegativePrompts.Insert(0, tbNegative.Text);
+                Program.Config.NegativePrompts.Remove(negativeText);
+                Program.Config.NegativePrompts.Insert(0, negativeText);
                 Program.Config.NegativePrompts = Program.Config.NegativePrompts.Take(10).ToList();
             }
 
@@ -149,7 +129,6 @@ namespace AiPainter.Adapters.StableDiffusion
             numSteps.Value = 35;
             cbUseSeed.Checked = false;
             trackBarSeedVariationStrength.Value = 0;
-            Modifiers = new string[] { };
         }
 
         public void UpdateState(SmartPictureBox pb)
@@ -187,15 +166,6 @@ namespace AiPainter.Adapters.StableDiffusion
         public void SetVaeName(string name)
         {
             Program.Config.StableDiffusionVae = name;
-        }
-
-        private void lbModifiers_Click(object sender, EventArgs e)
-        {
-            modifiersForm.Modifiers = Modifiers;
-            if (modifiersForm.ShowDialog(this) == DialogResult.OK)
-            {
-                Modifiers = modifiersForm.Modifiers;
-            }
         }
 
         private void collapsablePanel_Resize(object sender, EventArgs e)
@@ -310,7 +280,7 @@ namespace AiPainter.Adapters.StableDiffusion
         private void btEmbeddings_Click(object sender, EventArgs e)
         {
             var models = SdEmbeddingHelper.GetNames()
-                                          .Where(x => SdEmbeddingHelper.GetPathToModel(x) != null 
+                                          .Where(x => SdEmbeddingHelper.GetPathToModel(x) != null
                                                    && SdEmbeddingHelper.IsEnabled(x)
                                                    && !SdEmbeddingHelper.GetConfig(x).isNegative)
                                           .ToArray();
@@ -320,7 +290,7 @@ namespace AiPainter.Adapters.StableDiffusion
         private void btNegativeEmbeddings_Click(object sender, EventArgs e)
         {
             var models = SdEmbeddingHelper.GetNames()
-                                          .Where(x => SdEmbeddingHelper.GetPathToModel(x) != null 
+                                          .Where(x => SdEmbeddingHelper.GetPathToModel(x) != null
                                                    && SdEmbeddingHelper.IsEnabled(x)
                                                    && SdEmbeddingHelper.GetConfig(x).isNegative)
                                           .ToArray();
@@ -353,6 +323,15 @@ namespace AiPainter.Adapters.StableDiffusion
             }
 
             menu.Show(Cursor.Position);
+        }
+
+        private void btStyles_Click(object sender, EventArgs e)
+        {
+            var form = new SdStylesForm();
+            if (form.ShowDialog(this) == DialogResult.OK)
+            {
+                tbPrompt.Text = (tbPrompt.Text + ", " + string.Join(", ", form.Modifiers)).TrimStart(',', ' ');
+            }
         }
     }
 }

@@ -137,7 +137,7 @@ namespace AiPainter.Adapters.StableDiffusion
             tbCheckpointInpaintUrl.Text = ImportModelHelper.GetInpaintDownloadUrl(model, version);
             tbCheckpointVaeUrl.Text = ImportModelHelper.GetBestModelDownloadUrl(version.files, "VAE");
 
-            numCheckpointClipSkip.Value = 0;
+            numCheckpointClipSkip.Value = 1;
         }
 
         private void importLora(CivitaiModel model, CivitaiVersion version)
@@ -207,7 +207,7 @@ namespace AiPainter.Adapters.StableDiffusion
                 promptRequired = tbCheckpointRequiredPrompt.Text.Trim(),
                 promptSuggested = tbCheckpointSuggestedPrompt.Text.Trim(),
                 description = tbCheckpointDescription.Text.Trim(),
-                overrideSettings = numCheckpointClipSkip.Value == 0 ? null : new SdSettings
+                overrideSettings = numCheckpointClipSkip.Value == 1 ? null : new SdSettings
                 {
                     CLIP_stop_at_last_layers = (int)numCheckpointClipSkip.Value
                 },

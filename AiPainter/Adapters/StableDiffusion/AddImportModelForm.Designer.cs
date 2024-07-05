@@ -102,9 +102,10 @@
             tbUrl.BackColor = Color.FromArgb(226, 241, 227);
             tbUrl.Location = new Point(99, 17);
             tbUrl.Name = "tbUrl";
-            tbUrl.PlaceholderText = "https://civitai.com/models/352581/vixons-pony-styles";
+            tbUrl.PlaceholderText = "https://";
             tbUrl.Size = new Size(460, 23);
             tbUrl.TabIndex = 14;
+            toolTip1.SetToolTip(tbUrl, "Link to civitai.com model like \"civitai.com/models/352581/vixons-pony-styles\"");
             // 
             // btImport
             // 
@@ -191,11 +192,14 @@
             // numCheckpointClipSkip
             // 
             numCheckpointClipSkip.Location = new Point(652, 207);
+            numCheckpointClipSkip.Maximum = new decimal(new int[] { 2, 0, 0, 0 });
+            numCheckpointClipSkip.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
             numCheckpointClipSkip.Name = "numCheckpointClipSkip";
             numCheckpointClipSkip.Size = new Size(55, 23);
             numCheckpointClipSkip.TabIndex = 15;
             numCheckpointClipSkip.TextAlign = HorizontalAlignment.Center;
-            toolTip1.SetToolTip(numCheckpointClipSkip, "Specify only if need, set to 0 otherwise.");
+            toolTip1.SetToolTip(numCheckpointClipSkip, "Default is 1 - accurate results (use 2 for more variable results)");
+            numCheckpointClipSkip.Value = new decimal(new int[] { 1, 0, 0, 0 });
             // 
             // label8
             // 
@@ -346,7 +350,7 @@
             tabLora.Padding = new Padding(3);
             tabLora.Size = new Size(768, 352);
             tabLora.TabIndex = 1;
-            tabLora.Text = "LoRA (additional model)";
+            tabLora.Text = "LoRA/LyCORIS (additional model)";
             tabLora.UseVisualStyleBackColor = true;
             // 
             // label11
@@ -474,7 +478,7 @@
             tabEmbedding.Padding = new Padding(3);
             tabEmbedding.Size = new Size(768, 352);
             tabEmbedding.TabIndex = 2;
-            tabEmbedding.Text = "Embedding (textual inversion)";
+            tabEmbedding.Text = "Embedding (model-helper)";
             tabEmbedding.UseVisualStyleBackColor = true;
             // 
             // cbEmbeddingIsNegative
@@ -598,7 +602,7 @@
             Name = "AddImportModelForm";
             ShowInTaskbar = false;
             StartPosition = FormStartPosition.CenterParent;
-            Text = "Add/Import Checkpoint, LoRA or Embedding model";
+            Text = "Add/Import Checkpoint, LoRA/LyCORIS or Embedding model";
             Load += ImportFromCivitaiForm_Load;
             tabs.ResumeLayout(false);
             tabCheckpoint.ResumeLayout(false);

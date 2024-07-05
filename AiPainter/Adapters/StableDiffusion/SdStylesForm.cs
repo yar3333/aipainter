@@ -2,8 +2,10 @@
 
 namespace AiPainter.Adapters.StableDiffusion
 {
-    public partial class SdModifiersForm : Form
+    public partial class SdStylesForm : Form
     {
+        private static string BasePath => Path.Join(Application.StartupPath, "stable_diffusion_styles");
+        
         private SdModCategory[] categories = null!;
 
         private string previewName = "portrait"; // "landscape"
@@ -24,12 +26,11 @@ namespace AiPainter.Adapters.StableDiffusion
             }
         }
 
-        public SdModifiersForm()
+        public SdStylesForm()
         {
             InitializeComponent();            
             
-            var baseDir = Path.Join(Application.StartupPath, "stable_diffusion_modifiers");
-            var jsonFile = Path.Join(baseDir, "modifiers.json");
+            var jsonFile = Path.Join(BasePath, "styles.json");
             if (File.Exists(jsonFile))
             {
                 categories = JsonSerializer.Deserialize<SdModCategory[]>(File.ReadAllText(jsonFile))!;
@@ -87,10 +88,9 @@ namespace AiPainter.Adapters.StableDiffusion
             var m = categories.SelectMany(x => x.modifiers).FirstOrDefault(x => x.modifier == modifier);
             if (m == null) return;
 
-            var baseDir = Path.Join(Application.StartupPath, "stable_diffusion_modifiers");
             var preview = m.previews.SingleOrDefault(x => x.name == previewName)
                        ?? m.previews.First();
-            var path = Path.Join(baseDir, preview.path);
+            var path = Path.Join(BasePath, preview.path);
             lvModifiers.LargeImageList.Images.Add(modifier, Image.FromFile(path));
         }
     }

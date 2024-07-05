@@ -1,6 +1,6 @@
 ﻿namespace AiPainter.Adapters.StableDiffusion
 {
-    partial class SdModifiersForm
+    partial class SdStylesForm
     {
         /// <summary>
         /// Required designer variable.
@@ -123,7 +123,7 @@
             btCancel.Text = "Cancel";
             btCancel.UseVisualStyleBackColor = true;
             // 
-            // SdModifiersForm
+            // SdStylesForm
             // 
             AcceptButton = btOk;
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -139,9 +139,9 @@
             Controls.Add(lvSelected);
             Controls.Add(lvModifiers);
             FormBorderStyle = FormBorderStyle.SizableToolWindow;
-            Name = "SdModifiersForm";
+            Name = "SdStylesForm";
             StartPosition = FormStartPosition.CenterParent;
-            Text = "StableDiffusion modifiers";
+            Text = "Styles (just a text portion to improve your prompt)";
             ResumeLayout(false);
             PerformLayout();
         }

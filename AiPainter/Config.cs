@@ -12,8 +12,10 @@ class Config
     public bool UseEmbeddedLamaCleaner { get; set; } = true;
     public string LamaCleanerUrl { get; set; } = "http://127.0.0.1:9595/";
 
-    public string NegativePrompt { get; set; } = "[deformed | disfigured], poorly drawn, [bad : wrong] anatomy, [extra | missing | floating | disconnected] limb, (mutated hands and fingers), blurry";
-    public List<string> NegativePrompts { get; set; } = new();
+    public List<string> NegativePrompts { get; set; } = new()
+    {
+        "[deformed | disfigured], poorly drawn, [bad : wrong] anatomy, [extra | missing | floating | disconnected] limb, (mutated hands and fingers), blurry"
+    };
 
     public List<string> ImageSizes { get; set; } = new()
     {

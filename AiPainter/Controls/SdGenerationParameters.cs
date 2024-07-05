@@ -13,7 +13,6 @@ class SdGenerationParameters
     public long seed { get; set; }
     public decimal seedVariationStrength { get; set; }
     
-    public string[] modifiers { get; set; } = null!;
     public int width { get; set; } = 512;
     public int height { get; set; } = 512;
     public string sampler { get; set; } = "Euler a";
