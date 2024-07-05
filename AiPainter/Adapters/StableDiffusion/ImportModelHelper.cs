@@ -19,20 +19,20 @@ static class ImportModelHelper
         return versionName;
     }
 
-    public static string GetLoraName(string modelName, string versionName)
+    public static string GetLoraOrEmbeddingName(CivitaiModel model, CivitaiVersion version)
     {
-        modelName = processLoraNameAndDetectForModels(modelName, out var forModelNames);
+        var modelName = processLoraNameAndDetectForModels(model.name, out var forModelNames);
+
+        if (!string.IsNullOrEmpty(version.baseModel))
+        {
+            forModelNames = forModelNames.Concat(new []{ version.baseModel }).Distinct().ToArray();
+        }
+
+        forModelNames = forModelNames.Select(x => x.Replace(" ", "").Replace(".", "_")).ToArray();
 
         return UnderscoresToCapitalisation(SanitizeText(modelName))
-             + "_for_" + string.Join('_', forModelNames)
-             + "-" + SanitizeText(versionName);
-    }
-
-    public static string GetEmbeddingName(string modelName, string versionName)
-    {
-        return modelName != versionName
-                   ? SanitizeText(modelName) + "_" + SanitizeText(versionName)
-                   : SanitizeText(versionName);
+             + (forModelNames.Length > 0 ? "_for_" + string.Join('_', forModelNames) : "")
+             + "-" + SanitizeText(version.name);
     }
 
     public static string GetInpaintDownloadUrl(CivitaiModel model, CivitaiVersion version)

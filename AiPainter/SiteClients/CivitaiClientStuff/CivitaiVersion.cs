@@ -1,5 +1,6 @@
 ﻿namespace AiPainter.SiteClients.CivitaiClientStuff;
 
+[Serializable]
 class CivitaiVersion
 {
     public long id { get; set; }
@@ -7,8 +8,11 @@ class CivitaiVersion
     public string name { get; set; }
     public CivitaiFile[]? files { get; set; }
     public string downloadUrl { get; set; }
+    public string? baseModel { get; set; }
+    //public string? baseModelType { get; set; } // "Standard"
 }
 
+[Serializable]
 class CivitaiFile
 {
     public string type { get; set; }
@@ -16,6 +20,7 @@ class CivitaiFile
     public CivitaiFileMetadata? metadata { get; set; }
 }
 
+[Serializable]
 class CivitaiFileMetadata
 {
     public string format { get; set; } // PickleTensor, SafeTensor, Other

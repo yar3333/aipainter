@@ -144,7 +144,7 @@ namespace AiPainter.Adapters.StableDiffusion
         {
             tabs.SelectedTab = tabLora;
 
-            tbLoraName.Text = ImportModelHelper.GetLoraName(model.name, version.name);
+            tbLoraName.Text = ImportModelHelper.GetLoraOrEmbeddingName(model, version);
 
             tbLoraRequiredPrompt.Text = "";
             tbLoraSuggestedPrompt.Text = "";
@@ -168,7 +168,7 @@ namespace AiPainter.Adapters.StableDiffusion
         {
             tabs.SelectedTab = tabEmbedding;
 
-            tbEmbeddingName.Text = ImportModelHelper.GetEmbeddingName(model.name, version.name);
+            tbEmbeddingName.Text = ImportModelHelper.GetLoraOrEmbeddingName(model, version);
 
             tbEmbeddingDescription.Text = "";
             if (model.tags != null)

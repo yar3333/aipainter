@@ -1,0 +1,9 @@
+{
+  "homeUrl": "https://civitai.com/models/101055?modelVersionId=128078",
+  "mainCheckpointUrl": "https://civitai.com/api/download/models/128078",
+  "inpaintCheckpointUrl": "",
+  "vaeUrl": "",
+  "description": "base model, official, stability ai",
+  "promptRequired": "",
+  "promptSuggested": ""
+}
