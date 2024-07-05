@@ -15,7 +15,7 @@ static class ImportModelHelper
     {
         versionName = Regex.Replace(versionName, @"\s*[+]\s*VAE$", "");
         versionName = Regex.Replace(versionName, @"\s*[(]VAE[)]$", "");
-        versionName = Regex.Replace(versionName, @"^V(\d)", "v$1");
+        versionName = Regex.Replace(versionName, @"^v(\d)", "$1", RegexOptions.IgnoreCase);
         return versionName;
     }
 
