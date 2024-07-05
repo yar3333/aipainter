@@ -28,7 +28,7 @@ static class ImportModelHelper
             forModelNames = forModelNames.Concat(new []{ version.baseModel }).Distinct().ToArray();
         }
 
-        forModelNames = forModelNames.Select(x => x.Replace(" ", "").Replace(".", "_")).ToArray();
+        forModelNames = forModelNames.Select(x => x.Replace(" ", "")).ToArray();
 
         return UnderscoresToCapitalisation(SanitizeText(modelName))
              + (forModelNames.Length > 0 ? "_for_" + string.Join('_', forModelNames) : "")
