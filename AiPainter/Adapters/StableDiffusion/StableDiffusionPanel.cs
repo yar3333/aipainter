@@ -330,8 +330,40 @@ namespace AiPainter.Adapters.StableDiffusion
             var form = new SdStylesForm();
             if (form.ShowDialog(this) == DialogResult.OK)
             {
-                tbPrompt.Text = (tbPrompt.Text + ", " + string.Join(", ", form.Modifiers)).TrimStart(',', ' ');
+                addTextToPrompt(string.Join(", ", form.Modifiers));
             }
+        }
+
+        private void btSuggestedPrompt_Click(object sender, EventArgs e)
+        {
+            cmSuggestedPromptMenu.Items.Clear();
+
+            if (!string.IsNullOrEmpty(ddCheckpoint.SelectedValue?.ToString()))
+            {
+                var promptSuggested = SdCheckpointsHelper.GetConfig(ddCheckpoint.SelectedValue!.ToString()!).promptSuggested;
+                if (!string.IsNullOrEmpty(promptSuggested))
+                {
+                    var parts = promptSuggested.Split(',').Select(x => x.Trim(',', ' ')).ToList();
+                    parts.Insert(0, promptSuggested);
+                    parts = parts.Where(x => x != "").Distinct().ToList();
+                    foreach (var s in parts)
+                    {
+                        cmSuggestedPromptMenu.Items.Add(s, null, (_, _) => addTextToPrompt(s));
+                    }
+                }
+            }
+
+            if (cmSuggestedPromptMenu.Items.Count == 0)
+            {
+                cmSuggestedPromptMenu.Items.Add(new ToolStripLabel("No suggested phrases"));
+            }
+
+            cmSuggestedPromptMenu.Show(Cursor.Position);
+        }
+
+        private void addTextToPrompt(string s)
+        {
+            tbPrompt.Text = (tbPrompt.Text + ", " + s).TrimStart(',', ' ');
         }
     }
 }

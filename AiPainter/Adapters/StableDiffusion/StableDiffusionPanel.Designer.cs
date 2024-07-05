@@ -61,6 +61,8 @@
             cmNegativePromptHistoryMenu = new ContextMenuStrip(components);
             cmEmbeddingsMenu = new ContextMenuStrip(components);
             cmNegativeEmbeddingsMenu = new ContextMenuStrip(components);
+            btSuggestedPrompt = new Button();
+            cmSuggestedPromptMenu = new ContextMenuStrip(components);
             collapsablePanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)numIterations).BeginInit();
             ((System.ComponentModel.ISupportInitialize)numSteps).BeginInit();
@@ -78,6 +80,7 @@
             collapsablePanel.Controls.Add(label1);
             collapsablePanel.Controls.Add(label5);
             collapsablePanel.Controls.Add(ddSampler);
+            collapsablePanel.Controls.Add(btSuggestedPrompt);
             collapsablePanel.Controls.Add(btStyles);
             collapsablePanel.Controls.Add(btEmbeddings);
             collapsablePanel.Controls.Add(btNegativeEmbeddings);
@@ -157,7 +160,7 @@
             btStyles.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             btStyles.BackColor = Color.White;
             btStyles.Font = new Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point);
-            btStyles.Location = new Point(367, 121);
+            btStyles.Location = new Point(367, 152);
             btStyles.Name = "btStyles";
             btStyles.Size = new Size(56, 25);
             btStyles.TabIndex = 24;
@@ -449,6 +452,26 @@
             cmNegativeEmbeddingsMenu.Name = "contextMenuCheckpoint";
             cmNegativeEmbeddingsMenu.Size = new Size(200, 4);
             // 
+            // btSuggestedPrompt
+            // 
+            btSuggestedPrompt.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            btSuggestedPrompt.BackColor = Color.White;
+            btSuggestedPrompt.Font = new Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point);
+            btSuggestedPrompt.Location = new Point(367, 121);
+            btSuggestedPrompt.Name = "btSuggestedPrompt";
+            btSuggestedPrompt.Size = new Size(56, 25);
+            btSuggestedPrompt.TabIndex = 24;
+            btSuggestedPrompt.Text = "Sug>";
+            toolTip.SetToolTip(btSuggestedPrompt, "Suggested prompt (for selected Checkpoint and LoRAs)");
+            btSuggestedPrompt.UseVisualStyleBackColor = false;
+            btSuggestedPrompt.Click += btSuggestedPrompt_Click;
+            // 
+            // cmSuggestedPromptMenu
+            // 
+            cmSuggestedPromptMenu.MinimumSize = new Size(200, 0);
+            cmSuggestedPromptMenu.Name = "contextMenuCheckpoint";
+            cmSuggestedPromptMenu.Size = new Size(200, 4);
+            // 
             // StableDiffusionPanel
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -501,5 +524,7 @@
         private ContextMenuStrip cmEmbeddingsMenu;
         private ContextMenuStrip cmNegativeEmbeddingsMenu;
         private Button btStyles;
+        private Button btSuggestedPrompt;
+        private ContextMenuStrip cmSuggestedPromptMenu;
     }
 }
