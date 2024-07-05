@@ -142,7 +142,7 @@ namespace AiPainter.Adapters.StableDiffusion
         private void btReset_Click(object sender, EventArgs e)
         {
             cbUseInitImage.Checked = false;
-            trackBarChangesLevel.Value = 0;
+            trackBarChangesLevel.Value = 100;
             numCfgScale.Value = 7.0m;
             ddImageSize.Text = "512x512";
             ddSampler.SelectedItem = 0;
@@ -343,7 +343,7 @@ namespace AiPainter.Adapters.StableDiffusion
             {
                 menu.Items.Add(SdEmbeddingHelper.GetHumanName(name), null, (_, _) =>
                 {
-                    tb.Text = (tb.Text + ", (" + name + ":1.2), ").TrimStart(' ', ',');
+                    tb.Text = (tb.Text + ", (" + name + ":1.0), ").TrimStart(' ', ',');
                 });
             }
 

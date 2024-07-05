@@ -155,65 +155,70 @@
             // btEmbeddings
             // 
             btEmbeddings.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            btEmbeddings.BackColor = Color.White;
             btEmbeddings.Font = new Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point);
-            btEmbeddings.Location = new Point(391, 90);
+            btEmbeddings.Location = new Point(367, 90);
             btEmbeddings.Name = "btEmbeddings";
-            btEmbeddings.Size = new Size(32, 25);
+            btEmbeddings.Size = new Size(56, 25);
             btEmbeddings.TabIndex = 24;
-            btEmbeddings.Text = "E>";
+            btEmbeddings.Text = "Emb>";
             toolTip.SetToolTip(btEmbeddings, "Embeddings");
-            btEmbeddings.UseVisualStyleBackColor = true;
+            btEmbeddings.UseVisualStyleBackColor = false;
             btEmbeddings.Click += btEmbeddings_Click;
             // 
             // btNegativeEmbeddings
             // 
             btNegativeEmbeddings.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+            btNegativeEmbeddings.BackColor = Color.White;
             btNegativeEmbeddings.Font = new Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point);
-            btNegativeEmbeddings.Location = new Point(391, 234);
+            btNegativeEmbeddings.Location = new Point(367, 234);
             btNegativeEmbeddings.Name = "btNegativeEmbeddings";
-            btNegativeEmbeddings.Size = new Size(32, 25);
+            btNegativeEmbeddings.Size = new Size(56, 25);
             btNegativeEmbeddings.TabIndex = 24;
-            btNegativeEmbeddings.Text = "E>";
+            btNegativeEmbeddings.Text = "Emb>";
             toolTip.SetToolTip(btNegativeEmbeddings, "Negative Embeddings");
-            btNegativeEmbeddings.UseVisualStyleBackColor = true;
+            btNegativeEmbeddings.UseVisualStyleBackColor = false;
             btNegativeEmbeddings.Click += btNegativeEmbeddings_Click;
             // 
             // btNegativePromptHistory
             // 
             btNegativePromptHistory.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+            btNegativePromptHistory.BackColor = Color.White;
             btNegativePromptHistory.Font = new Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point);
-            btNegativePromptHistory.Location = new Point(391, 203);
+            btNegativePromptHistory.Location = new Point(367, 203);
             btNegativePromptHistory.Name = "btNegativePromptHistory";
-            btNegativePromptHistory.Size = new Size(32, 25);
+            btNegativePromptHistory.Size = new Size(56, 25);
             btNegativePromptHistory.TabIndex = 24;
-            btNegativePromptHistory.Text = "H>";
+            btNegativePromptHistory.Text = "Hist>";
             toolTip.SetToolTip(btNegativePromptHistory, "Negative Prompts History");
-            btNegativePromptHistory.UseVisualStyleBackColor = true;
+            btNegativePromptHistory.UseVisualStyleBackColor = false;
             btNegativePromptHistory.Click += btNegativePromptHistory_Click;
             // 
             // btLoras
             // 
             btLoras.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            btLoras.BackColor = Color.White;
             btLoras.Font = new Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point);
-            btLoras.Location = new Point(391, 59);
+            btLoras.Location = new Point(367, 59);
             btLoras.Name = "btLoras";
-            btLoras.Size = new Size(32, 25);
+            btLoras.Size = new Size(56, 25);
             btLoras.TabIndex = 24;
-            btLoras.Text = "L>";
+            btLoras.Text = "LoRA>";
             toolTip.SetToolTip(btLoras, "LoRA models");
-            btLoras.UseVisualStyleBackColor = true;
+            btLoras.UseVisualStyleBackColor = false;
             btLoras.Click += btLoras_Click;
             // 
             // btCheckpoint
             // 
             btCheckpoint.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            btCheckpoint.BackColor = Color.White;
             btCheckpoint.Font = new Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point);
             btCheckpoint.Location = new Point(391, 28);
             btCheckpoint.Name = "btCheckpoint";
             btCheckpoint.Size = new Size(32, 25);
             btCheckpoint.TabIndex = 24;
             btCheckpoint.Text = ">>";
-            btCheckpoint.UseVisualStyleBackColor = true;
+            btCheckpoint.UseVisualStyleBackColor = false;
             btCheckpoint.Click += btCheckpoint_Click;
             // 
             // label4
@@ -274,7 +279,7 @@
             tbNegative.Name = "tbNegative";
             tbNegative.PlaceholderText = "Negative prompt (don't want to get)";
             tbNegative.ScrollBars = ScrollBars.Vertical;
-            tbNegative.Size = new Size(382, 57);
+            tbNegative.Size = new Size(358, 57);
             tbNegative.TabIndex = 17;
             // 
             // cbUseInitImage
@@ -311,7 +316,7 @@
             tbPrompt.Name = "tbPrompt";
             tbPrompt.PlaceholderText = "Prompt (describe desired picture)";
             tbPrompt.ScrollBars = ScrollBars.Vertical;
-            tbPrompt.Size = new Size(382, 138);
+            tbPrompt.Size = new Size(358, 138);
             tbPrompt.TabIndex = 0;
             // 
             // numIterations
@@ -402,6 +407,7 @@
             trackBarChangesLevel.TabIndex = 27;
             trackBarChangesLevel.TickStyle = TickStyle.None;
             toolTip.SetToolTip(trackBarChangesLevel, "Changes level");
+            trackBarChangesLevel.Value = 100;
             // 
             // trackBarSeedVariationStrength
             // 

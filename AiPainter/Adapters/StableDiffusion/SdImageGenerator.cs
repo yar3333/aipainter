@@ -53,7 +53,7 @@ class SdImageGenerator : IImageGenerator
             width = int.Parse(sdPanel.ddImageSize.SelectedItem.ToString()!.Split("x")[0]),
             height = int.Parse(sdPanel.ddImageSize.SelectedItem.ToString()!.Split("x")[1]),
             sampler = sdPanel.ddSampler.SelectedItem.ToString()!,
-            changesLevel = sdPanel.trackBarChangesLevel.Value / 100.0m,
+            changesLevel = sdPanel.cbUseInitImage.Checked ? sdPanel.trackBarChangesLevel.Value / 100.0m : -1,
         };
 
         if (sdPanel.cbUseInitImage.Checked)
@@ -99,7 +99,7 @@ class SdImageGenerator : IImageGenerator
         sdPanel.trackBarSeedVariationStrength.Value = (int)Math.Round(sdGenerationParameters.seedVariationStrength * 100);
         
         sdPanel.ddSampler.SelectedItem = sdGenerationParameters.sampler;
-        sdPanel.trackBarChangesLevel.Value = (int)Math.Round(sdGenerationParameters.changesLevel * 100);
+        if (sdGenerationParameters.changesLevel >= 0) sdPanel.trackBarChangesLevel.Value = (int)Math.Round(sdGenerationParameters.changesLevel * 100);
 
         sdPanel.numIterations.Value = originalCount;
 
@@ -282,7 +282,6 @@ class SdImageGenerator : IImageGenerator
                 height = sdGenerationParameters.height,
                 
                 sampler_index = sdGenerationParameters.sampler,
-                s_noise = sdGenerationParameters.changesLevel,
 
                 override_settings = SdCheckpointsHelper.GetConfig(sdGenerationParameters.checkpointName).overrideSettings,
             };
@@ -313,7 +312,9 @@ class SdImageGenerator : IImageGenerator
                 height = initImage.Height,
                 
                 sampler_index = sdGenerationParameters.sampler,
-                s_noise = sdGenerationParameters.changesLevel,
+
+                //inpainting_fill = SdInpaintingFill.original,
+                denoising_strength = sdGenerationParameters.changesLevel,
 
                 override_settings = SdCheckpointsHelper.GetConfig(sdGenerationParameters.checkpointName).overrideSettings,
             };
