@@ -1,4 +1,6 @@
-﻿using AiPainter.Adapters.StableDiffusion.SdCheckpointStuff;
+﻿using System.Text.RegularExpressions;
+using System.Xml.Linq;
+using AiPainter.Adapters.StableDiffusion.SdCheckpointStuff;
 using AiPainter.Adapters.StableDiffusion.SdEmbeddingStuff;
 using AiPainter.Adapters.StableDiffusion.SdLoraStuff;
 using AiPainter.Adapters.StableDiffusion.SdVaeStuff;
@@ -338,15 +340,29 @@ namespace AiPainter.Adapters.StableDiffusion
         {
             cmSuggestedPromptMenu.Items.Clear();
 
-            if (!string.IsNullOrEmpty(ddCheckpoint.SelectedValue?.ToString()))
+            var checkpointName = ddCheckpoint.SelectedValue?.ToString();
+            if (!string.IsNullOrEmpty(checkpointName))
             {
-                var promptSuggested = SdCheckpointsHelper.GetConfig(ddCheckpoint.SelectedValue!.ToString()!).promptSuggested;
-                if (!string.IsNullOrEmpty(promptSuggested))
+                var phrases = getSuggestedPhrases(SdCheckpointsHelper.GetConfig(checkpointName).promptSuggested);
+                if (phrases.Length > 0)
                 {
-                    var parts = promptSuggested.Split(',').Select(x => x.Trim(',', ' ')).ToList();
-                    parts.Insert(0, promptSuggested);
-                    parts = parts.Where(x => x != "").Distinct().ToList();
-                    foreach (var s in parts)
+                    cmSuggestedPromptMenu.Items.Add(new ToolStripLabel("*** " + checkpointName + " ***"));
+                    foreach (var s in phrases)
+                    {
+                        cmSuggestedPromptMenu.Items.Add(s, null, (_, _) => addTextToPrompt(s));
+                    }
+                }
+            }
+
+            var loras = Regex.Matches(tbPrompt.Text, @"<lora:([^:>]+)[:>]").Select(x => x.Groups[1].Value).ToArray();
+            foreach (var name in loras)
+            {
+                var phrases = getSuggestedPhrases(SdLoraHelper.GetConfig(name).promptSuggested);
+                if (phrases.Length > 0)
+                {
+                    cmSuggestedPromptMenu.Items.Add(new ToolStripSeparator());
+                    cmSuggestedPromptMenu.Items.Add(new ToolStripLabel("*** " + name + " ***"));
+                    foreach (var s in phrases)
                     {
                         cmSuggestedPromptMenu.Items.Add(s, null, (_, _) => addTextToPrompt(s));
                     }
@@ -363,7 +379,15 @@ namespace AiPainter.Adapters.StableDiffusion
 
         private void addTextToPrompt(string s)
         {
-            tbPrompt.Text = (tbPrompt.Text + ", " + s).TrimStart(',', ' ');
+            tbPrompt.Text = (tbPrompt.Text.TrimEnd(',', ' ') + ", " + s).TrimStart(',', ' ');
+        }
+
+        private static string[] getSuggestedPhrases(string? text)
+        {
+            if (text == null) return new string[] {};
+            var parts = text.Split(',').Select(x => x.Trim(',', ' ')).ToList();
+            parts.Insert(0, text);
+            return parts.Where(x => x != "").Distinct().ToArray();
         }
     }
 }

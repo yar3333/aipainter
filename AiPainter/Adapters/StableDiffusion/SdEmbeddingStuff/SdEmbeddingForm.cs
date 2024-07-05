@@ -85,7 +85,7 @@ namespace AiPainter.Adapters.StableDiffusion.SdEmbeddingStuff
             {
                 FileNameIfNotDetected = SdModelDownloadHelper.GetModelFileNameFromUrl(url, name + ".safetensors"),
                 PreprocessFileName = x => name + Path.GetExtension(x),
-                AuthorizationBearer = SdEmbeddingHelper.GetConfig(name).isNeedAuthToDownload ? Program.Config.CivitaiApiKey : null,
+                AuthorizationBearer = Program.Config.CivitaiApiKey,
             });
 
             SdModelDownloadHelper.AnalyzeDownloadedModel(resultFilePath, () =>
