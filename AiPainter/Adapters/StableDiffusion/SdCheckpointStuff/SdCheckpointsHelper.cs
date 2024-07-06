@@ -1,4 +1,5 @@
-﻿using System.Text.Json;
+﻿using System.Globalization;
+using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
 
@@ -85,7 +86,7 @@ static class SdCheckpointsHelper
         if (string.IsNullOrEmpty(name)) return "<Select Checkpoint>";
         var path = GetPathToMainCheckpoint(name);
         var size = path != null ? new FileInfo(path).Length : 0;
-        return name + " (" + Math.Round(size / 1024.0 / 1024 / 1024, 1) + " GB)";
+        return name + " (" + Math.Round(size / 1024.0 / 1024 / 1024, 1).ToString(CultureInfo.InvariantCulture) + " GB)";
     }
 
     public static SdCheckpointConfig GetConfig(string name)
