@@ -93,10 +93,12 @@ static class SdEmbeddingHelper
                 DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
                 WriteIndented = true,
             }));
+
+            configCache[name] = config;
             
             return true;
         }
-        catch (Exception e)
+        catch
         {
             return false;
         }

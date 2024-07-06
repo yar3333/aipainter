@@ -1,5 +1,4 @@
 ﻿using System.Text.RegularExpressions;
-using System.Xml.Linq;
 using AiPainter.Adapters.StableDiffusion.SdCheckpointStuff;
 using AiPainter.Adapters.StableDiffusion.SdEmbeddingStuff;
 using AiPainter.Adapters.StableDiffusion.SdLoraStuff;
@@ -13,19 +12,30 @@ namespace AiPainter.Adapters.StableDiffusion
     {
         public Action OnGenerate = null!;
 
+        public bool IsTextboxInFocus => collapsablePanel.ActiveControl is TextBox;
+
+        private string selectedCheckpointName
+        {
+            get => ddCheckpoint.SelectedValue?.ToString() ?? "";
+            set
+            {
+                if (ddCheckpoint.DataSource == null || ddCheckpoint.Items.Cast<ListItem>().All(x => x.Value != value))
+                {
+                    ddCheckpoint.DataSource = SdCheckpointsHelper.GetListItems(value);
+                }
+                ddCheckpoint.SelectedValue = value;
+            }
+        }
+
         public StableDiffusionPanel()
         {
             InitializeComponent();
         }
 
-        public bool IsTextboxInFocus => collapsablePanel.ActiveControl is TextBox;
 
         private void collapsablePanel_Load(object sender, EventArgs e)
         {
-            ddCheckpoint.DataSource = SdCheckpointsHelper.GetListItems(Program.Config.StableDiffusionCheckpoint);
-            ddCheckpoint.ValueMember = "Value";
-            ddCheckpoint.DisplayMember = "Text";
-            ddCheckpoint.SelectedValue = Program.Config.StableDiffusionCheckpoint;
+            selectedCheckpointName = Program.Config.StableDiffusionCheckpoint ?? "";
 
             tbNegative.Text = Program.Config.NegativePrompts.FirstOrDefault() ?? "";
 
@@ -46,9 +56,9 @@ namespace AiPainter.Adapters.StableDiffusion
             var form = new SdCheckpointsForm();
             form.ShowDialog(this);
 
-            var saveName = ddCheckpoint.SelectedValue?.ToString() ?? "";
+            var saveName = selectedCheckpointName;
             ddCheckpoint.DataSource = SdCheckpointsHelper.GetListItems(saveName);
-            ddCheckpoint.SelectedValue = saveName;
+            selectedCheckpointName = saveName;
 
         }
 
@@ -60,7 +70,7 @@ namespace AiPainter.Adapters.StableDiffusion
 
             if (tbPrompt.Text.Trim() == "") { tbPrompt.Focus(); return; }
 
-            if (string.IsNullOrEmpty(ddCheckpoint.SelectedValue?.ToString()))
+            if (selectedCheckpointName == "")
             {
                 ddCheckpoint.DroppedDown = true;
                 return;
@@ -73,10 +83,10 @@ namespace AiPainter.Adapters.StableDiffusion
         {
             var needSave = false;
 
-            if ((ddCheckpoint.SelectedValue?.ToString() ?? "") != Program.Config.StableDiffusionCheckpoint)
+            if (selectedCheckpointName != Program.Config.StableDiffusionCheckpoint)
             {
                 needSave = true;
-                Program.Config.StableDiffusionCheckpoint = ddCheckpoint.SelectedValue?.ToString() ?? "";
+                Program.Config.StableDiffusionCheckpoint = selectedCheckpointName;
             }
 
             var negativeText = tbNegative.Text.Trim(' ', ',', ';', '\r', '\n');
@@ -196,17 +206,17 @@ namespace AiPainter.Adapters.StableDiffusion
 
             cmCheckpointMenu.Items.Add("Show in Explorer", null, (_, _) =>
             {
-                if (!string.IsNullOrEmpty(ddCheckpoint.SelectedValue?.ToString()))
+                if (selectedCheckpointName != "")
                 {
-                    ProcessHelper.ShowFolderInExplorer(SdCheckpointsHelper.GetDirPath(ddCheckpoint.SelectedValue.ToString()!));
+                    ProcessHelper.ShowFolderInExplorer(SdCheckpointsHelper.GetDirPath(selectedCheckpointName));
                 }
             });
 
             cmCheckpointMenu.Items.Add("Visit home page", null, (_, _) =>
             {
-                if (!string.IsNullOrEmpty(ddCheckpoint.SelectedValue?.ToString()))
+                if (selectedCheckpointName != "")
                 {
-                    var config = SdCheckpointsHelper.GetConfig(ddCheckpoint.SelectedValue.ToString()!);
+                    var config = SdCheckpointsHelper.GetConfig(selectedCheckpointName);
                     if (!string.IsNullOrEmpty(config.homeUrl)) ProcessHelper.OpenUrlInBrowser(config.homeUrl);
                 }
             });
@@ -340,8 +350,8 @@ namespace AiPainter.Adapters.StableDiffusion
         {
             cmSuggestedPromptMenu.Items.Clear();
 
-            var checkpointName = ddCheckpoint.SelectedValue?.ToString();
-            if (!string.IsNullOrEmpty(checkpointName))
+            var checkpointName = selectedCheckpointName;
+            if (checkpointName != "")
             {
                 var phrases = getSuggestedPhrases(SdCheckpointsHelper.GetConfig(checkpointName).promptSuggested);
                 if (phrases.Length > 0)

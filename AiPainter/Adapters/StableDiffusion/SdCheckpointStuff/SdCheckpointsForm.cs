@@ -31,6 +31,8 @@ namespace AiPainter.Adapters.StableDiffusion.SdCheckpointStuff
 
             lvModels.Items.Clear();
 
+            var newChecked = new List<string>();
+
             foreach (var name in SdCheckpointsHelper.GetNames("").Where(x => x != ""))
             {
                 var filePath = SdCheckpointsHelper.GetPathToMainCheckpoint(name);
@@ -52,9 +54,11 @@ namespace AiPainter.Adapters.StableDiffusion.SdCheckpointStuff
 
                     lvModels.Items.Add(item);
 
-                    if (item.Checked) checkedNames = checkedNames.Concat(new[] { name }).ToArray();
+                    if (item.Checked) newChecked.Add(name);
                 }
             }
+
+            checkedNames = newChecked.ToArray();
 
             ignoreCheckedChange = false;
         }

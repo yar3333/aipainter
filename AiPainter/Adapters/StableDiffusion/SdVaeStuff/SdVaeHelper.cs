@@ -24,12 +24,11 @@ static class SdVaeHelper
     public static ToolStripItem[] GetMenuItems(string selectedName, Action<string> onClick)
     {
         // ReSharper disable once CoVariantArrayConversion
-        return GetNames(selectedName).Where(IsEnabled)
-                                     .Select(x => new ToolStripMenuItem(x != "" ? "Use VAE: " + getHumanName(x) : "Use VAE: default", null, (_, _) => onClick(x))
+        return GetNames(selectedName).Select(x => new ToolStripMenuItem(x != "" ? "Use VAE: " + getHumanName(x) : "Use VAE: default", null, (_, _) => onClick(x))
                                      {
                                          Name = x,
                                          Checked = x == selectedName,
-                                         ToolTipText = x != "" ? GetConfig(x).description : "No improved rendering"
+                                         ToolTipText = x != "" ? GetConfig(x).description : "Default rendering layer"
                                      })
                                      .ToArray();
     }
@@ -72,17 +71,5 @@ static class SdVaeHelper
         var file = GetPathToVae(name);
         var url = GetConfig(name).downloadUrl;
         return file != null ? "file" : !string.IsNullOrWhiteSpace(url) ? "URL" : "-";
-    }
-
-    public static bool IsEnabled(string name)
-    {
-        return !File.Exists(Path.Combine(GetDirPath(name), "_disabled"));
-    }
-
-    public static void SetEnabled(string name, bool enabled)
-    {
-        var filePath = Path.Combine(GetDirPath(name), "_disabled");
-        if (enabled && File.Exists(filePath)) File.Delete(filePath);
-        if (!enabled && !File.Exists(filePath)) File.WriteAllText(filePath, "");
     }
 }

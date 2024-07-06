@@ -32,6 +32,8 @@ namespace AiPainter.Adapters.StableDiffusion.SdEmbeddingStuff
 
             lvModels.Items.Clear();
 
+            var newChecked = new List<string>();
+            
             foreach (var name in SdEmbeddingHelper.GetNames())
             {
                 var filePath = SdEmbeddingHelper.GetPathToModel(name);
@@ -50,9 +52,11 @@ namespace AiPainter.Adapters.StableDiffusion.SdEmbeddingStuff
 
                     lvModels.Items.Add(item);
 
-                    if (item.Checked) checkedNames = checkedNames.Concat(new[] { name }).ToArray();
+                    if (item.Checked) newChecked.Add(name);
                 }
             }
+
+            checkedNames = newChecked.ToArray();
 
             ignoreCheckedChange = false;
         }

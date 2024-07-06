@@ -34,6 +34,7 @@
             label1 = new Label();
             label5 = new Label();
             ddSampler = new ComboBox();
+            btSuggestedPrompt = new Button();
             btStyles = new Button();
             btEmbeddings = new Button();
             btNegativeEmbeddings = new Button();
@@ -61,7 +62,6 @@
             cmNegativePromptHistoryMenu = new ContextMenuStrip(components);
             cmEmbeddingsMenu = new ContextMenuStrip(components);
             cmNegativeEmbeddingsMenu = new ContextMenuStrip(components);
-            btSuggestedPrompt = new Button();
             cmSuggestedPromptMenu = new ContextMenuStrip(components);
             collapsablePanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)numIterations).BeginInit();
@@ -154,6 +154,20 @@
             ddSampler.Size = new Size(162, 25);
             ddSampler.TabIndex = 25;
             toolTip.SetToolTip(ddSampler, "Euler a (default, use 50+ detail level), DPM++ 2M (use 20+ detail level), Heun (useful for postprocessing)");
+            // 
+            // btSuggestedPrompt
+            // 
+            btSuggestedPrompt.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            btSuggestedPrompt.BackColor = Color.White;
+            btSuggestedPrompt.Font = new Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point);
+            btSuggestedPrompt.Location = new Point(367, 121);
+            btSuggestedPrompt.Name = "btSuggestedPrompt";
+            btSuggestedPrompt.Size = new Size(56, 25);
+            btSuggestedPrompt.TabIndex = 24;
+            btSuggestedPrompt.Text = "Sug>";
+            toolTip.SetToolTip(btSuggestedPrompt, "Suggested prompt (for selected Checkpoint and LoRAs)");
+            btSuggestedPrompt.UseVisualStyleBackColor = false;
+            btSuggestedPrompt.Click += btSuggestedPrompt_Click;
             // 
             // btStyles
             // 
@@ -263,6 +277,7 @@
             // ddCheckpoint
             // 
             ddCheckpoint.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            ddCheckpoint.DisplayMember = "Text";
             ddCheckpoint.DropDownStyle = ComboBoxStyle.DropDownList;
             ddCheckpoint.FormattingEnabled = true;
             ddCheckpoint.Location = new Point(3, 29);
@@ -270,6 +285,7 @@
             ddCheckpoint.Size = new Size(382, 23);
             ddCheckpoint.TabIndex = 18;
             toolTip.SetToolTip(ddCheckpoint, "Active checkpoint (image generation model)");
+            ddCheckpoint.ValueMember = "Value";
             ddCheckpoint.DropDown += ddCheckpoint_DropDown;
             // 
             // tbNegative
@@ -451,20 +467,6 @@
             cmNegativeEmbeddingsMenu.MinimumSize = new Size(200, 0);
             cmNegativeEmbeddingsMenu.Name = "contextMenuCheckpoint";
             cmNegativeEmbeddingsMenu.Size = new Size(200, 4);
-            // 
-            // btSuggestedPrompt
-            // 
-            btSuggestedPrompt.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            btSuggestedPrompt.BackColor = Color.White;
-            btSuggestedPrompt.Font = new Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point);
-            btSuggestedPrompt.Location = new Point(367, 121);
-            btSuggestedPrompt.Name = "btSuggestedPrompt";
-            btSuggestedPrompt.Size = new Size(56, 25);
-            btSuggestedPrompt.TabIndex = 24;
-            btSuggestedPrompt.Text = "Sug>";
-            toolTip.SetToolTip(btSuggestedPrompt, "Suggested prompt (for selected Checkpoint and LoRAs)");
-            btSuggestedPrompt.UseVisualStyleBackColor = false;
-            btSuggestedPrompt.Click += btSuggestedPrompt_Click;
             // 
             // cmSuggestedPromptMenu
             // 
