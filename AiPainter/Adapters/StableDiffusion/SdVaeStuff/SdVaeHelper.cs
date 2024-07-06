@@ -6,11 +6,11 @@ static class SdVaeHelper
 {
     private static string BasePath => Path.Join(Application.StartupPath, "stable_diffusion_vae");
 
-    public static string[] GetNames(string nameToEnsureExists)
+    public static string[] GetNames()
     {
         var basePath = BasePath;
 
-        return new[] { "", nameToEnsureExists }
+        return new[] { "" }
                 .Concat(Directory.GetFiles(basePath, "*.ckpt", SearchOption.AllDirectories)
                 .Concat(Directory.GetFiles(basePath, "*.safetensors", SearchOption.AllDirectories))
                 .Concat(Directory.GetFiles(basePath, "*.pt", SearchOption.AllDirectories))
@@ -21,14 +21,13 @@ static class SdVaeHelper
                 .ToArray();
     }
 
-    public static ToolStripItem[] GetMenuItems(string selectedName, Action<string> onClick)
+    public static ListItem[] GetListItems()
     {
         // ReSharper disable once CoVariantArrayConversion
-        return GetNames(selectedName).Select(x => new ToolStripMenuItem(x != "" ? "Use VAE: " + getHumanName(x) : "Use VAE: default", null, (_, _) => onClick(x))
+        return GetNames().Select(x => new ListItem
                                      {
-                                         Name = x,
-                                         Checked = x == selectedName,
-                                         ToolTipText = x != "" ? GetConfig(x).description : "Default rendering layer"
+                                         Text = x != "" ? getHumanName(x) : "Default",
+                                         Value = x
                                      })
                                      .ToArray();
     }
@@ -52,9 +51,7 @@ static class SdVaeHelper
 
     static string getHumanName(string name)
     {
-        var path = GetPathToVae(name);
-        var size = path != null ? new FileInfo(path).Length : 0;
-        return name + " (" + Math.Round(size / 1024.0 / 1024, 1) + " MB)";
+        return name;
     }
 
     public static SdVaeConfig GetConfig(string name)

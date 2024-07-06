@@ -14,6 +14,8 @@ namespace AiPainter.Adapters.StableDiffusion
 
         public bool IsTextboxInFocus => collapsablePanel.ActiveControl is TextBox;
 
+        private string baseVaeTooltip;
+
         private string selectedCheckpointName
         {
             get => ddCheckpoint.SelectedValue?.ToString() ?? "";
@@ -30,6 +32,8 @@ namespace AiPainter.Adapters.StableDiffusion
         public StableDiffusionPanel()
         {
             InitializeComponent();
+
+            baseVaeTooltip = toolTip.GetToolTip(ddVae);
         }
 
 
@@ -37,7 +41,8 @@ namespace AiPainter.Adapters.StableDiffusion
         {
             selectedCheckpointName = Program.Config.StableDiffusionCheckpoint ?? "";
 
-            tbNegative.Text = Program.Config.NegativePrompts.FirstOrDefault() ?? "";
+            ddVae.DataSource = SdVaeHelper.GetListItems();
+            ddVae.SelectedValue = SdVaeHelper.GetNames().Contains(Program.Config.StableDiffusionVae) ? Program.Config.StableDiffusionVae : "";
 
             ddSampler.DataSource = new[]
             {
@@ -49,6 +54,8 @@ namespace AiPainter.Adapters.StableDiffusion
 
             ddImageSize.DataSource = Program.Config.ImageSizes;
             ddImageSize.Text = Program.Config.ImageSizes.FirstOrDefault() ?? "512x512";
+
+            tbNegative.Text = Program.Config.NegativePrompts.FirstOrDefault() ?? "";
         }
 
         private void showManageCheckpointDialog()
@@ -87,6 +94,12 @@ namespace AiPainter.Adapters.StableDiffusion
             {
                 needSave = true;
                 Program.Config.StableDiffusionCheckpoint = selectedCheckpointName;
+            }
+
+            if (ddVae.SelectedValue.ToString() != Program.Config.StableDiffusionVae)
+            {
+                needSave = true;
+                Program.Config.StableDiffusionVae = ddVae.SelectedValue!.ToString()!;
             }
 
             var negativeText = tbNegative.Text.Trim(' ', ',', ';', '\r', '\n');
@@ -220,22 +233,6 @@ namespace AiPainter.Adapters.StableDiffusion
                     if (!string.IsNullOrEmpty(config.homeUrl)) ProcessHelper.OpenUrlInBrowser(config.homeUrl);
                 }
             });
-
-            cmCheckpointMenu.Items.Add(new ToolStripSeparator());
-
-            cmCheckpointMenu.Items.AddRange(SdVaeHelper.GetMenuItems(Program.Config.StableDiffusionVae, vaeName =>
-            {
-                if (vaeName != "" && SdVaeHelper.GetPathToVae(vaeName) == null)
-                {
-                    var form = new SdVaeForm(vaeName);
-                    form.ShowDialog(this);
-                }
-                if (vaeName == "" || SdVaeHelper.GetPathToVae(vaeName) != null)
-                {
-                    Program.Config.StableDiffusionVae = vaeName;
-                    Program.SaveConfig();
-                }
-            }));
 
             cmCheckpointMenu.Show(Cursor.Position);
         }
@@ -394,10 +391,22 @@ namespace AiPainter.Adapters.StableDiffusion
 
         private static string[] getSuggestedPhrases(string? text)
         {
-            if (text == null) return new string[] {};
+            if (text == null) return new string[] { };
             var parts = text.Split(',').Select(x => x.Trim(',', ' ')).ToList();
             parts.Insert(0, text);
             return parts.Where(x => x != "").Distinct().ToArray();
+        }
+
+        private void ddVae_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            var vaeName = ddVae.SelectedValue.ToString()!;
+            if (vaeName != "" && SdVaeHelper.GetPathToVae(vaeName) == null)
+            {
+                var form = new SdVaeForm(vaeName);
+                form.ShowDialog(this);
+            }
+
+            toolTip.SetToolTip(ddVae, baseVaeTooltip + (vaeName != "" ? "\n\n*** " + vaeName + "\n" + SdVaeHelper.GetConfig(vaeName).description : ""));
         }
     }
 }

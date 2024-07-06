@@ -43,6 +43,7 @@
             btCheckpoint = new Button();
             label4 = new Label();
             ddImageSize = new ComboBox();
+            ddVae = new ComboBox();
             ddCheckpoint = new ComboBox();
             tbNegative = new TextBox();
             cbUseInitImage = new CheckBox();
@@ -89,6 +90,7 @@
             collapsablePanel.Controls.Add(btCheckpoint);
             collapsablePanel.Controls.Add(label4);
             collapsablePanel.Controls.Add(ddImageSize);
+            collapsablePanel.Controls.Add(ddVae);
             collapsablePanel.Controls.Add(ddCheckpoint);
             collapsablePanel.Controls.Add(tbNegative);
             collapsablePanel.Controls.Add(cbUseInitImage);
@@ -148,7 +150,6 @@
             ddSampler.DropDownStyle = ComboBoxStyle.DropDownList;
             ddSampler.Font = new Font("Segoe UI", 10F, FontStyle.Regular, GraphicsUnit.Point);
             ddSampler.FormattingEnabled = true;
-            ddSampler.Items.AddRange(new object[] { "512x512", "768x768", "512x768", "768x512", "640x640" });
             ddSampler.Location = new Point(59, 422);
             ddSampler.Name = "ddSampler";
             ddSampler.Size = new Size(162, 25);
@@ -244,9 +245,9 @@
             btCheckpoint.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             btCheckpoint.BackColor = Color.White;
             btCheckpoint.Font = new Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point);
-            btCheckpoint.Location = new Point(391, 28);
+            btCheckpoint.Location = new Point(367, 29);
             btCheckpoint.Name = "btCheckpoint";
-            btCheckpoint.Size = new Size(32, 25);
+            btCheckpoint.Size = new Size(56, 25);
             btCheckpoint.TabIndex = 24;
             btCheckpoint.Text = ">>";
             btCheckpoint.UseVisualStyleBackColor = false;
@@ -272,7 +273,22 @@
             ddImageSize.Size = new Size(151, 28);
             ddImageSize.TabIndex = 22;
             ddImageSize.Text = "512x512";
-            toolTip.SetToolTip(ddImageSize, "Generated image size. Can be changed in \"Config.json\" file");
+            toolTip.SetToolTip(ddImageSize, "Generated image size");
+            // 
+            // ddVae
+            // 
+            ddVae.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            ddVae.DisplayMember = "Text";
+            ddVae.DropDownStyle = ComboBoxStyle.DropDownList;
+            ddVae.FormattingEnabled = true;
+            ddVae.Location = new Point(297, 30);
+            ddVae.Name = "ddVae";
+            ddVae.Size = new Size(64, 23);
+            ddVae.TabIndex = 18;
+            toolTip.SetToolTip(ddVae, "VAE (rendering layer). Use none-default value to improve quality.");
+            ddVae.ValueMember = "Value";
+            ddVae.DropDown += ddCheckpoint_DropDown;
+            ddVae.SelectedIndexChanged += ddVae_SelectedIndexChanged;
             // 
             // ddCheckpoint
             // 
@@ -282,7 +298,7 @@
             ddCheckpoint.FormattingEnabled = true;
             ddCheckpoint.Location = new Point(3, 29);
             ddCheckpoint.Name = "ddCheckpoint";
-            ddCheckpoint.Size = new Size(382, 23);
+            ddCheckpoint.Size = new Size(288, 23);
             ddCheckpoint.TabIndex = 18;
             toolTip.SetToolTip(ddCheckpoint, "Active checkpoint (image generation model)");
             ddCheckpoint.ValueMember = "Value";
@@ -402,7 +418,7 @@
             numCfgScale.Name = "numCfgScale";
             numCfgScale.Size = new Size(62, 27);
             numCfgScale.TabIndex = 3;
-            toolTip.SetToolTip(numCfgScale, "How hard to follow the text prompt (original name: cfg scale)");
+            toolTip.SetToolTip(numCfgScale, "How hard to follow the text prompt (original name: cfg scale). Use ~7 for new images and ~2 for change existing images.");
             numCfgScale.Value = new decimal(new int[] { 7, 0, 0, 0 });
             // 
             // label3
@@ -528,5 +544,6 @@
         private Button btStyles;
         private Button btSuggestedPrompt;
         private ContextMenuStrip cmSuggestedPromptMenu;
+        public ComboBox ddVae;
     }
 }
