@@ -48,6 +48,8 @@ static class StableDiffusionProcess
                 "--lora-dir=\"" + SdLoraHelper.BaseDir + "\"",
                 "--embeddings-dir=\"" + SdEmbeddingHelper.BaseDir + "\"",
                 "--skip-load-model-at-start",
+                "--no-prompt-history",
+                "--disable-console-progressbars",
             }.Where(x => !string.IsNullOrEmpty(x))),
 
             directory: Path.Join(Application.StartupPath, @"external\StableDiffusion"),

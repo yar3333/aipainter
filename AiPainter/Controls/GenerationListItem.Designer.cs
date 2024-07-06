@@ -28,110 +28,104 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
-            this.tbPrompt = new System.Windows.Forms.TextBox();
-            this.pbSteps = new AiPainter.Controls.CustomProgressBar();
-            this.pbIterations = new AiPainter.Controls.CustomProgressBar();
-            this.numIterations = new System.Windows.Forms.NumericUpDown();
-            this.btRemove = new System.Windows.Forms.Button();
-            this.btLoadParamsBackToPanel = new System.Windows.Forms.Button();
-            this.toolTip = new System.Windows.Forms.ToolTip(this.components);
-            ((System.ComponentModel.ISupportInitialize)(this.numIterations)).BeginInit();
-            this.SuspendLayout();
+            components = new System.ComponentModel.Container();
+            tbPrompt = new TextBox();
+            pbSteps = new CustomProgressBar();
+            pbIterations = new CustomProgressBar();
+            numIterations = new NumericUpDown();
+            btRemove = new Button();
+            btLoadParamsBackToPanel = new Button();
+            toolTip = new ToolTip(components);
+            ((System.ComponentModel.ISupportInitialize)numIterations).BeginInit();
+            SuspendLayout();
             // 
             // tbPrompt
             // 
-            this.tbPrompt.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.tbPrompt.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.tbPrompt.Location = new System.Drawing.Point(50, 7);
-            this.tbPrompt.Name = "tbPrompt";
-            this.tbPrompt.ReadOnly = true;
-            this.tbPrompt.Size = new System.Drawing.Size(264, 23);
-            this.tbPrompt.TabIndex = 0;
+            tbPrompt.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            tbPrompt.BorderStyle = BorderStyle.FixedSingle;
+            tbPrompt.Location = new Point(50, 7);
+            tbPrompt.Name = "tbPrompt";
+            tbPrompt.ReadOnly = true;
+            tbPrompt.Size = new Size(264, 23);
+            tbPrompt.TabIndex = 0;
             // 
             // pbSteps
             // 
-            this.pbSteps.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.pbSteps.BackColor = System.Drawing.Color.AliceBlue;
-            this.pbSteps.CustomText = null;
-            this.pbSteps.Location = new System.Drawing.Point(374, 7);
-            this.pbSteps.Name = "pbSteps";
-            this.pbSteps.Size = new System.Drawing.Size(100, 23);
-            this.pbSteps.TabIndex = 1;
-            this.pbSteps.TextColor = System.Drawing.Color.Black;
-            this.toolTip.SetToolTip(this.pbSteps, "Steps");
+            pbSteps.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            pbSteps.BackColor = Color.AliceBlue;
+            pbSteps.CustomText = null;
+            pbSteps.Location = new Point(374, 7);
+            pbSteps.Name = "pbSteps";
+            pbSteps.Size = new Size(100, 23);
+            pbSteps.TabIndex = 1;
+            pbSteps.TextColor = Color.Black;
+            toolTip.SetToolTip(pbSteps, "Steps");
             // 
             // pbIterations
             // 
-            this.pbIterations.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.pbIterations.BackColor = System.Drawing.Color.AliceBlue;
-            this.pbIterations.CustomText = null;
-            this.pbIterations.Location = new System.Drawing.Point(480, 7);
-            this.pbIterations.Name = "pbIterations";
-            this.pbIterations.Size = new System.Drawing.Size(100, 23);
-            this.pbIterations.TabIndex = 2;
-            this.pbIterations.TextColor = System.Drawing.Color.Black;
-            this.toolTip.SetToolTip(this.pbIterations, "Iterations");
+            pbIterations.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            pbIterations.BackColor = Color.AliceBlue;
+            pbIterations.CustomText = null;
+            pbIterations.Location = new Point(480, 7);
+            pbIterations.Name = "pbIterations";
+            pbIterations.Size = new Size(100, 23);
+            pbIterations.TabIndex = 2;
+            pbIterations.TextColor = Color.Black;
+            toolTip.SetToolTip(pbIterations, "Iterations");
             // 
             // numIterations
             // 
-            this.numIterations.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.numIterations.Location = new System.Drawing.Point(320, 7);
-            this.numIterations.Maximum = new decimal(new int[] {
-            9999,
-            0,
-            0,
-            0});
-            this.numIterations.Name = "numIterations";
-            this.numIterations.Size = new System.Drawing.Size(48, 23);
-            this.numIterations.TabIndex = 3;
-            this.toolTip.SetToolTip(this.numIterations, "Count");
-            this.numIterations.ValueChanged += new System.EventHandler(this.numIterations_ValueChanged);
+            numIterations.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            numIterations.Location = new Point(320, 7);
+            numIterations.Maximum = new decimal(new int[] { 9999, 0, 0, 0 });
+            numIterations.Name = "numIterations";
+            numIterations.Size = new Size(48, 23);
+            numIterations.TabIndex = 3;
+            toolTip.SetToolTip(numIterations, "Images count need to generate");
+            numIterations.ValueChanged += numIterations_ValueChanged;
             // 
             // btRemove
             // 
-            this.btRemove.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btRemove.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
-            this.btRemove.ForeColor = System.Drawing.Color.Red;
-            this.btRemove.Location = new System.Drawing.Point(586, 7);
-            this.btRemove.Name = "btRemove";
-            this.btRemove.Size = new System.Drawing.Size(31, 23);
-            this.btRemove.TabIndex = 4;
-            this.btRemove.Text = "X";
-            this.toolTip.SetToolTip(this.btRemove, "Cancel");
-            this.btRemove.UseVisualStyleBackColor = true;
-            this.btRemove.Click += new System.EventHandler(this.btRemove_Click);
+            btRemove.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            btRemove.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point);
+            btRemove.ForeColor = Color.Red;
+            btRemove.Location = new Point(586, 7);
+            btRemove.Name = "btRemove";
+            btRemove.Size = new Size(31, 23);
+            btRemove.TabIndex = 4;
+            btRemove.Text = "X";
+            toolTip.SetToolTip(btRemove, "Cancel");
+            btRemove.UseVisualStyleBackColor = true;
+            btRemove.Click += btRemove_Click;
             // 
             // btLoadParamsBackToPanel
             // 
-            this.btLoadParamsBackToPanel.Location = new System.Drawing.Point(6, 6);
-            this.btLoadParamsBackToPanel.Name = "btLoadParamsBackToPanel";
-            this.btLoadParamsBackToPanel.Size = new System.Drawing.Size(38, 25);
-            this.btLoadParamsBackToPanel.TabIndex = 5;
-            this.btLoadParamsBackToPanel.Text = "<=";
-            this.toolTip.SetToolTip(this.btLoadParamsBackToPanel, "Load parameters into panel");
-            this.btLoadParamsBackToPanel.UseVisualStyleBackColor = true;
-            this.btLoadParamsBackToPanel.Click += new System.EventHandler(this.btLoadParamsBackToPanel_Click);
+            btLoadParamsBackToPanel.Location = new Point(6, 6);
+            btLoadParamsBackToPanel.Name = "btLoadParamsBackToPanel";
+            btLoadParamsBackToPanel.Size = new Size(38, 25);
+            btLoadParamsBackToPanel.TabIndex = 5;
+            btLoadParamsBackToPanel.Text = "<=";
+            toolTip.SetToolTip(btLoadParamsBackToPanel, "Load parameters into panel");
+            btLoadParamsBackToPanel.UseVisualStyleBackColor = true;
+            btLoadParamsBackToPanel.Click += btLoadParamsBackToPanel_Click;
             // 
             // GenerationListItem
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.SystemColors.ControlLight;
-            this.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.Controls.Add(this.btLoadParamsBackToPanel);
-            this.Controls.Add(this.btRemove);
-            this.Controls.Add(this.numIterations);
-            this.Controls.Add(this.pbIterations);
-            this.Controls.Add(this.pbSteps);
-            this.Controls.Add(this.tbPrompt);
-            this.Name = "GenerationListItem";
-            this.Size = new System.Drawing.Size(620, 42);
-            ((System.ComponentModel.ISupportInitialize)(this.numIterations)).EndInit();
-            this.ResumeLayout(false);
-            this.PerformLayout();
-
+            AutoScaleDimensions = new SizeF(7F, 15F);
+            AutoScaleMode = AutoScaleMode.Font;
+            BackColor = SystemColors.ControlLight;
+            BorderStyle = BorderStyle.FixedSingle;
+            Controls.Add(btLoadParamsBackToPanel);
+            Controls.Add(btRemove);
+            Controls.Add(numIterations);
+            Controls.Add(pbIterations);
+            Controls.Add(pbSteps);
+            Controls.Add(tbPrompt);
+            Name = "GenerationListItem";
+            Size = new Size(620, 42);
+            ((System.ComponentModel.ISupportInitialize)numIterations).EndInit();
+            ResumeLayout(false);
+            PerformLayout();
         }
 
         #endregion
