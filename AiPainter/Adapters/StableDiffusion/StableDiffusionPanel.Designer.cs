@@ -245,7 +245,7 @@
             btCheckpoint.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             btCheckpoint.BackColor = Color.White;
             btCheckpoint.Font = new Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point);
-            btCheckpoint.Location = new Point(367, 29);
+            btCheckpoint.Location = new Point(367, 28);
             btCheckpoint.Name = "btCheckpoint";
             btCheckpoint.Size = new Size(56, 25);
             btCheckpoint.TabIndex = 24;
@@ -281,7 +281,7 @@
             ddVae.DisplayMember = "Text";
             ddVae.DropDownStyle = ComboBoxStyle.DropDownList;
             ddVae.FormattingEnabled = true;
-            ddVae.Location = new Point(297, 30);
+            ddVae.Location = new Point(297, 29);
             ddVae.Name = "ddVae";
             ddVae.Size = new Size(64, 23);
             ddVae.TabIndex = 18;

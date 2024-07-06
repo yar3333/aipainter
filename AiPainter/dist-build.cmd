@@ -11,4 +11,4 @@ if not exist dist\AiPainter\stable_diffusion_checkpoints mklink /D dist\AiPainte
 if not exist dist\AiPainter\stable_diffusion_styles      mklink /D dist\AiPainter\stable_diffusion_styles %~dp0..\_stable_diffusion_styles 2> nul
 if not exist dist\AiPainter\stable_diffusion_vae         mklink /D dist\AiPainter\stable_diffusion_vae %~dp0..\_stable_diffusion_vae 2> nul
 if not exist dist\AiPainter\stable_diffusion_lora        mklink /D dist\AiPainter\stable_diffusion_lora %~dp0..\_stable_diffusion_lora 2> nul
-if not exist dist\AiPainter\stable_diffusion_embeddings  mklink /D dist\AiPainter\stable_diffusion_lora %~dp0..\_stable_diffusion_embeddings 2> nul
+if not exist dist\AiPainter\stable_diffusion_embeddings  mklink /D dist\AiPainter\stable_diffusion_embeddings %~dp0..\_stable_diffusion_embeddings 2> nul

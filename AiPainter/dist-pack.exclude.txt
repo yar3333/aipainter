@@ -23,3 +23,5 @@ AiPainter\stable_diffusion_vae\*\*.pt
 AiPainter\stable_diffusion_vae\*\*.safetensors
 
 AiPainter\external\StableDiffusion\webui\models\Stable-diffusion\*.safetensors
+AiPainter\external\StableDiffusion\webui\tmp\*
+AiPainter\external\StableDiffusion\webui\params.txt 
