@@ -118,7 +118,11 @@
 
         public void NotifyStepsCustomText(string text)
         {
-            Invoke(() => pbSteps.CustomText = text);
+            Invoke(() =>
+            {
+                pbSteps.CustomText = text;
+                pbSteps.Value = 0;
+            });
         }
 
         private void btRemove_Click(object sender, EventArgs e)

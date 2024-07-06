@@ -5,13 +5,13 @@ namespace AiPainter.Adapters.StableDiffusion.SdLoraStuff;
 
 static class SdLoraHelper
 {
-    private static string BasePath => Path.Join(Application.StartupPath, "stable_diffusion_lora");
+    public static readonly string BaseDir = Path.Join(Application.StartupPath, "stable_diffusion_lora");
 
     private static readonly Dictionary<string, SdLoraConfig> configCache = new();
 
     public static string[] GetNames()
     {
-        var basePath = BasePath;
+        var basePath = BaseDir;
 
         return new string[] { }
            .Concat(Directory.GetFiles(basePath, "*.safetensors"))
@@ -39,12 +39,12 @@ static class SdLoraHelper
 
     public static string GetDir()
     {
-        return BasePath;
+        return BaseDir;
     }
 
     public static string? GetPathToModel(string name)
     {
-        var baseFilePath = Path.Combine(BasePath, name) + ".";
+        var baseFilePath = Path.Combine(BaseDir, name) + ".";
         if (File.Exists(baseFilePath + "safetensors")) return baseFilePath + "safetensors";
         if (File.Exists(baseFilePath + "ckpt")) return baseFilePath + "ckpt";
         if (File.Exists(baseFilePath + "pt")) return baseFilePath + "pt";
@@ -62,7 +62,7 @@ static class SdLoraHelper
     {
         if (configCache.ContainsKey(name)) return configCache[name];
 
-        var configFilePath = Path.Combine(BasePath, name + ".json");
+        var configFilePath = Path.Combine(BaseDir, name + ".json");
 
         var r = File.Exists(configFilePath)
                     ? JsonSerializer.Deserialize<SdLoraConfig>(File.ReadAllText(configFilePath)) ?? new SdLoraConfig()
@@ -75,19 +75,19 @@ static class SdLoraHelper
 
     public static bool IsEnabled(string name)
     {
-        return !File.Exists(Path.Combine(BasePath, name + ".disabled"));
+        return !File.Exists(Path.Combine(BaseDir, name + ".disabled"));
     }
 
     public static void SetEnabled(string name, bool enabled)
     {
-        var filePath = Path.Combine(BasePath, name + ".disabled");
+        var filePath = Path.Combine(BaseDir, name + ".disabled");
         if (enabled && File.Exists(filePath)) File.Delete(filePath);
         if (!enabled && !File.Exists(filePath)) File.WriteAllText(filePath, "");
     }
 
     public static bool SaveConfig(string name, SdLoraConfig config)
     {
-        var configFilePath = Path.Combine(BasePath, name + ".json");
+        var configFilePath = Path.Combine(BaseDir, name + ".json");
         if (!Directory.Exists(Path.GetDirectoryName(configFilePath)))
         {
             Directory.CreateDirectory(Path.GetDirectoryName(configFilePath)!);
@@ -114,7 +114,7 @@ static class SdLoraHelper
 
     public static bool IsConfigExist(string name)
     {
-        var configFilePath = Path.Combine(BasePath, name + ".json");
+        var configFilePath = Path.Combine(BaseDir, name + ".json");
         return File.Exists(configFilePath);
     }
 }

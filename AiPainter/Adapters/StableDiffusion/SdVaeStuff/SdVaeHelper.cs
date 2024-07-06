@@ -4,11 +4,11 @@ namespace AiPainter.Adapters.StableDiffusion.SdVaeStuff;
 
 static class SdVaeHelper
 {
-    private static string BasePath => Path.Join(Application.StartupPath, "stable_diffusion_vae");
+    public static readonly string BaseDir = Path.Join(Application.StartupPath, "stable_diffusion_vae");
 
     public static string[] GetNames()
     {
-        var basePath = BasePath;
+        var basePath = BaseDir;
 
         return new[] { "" }
                 .Concat(Directory.GetFiles(basePath, "*.ckpt", SearchOption.AllDirectories)
@@ -46,7 +46,7 @@ static class SdVaeHelper
 
     public static string GetDirPath(string name)
     {
-        return Path.Combine(BasePath, name);
+        return Path.Combine(BaseDir, name);
     }
 
     static string getHumanName(string name)

@@ -2,8 +2,8 @@
 
 class SiteClientException : Exception
 {
-    public SiteClientException(string message)
-        : base(message)
+    public SiteClientException(string message, Exception innerException)
+        : base(message, innerException)
     {
     }
 }

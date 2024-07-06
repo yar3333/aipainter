@@ -1,5 +1,6 @@
 ﻿using System.Net.Http.Json;
 using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
 using AiPainter.Helpers;
 
@@ -77,6 +78,19 @@ static class SdApiClient
         if (!inProcess) return;
         try { postAsync<object>("sdapi/v1/interrupt", new object()).Wait(); }
         catch { }
+    }
+
+    public static async Task ChangeSettingsAsync(SdSettings settings)
+    {
+        try
+        {
+            var result = await postAsync<JsonObject>("sdapi/v1/options", settings);
+            if (result != null) throw new SdApiException("webui produce error", null);
+        }
+        catch (Exception e)
+        {
+            throw new SdApiException("request to webui error", e);
+        }
     }
 
     private static void runProgressUpdateTask(Action<int> onProgress, CancellationToken cancellationToken)

@@ -11,6 +11,9 @@ namespace AiPainter.Adapters.StableDiffusion;
 
 class SdImageGenerator : IImageGenerator
 {
+    private static string? lastUsedCheckpointFilePath = null;
+    private static string? lastUsedVaeFilePath = null;
+
     private readonly StableDiffusionPanel sdPanel;
     private readonly SmartPictureBox pictureBox;
     private readonly MainForm mainForm;
@@ -133,46 +136,39 @@ class SdImageGenerator : IImageGenerator
         }
 
         var vaeFilePath = SdVaeHelper.GetPathToVae(sdGenerationParameters.vaeName) 
-                       ?? SdCheckpointsHelper.GetPathToVae(sdGenerationParameters.checkpointName) 
+                       ?? SdCheckpointsHelper.GetPathToVae(sdGenerationParameters.checkpointName)
                        ?? "";
-
-        if (Program.Config.UseEmbeddedStableDiffusion && StableDiffusionProcess.Loading)
-        {
-            if (StableDiffusionProcess.ActiveCheckpointFilePath != checkpointFilePath || StableDiffusionProcess.ActiveVaeFilePath != vaeFilePath)
-            {
-                control.NotifyStepsCustomText("Stopping...");
-                StableDiffusionProcess.Stop();
-                while (StableDiffusionProcess.IsReady())
-                {
-                    if (await DelayTools.WaitForExitAsync(500) || control.IsDisposed) return;
-                }
-            }
-        }
-
-        var waitTextShown = false;
-
-        if (Program.Config.UseEmbeddedStableDiffusion && !StableDiffusionProcess.Loading)
-        {
-            waitTextShown = true;
-            control.NotifyStepsCustomText("Starting...");
-            StableDiffusionProcess.Start(checkpointFilePath, vaeFilePath);
-            while (!StableDiffusionProcess.IsReady())
-            {
-                if (await DelayTools.WaitForExitAsync(500) || control.IsDisposed) return;
-            }
-        }
 
         if (!StableDiffusionProcess.IsReady())
         {
-            waitTextShown = true;
-            control.NotifyStepsCustomText("Waiting ready...");
+            control.NotifyStepsCustomText("Starting...");
             while (!StableDiffusionProcess.IsReady())
             {
-                if (await DelayTools.WaitForExitAsync(500) || control.IsDisposed) return;
+                if (await DelayTools.WaitForExitAsync(1000) || control.IsDisposed) return;
             }
         }
 
-        if (!waitTextShown) control.NotifyProgress(0);
+        if (lastUsedCheckpointFilePath != checkpointFilePath || lastUsedVaeFilePath != vaeFilePath)
+        {
+            control.NotifyStepsCustomText("Loading...");
+            try
+            {
+                await SdApiClient.ChangeSettingsAsync(new SdSettings
+                {
+                    sd_model_checkpoint = Path.GetRelativePath(SdCheckpointsHelper.BaseDir, checkpointFilePath),
+                    sd_vae = vaeFilePath,
+                });
+                lastUsedCheckpointFilePath = checkpointFilePath;
+                lastUsedVaeFilePath = vaeFilePath;
+            }
+            catch (Exception e)
+            {
+                control.NotifyGenerateFail("MODEL LOAD ERROR");
+                return;
+            }
+        }
+
+        control.NotifyProgress(0);
 
         if (originalImage == null)
         {

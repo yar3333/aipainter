@@ -1,5 +1,4 @@
-﻿using System.Net.Http.Headers;
-using System.Net.Http.Json;
+﻿using System.Net.Http.Json;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -17,7 +16,7 @@ static class CivitaiClient
         }
         catch (Exception e)
         {
-            throw new SiteClientException(e.Message);
+            throw new SiteClientException(e.Message, e);
         }
     }
 
@@ -29,7 +28,7 @@ static class CivitaiClient
         }
         catch (Exception e)
         {
-            throw new SiteClientException(e.Message);
+            throw new SiteClientException(e.Message, e);
         }
     }
 

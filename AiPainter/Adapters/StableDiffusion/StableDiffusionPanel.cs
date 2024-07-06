@@ -14,7 +14,7 @@ namespace AiPainter.Adapters.StableDiffusion
 
         public bool IsTextboxInFocus => collapsablePanel.ActiveControl is TextBox;
 
-        private string baseVaeTooltip;
+        private readonly string baseVaeTooltip;
 
         private string selectedCheckpointName
         {

@@ -6,13 +6,13 @@ namespace AiPainter.Adapters.StableDiffusion.SdCheckpointStuff;
 
 static class SdCheckpointsHelper
 {
-    private static string BasePath => Path.Join(Application.StartupPath, "stable_diffusion_checkpoints");
+    public static readonly string BaseDir = Path.Join(Application.StartupPath, "stable_diffusion_checkpoints");
 
     private static readonly Dictionary<string, SdCheckpointConfig> configCache = new();
 
     public static string[] GetNames(string nameToEnsureExists)
     {
-        var basePath = BasePath;
+        var basePath = BaseDir;
 
         var baseName = !string.IsNullOrEmpty(nameToEnsureExists)
                     ? new string[] { nameToEnsureExists }
@@ -77,7 +77,7 @@ static class SdCheckpointsHelper
 
     public static string GetDirPath(string name)
     {
-        return Path.Combine(BasePath, name);
+        return Path.Combine(BaseDir, name);
     }
 
     static string getHumanName(string name)
