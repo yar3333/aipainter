@@ -16,16 +16,29 @@ namespace AiPainter.Adapters.StableDiffusion
 
         private readonly string baseVaeTooltip;
 
-        private string selectedCheckpointName
+        public string selectedCheckpointName
         {
             get => ddCheckpoint.SelectedValue?.ToString() ?? "";
             set
             {
                 if (ddCheckpoint.DataSource == null || ddCheckpoint.Items.Cast<ListItem>().All(x => x.Value != value))
                 {
-                    ddCheckpoint.DataSource = SdCheckpointsHelper.GetListItems(value);
+                    ddCheckpoint.DataSource = SdCheckpointsHelper.GetListItems(value ?? "");
                 }
-                ddCheckpoint.SelectedValue = value;
+                ddCheckpoint.SelectedValue = value ?? "";
+            }
+        }
+
+        public string selectedVaeName
+        {
+            get => ddVae.SelectedValue?.ToString() ?? "";
+            set
+            {
+                if (ddVae.DataSource == null || ddVae.Items.Cast<ListItem>().All(x => x.Value != value))
+                {
+                    ddVae.DataSource = SdVaeHelper.GetListItems();
+                }
+                ddVae.SelectedValue = ddVae.Items.Cast<ListItem>().Any(x => x.Value == value) ? (value ?? "") : "";
             }
         }
 
@@ -40,9 +53,7 @@ namespace AiPainter.Adapters.StableDiffusion
         private void collapsablePanel_Load(object sender, EventArgs e)
         {
             selectedCheckpointName = Program.Config.StableDiffusionCheckpoint ?? "";
-
-            ddVae.DataSource = SdVaeHelper.GetListItems();
-            ddVae.SelectedValue = SdVaeHelper.GetNames().Contains(Program.Config.StableDiffusionVae) ? Program.Config.StableDiffusionVae : "";
+            selectedVaeName = Program.Config.StableDiffusionVae;
 
             ddSampler.DataSource = new[]
             {
@@ -96,10 +107,10 @@ namespace AiPainter.Adapters.StableDiffusion
                 Program.Config.StableDiffusionCheckpoint = selectedCheckpointName;
             }
 
-            if (ddVae.SelectedValue.ToString() != Program.Config.StableDiffusionVae)
+            if (selectedVaeName != Program.Config.StableDiffusionVae)
             {
                 needSave = true;
-                Program.Config.StableDiffusionVae = ddVae.SelectedValue!.ToString()!;
+                Program.Config.StableDiffusionVae = selectedVaeName;
             }
 
             var negativeText = tbNegative.Text.Trim(' ', ',', ';', '\r', '\n');
@@ -186,11 +197,6 @@ namespace AiPainter.Adapters.StableDiffusion
         public void SetImageSize(int w, int h)
         {
             ddImageSize.Text = w + "x" + h;
-        }
-
-        public void SetVaeName(string name)
-        {
-            Program.Config.StableDiffusionVae = name;
         }
 
         private void collapsablePanel_Resize(object sender, EventArgs e)
@@ -399,7 +405,7 @@ namespace AiPainter.Adapters.StableDiffusion
 
         private void ddVae_SelectedIndexChanged(object sender, EventArgs e)
         {
-            var vaeName = ddVae.SelectedValue.ToString()!;
+            var vaeName = selectedVaeName;
             if (vaeName != "" && SdVaeHelper.GetPathToVae(vaeName) == null)
             {
                 var form = new SdVaeForm(vaeName);

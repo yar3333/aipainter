@@ -193,11 +193,8 @@ namespace AiPainter
                 {
                     var sdGenerationParameters = JsonSerializer.Deserialize<SdGenerationParameters>(File.ReadAllText(parametersJsonFilePath));
 
-                    panStableDiffusion.ddCheckpoint.DataSource = SdCheckpointsHelper.GetListItems(sdGenerationParameters.checkpointName);
-                    if (!string.IsNullOrEmpty(sdGenerationParameters.checkpointName))
-                    {
-                        panStableDiffusion.ddCheckpoint.SelectedValue = sdGenerationParameters.checkpointName;
-                    }
+                    panStableDiffusion.selectedCheckpointName = sdGenerationParameters.checkpointName;
+                    panStableDiffusion.selectedVaeName = sdGenerationParameters.vaeName;
 
                     panStableDiffusion.numSteps.Value = sdGenerationParameters.steps;
                     panStableDiffusion.tbPrompt.Text = sdGenerationParameters.prompt;

@@ -1,8 +1,5 @@
 using System.Diagnostics;
 using AiPainter.Adapters.StableDiffusion.SdApiClientStuff;
-using AiPainter.Adapters.StableDiffusion.SdCheckpointStuff;
-using AiPainter.Adapters.StableDiffusion.SdEmbeddingStuff;
-using AiPainter.Adapters.StableDiffusion.SdLoraStuff;
 using AiPainter.Helpers;
 
 namespace AiPainter.Adapters.StableDiffusion;
@@ -11,6 +8,10 @@ static class StableDiffusionProcess
 {
     private static Process? process;
     
+    public static bool Running { get; private set; }
+    public static string ActiveCheckpointFilePath { get; private set; } = "";
+    public static string ActiveVaeFilePath { get; private set; } = "";
+
     public static bool IsReady()
     {
         return ProcessHelper.IsPortOpen(Program.Config.StableDiffusionUrl);
@@ -35,6 +36,14 @@ static class StableDiffusionProcess
         }
 
         var uri = new Uri(Program.Config.StableDiffusionUrl);
+
+        Running = true;
+
+        ActiveCheckpointFilePath = checkpointFilePath;
+        ActiveVaeFilePath = vaeFilePath ?? "";
+
+        var pathToLoraDir = Path.Join(Application.StartupPath, "stable_diffusion_lora");
+        var pathToEmbeddingsDir = Path.Join(Application.StartupPath, "stable_diffusion_embeddings");
         
         process = ProcessHelper.RunInBackground
         (
@@ -42,22 +51,21 @@ static class StableDiffusionProcess
             string.Join(' ', new[]
             { 
                 "--api",
-                uri.Host != "127.0.0.1" && uri.Host.ToLowerInvariant() != "localhost" ? " --listen" : "",
+                (uri.Host != "127.0.0.1" && uri.Host.ToLowerInvariant() != "localhost" ? "--listen" : ""),
                 "--port=" + uri.Port,
-                "--ckpt-dir=\"" + SdCheckpointsHelper.BaseDir + "\"",
-                "--lora-dir=\"" + SdLoraHelper.BaseDir + "\"",
-                "--embeddings-dir=\"" + SdEmbeddingHelper.BaseDir + "\"",
-                "--skip-load-model-at-start",
-                "--no-prompt-history",
-                "--disable-console-progressbars",
+                "--ckpt=\"" + checkpointFilePath + "\"",
+                !string.IsNullOrEmpty(vaeFilePath) ? " --vae-path=\"" + vaeFilePath + "\"" : "",
+                "--lora-dir=\"" + pathToLoraDir + "\"",
+                "--embeddings-dir=\"" + pathToEmbeddingsDir + "\"",
             }.Where(x => !string.IsNullOrEmpty(x))),
-
+            
             directory: Path.Join(Application.StartupPath, @"external\StableDiffusion"),
             
             logFunc: s => log.WriteLine("[process] " + s),
             
             onExit: code =>
             {
+                Running = false;
                 log.WriteLine("[process] Exit " + code);
             }
         );
@@ -67,6 +75,8 @@ static class StableDiffusionProcess
 
     public static void Stop()
     {
+        Running = false;
+
         try { process?.Kill(true); } catch {}
         try { process?.WaitForExit(); } catch {}
     }

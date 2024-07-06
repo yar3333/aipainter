@@ -522,7 +522,7 @@
         private Label label3;
         private ToolTip toolTip;
         public TextBox tbNegative;
-        public ComboBox ddCheckpoint;
+        private ComboBox ddCheckpoint;
         public ComboBox ddImageSize;
         private Label label4;
         private Button btCheckpoint;
@@ -544,6 +544,6 @@
         private Button btStyles;
         private Button btSuggestedPrompt;
         private ContextMenuStrip cmSuggestedPromptMenu;
-        public ComboBox ddVae;
+        private ComboBox ddVae;
     }
 }
