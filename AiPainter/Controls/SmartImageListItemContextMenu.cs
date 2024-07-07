@@ -94,6 +94,29 @@ sealed class SmartImageListItemContextMenu : ContextMenuStrip
         {
             ProcessHelper.ShowFileInExplorer(imageFilePath);
         });
+        
+        Items.Add("Rename folder (" + Path.GetFileName(mainForm.ImagesFolder) + ")", null, (_, _) =>
+        {
+            var name = Path.GetFileName(mainForm.ImagesFolder)!;
+            var dialog = new FolderNameDialog(name, null);
+            if (dialog.ShowDialog(this) == DialogResult.OK && dialog.ResultFolderName != name)
+            {
+                var destFolder = Path.Combine(Path.GetDirectoryName(mainForm.ImagesFolder)!, dialog.ResultFolderName!);
+                if (!Directory.Exists(destFolder))
+                {
+                    var srcFolder = mainForm.ImagesFolder!;
+                    mainForm.ImagesFolder = destFolder;
+                    Directory.Move(srcFolder, destFolder);
+                }
+            }
+        });
+        
+        Items.Add(new ToolStripSeparator());
+        
+        Items.Add("Open image with default application", null, (_, _) =>
+        {
+            ProcessHelper.OpenUrlInBrowser(imageFilePath);
+        });
     }
 
     private static string moveImageFile(string srcFilePath, string destDir)

@@ -99,14 +99,13 @@ class SdImageGenerator : IImageGenerator
         sdPanel.ddSampler.SelectedItem = sdGenerationParameters.sampler;
         if (sdGenerationParameters.changesLevel >= 0) sdPanel.trackBarChangesLevel.Value = (int)Math.Round(sdGenerationParameters.changesLevel * 100);
 
-        sdPanel.numIterations.Value = originalCount;
-
         sdPanel.cbUseInitImage.Checked = originalImage != null;
 
         if (originalImage != null)
         {
-            pictureBox.HistoryAddCurrentState();
+            mainForm.FilePath = savedFilePath;
 
+            pictureBox.HistoryAddCurrentState();
             pictureBox.ActiveBox = activeBox;
             pictureBox.Image = BitmapTools.Clone(originalImage);
             pictureBox.LoadMask(savedMask);
@@ -114,8 +113,6 @@ class SdImageGenerator : IImageGenerator
         }
 
         sdPanel.SetImageSize(sdGenerationParameters.width, sdGenerationParameters.height);
-
-        if (savedFilePath != null) mainForm.OpenImageFile(savedFilePath);
     }
 
     public async Task RunAsync()
@@ -309,7 +306,7 @@ class SdImageGenerator : IImageGenerator
                 
                 sampler_index = sdGenerationParameters.sampler,
 
-                //inpainting_fill = SdInpaintingFill.original,
+                inpainting_fill = SdInpaintingFill.original, // looks like webui use 'fill' as default if mask specified, so force to use 'original'
                 denoising_strength = sdGenerationParameters.changesLevel,
 
                 override_settings = SdCheckpointsHelper.GetConfig(sdGenerationParameters.checkpointName).overrideSettings,

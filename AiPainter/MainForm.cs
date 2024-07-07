@@ -13,7 +13,7 @@ namespace AiPainter
     {
         private const int IMAGE_EXTEND_SIZE = 64;
 
-        public string? FilePath { get; private set; }
+        public string? FilePath;
 
         public string? ImagesFolder
         {
@@ -177,7 +177,7 @@ namespace AiPainter
             pb.Name = "pic" + n;
             pb.Parent = splitContainer.Panel2;
 
-            pb.OnImageClick = () => OpenImageFile(pb.FilePath);
+            pb.OnImageClick = () => OpenImageFile(pb.FilePath, false);
 
             pb.OnImageDoubleClick = () =>
             {
@@ -296,15 +296,16 @@ namespace AiPainter
             if (openFileDialog.ShowDialog() == DialogResult.OK)
             {
                 OpenImageFile(openFileDialog.FileName);
+                ImagesFolder = Path.GetDirectoryName(FilePath);
             }
         }
 
-        public void OpenImageFile(string filePath)
+        public void OpenImageFile(string filePath, bool autoZoom = true)
         {
             FilePath = filePath;
             pictureBox.Image = BitmapTools.Load(FilePath);
             pictureBox.ResetMask();
-            pictureBox.ZoomAndMoveGlobalViewToFitImage();
+            if (autoZoom) pictureBox.ZoomAndMoveGlobalViewToFitImage();
             pictureBox.HistoryClear();
             pictureBox.Refresh();
         }
