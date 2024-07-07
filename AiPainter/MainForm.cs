@@ -2,7 +2,6 @@ using System.Drawing.Imaging;
 using System.Text.Json;
 using AiPainter.Adapters.LamaCleaner;
 using AiPainter.Adapters.StableDiffusion;
-using AiPainter.Adapters.StableDiffusion.SdCheckpointStuff;
 using AiPainter.Controls;
 using AiPainter.Helpers;
 
@@ -14,29 +13,28 @@ namespace AiPainter
     {
         private const int IMAGE_EXTEND_SIZE = 64;
 
-        private string? filePath;
-        public string? FilePath
+        public string? FilePath { get; private set; }
+
+        public string? ImagesFolder
         {
-            get => filePath;
+            // ReSharper disable once InconsistentlySynchronizedField
+            get => storedImageList.Folder;
             set
             {
-                filePath = value;
+                var v = Path.Combine(Application.StartupPath, value ?? Program.Config.ImagesFolder);
 
-                outputFolder = filePath != null ? (Path.GetDirectoryName(filePath) ?? Program.Config.OutputFolder) : Program.Config.OutputFolder;
-                if (storedImageList.Folder != outputFolder)
+                // ReSharper disable once InconsistentlySynchronizedField
+                if (storedImageList.Folder != v)
                 {
-                    storedImageList = new(outputFolder);
+                    // ReSharper disable once InconsistentlySynchronizedField
+                    storedImageList = new(v);
                 }
             }
         }
 
-        public string? outputFolder { get; private set; }
-
-        private static StoredImageList storedImageList = new(Program.Config.OutputFolder);
+        private static StoredImageList storedImageList = new(Path.Combine(Application.StartupPath, Program.Config.ImagesFolder));
 
         private readonly LamaCleanerManager lamaCleaner = new();
-
-        private SmartImagePreview activeImagePreview = null;
 
         public MainForm()
         {
@@ -67,8 +65,9 @@ namespace AiPainter
             {
                 if (File.Exists(args[1]))
                 {
-                    FilePath = args[1];
-                    pictureBox.Image = BitmapTools.Load(FilePath);
+                    var filePath = Path.GetFullPath(args[1]);
+                    OpenImageFile(filePath);
+                    ImagesFolder = Path.GetDirectoryName(filePath);
                 }
             }
 
@@ -146,7 +145,7 @@ namespace AiPainter
                 var i = hPicScrollValue ?? hPicScroll.Value;
                 while (x < panel.ClientSize.Width && i < storedImageList.Count)
                 {
-                    var pb = (SmartImagePreview?)panel.Controls.Find("pic" + n, false).SingleOrDefault() ?? createSmartImagePreview(n);
+                    var pb = (SmartImageListItem?)panel.Controls.Find("pic" + n, false).SingleOrDefault() ?? createSmartImagePreview(n);
 
                     pb.Image = storedImageList.GetAt(i).Bitmap!;
                     pb.Location = new Point(x, 0);
@@ -163,7 +162,7 @@ namespace AiPainter
 
             while (x < panel.ClientSize.Width)
             {
-                var pb = (SmartImagePreview?)panel.Controls.Find("pic" + n, false).FirstOrDefault();
+                var pb = (SmartImageListItem?)panel.Controls.Find("pic" + n, false).FirstOrDefault();
                 if (pb != null) pb.Visible = false;
                 x += sz + 5;
                 n++;
@@ -172,19 +171,13 @@ namespace AiPainter
             panel.Refresh();
         }
 
-        private SmartImagePreview createSmartImagePreview(int n)
+        private SmartImageListItem createSmartImagePreview(int n)
         {
-            var pb = new SmartImagePreview();
+            var pb = new SmartImageListItem();
             pb.Name = "pic" + n;
             pb.Parent = splitContainer.Panel2;
 
-            pb.OnImageClick = () =>
-            {
-                FilePath = pb.FilePath;
-                pictureBox.Image = BitmapTools.Load(pb.FilePath);
-                pictureBox.ResetMask();
-                pictureBox.HistoryClear();
-            };
+            pb.OnImageClick = () => OpenImageFile(pb.FilePath);
 
             pb.OnImageDoubleClick = () =>
             {
@@ -226,10 +219,7 @@ namespace AiPainter
 
             pb.OnImageContextMenu = () =>
             {
-                toolTip.Active = false;
-
-                activeImagePreview = pb;
-                contextMenuPreviewImage.Show(Cursor.Position);
+                new SmartImageListItemContextMenu(this, pb.FilePath).Show(Cursor.Position);
             };
 
             return pb;
@@ -305,13 +295,13 @@ namespace AiPainter
             openFileDialog.Filter = "Image files (*.jpg;*.jpeg;*.png)|*.jpg;*.jpeg;*.png|All files (*.*)|*.*";
             if (openFileDialog.ShowDialog() == DialogResult.OK)
             {
-                openImageFile(openFileDialog.FileName);
+                OpenImageFile(openFileDialog.FileName);
             }
         }
 
-        private void openImageFile(string filePathToOpen)
+        public void OpenImageFile(string filePath)
         {
-            FilePath = filePathToOpen;
+            FilePath = filePath;
             pictureBox.Image = BitmapTools.Load(FilePath);
             pictureBox.ResetMask();
             pictureBox.ZoomAndMoveGlobalViewToFitImage();
@@ -523,80 +513,6 @@ namespace AiPainter
                     pictureBox.Refresh();
                 });
             });
-        }
-
-        private static string moveImageFile(string srcFilePath, string destDir)
-        {
-            var baseFileName = Path.GetFileNameWithoutExtension(srcFilePath);
-            var srcDir = Path.GetDirectoryName(srcFilePath)!;
-
-            if (!Directory.Exists(destDir)) Directory.CreateDirectory(destDir);
-
-            var destImagePath = Path.Combine(destDir, Path.GetFileName(srcFilePath));
-            File.Move(srcFilePath, destImagePath);
-            if (File.Exists(Path.Combine(srcDir, baseFileName) + ".json"))
-            {
-                File.Move(Path.Combine(srcDir, baseFileName) + ".json", Path.Combine(destDir, baseFileName) + ".json");
-            }
-
-            return destImagePath;
-        }
-
-        private void contextMenuPreviewImage_MoveToSubfolder_Click(object sender, EventArgs e)
-        {
-            var baseFileName = Path.GetFileNameWithoutExtension(activeImagePreview.FilePath);
-            var srcDir = Path.GetDirectoryName(activeImagePreview.FilePath)!;
-
-            moveImageFile(activeImagePreview.FilePath, Path.Combine(srcDir, baseFileName));
-        }
-
-        private void contextMenuPreviewImage_MoveToSubfolderAndOpen_Click(object sender, EventArgs e)
-        {
-            var baseFileName = Path.GetFileNameWithoutExtension(activeImagePreview.FilePath);
-            var srcDir = Path.GetDirectoryName(activeImagePreview.FilePath)!;
-
-            var destImagePath = moveImageFile(activeImagePreview.FilePath, Path.Combine(srcDir, baseFileName));
-            openImageFile(destImagePath);
-        }
-
-        private void contextMenuPreviewImage_MoveToParentFolder_Click(object sender, EventArgs e)
-        {
-            var srcDir = Path.GetDirectoryName(activeImagePreview.FilePath)!;
-            var destDir = Path.GetDirectoryName(srcDir);
-            if (destDir == null) return;
-
-            moveImageFile(activeImagePreview.FilePath, destDir);
-
-            if (Directory.GetDirectories(srcDir).Length == 0 && Directory.GetFiles(srcDir).Length == 0)
-            {
-                try { Directory.Delete(srcDir); } catch { }
-            }
-        }
-
-        private void contextMenuPreviewImage_MoveToParentFolderAndOpen_Click(object sender, EventArgs e)
-        {
-            var srcDir = Path.GetDirectoryName(activeImagePreview.FilePath)!;
-            var destDir = Path.GetDirectoryName(srcDir);
-            if (destDir == null) return;
-
-            var destImagePath = moveImageFile(activeImagePreview.FilePath, Path.Combine(Path.GetDirectoryName(srcDir)!));
-
-            if (Directory.GetDirectories(srcDir).Length == 0 && Directory.GetFiles(srcDir).Length == 0)
-            {
-                try { Directory.Delete(srcDir); } catch { }
-            }
-
-            openImageFile(destImagePath);
-        }
-
-        private void contextMenuPreviewImage_ShowInExplorer_Click(object sender, EventArgs e)
-        {
-            ProcessHelper.ShowFileInExplorer(activeImagePreview.FilePath);
-        }
-
-        private void contextMenuPreviewImage_Closed(object sender, ToolStripDropDownClosedEventArgs e)
-        {
-            toolTip.Active = true;
         }
     }
 }

@@ -2,7 +2,7 @@
 
 class Config
 {
-    public string OutputFolder { get; set; } = "images";
+    public string ImagesFolder { get; set; } = "images";
 
     public bool UseEmbeddedStableDiffusion { get; set; } = true;
     public string StableDiffusionUrl { get; set; } = "http://127.0.0.1:7860/";

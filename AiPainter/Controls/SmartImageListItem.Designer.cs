@@ -1,6 +1,6 @@
 ﻿namespace AiPainter.Controls
 {
-    partial class SmartImagePreview
+    partial class SmartImageListItem
     {
         /// <summary> 
         /// Required designer variable.

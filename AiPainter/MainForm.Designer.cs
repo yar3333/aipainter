@@ -64,14 +64,6 @@ namespace AiPainter
             hPicScroll = new HScrollBar();
             toolTip = new ToolTip(components);
             updateImageListWorker = new System.ComponentModel.BackgroundWorker();
-            contextMenuPreviewImage = new ContextMenuStrip(components);
-            contextMenuPreviewImage_ShowInExplorer = new ToolStripMenuItem();
-            toolStripSeparator6 = new ToolStripSeparator();
-            contextMenuPreviewImage_MoveToSubfolder = new ToolStripMenuItem();
-            contextMenuPreviewImage_MoveToSubfolderAndOpen = new ToolStripMenuItem();
-            toolStripSeparator5 = new ToolStripSeparator();
-            contextMenuPreviewImage_MoveToParentFolder = new ToolStripMenuItem();
-            contextMenuPreviewImage_MoveToParentFolderAndOpen = new ToolStripMenuItem();
             controlsStateUpdater = new System.Windows.Forms.Timer(components);
             toolbar.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)splitContainer).BeginInit();
@@ -86,7 +78,6 @@ namespace AiPainter
             splitContainer2.Panel2.SuspendLayout();
             splitContainer2.SuspendLayout();
             panel1.SuspendLayout();
-            contextMenuPreviewImage.SuspendLayout();
             SuspendLayout();
             // 
             // controlsStateUpdater
@@ -370,6 +361,8 @@ namespace AiPainter
             panStableDiffusion.Location = new Point(0, 0);
             panStableDiffusion.MinimumSize = new Size(426, 0);
             panStableDiffusion.Name = "panStableDiffusion";
+            panStableDiffusion.selectedCheckpointName = "";
+            panStableDiffusion.selectedVaeName = "";
             panStableDiffusion.Size = new Size(430, 569);
             panStableDiffusion.TabIndex = 6;
             // 
@@ -395,58 +388,6 @@ namespace AiPainter
             // updateImageListWorker
             // 
             updateImageListWorker.DoWork += updateImageListWorker_DoWork;
-            // 
-            // contextMenuPreviewImage
-            // 
-            contextMenuPreviewImage.Items.AddRange(new ToolStripItem[] { contextMenuPreviewImage_ShowInExplorer, toolStripSeparator6, contextMenuPreviewImage_MoveToSubfolder, contextMenuPreviewImage_MoveToSubfolderAndOpen, toolStripSeparator5, contextMenuPreviewImage_MoveToParentFolder, contextMenuPreviewImage_MoveToParentFolderAndOpen });
-            contextMenuPreviewImage.Name = "cmPreviewImageContextMenu";
-            contextMenuPreviewImage.Size = new Size(243, 126);
-            contextMenuPreviewImage.Closed += contextMenuPreviewImage_Closed;
-            // 
-            // contextMenuPreviewImage_ShowInExplorer
-            // 
-            contextMenuPreviewImage_ShowInExplorer.Name = "contextMenuPreviewImage_ShowInExplorer";
-            contextMenuPreviewImage_ShowInExplorer.Size = new Size(242, 22);
-            contextMenuPreviewImage_ShowInExplorer.Text = "Show in Explorer";
-            contextMenuPreviewImage_ShowInExplorer.Click += contextMenuPreviewImage_ShowInExplorer_Click;
-            // 
-            // toolStripSeparator6
-            // 
-            toolStripSeparator6.Name = "toolStripSeparator6";
-            toolStripSeparator6.Size = new Size(239, 6);
-            // 
-            // contextMenuPreviewImage_MoveToSubfolder
-            // 
-            contextMenuPreviewImage_MoveToSubfolder.Name = "contextMenuPreviewImage_MoveToSubfolder";
-            contextMenuPreviewImage_MoveToSubfolder.Size = new Size(242, 22);
-            contextMenuPreviewImage_MoveToSubfolder.Text = "Move to subfolder";
-            contextMenuPreviewImage_MoveToSubfolder.Click += contextMenuPreviewImage_MoveToSubfolder_Click;
-            // 
-            // contextMenuPreviewImage_MoveToSubfolderAndOpen
-            // 
-            contextMenuPreviewImage_MoveToSubfolderAndOpen.Name = "contextMenuPreviewImage_MoveToSubfolderAndOpen";
-            contextMenuPreviewImage_MoveToSubfolderAndOpen.Size = new Size(242, 22);
-            contextMenuPreviewImage_MoveToSubfolderAndOpen.Text = "Move to subfolder and open";
-            contextMenuPreviewImage_MoveToSubfolderAndOpen.Click += contextMenuPreviewImage_MoveToSubfolderAndOpen_Click;
-            // 
-            // toolStripSeparator5
-            // 
-            toolStripSeparator5.Name = "toolStripSeparator5";
-            toolStripSeparator5.Size = new Size(239, 6);
-            // 
-            // contextMenuPreviewImage_MoveToParentFolder
-            // 
-            contextMenuPreviewImage_MoveToParentFolder.Name = "contextMenuPreviewImage_MoveToParentFolder";
-            contextMenuPreviewImage_MoveToParentFolder.Size = new Size(242, 22);
-            contextMenuPreviewImage_MoveToParentFolder.Text = "Move to parent folder";
-            contextMenuPreviewImage_MoveToParentFolder.Click += contextMenuPreviewImage_MoveToParentFolder_Click;
-            // 
-            // contextMenuPreviewImage_MoveToParentFolderAndOpen
-            // 
-            contextMenuPreviewImage_MoveToParentFolderAndOpen.Name = "contextMenuPreviewImage_MoveToParentFolderAndOpen";
-            contextMenuPreviewImage_MoveToParentFolderAndOpen.Size = new Size(242, 22);
-            contextMenuPreviewImage_MoveToParentFolderAndOpen.Text = "Move to parent folder and open";
-            contextMenuPreviewImage_MoveToParentFolderAndOpen.Click += contextMenuPreviewImage_MoveToParentFolderAndOpen_Click;
             // 
             // MainForm
             // 
@@ -477,7 +418,6 @@ namespace AiPainter
             splitContainer2.ResumeLayout(false);
             panel1.ResumeLayout(false);
             panel1.PerformLayout();
-            contextMenuPreviewImage.ResumeLayout(false);
             ResumeLayout(false);
         }
 
@@ -497,7 +437,7 @@ namespace AiPainter
         private ToolStripButton btUp;
         private ToolStripButton btRight;
         private ToolStripButton btResetMask;
-        private ToolTip toolTip;
+        public ToolTip toolTip;
         private SmartPictureBox pictureBox;
         private Adapters.StableDiffusion.StableDiffusionPanel panStableDiffusion;
         private ToolStripButton btRestorePrevMask;
@@ -514,13 +454,5 @@ namespace AiPainter
         private ToolStripSplitButton sbResize;
         private ToolStripSeparator toolStripSeparator4;
         private ToolStripButton btRemoveObjectFromImage;
-        private ContextMenuStrip contextMenuPreviewImage;
-        private ToolStripMenuItem contextMenuPreviewImage_MoveToSubfolderAndOpen;
-        private ToolStripMenuItem contextMenuPreviewImage_MoveToSubfolder;
-        private ToolStripMenuItem contextMenuPreviewImage_MoveToParentFolder;
-        private ToolStripMenuItem contextMenuPreviewImage_MoveToParentFolderAndOpen;
-        private ToolStripSeparator toolStripSeparator5;
-        private ToolStripMenuItem contextMenuPreviewImage_ShowInExplorer;
-        private ToolStripSeparator toolStripSeparator6;
     }
 }

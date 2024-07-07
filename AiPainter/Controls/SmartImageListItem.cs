@@ -1,6 +1,6 @@
 ﻿namespace AiPainter.Controls
 {
-    public partial class SmartImagePreview : UserControl
+    public partial class SmartImageListItem : UserControl
     {
         public string FilePath { get; set; } = null!;
 
@@ -17,7 +17,7 @@
 
         public PictureBox PictureBox => pictureBox;
 
-        public SmartImagePreview()
+        public SmartImageListItem()
         {
             InitializeComponent();
         }

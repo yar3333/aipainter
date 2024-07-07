@@ -64,7 +64,7 @@ class SdImageGenerator : IImageGenerator
 
         savedFilePath = mainForm.FilePath;
         savedMask = pictureBox.SaveMask();
-        destDir = mainForm.outputFolder ?? Path.Combine(Application.StartupPath, Program.Config.OutputFolder);
+        destDir = mainForm.ImagesFolder!;
     }
 
     public int GetOriginalCount() => originalCount;
@@ -115,7 +115,7 @@ class SdImageGenerator : IImageGenerator
 
         sdPanel.SetImageSize(sdGenerationParameters.width, sdGenerationParameters.height);
 
-        mainForm.FilePath = savedFilePath;
+        if (savedFilePath != null) mainForm.OpenImageFile(savedFilePath);
     }
 
     public async Task RunAsync()
