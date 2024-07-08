@@ -90,6 +90,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="BigGustave" Version="1.0.6" />
     <PackageReference Include="SocketIOClient" Version="3.0.6" />
     <PackageReference Include="TagLibSharp" Version="2.3.0" />
   </ItemGroup>

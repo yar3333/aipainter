@@ -1,0 +1,133 @@
+﻿using System.Drawing.Imaging;
+using AiPainter.Controls;
+using AiPainter.Helpers;
+using System.Globalization;
+using System.Runtime.InteropServices;
+
+namespace AiPainter.Adapters.StableDiffusion;
+
+static class SdPngHelper
+{
+    public static Bitmap Load(string filePath, out SdGenerationParameters? generationParameters)
+    {
+        var data = File.ReadAllBytes(filePath);
+        
+        var chunks = PngHelper.GetTextChunks(data);
+        if (chunks.ContainsKey("parameters"))
+        {
+            loadParameters(chunks["parameters"], out generationParameters);
+        }
+        else
+        {
+            generationParameters = null;
+        }
+        
+        return (Bitmap)Image.FromStream(new MemoryStream(data));
+    }
+
+    public static void Save(Bitmap image, SdGenerationParameters src, long seed, string filePath)
+    {
+        var bmpData = image.LockBits(new Rectangle(0,0,image.Width, image.Height), ImageLockMode.ReadOnly, PixelFormat.Format32bppArgb);
+        byte[] bgraData = new byte[bmpData.Width * bmpData.Height * 4];
+        Marshal.Copy(bmpData.Scan0, bgraData, 0, bgraData.Length);
+        image.UnlockBits(bmpData);
+        
+        var pngData = PngHelper.EncodeImage(bgraData, image.Width, image.Height, new Dictionary<string, string> { {"parameters", saveParameters(src, seed) } });
+        File.WriteAllBytes(filePath, pngData);
+    }
+
+    private static void loadParameters(string text, out SdGenerationParameters generationParameters)
+    {
+        generationParameters = new SdGenerationParameters();
+
+        // wooden house\n
+        // Steps: 20, Sampler: DPM++ 2M, Schedule type: Karras, CFG scale: 7, Seed: 3654104940, Size: 512x512, Model hash: 6ce0161689, Model: v1-5-pruned-emaonly, Version: v1.9.4
+
+        var lines = text.Split('\n');
+
+        if (lines.Length == 0) return;
+
+        generationParameters.prompt = lines[0];
+
+        foreach (var line in lines.Skip(1))
+        {
+            if (line.ToLowerInvariant().StartsWith("negative prompt:"))
+            {
+                generationParameters.negative = line.Substring("negative prompt:".Length).TrimStart(' ');
+            }
+            else
+            {
+                var pp = line.Split(',').Select(x => x.Trim()).ToArray();
+                foreach (var p in pp)
+                {
+                    var m = p.IndexOf(':');
+                    if (m <= 0) continue; 
+            
+                    var k = p.Substring(0, m).Trim();
+                    var v = p.Substring(m + 1).Trim();
+                    switch (k.ToLowerInvariant())
+                    {
+                        case "steps":
+                            generationParameters.steps = parseInt(v) ?? generationParameters.steps;
+                            break;
+
+                        case "sampler":
+                            // result must be one of: "Euler a", "DPM++ 2M", "Heun"
+                            if      (v.ToLowerInvariant() == "dpm++ 2m")     generationParameters.sampler = "DPM++ 2M";
+                            else if (v.ToLowerInvariant().Contains("euler")) generationParameters.sampler = "Euler a";
+                            break;
+
+                        case "cfg scale":
+                            generationParameters.cfgScale = parseDecimal(v) ?? generationParameters.cfgScale;
+                            break;
+
+                        case "seed":
+                            generationParameters.seed = parseLong(v) ?? generationParameters.seed;
+                            break;
+
+                        case "size":
+                            generationParameters.width  = parseInt(v.ToLowerInvariant().Split("x").FirstOrDefault()) ?? generationParameters.width;
+                            generationParameters.height = parseInt(v.ToLowerInvariant().Split("x").LastOrDefault())  ?? generationParameters.height;
+                            break;
+
+                        case "model":
+                            break;
+
+                        case "aip_model":
+                            generationParameters.checkpointName = v;
+                            break;
+                    }
+                }
+            }
+        }
+    }
+
+    private static string saveParameters(SdGenerationParameters generationParameters, long seed)
+    {
+        return generationParameters.prompt.Replace('\n', ' ') + "\n"
+               + (!string.IsNullOrEmpty(generationParameters.negative) ? "Negative prompt: " + generationParameters.negative + "\n" : "")
+               + string.Join(", ",
+                    "Steps: " + generationParameters.steps,
+                    "Sampler: " + generationParameters.sampler,
+                    "CFG scale: " + generationParameters.cfgScale.ToString(CultureInfo.InvariantCulture),
+                    "Seed: " + seed,
+                    "Size: " + generationParameters.width + "x" + generationParameters.height,
+                    "aip_Model: " + generationParameters.checkpointName
+                );
+    }
+
+    private static decimal? parseDecimal(string? s)
+    {
+        return decimal.TryParse(s, NumberStyles.Number, CultureInfo.InvariantCulture, out var r) ? r : null;
+    }
+
+    private static int? parseInt(string? s)
+    {
+        return int.TryParse(s, out var r) ? r : null;
+    }
+
+    private static long? parseLong(string? s)
+    {
+        return long.TryParse(s, out var r) ? r : null;
+    }
+}

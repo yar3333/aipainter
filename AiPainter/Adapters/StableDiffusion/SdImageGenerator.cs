@@ -180,11 +180,8 @@ class SdImageGenerator : IImageGenerator
                 {
                     try
                     {
-                        var resultFilePath = getDestImageFilePath();
-                        resultImage.Save(resultFilePath, ImageFormat.Png);
+                        SdPngHelper.Save(resultImage, sdGenerationParameters, seed, getDestImageFilePath());
                         resultImage.Dispose();
-
-                        saveSdGeneraqtionParameters(resultFilePath, seed);
                     }
                     catch (Exception ee)
                     {
@@ -240,17 +237,12 @@ class SdImageGenerator : IImageGenerator
         string resultFilePath;
         for (; ; )
         {
-            resultFilePath = basePath + "-aip" + n.ToString("D3") + Path.GetExtension(savedFilePath);
+            resultFilePath = basePath + "-aip" + n.ToString("D3") + ".png";
             if (!File.Exists(resultFilePath)) break;
             n++;
         }
 
-        image.Save
-        (
-            resultFilePath,
-            Path.GetExtension(resultFilePath).ToLowerInvariant() == ".png" ? ImageFormat.Png : ImageFormat.Jpeg
-        );
-        saveSdGeneraqtionParameters(resultFilePath, seed);
+        SdPngHelper.Save(image, sdGenerationParameters, seed, resultFilePath);
     }
 
     private void generate(Bitmap? initImage, Bitmap? maskImage, Action<Bitmap, long> processGeneratedImage)
@@ -353,13 +345,5 @@ class SdImageGenerator : IImageGenerator
     {
         if (!string.IsNullOrEmpty(destDir) && !Directory.Exists(destDir)) Directory.CreateDirectory(destDir);
         return Path.Combine(destDir, (DateTime.UtcNow.Ticks / 10000) + ".png");
-    }
-
-    private void saveSdGeneraqtionParameters(string resultImageFilePath, long seed)
-    {
-        var t = sdGenerationParameters.ShallowCopy();
-        t.seed = seed;
-        var resultJsonFilePath = Path.Join(Path.GetDirectoryName(resultImageFilePath), Path.GetFileNameWithoutExtension(resultImageFilePath)) + ".json";
-        File.WriteAllText(resultJsonFilePath, JsonSerializer.Serialize(t, new JsonSerializerOptions { PropertyNamingPolicy = null, WriteIndented = true }));
     }
 }

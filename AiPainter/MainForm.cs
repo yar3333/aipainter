@@ -181,18 +181,16 @@ namespace AiPainter
 
             pb.OnImageDoubleClick = () =>
             {
-                var parametersJsonFilePath = Path.Join(Path.GetDirectoryName(FilePath), Path.GetFileNameWithoutExtension(FilePath)) + ".json";
-                if (File.Exists(parametersJsonFilePath))
+                SdPngHelper.Load(pb.FilePath, out var sdGenerationParameters);
+                if (sdGenerationParameters != null)
                 {
-                    var sdGenerationParameters = JsonSerializer.Deserialize<SdGenerationParameters>(File.ReadAllText(parametersJsonFilePath));
-
                     panStableDiffusion.selectedCheckpointName = sdGenerationParameters.checkpointName;
                     panStableDiffusion.selectedVaeName = sdGenerationParameters.vaeName;
 
                     panStableDiffusion.numSteps.Value = sdGenerationParameters.steps;
                     panStableDiffusion.tbPrompt.Text = sdGenerationParameters.prompt;
                     panStableDiffusion.tbNegative.Text = sdGenerationParameters.negative;
-                    panStableDiffusion.numCfgScale.Value = sdGenerationParameters.cfgScale;
+                    if (sdGenerationParameters.cfgScale != 0) panStableDiffusion.numCfgScale.Value = Math.Max(panStableDiffusion.numCfgScale.Minimum, Math.Min(panStableDiffusion.numCfgScale.Maximum, sdGenerationParameters.cfgScale));
 
                     panStableDiffusion.tbSeed.Text = sdGenerationParameters.seed.ToString();
                     panStableDiffusion.trackBarSeedVariationStrength.Value = (int)Math.Round(sdGenerationParameters.seedVariationStrength * 100m);
@@ -209,9 +207,6 @@ namespace AiPainter
                 {
                     File.Delete(pb.FilePath);
                     storedImageList.Remove(pb.FilePath);
-
-                    var jsonFilePath = Path.Join(Path.GetDirectoryName(pb.FilePath), Path.GetFileNameWithoutExtension(pb.FilePath)) + ".json";
-                    if (File.Exists(jsonFilePath)) File.Delete(jsonFilePath);
 
                     updateImages(null);
                 }

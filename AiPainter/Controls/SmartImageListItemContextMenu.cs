@@ -164,17 +164,10 @@ sealed class SmartImageListItemContextMenu : ContextMenuStrip
 
     private static string moveImageFile(string srcFilePath, string destDir)
     {
-        var baseFileName = Path.GetFileNameWithoutExtension(srcFilePath);
-        var srcDir = Path.GetDirectoryName(srcFilePath)!;
-
         if (!Directory.Exists(destDir)) Directory.CreateDirectory(destDir);
 
         var destImagePath = Path.Combine(destDir, Path.GetFileName(srcFilePath));
         File.Move(srcFilePath, destImagePath);
-        if (File.Exists(Path.Combine(srcDir, baseFileName) + ".json"))
-        {
-            File.Move(Path.Combine(srcDir, baseFileName) + ".json", Path.Combine(destDir, baseFileName) + ".json");
-        }
 
         return destImagePath;
     }
