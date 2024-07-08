@@ -1,5 +1,4 @@
 using System.Drawing.Imaging;
-using System.Text.Json;
 using AiPainter.Adapters.LamaCleaner;
 using AiPainter.Adapters.StableDiffusion;
 using AiPainter.Controls;
@@ -181,23 +180,26 @@ namespace AiPainter
 
             pb.OnImageDoubleClick = () =>
             {
-                SdPngHelper.Load(pb.FilePath, out var sdGenerationParameters);
+                var sdGenerationParameters = SdPngHelper.LoadGenerationParameters(pb.FilePath);
                 if (sdGenerationParameters != null)
                 {
                     panStableDiffusion.selectedCheckpointName = sdGenerationParameters.checkpointName;
                     panStableDiffusion.selectedVaeName = sdGenerationParameters.vaeName;
 
                     panStableDiffusion.numSteps.Value = sdGenerationParameters.steps;
+                    
                     panStableDiffusion.tbPrompt.Text = sdGenerationParameters.prompt;
                     panStableDiffusion.tbNegative.Text = sdGenerationParameters.negative;
-                    if (sdGenerationParameters.cfgScale != 0) panStableDiffusion.numCfgScale.Value = Math.Max(panStableDiffusion.numCfgScale.Minimum, Math.Min(panStableDiffusion.numCfgScale.Maximum, sdGenerationParameters.cfgScale));
+                    
+                    if (sdGenerationParameters.cfgScale != 0)
+                    {
+                        panStableDiffusion.numCfgScale.Value = Math.Max(panStableDiffusion.numCfgScale.Minimum, Math.Min(panStableDiffusion.numCfgScale.Maximum, sdGenerationParameters.cfgScale));
+                    }
 
                     panStableDiffusion.tbSeed.Text = sdGenerationParameters.seed.ToString();
-                    panStableDiffusion.trackBarSeedVariationStrength.Value = (int)Math.Round(sdGenerationParameters.seedVariationStrength * 100m);
 
                     panStableDiffusion.SetImageSize(sdGenerationParameters.width, sdGenerationParameters.height);
                     panStableDiffusion.ddSampler.SelectedItem = sdGenerationParameters.sampler;
-                    if (sdGenerationParameters.changesLevel >= 0) panStableDiffusion.trackBarChangesLevel.Value = (int)Math.Round(sdGenerationParameters.changesLevel * 100);
                 }
             };
 

@@ -11,18 +11,16 @@ static class SdPngHelper
     public static Bitmap Load(string filePath, out SdGenerationParameters? generationParameters)
     {
         var data = File.ReadAllBytes(filePath);
-        
         var chunks = PngHelper.GetTextChunks(data);
-        if (chunks.ContainsKey("parameters"))
-        {
-            loadParameters(chunks["parameters"], out generationParameters);
-        }
-        else
-        {
-            generationParameters = null;
-        }
-        
+        generationParameters = chunks.ContainsKey("parameters") ? loadParameters(chunks["parameters"]) : null;
         return (Bitmap)Image.FromStream(new MemoryStream(data));
+    }    
+    
+    public static SdGenerationParameters? LoadGenerationParameters(string filePath)
+    {
+        var data = File.ReadAllBytes(filePath);
+        var chunks = PngHelper.GetTextChunks(data);
+        return chunks.ContainsKey("parameters") ? loadParameters(chunks["parameters"]) : null;
     }
 
     public static void Save(Bitmap image, SdGenerationParameters src, long seed, string filePath)
@@ -36,16 +34,17 @@ static class SdPngHelper
         File.WriteAllBytes(filePath, pngData);
     }
 
-    private static void loadParameters(string text, out SdGenerationParameters generationParameters)
+    private static SdGenerationParameters? loadParameters(string text)
     {
-        generationParameters = new SdGenerationParameters();
 
         // wooden house\n
         // Steps: 20, Sampler: DPM++ 2M, Schedule type: Karras, CFG scale: 7, Seed: 3654104940, Size: 512x512, Model hash: 6ce0161689, Model: v1-5-pruned-emaonly, Version: v1.9.4
 
         var lines = text.Split('\n');
 
-        if (lines.Length == 0) return;
+        if (lines.Length == 0) return null;
+
+        var generationParameters = new SdGenerationParameters();
 
         generationParameters.prompt = lines[0];
 
@@ -100,6 +99,8 @@ static class SdPngHelper
                 }
             }
         }
+
+        return generationParameters;
     }
 
     private static string saveParameters(SdGenerationParameters generationParameters, long seed)
