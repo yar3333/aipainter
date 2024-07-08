@@ -2,7 +2,7 @@
 
 public partial class FolderNameDialog : Form
 {
-    public string? ResultFolderName;
+    public string ResultFolderName;
 
     public FolderNameDialog(string defaultName, string[]? suggestions)
     {
@@ -10,6 +10,8 @@ public partial class FolderNameDialog : Form
 
         cbFolderName.DataSource = suggestions;
         cbFolderName.Text = defaultName;
+
+        ResultFolderName = defaultName;
     }
 
     private void btOk_Click(object sender, EventArgs e)

@@ -19,39 +19,82 @@ sealed class SmartImageListItemContextMenu : ContextMenuStrip
         }
         else
         {
-            Items.Add(new ToolStripMenuItem("Open parent") { Enabled = false }); 
+            Items.Add(new ToolStripMenuItem("Open parent folder") { Enabled = false }); 
         }
 
-        var subfolderMenuItem = new ToolStripMenuItem("Open subfolder");
-        foreach (var dir in Directory.GetDirectories(mainForm.ImagesFolder!))
+        var subfolders = Directory.Exists(mainForm.ImagesFolder) 
+                             ? Directory.GetDirectories(mainForm.ImagesFolder!)
+                             : new string?[] {};
+        if (subfolders.Length > 0)
         {
-            subfolderMenuItem.DropDownItems.Add(Path.GetFileName(dir), null, (_, _) =>
+            var openSubfolderMenuItem = new ToolStripMenuItem("Open subfolder");
+            foreach (var dir in subfolders)
             {
-                mainForm.ImagesFolder = dir;
-            });
+                openSubfolderMenuItem.DropDownItems.Add(Path.GetFileName(dir), null, (_, _) =>
+                {
+                    mainForm.ImagesFolder = dir;
+                });
+            }
+            Items.Add(openSubfolderMenuItem);
         }
-        if (subfolderMenuItem.DropDownItems.Count > 0) Items.Add(subfolderMenuItem);
-        else                                           Items.Add(new ToolStripMenuItem("Open subfolder") { Enabled = false }); 
+        else
+        {
+            Items.Add(new ToolStripMenuItem("Open subfolder") { Enabled = false }); 
+        }
 
         Items.Add(new ToolStripSeparator());
         
-        Items.Add("Move image to subfolder", null, (_, _) =>
         {
-            var baseFileName = Path.GetFileNameWithoutExtension(imageFilePath);
-            var srcDir = Path.GetDirectoryName(imageFilePath)!;
-
-            moveImageFile(imageFilePath, Path.Combine(srcDir, baseFileName));
-        });
-
-        Items.Add("Move image to subfolder and open", null, (_, _) =>
+            var moveImageToSubfolderMenuItem = new ToolStripMenuItem("Move image to subfolder");
+            moveImageToSubfolderMenuItem.DropDownItems.Add("<NEW>", null, (_, _) =>
+            {
+                var dialog = new FolderNameDialog(Path.GetFileNameWithoutExtension(imageFilePath), null);
+                if (dialog.ShowDialog(this) == DialogResult.OK)
+                {
+                    moveImageFile(imageFilePath, Path.Combine(mainForm.ImagesFolder!, dialog.ResultFolderName));
+                }
+            });
+            if (subfolders.Length > 0)
+            {
+                moveImageToSubfolderMenuItem.DropDownItems.Add(new ToolStripSeparator());
+                foreach (var dir in subfolders)
+                {
+                    moveImageToSubfolderMenuItem.DropDownItems.Add(Path.GetFileName(dir), null, (_, _) =>
+                    {
+                        moveImageFile(imageFilePath, dir);
+                    });
+                }
+            }
+            Items.Add(moveImageToSubfolderMenuItem);
+        }
+        
         {
-            var baseFileName = Path.GetFileNameWithoutExtension(imageFilePath);
-            var srcDir = Path.GetDirectoryName(imageFilePath)!;
-
-            var destImagePath = moveImageFile(imageFilePath, Path.Combine(srcDir, baseFileName));
-            mainForm.OpenImageFile(destImagePath);
-            mainForm.ImagesFolder = Path.GetDirectoryName(destImagePath);
-        });
+            var moveImageToSubfolderAndOpenMenuItem = new ToolStripMenuItem("Move image to subfolder and open");
+            moveImageToSubfolderAndOpenMenuItem.DropDownItems.Add("<NEW>", null, (_, _) =>
+            {
+                var dialog = new FolderNameDialog(Path.GetFileNameWithoutExtension(imageFilePath), null);
+                if (dialog.ShowDialog(this) == DialogResult.OK)
+                {
+                    var destImagePath = moveImageFile(imageFilePath, Path.Combine(mainForm.ImagesFolder!, dialog.ResultFolderName));
+                    mainForm.OpenImageFile(destImagePath);
+                    mainForm.ImagesFolder = Path.GetDirectoryName(destImagePath);
+                }
+            });
+            if (subfolders.Length > 0)
+            {
+                moveImageToSubfolderAndOpenMenuItem.DropDownItems.Add(new ToolStripSeparator());
+                foreach (var dir in subfolders)
+                {
+                    moveImageToSubfolderAndOpenMenuItem.DropDownItems.Add(Path.GetFileName(dir), null, (_, _) =>
+                    {
+                        var destImagePath = moveImageFile(imageFilePath, dir);
+                        mainForm.OpenImageFile(destImagePath);
+                        mainForm.ImagesFolder = Path.GetDirectoryName(destImagePath);
+                    });
+                }
+            }
+            Items.Add(moveImageToSubfolderAndOpenMenuItem);
+        }
 
         if (parentFolder != Application.StartupPath.TrimEnd('\\', '/'))
         {
