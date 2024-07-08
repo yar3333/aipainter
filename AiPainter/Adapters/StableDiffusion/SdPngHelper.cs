@@ -1,8 +1,6 @@
-﻿using System.Drawing.Imaging;
-using AiPainter.Controls;
+﻿using AiPainter.Controls;
 using AiPainter.Helpers;
 using System.Globalization;
-using System.Runtime.InteropServices;
 
 namespace AiPainter.Adapters.StableDiffusion;
 
@@ -25,18 +23,15 @@ static class SdPngHelper
 
     public static void Save(Bitmap image, SdGenerationParameters src, long seed, string filePath)
     {
-        var bmpData = image.LockBits(new Rectangle(0,0,image.Width, image.Height), ImageLockMode.ReadOnly, PixelFormat.Format32bppArgb);
-        byte[] bgraData = new byte[bmpData.Width * bmpData.Height * 4];
-        Marshal.Copy(bmpData.Scan0, bgraData, 0, bgraData.Length);
-        image.UnlockBits(bmpData);
-        
-        var pngData = PngHelper.EncodeImage(bgraData, image.Width, image.Height, new Dictionary<string, string> { {"parameters", saveParameters(src, seed) } });
+        var pngData = PngHelper.EncodeImage(image, new Dictionary<string, string>
+        {
+            { "parameters", saveParameters(src, seed) }
+        });
         File.WriteAllBytes(filePath, pngData);
     }
 
     private static SdGenerationParameters? loadParameters(string text)
     {
-
         // wooden house\n
         // Steps: 20, Sampler: DPM++ 2M, Schedule type: Karras, CFG scale: 7, Seed: 3654104940, Size: 512x512, Model hash: 6ce0161689, Model: v1-5-pruned-emaonly, Version: v1.9.4
 

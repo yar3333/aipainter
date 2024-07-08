@@ -1,4 +1,4 @@
-﻿using System.Linq;
+﻿using System.Drawing.Imaging;
 using System.Text;
 using BigGustave;
 
@@ -76,7 +76,12 @@ static class PngHelper
         return visitor.TextChunks;
     }
 
-    public static byte[] EncodeImage(byte[] bgraData, int width, int height, Dictionary<string, string> textChunks)
+    public static byte[] EncodeImage(Bitmap image, Dictionary<string, string> textChunks)
+    {
+        return encodeImage(getBgraDataFromImage(image), image.Width, image.Height, textChunks);
+    }
+
+    private static byte[] encodeImage(byte[] bgraData, int width, int height, Dictionary<string, string> textChunks)
     {
         var builder = PngBuilder.FromBgra32Pixels(bgraData, width, height);
         foreach (var kv in textChunks)
@@ -84,5 +89,40 @@ static class PngHelper
             builder.StoreText(kv.Key, kv.Value);
         }
         return builder.Save();
+    }
+
+    private static byte[] getBgraDataFromImage(Bitmap image)
+    {
+        var bmpData = image.LockBits(new Rectangle(0,0,image.Width, image.Height), ImageLockMode.ReadOnly, PixelFormat.Format32bppArgb);
+
+        var bgraData = new byte[bmpData.Width * bmpData.Height * 4];
+        unsafe
+        {
+            var srcLine = (byte*)bmpData.Scan0.ToPointer();
+            fixed(byte* destStart = bgraData)
+            {
+                var destP = destStart;
+                for (var i = 0; i < bmpData.Height; i++, srcLine += bmpData.Stride)
+                {
+                    var srcP = srcLine;
+                    var lastP = srcLine + bmpData.Width * 4;
+                    while (srcP < lastP)
+                    {
+                        var r = *srcP; srcP++;
+                        var g = *srcP; srcP++;
+                        var b = *srcP; srcP++;
+                        var a = *srcP; srcP++;
+
+                        *destP = b; destP++;
+                        *destP = g; destP++;
+                        *destP = r; destP++;
+                        *destP = a; destP++;
+                    }
+                }
+            }
+        }
+
+        image.UnlockBits(bmpData);
+        return bgraData;
     }
 }
