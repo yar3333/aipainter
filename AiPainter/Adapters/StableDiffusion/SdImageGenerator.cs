@@ -196,22 +196,20 @@ class SdImageGenerator : IImageGenerator
         else
         {
             using var croppedImage = BitmapTools.GetCropped(originalImage, activeBox, Color.Black);
-            using var image512 = BitmapTools.GetResized(croppedImage, 512, 512);
-            using var mask512 = croppedMask != null ? BitmapTools.GetResized(croppedMask, 512, 512) : null;
+            //using var image512 = BitmapTools.GetResized(croppedImage, 512, 512);
+            //using var mask512 = croppedMask != null ? BitmapTools.GetResized(croppedMask, 512, 512) : null;
 
             generate
             (
-                image512,
-                mask512,
+                croppedImage, //image512,
+                croppedMask, //mask512,
                 (resultImage, seed) =>
                 {
                     try
                     {
-                        using var resultImageResized = BitmapTools.GetResized(resultImage, activeBox.Width, activeBox.Height);
-                        resultImage.Dispose();
-
                         using var tempOriginalImage = BitmapTools.Clone(originalImage);
-                        BitmapTools.DrawBitmapAtPos(resultImageResized, tempOriginalImage, activeBox.X, activeBox.Y);
+                        BitmapTools.DrawBitmapAtPos(resultImage, tempOriginalImage, activeBox.X, activeBox.Y);
+                        resultImage.Dispose();
 
                         saveImageBasedOnOriginalImage(tempOriginalImage, seed);
                     }
