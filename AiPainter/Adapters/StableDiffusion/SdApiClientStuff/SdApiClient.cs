@@ -13,37 +13,18 @@ static class SdApiClient
     private static bool inProcess;
 
     // ReSharper disable once InconsistentNaming
-    public static void txt2img(SdTxt2ImgRequest request, Action<int> onProgress, Action<SdGenerationResponse?> onSuccess)
+    public static async Task<SdGenerationResponse?> txt2imgAsync(SdTxt2ImgRequest request, Action<int> onProgress)
     {
-        request = request.Clone();
-        request.n_iter = 1;
-
-        inProcess = true;
-        var cancelation = new CancellationTokenSource();
-
-        // ReSharper disable once MethodSupportsCancellation
-        Task.Run(async () =>
-        {
-            try
-            {
-                var result = await postAsync<SdGenerationResponse>("sdapi/v1/txt2img", request);
-                cancelation.Cancel();
-                onSuccess(result);
-            }
-            catch (Exception e)
-            {
-                Log.WriteLine(e.ToString());
-                cancelation.Cancel();
-                onSuccess(null);
-            }
-            inProcess = false;
-        });
-
-        runProgressUpdateTask(onProgress, cancelation.Token);
+        return await runGenerateAsync("sdapi/v1/txt2img", request, onProgress);
     }
 
     // ReSharper disable once InconsistentNaming
-    public static void img2img(SdImg2ImgRequest request, Action<int> onProgress, Action<SdGenerationResponse?> onSuccess)
+    public static async Task<SdGenerationResponse?> img2imgAsync(SdImg2ImgRequest request, Action<int> onProgress)
+    {
+        return await runGenerateAsync("sdapi/v1/img2img", request, onProgress);
+    }
+    
+    private static async Task<SdGenerationResponse?> runGenerateAsync(string url, SdBaseGenerationRequest request, Action<int> onProgress)
     {
         request = request.Clone();
         request.n_iter = 1;
@@ -51,26 +32,22 @@ static class SdApiClient
         inProcess = true;
         var cancelation = new CancellationTokenSource();
 
-        // ReSharper disable once MethodSupportsCancellation
-        Task.Run(async () =>
+        try
         {
-            try
-            {
-                var result = await postAsync<SdGenerationResponse>("sdapi/v1/img2img", request);
-                cancelation.Cancel();
-                onProgress(request.steps);
-                onSuccess(result);
-            }
-            catch (Exception e)
-            {
-                Log.WriteLine(e.ToString());
-                cancelation.Cancel();
-                onSuccess(null);
-            }
+            var resultTask = postAsync<SdGenerationResponse>(url, request);
+            runProgressUpdateTask(onProgress, cancelation.Token);
+            var result = await resultTask;
+            cancelation.Cancel();
             inProcess = false;
-        });
-
-        runProgressUpdateTask(onProgress, cancelation.Token);
+            return result;
+        }
+        catch (Exception e)
+        {
+            Log.WriteLine(e.ToString());
+            cancelation.Cancel();
+            inProcess = false;
+            return null;
+        }
     }
 
     public static void Cancel()

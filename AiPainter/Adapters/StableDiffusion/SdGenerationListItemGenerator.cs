@@ -109,6 +109,81 @@ public class SdGenerationListItemGenerator
 
     public async Task RunAsync()
     {
+        if (!await prepareCheckpointAsync()) return;
+
+        SdGenerationResponse? response;
+
+        if (originalImage == null)
+        {
+            var parameters = new SdTxt2ImgRequest
+            {
+                prompt = getFullPromptText(),
+                negative_prompt = sdGenerationParameters.negative,
+                cfg_scale = sdGenerationParameters.cfgScale,
+                steps = sdGenerationParameters.steps,
+
+                seed = sdGenerationParameters.seed,
+                subseed_strength = sdGenerationParameters.seedVariationStrength,
+
+                width = sdGenerationParameters.width,
+                height = sdGenerationParameters.height,
+                
+                sampler_index = sdGenerationParameters.sampler,
+
+                override_settings = SdCheckpointsHelper.GetConfig(sdGenerationParameters.checkpointName).overrideSettings,
+            };
+            response = await SdApiClient.txt2imgAsync(parameters, onProgress: step => control.NotifyProgress(step));
+        }
+        else
+        {
+            using var croppedImage = BitmapTools.GetCropped(originalImage, activeBox, Color.Black);
+
+            var parameters = new SdImg2ImgRequest
+            {
+                prompt = getFullPromptText(),
+                negative_prompt = sdGenerationParameters.negative,
+                cfg_scale = sdGenerationParameters.cfgScale,
+                steps = sdGenerationParameters.steps,
+                
+                seed = sdGenerationParameters.seed,
+                subseed_strength = sdGenerationParameters.seedVariationStrength,
+                
+                init_images = new[] { BitmapTools.GetBase64String(croppedImage) },
+                mask = croppedMask != null ? BitmapTools.GetBase64String(croppedMask) : null,
+                
+                width = croppedImage.Width,
+                height = croppedImage.Height,
+                
+                sampler_index = sdGenerationParameters.sampler,
+
+                inpainting_fill = SdInpaintingFill.original, // looks like webui use 'fill' as default if mask specified, so force to use 'original'
+                denoising_strength = sdGenerationParameters.changesLevel,
+
+                override_settings = SdCheckpointsHelper.GetConfig(sdGenerationParameters.checkpointName).overrideSettings,
+            };
+            response = await SdApiClient.img2imgAsync(parameters, onProgress: step => control.NotifyProgress(step));
+        }
+
+        if (response == null)
+        {
+            control.NotifyProgress(sdGenerationParameters.steps);
+            control.NotifyGenerateFail("ERROR");
+            return;
+        }
+
+        // SD not ready, need retry later
+        if (response.images == null) { control.NotifyNeedRetry(); return; }
+
+        if (control.IsWantToCancelProcessingResultOfCurrentGeneration) return;
+
+        processGenerationResult(BitmapTools.FromBase64(response.images[0]), response.infoParsed.seed);
+        
+        control.NotifyProgress(sdGenerationParameters.steps);
+        control.NotifyGenerateSuccess();
+    }
+
+    private async Task<bool> prepareCheckpointAsync()
+    {
         var checkpointFilePath = originalImage == null || croppedMask == null
                                      ? SdCheckpointsHelper.GetPathToMainCheckpoint(sdGenerationParameters.checkpointName)
                                      : (SdCheckpointsHelper.GetPathToInpaintCheckpoint(sdGenerationParameters.checkpointName) 
@@ -117,7 +192,7 @@ public class SdGenerationListItemGenerator
         if (checkpointFilePath == null)
         {
             control.NotifyGenerateFail("NOT FOUND");
-            return;
+            return false;
         }
 
         var vaeFilePath = SdVaeHelper.GetPathToVae(sdGenerationParameters.vaeName) 
@@ -132,7 +207,7 @@ public class SdGenerationListItemGenerator
                 StableDiffusionProcess.Stop();
                 while (StableDiffusionProcess.IsReady())
                 {
-                    if (await DelayTools.WaitForExitAsync(500) || control.IsDisposed) return;
+                    if (await DelayTools.WaitForExitAsync(500) || control.IsDisposed) return false;
                 }
             }
         }
@@ -146,7 +221,7 @@ public class SdGenerationListItemGenerator
             StableDiffusionProcess.Start(checkpointFilePath, vaeFilePath);
             while (!StableDiffusionProcess.IsReady())
             {
-                if (await DelayTools.WaitForExitAsync(500) || control.IsDisposed) return;
+                if (await DelayTools.WaitForExitAsync(500) || control.IsDisposed) return false;
             }
         }
 
@@ -156,56 +231,44 @@ public class SdGenerationListItemGenerator
             control.NotifyStepsCustomText("Waiting ready...");
             while (!StableDiffusionProcess.IsReady())
             {
-                if (await DelayTools.WaitForExitAsync(500) || control.IsDisposed) return;
+                if (await DelayTools.WaitForExitAsync(500) || control.IsDisposed) return false;
             }
         }
 
         if (!waitTextShown) control.NotifyProgress(0);
 
+        return true;
+    }
+
+    private void processGenerationResult(Bitmap resultImage, long seed)
+    {
         if (originalImage == null)
         {
-            generate
-            (
-                null,
-                null,
-                (resultImage, seed) =>
-                {
-                    try
-                    {
-                        SdPngHelper.Save(resultImage, sdGenerationParameters, seed, getDestImageFilePath());
-                        resultImage.Dispose();
-                    }
-                    catch (Exception ee)
-                    {
-                        SdApiClient.Log.WriteLine(ee.ToString());
-                    }
-                }
-            );
+            try
+            {
+                if (!Directory.Exists(destDir)) Directory.CreateDirectory(destDir);
+                var destImageFilePath = Path.Combine(destDir, (DateTime.UtcNow.Ticks / 10000) + ".png");
+                SdPngHelper.Save(resultImage, sdGenerationParameters, seed, destImageFilePath);
+                resultImage.Dispose();
+            }
+            catch (Exception ee)
+            {
+                SdApiClient.Log.WriteLine(ee.ToString());
+            }
         }
         else
         {
-            using var croppedImage = BitmapTools.GetCropped(originalImage, activeBox, Color.Black);
-
-            generate
-            (
-                croppedImage,
-                croppedMask,
-                (resultImage, seed) =>
-                {
-                    try
-                    {
-                        using var tempOriginalImage = BitmapTools.Clone(originalImage);
-                        BitmapTools.DrawBitmapAtPos(resultImage, tempOriginalImage, activeBox.X, activeBox.Y);
-                        resultImage.Dispose();
-
-                        saveImageBasedOnOriginalImage(tempOriginalImage, seed);
-                    }
-                    catch (Exception ee)
-                    {
-                        SdApiClient.Log.WriteLine(ee.ToString());
-                    }
-                }
-            );
+            try
+            {
+                using var tempOriginalImage = BitmapTools.Clone(originalImage);
+                BitmapTools.DrawBitmapAtPos(resultImage, tempOriginalImage, activeBox.X, activeBox.Y);
+                resultImage.Dispose();
+                saveImageBasedOnOriginalImage(tempOriginalImage, seed);
+            }
+            catch (Exception ee)
+            {
+                SdApiClient.Log.WriteLine(ee.ToString());
+            }
         }
     }
 
@@ -237,92 +300,6 @@ public class SdGenerationListItemGenerator
         SdPngHelper.Save(image, sdGenerationParameters, seed, resultFilePath);
     }
 
-    private void generate(Bitmap? initImage, Bitmap? maskImage, Action<Bitmap, long> processGeneratedImage)
-    {
-        if (initImage == null)
-        {
-            var parameters = new SdTxt2ImgRequest
-            {
-                prompt = getFullPromptText(),
-                negative_prompt = sdGenerationParameters.negative,
-                cfg_scale = sdGenerationParameters.cfgScale,
-                steps = sdGenerationParameters.steps,
-
-                seed = sdGenerationParameters.seed,
-                subseed_strength = sdGenerationParameters.seedVariationStrength,
-
-                width = sdGenerationParameters.width,
-                height = sdGenerationParameters.height,
-                
-                sampler_index = sdGenerationParameters.sampler,
-
-                override_settings = SdCheckpointsHelper.GetConfig(sdGenerationParameters.checkpointName).overrideSettings,
-            };
-
-            SdApiClient.txt2img
-            (
-                parameters,
-                onProgress: step => control.NotifyProgress(step),
-                onSuccess: ev => onImageGenerated(ev, processGeneratedImage)
-            );
-        }
-        else
-        {
-            var parameters = new SdImg2ImgRequest
-            {
-                prompt = getFullPromptText(),
-                negative_prompt = sdGenerationParameters.negative,
-                cfg_scale = sdGenerationParameters.cfgScale,
-                steps = sdGenerationParameters.steps,
-                
-                seed = sdGenerationParameters.seed,
-                subseed_strength = sdGenerationParameters.seedVariationStrength,
-                
-                init_images = new[] { BitmapTools.GetBase64String(initImage) },
-                mask = maskImage != null ? BitmapTools.GetBase64String(maskImage) : null,
-                
-                width = initImage.Width,
-                height = initImage.Height,
-                
-                sampler_index = sdGenerationParameters.sampler,
-
-                inpainting_fill = SdInpaintingFill.original, // looks like webui use 'fill' as default if mask specified, so force to use 'original'
-                denoising_strength = sdGenerationParameters.changesLevel,
-
-                override_settings = SdCheckpointsHelper.GetConfig(sdGenerationParameters.checkpointName).overrideSettings,
-            };
-
-            SdApiClient.img2img
-            (
-                parameters,
-                onProgress: step => control.NotifyProgress(step),
-                onSuccess: ev => onImageGenerated(ev, processGeneratedImage)
-            );
-        }
-    }
-
-    private void onImageGenerated(SdGenerationResponse? ev, Action<Bitmap, long> processGeneratedImage)
-    {
-        if (ev == null)
-        {
-            control.NotifyProgress(sdGenerationParameters.steps);
-            control.NotifyGenerateFail("ERROR");
-            return;
-        }
-
-        // SD not ready, need retry later
-        if (ev.images == null) { control.NotifyNeedRetry(); return; }
-
-        control.NotifyProgress(sdGenerationParameters.steps);
-
-        if (!control.IsWantToCancelProcessingResultOfCurrentGeneration)
-        {
-            processGeneratedImage(BitmapTools.FromBase64(ev.images[0]), ev.infoParsed.seed);
-        }
-
-        control.NotifyGenerateSuccess();
-    }
-
     private string getFullPromptText()
     {
         var checkpointPrompt = SdCheckpointsHelper.GetConfig(sdGenerationParameters.checkpointName).promptRequired;
@@ -331,11 +308,5 @@ public class SdGenerationListItemGenerator
               + (!string.IsNullOrWhiteSpace(sdGenerationParameters.prompt) ? sdGenerationParameters.prompt + "; " : "");
 
         return r.Trim(' ', ',', ';');
-    }
-
-    private string getDestImageFilePath()
-    {
-        if (!string.IsNullOrEmpty(destDir) && !Directory.Exists(destDir)) Directory.CreateDirectory(destDir);
-        return Path.Combine(destDir, (DateTime.UtcNow.Ticks / 10000) + ".png");
     }
 }

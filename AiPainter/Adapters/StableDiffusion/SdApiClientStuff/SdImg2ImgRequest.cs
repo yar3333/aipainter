@@ -24,7 +24,7 @@ class SdImg2ImgRequest : SdBaseGenerationRequest
 
     public bool include_init_images { get; set; }
 
-    public SdImg2ImgRequest Clone()
+    public override SdImg2ImgRequest Clone()
     {
         var r = (SdImg2ImgRequest)MemberwiseClone();
         r.override_settings = r.override_settings?.Clone();

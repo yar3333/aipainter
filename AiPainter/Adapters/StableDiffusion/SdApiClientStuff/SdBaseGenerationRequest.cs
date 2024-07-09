@@ -1,7 +1,7 @@
 ﻿namespace AiPainter.Adapters.StableDiffusion.SdApiClientStuff;
 
 [Serializable]
-class SdBaseGenerationRequest
+abstract class SdBaseGenerationRequest
 {
     public string prompt { get; set; } = "";
     public string negative_prompt { get; set; } = "";
@@ -57,4 +57,8 @@ class SdBaseGenerationRequest
     /// </summary>
     public SdSettings? override_settings { get; set; } = null;
     public bool? override_settings_restore_afterwards { get; set; } = null;
+
+    ////////////////////////////////////////////////////////////////////////////////
+    
+    public abstract SdBaseGenerationRequest Clone();
 }
