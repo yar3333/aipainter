@@ -62,7 +62,6 @@ namespace AiPainter
             panStableDiffusion = new Adapters.StableDiffusion.StableDiffusionPanel();
             panGenerationList = new GenerationList();
             panImages = new SmartImageList();
-            hPicScroll = new HScrollBar();
             toolTip = new ToolTip(components);
             updateImageListWorker = new System.ComponentModel.BackgroundWorker();
             controlsStateUpdater = new System.Windows.Forms.Timer(components);
@@ -295,8 +294,8 @@ namespace AiPainter
             // 
             splitContainer.Panel2.Controls.Add(panImages);
             splitContainer.Panel2.Resize += splitContainer_Panel2_Resize;
-            splitContainer.Size = new Size(1150, 757);
-            splitContainer.SplitterDistance = 593;
+            splitContainer.Size = new Size(1150, 790);
+            splitContainer.SplitterDistance = 618;
             splitContainer.TabIndex = 2;
             splitContainer.SplitterMoved += splitContainer_SplitterMoved;
             // 
@@ -313,7 +312,7 @@ namespace AiPainter
             // splitContainer1.Panel2
             // 
             splitContainer1.Panel2.Controls.Add(splitContainer2);
-            splitContainer1.Size = new Size(1150, 593);
+            splitContainer1.Size = new Size(1150, 618);
             splitContainer1.SplitterDistance = 383;
             splitContainer1.TabIndex = 4;
             splitContainer1.SplitterMoved += splitContainer1_SplitterMoved;
@@ -325,7 +324,7 @@ namespace AiPainter
             pictureBox.Image = null;
             pictureBox.Location = new Point(0, 0);
             pictureBox.Name = "pictureBox";
-            pictureBox.Size = new Size(383, 593);
+            pictureBox.Size = new Size(383, 618);
             pictureBox.TabIndex = 3;
             // 
             // splitContainer2
@@ -341,7 +340,7 @@ namespace AiPainter
             // splitContainer2.Panel2
             // 
             splitContainer2.Panel2.Controls.Add(panGenerationList);
-            splitContainer2.Size = new Size(763, 593);
+            splitContainer2.Size = new Size(763, 618);
             splitContainer2.SplitterDistance = 430;
             splitContainer2.TabIndex = 0;
             // 
@@ -353,7 +352,7 @@ namespace AiPainter
             panel1.Dock = DockStyle.Fill;
             panel1.Location = new Point(0, 0);
             panel1.Name = "panel1";
-            panel1.Size = new Size(430, 593);
+            panel1.Size = new Size(430, 618);
             panel1.TabIndex = 2;
             // 
             // panStableDiffusion
@@ -377,28 +376,17 @@ namespace AiPainter
             panGenerationList.Dock = DockStyle.Fill;
             panGenerationList.Location = new Point(0, 0);
             panGenerationList.Name = "panGenerationList";
-            panGenerationList.Size = new Size(329, 593);
+            panGenerationList.Size = new Size(329, 618);
             panGenerationList.TabIndex = 0;
             // 
             // panImages
             // 
             panImages.Dock = DockStyle.Fill;
+            panImages.ImagesFolder = "C:\\Users\\Yaroslav\\AppData\\Local\\Microsoft\\VisualStudio\\17.0_23370747\\WinFormsDesigner\\421t2axo.a4a\\images";
             panImages.Location = new Point(0, 0);
             panImages.Name = "panImages";
-            panImages.Size = new Size(1150, 160);
+            panImages.Size = new Size(1150, 168);
             panImages.TabIndex = 0;
-            // 
-            // hPicScroll
-            // 
-            hPicScroll.Dock = DockStyle.Bottom;
-            hPicScroll.Location = new Point(0, 800);
-            hPicScroll.Name = "hPicScroll";
-            hPicScroll.Size = new Size(1150, 30);
-            hPicScroll.TabIndex = 0;
-            // 
-            // updateImageListWorker
-            // 
-            updateImageListWorker.DoWork += updateImageListWorker_DoWork;
             // 
             // MainForm
             // 
@@ -406,7 +394,6 @@ namespace AiPainter
             AutoScaleMode = AutoScaleMode.Font;
             BackgroundImageLayout = ImageLayout.Center;
             ClientSize = new Size(1150, 830);
-            Controls.Add(hPicScroll);
             Controls.Add(splitContainer);
             Controls.Add(toolbar);
             Icon = (Icon)resources.GetObject("$this.Icon");
@@ -441,7 +428,6 @@ namespace AiPainter
         private ToolStripSeparator toolStripSeparator2;
         private ToolStripSeparator toolStripSeparator1;
         private SplitContainer splitContainer;
-        private HScrollBar hPicScroll;
         private Panel panel1;
         private ToolStripButton btClearActiveImage;
         private ToolStripButton btLeft;

@@ -199,6 +199,27 @@ namespace AiPainter.Adapters.StableDiffusion
             ddImageSize.Text = w + "x" + h;
         }
 
+        public void LoadParametersToSdGenerationPanel(SdGenerationParameters sdGenerationParameters)
+        {
+            selectedCheckpointName = sdGenerationParameters.checkpointName;
+            selectedVaeName = sdGenerationParameters.vaeName;
+
+            numSteps.Value = sdGenerationParameters.steps;
+                
+            tbPrompt.Text = sdGenerationParameters.prompt;
+            tbNegative.Text = sdGenerationParameters.negative;
+                
+            if (sdGenerationParameters.cfgScale != 0)
+            {
+                numCfgScale.Value = Math.Max(numCfgScale.Minimum, Math.Min(numCfgScale.Maximum, sdGenerationParameters.cfgScale));
+            }
+
+            tbSeed.Text = sdGenerationParameters.seed.ToString();
+
+            SetImageSize(sdGenerationParameters.width, sdGenerationParameters.height);
+            ddSampler.SelectedItem = sdGenerationParameters.sampler;
+        }
+
         private void collapsablePanel_Resize(object sender, EventArgs e)
         {
             Height = collapsablePanel.Height;

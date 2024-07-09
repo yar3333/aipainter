@@ -16,28 +16,19 @@ namespace AiPainter
 
         public string? ImagesFolder
         {
-            // ReSharper disable once InconsistentlySynchronizedField
-            get => storedImageList.Folder;
-            set
-            {
-                var v = Path.Combine(Application.StartupPath, value ?? Program.Config.ImagesFolder);
-
-                // ReSharper disable once InconsistentlySynchronizedField
-                if (storedImageList.Folder != v)
-                {
-                    // ReSharper disable once InconsistentlySynchronizedField
-                    storedImageList = new(v);
-                }
-            }
+            get => panImages.ImagesFolder;
+            set => panImages.ImagesFolder = value;
         }
-
-        private static StoredImageList storedImageList = new(Path.Combine(Application.StartupPath, Program.Config.ImagesFolder));
 
         private readonly LamaCleanerManager lamaCleaner = new();
 
         public MainForm()
         {
             InitializeComponent();
+
+            panImages.mainForm = this;
+            panImages.OnLoadParametersToSdGenerationPanel = panStableDiffusion.LoadParametersToSdGenerationPanel;
+            panImages.OnOpenImageFile = filePath => OpenImageFile(filePath, false);
 
             panStableDiffusion.OnGenerate = () =>
             {
@@ -49,16 +40,6 @@ namespace AiPainter
 
         private void MainForm_Load(object sender, EventArgs e)
         {
-            hPicScroll.Minimum = 0;
-            hPicScroll.SmallChange = 1;
-            hPicScroll.Scroll += (_, ee) => updateImages(ee.NewValue);
-
-            panImages.MouseWheel += (_, ee) =>
-            {
-                hPicScroll.Value = Math.Max(hPicScroll.Minimum, Math.Min(hPicScroll.Maximum - hPicScroll.LargeChange + 1, hPicScroll.Value + (ee.Delta > 0 ? -1 : 1)));
-                updateImages(null);
-            };
-
             var args = Environment.GetCommandLineArgs();
             if (args.Length == 2)
             {
@@ -78,144 +59,6 @@ namespace AiPainter
                     resizeImage(size);
                 });
             }
-        }
-
-        private void updateImageListWorker_DoWork(object sender, System.ComponentModel.DoWorkEventArgs e)
-        {
-            while (!IsDisposed)
-            {
-                var changesDetected = false;
-                try
-                {
-                    lock (storedImageList)
-                    {
-                        changesDetected = storedImageList.Update();
-                    }
-                }
-                catch (Exception ee)
-                {
-                    Program.Log.WriteLine(ee.ToString());
-                    DelayTools.WaitForExit(1000);
-                }
-
-                if (changesDetected)
-                {
-                    try
-                    {
-                        Invoke(() =>
-                        {
-                            lock (storedImageList)
-                            {
-                                if (hPicScroll.Value == Math.Max(0, hPicScroll.Maximum - hPicScroll.LargeChange + 1) && !panImages.ClientRectangle.Contains(panImages.PointToClient(Cursor.Position)))
-                                {
-                                    hPicScroll.Maximum = Math.Max(0, storedImageList.Count - 1);
-                                    hPicScroll.Value = Math.Max(0, hPicScroll.Maximum - hPicScroll.LargeChange + 1);
-                                }
-                                updateImages(null);
-                            }
-                        });
-                    }
-                    catch (InvalidOperationException)
-                    {
-                    }
-                }
-
-                DelayTools.WaitForExit(1000);
-            }
-        }
-
-        private void updateImages(int? hPicScrollValue)
-        {
-            var sz = Math.Max(50, panImages.ClientSize.Height);
-            var x = 0;
-            var n = 0;
-
-            lock (storedImageList)
-            {
-                hPicScroll.LargeChange = (panImages.ClientSize.Width + 5) / (sz + 5);
-                hPicScroll.Maximum = Math.Max(0, storedImageList.Count - 1);
-                hPicScroll.Value = Math.Max(0, Math.Min(hPicScroll.Value, hPicScroll.Maximum - hPicScroll.LargeChange + 1));
-                if (hPicScrollValue != null) hPicScrollValue = Math.Max(0, Math.Min(hPicScrollValue.Value, hPicScroll.Maximum - hPicScroll.LargeChange + 1));
-
-                var i = hPicScrollValue ?? hPicScroll.Value;
-                while (x < panImages.ClientSize.Width && i < storedImageList.Count)
-                {
-                    var pb = (SmartImageListItem?)panImages.Controls.Find("pic" + n, false).SingleOrDefault() ?? createSmartImagePreview(n);
-
-                    pb.Image = storedImageList.GetAt(i).Bitmap!;
-                    pb.Location = new Point(x, 0);
-                    pb.Size = new Size(sz, sz);
-                    pb.FilePath = storedImageList.GetAt(i).FilePath;
-                    pb.Visible = true;
-                    toolTip.SetToolTip(pb.PictureBox, Path.GetFileName(pb.FilePath) + "\n\nClick to load image. Double click to load also original parameters from *.json file.");
-
-                    x += sz + 5;
-                    i++;
-                    n++;
-                }
-            }
-
-            while (x < panImages.ClientSize.Width)
-            {
-                var pb = (SmartImageListItem?)panImages.Controls.Find("pic" + n, false).FirstOrDefault();
-                if (pb != null) pb.Visible = false;
-                x += sz + 5;
-                n++;
-            }
-
-            panImages.Refresh();
-        }
-
-        private SmartImageListItem createSmartImagePreview(int n)
-        {
-            var pb = new SmartImageListItem();
-            pb.Name = "pic" + n;
-            pb.Parent = panImages;
-
-            pb.OnImageClick = () => OpenImageFile(pb.FilePath, false);
-
-            pb.OnImageDoubleClick = () =>
-            {
-                var sdGenerationParameters = SdPngHelper.LoadGenerationParameters(pb.FilePath);
-                if (sdGenerationParameters != null)
-                {
-                    panStableDiffusion.selectedCheckpointName = sdGenerationParameters.checkpointName;
-                    panStableDiffusion.selectedVaeName = sdGenerationParameters.vaeName;
-
-                    panStableDiffusion.numSteps.Value = sdGenerationParameters.steps;
-                    
-                    panStableDiffusion.tbPrompt.Text = sdGenerationParameters.prompt;
-                    panStableDiffusion.tbNegative.Text = sdGenerationParameters.negative;
-                    
-                    if (sdGenerationParameters.cfgScale != 0)
-                    {
-                        panStableDiffusion.numCfgScale.Value = Math.Max(panStableDiffusion.numCfgScale.Minimum, Math.Min(panStableDiffusion.numCfgScale.Maximum, sdGenerationParameters.cfgScale));
-                    }
-
-                    panStableDiffusion.tbSeed.Text = sdGenerationParameters.seed.ToString();
-
-                    panStableDiffusion.SetImageSize(sdGenerationParameters.width, sdGenerationParameters.height);
-                    panStableDiffusion.ddSampler.SelectedItem = sdGenerationParameters.sampler;
-                }
-            };
-
-            pb.OnImageRemove = () =>
-            {
-                lock (storedImageList)
-                {
-                    File.Delete(pb.FilePath);
-                    storedImageList.Remove(pb.FilePath);
-
-                    updateImages(null);
-                }
-            };
-
-            pb.OnImageContextMenu = () =>
-            {
-                new SmartImageListItemContextMenu(this, pb.FilePath).Show(Cursor.Position);
-            };
-
-            return pb;
         }
 
         protected override bool ProcessKeyPreview(ref Message msg)
@@ -306,7 +149,7 @@ namespace AiPainter
         private void splitContainer_SplitterMoved(object sender, SplitterEventArgs e)
         {
             pictureBox.Refresh();
-            updateImages(null);
+            panImages.updateImages(null);
         }
 
         private void splitContainer1_SplitterMoved(object sender, SplitterEventArgs e)
@@ -414,7 +257,7 @@ namespace AiPainter
             Text = (string.IsNullOrEmpty(FilePath) ? "AiPainter" : Path.GetFileName(FilePath))
                  + (pictureBox.Image == null ? "" : " (" + pictureBox.Image.Width + " x " + pictureBox.Image.Height + ")")
                  + $" [Active box: X,Y = {activeBox.X},{activeBox.Y}; WxH = {activeBox.Width}x{activeBox.Height}]"
-                 + " | " + Path.GetFullPath(storedImageList.Folder);
+                 + " | " + Path.GetFullPath(ImagesFolder);
 
             btClearActiveImage.Enabled = pictureBox.Image != null && pictureBox.Enabled;
             btCopyToClipboard.Enabled = pictureBox.Image != null && pictureBox.Enabled;
@@ -484,7 +327,7 @@ namespace AiPainter
 
         private void splitContainer_Panel2_Resize(object sender, EventArgs e)
         {
-            updateImages(null);
+            panImages.updateImages(null);
         }
 
         private void resizeImage(int size)

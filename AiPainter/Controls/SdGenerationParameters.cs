@@ -1,7 +1,7 @@
 ﻿namespace AiPainter.Controls;
 
 [Serializable]
-class SdGenerationParameters
+public class SdGenerationParameters
 {
     public string checkpointName { get; set; } = null!;
     public string vaeName { get; set; } = null!;
