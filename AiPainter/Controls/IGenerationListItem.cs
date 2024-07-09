@@ -2,9 +2,9 @@
 
 public interface IGenerationListItem
 {
-    public bool InProcess { get; }
-    public bool WantToBeRemoved { get; set; }
     public bool HasWorkToRun { get; }
+    public bool InProcess { get; }
+    public bool WantToBeRemoved { get; }
 
     public void Run();
     

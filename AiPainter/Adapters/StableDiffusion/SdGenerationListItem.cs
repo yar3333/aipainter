@@ -1,43 +1,95 @@
-﻿using AiPainter.Controls;
+﻿using AiPainter.Adapters.StableDiffusion.SdGeneratorStuff;
+using AiPainter.Adapters.StableDiffusion.SdGeneratorStuff.ExceptionsAndHelpers;
+using AiPainter.Controls;
+using AiPainter.Helpers;
 
 namespace AiPainter.Adapters.StableDiffusion
 {
     public partial class SdGenerationListItem : UserControl, IGenerationListItem
     {
-        public bool InProcess { get; private set;}
-        public bool WantToBeRemoved { get; set;}
         public bool HasWorkToRun => numIterations.Value > 0;
+        public bool InProcess { get; private set; }
+        public bool WantToBeRemoved { get; private set; }
 
-        private bool ignoreNumIterationsChange;
-        private int lastIterations;
+        private readonly StableDiffusionPanel sdPanel;
+        private readonly SmartPictureBox pictureBox;
+        private readonly MainForm mainForm;
 
-        private readonly SdGenerationListItemGenerator generator;
+        private int lastNumIterationsValue;
+
+        private readonly SdGenerationParameters sdGenerationParameters;
+        private readonly SdGeneratorBase generator;
+
+        private readonly string? savedFilePath;
+        private readonly Primitive[] savedMask;
+        private readonly Rectangle? savedActiveBox;
+        private readonly Bitmap? savedOriginalImage;
 
         public SdGenerationListItem(StableDiffusionPanel sdPanel, SmartPictureBox pictureBox, MainForm mainForm)
         {
             InitializeComponent();
-
-            generator = new SdGenerationListItemGenerator(this, sdPanel, pictureBox, mainForm);
             
-            ignoreNumIterationsChange = true;
-            numIterations.Value = generator.GetOriginalCount();
-            ignoreNumIterationsChange = false;
+            this.sdPanel = sdPanel;
+            this.pictureBox = pictureBox;
+            this.mainForm = mainForm;
+
+            sdGenerationParameters = new SdGenerationParameters
+            {
+                checkpointName = sdPanel.selectedCheckpointName,
+                vaeName = Program.Config.StableDiffusionVae,
+                prompt = sdPanel.tbPrompt.Text.Trim(),
+                negative = sdPanel.tbNegative.Text.Trim(),
+                steps = (int)sdPanel.numSteps.Value,
+                cfgScale = sdPanel.numCfgScale.Value,
+            
+                seed = sdPanel.cbUseSeed.Checked && sdPanel.tbSeed.Text.Trim() != "" ? long.Parse(sdPanel.tbSeed.Text.Trim()) : -1,
+                seedVariationStrength = sdPanel.trackBarSeedVariationStrength.Value / 100m,
+
+                width = int.Parse(sdPanel.ddImageSize.SelectedItem.ToString()!.Split("x")[0]),
+                height = int.Parse(sdPanel.ddImageSize.SelectedItem.ToString()!.Split("x")[1]),
+                sampler = sdPanel.ddSampler.SelectedItem.ToString()!,
+                changesLevel = sdPanel.cbUseInitImage.Checked ? sdPanel.trackBarChangesLevel.Value / 100.0m : -1,
+            };
+
+            lastNumIterationsValue = (int)sdPanel.numIterations.Value;
+            numIterations.Value = lastNumIterationsValue;
 
             pbIterations.Maximum = (int)numIterations.Value;
             pbIterations.Value = 0;
             pbIterations.CustomText = pbIterations.Value + " / " + pbIterations.Maximum;
             pbIterations.Refresh();
 
-            tbPrompt.Text = generator.GetBasePromptText();
+            tbPrompt.Text = sdPanel.tbPrompt.Text;
 
             pbSteps.Value = 0;
-            pbSteps.Maximum = generator.GetStepsMax();
+            pbSteps.Maximum = sdGenerationParameters.steps;
             pbSteps.CustomText = "";
             pbSteps.Refresh();
 
-            toolTip.SetToolTip(tbPrompt, generator.GetTooltip());
+            toolTip.SetToolTip(tbPrompt, getTooltip());
 
-            lastIterations = (int)numIterations.Value;
+            savedFilePath = mainForm.FilePath;
+            savedMask = pictureBox.SaveMask();
+            savedActiveBox = sdPanel.cbUseInitImage.Checked ? savedActiveBox = pictureBox.ActiveBox : null;
+            
+            if (!sdPanel.cbUseInitImage.Checked)
+            {
+                generator = new SdGeneratorMain(sdGenerationParameters, this, mainForm.ImagesFolder!);
+            }
+            else
+            {
+                savedActiveBox = pictureBox.ActiveBox;
+                savedOriginalImage = BitmapTools.Clone(pictureBox.Image!);
+                generator = new SdGeneratorInpaint
+                (
+                    sdGenerationParameters,
+                    this,
+                    savedOriginalImage,
+                    pictureBox.ActiveBox,
+                    pictureBox.GetMaskCropped(Color.Black, Color.White),
+                    mainForm.ImagesFolder!
+                );
+            }
         }
 
         public void Run()
@@ -46,61 +98,47 @@ namespace AiPainter.Adapters.StableDiffusion
 
             Task.Run(async () =>
             {
-                try
-                {
-                    await generator.RunAsync();
-                }
-                catch (Exception e)
-                {
-                    Program.Log.WriteLine(e.ToString());
-                }
-            });
-        }
-
-        public bool IsWantToCancelProcessingResultOfCurrentGeneration => numIterations.Value == 0;
-
-        public void NotifyGenerateSuccess()
-        {
-            InProcess = false;
-            
-            if (!IsWantToCancelProcessingResultOfCurrentGeneration)
-            {
-                Invoke(() =>
-                {
-                    ignoreNumIterationsChange = true;
-                    numIterations.Value--;
-                    ignoreNumIterationsChange = false;
-                    
-                    lastIterations = (int)numIterations.Value;
-                    
-                    pbIterations.Value++;
-                    pbIterations.CustomText = pbIterations.Value + " / " + pbIterations.Maximum;
-                    pbIterations.Refresh();
-                });
-            }
-        }
-
-        public void NotifyGenerateFail(string text)
-        {
-            InProcess = false;
-            
-            if (!WantToBeRemoved)
-            {
-                Invoke(() =>
-                {
-                    pbIterations.CustomText = text;
-                });
-            }
-        }
-
-        public void NotifyNeedRetry()
-        {
-            Task.Run(async () =>
-            {
-                await Task.Delay(1000);
+                await runInnerAsync();
                 InProcess = false;
             });
         }
+
+        private async Task runInnerAsync()
+        {
+            try
+            {
+                if (await generator.RunAsync())
+                {
+                    Invoke(() =>
+                    {
+                        lastNumIterationsValue = (int)numIterations.Value - 1;
+                        numIterations.Value--;
+                
+                        pbIterations.Value++;
+                        pbIterations.CustomText = pbIterations.Value + " / " + pbIterations.Maximum;
+                        pbIterations.Refresh();
+                    });
+                }
+            }
+            catch (SdGeneratorNeedRetryException)
+            {
+                await Task.Delay(1000);
+            }
+            catch (SdGeneratorFatalErrorException e)
+            {
+                if (!WantToBeRemoved)
+                {
+                    Invoke(() => pbIterations.CustomText = e.Message);
+                }
+            }
+            catch (Exception e)
+            {
+                Program.Log.WriteLine(e.ToString());
+                await Task.Delay(1000);
+            }
+        }
+
+        public bool IsWantToCancelProcessingResultOfCurrentGeneration => numIterations.Value == 0;
 
         public void NotifyProgress(int step)
         {
@@ -133,22 +171,54 @@ namespace AiPainter.Adapters.StableDiffusion
 
         private void btLoadParamsBackToPanel_Click(object sender, EventArgs e)
         {
-            generator.LoadParamsBackToPanel();
+            sdPanel.selectedCheckpointName = sdGenerationParameters.checkpointName;
+            sdPanel.selectedVaeName = sdGenerationParameters.vaeName;
+        
+            sdPanel.numSteps.Value = sdGenerationParameters.steps;
+            sdPanel.tbPrompt.Text = sdGenerationParameters.prompt;
+            sdPanel.tbNegative.Text = sdGenerationParameters.negative;
+            sdPanel.numCfgScale.Value = sdGenerationParameters.cfgScale;
+
+            sdPanel.cbUseSeed.Checked = sdGenerationParameters.seed > 0;
+            sdPanel.tbSeed.Text = sdGenerationParameters.seed.ToString();
+            sdPanel.trackBarSeedVariationStrength.Value = (int)Math.Round(sdGenerationParameters.seedVariationStrength * 100);
+        
+            sdPanel.ddSampler.SelectedItem = sdGenerationParameters.sampler;
+            if (sdGenerationParameters.changesLevel >= 0) sdPanel.trackBarChangesLevel.Value = (int)Math.Round(sdGenerationParameters.changesLevel * 100);
+
+            sdPanel.cbUseInitImage.Checked = savedOriginalImage != null;
+
+            if (savedOriginalImage != null)
+            {
+                mainForm.FilePath = savedFilePath;
+
+                pictureBox.HistoryAddCurrentState();
+                if (savedActiveBox != null) pictureBox.ActiveBox = savedActiveBox.Value;
+                pictureBox.Image = BitmapTools.Clone(savedOriginalImage);
+                pictureBox.LoadMask(savedMask);
+                pictureBox.Refresh();
+            }
+
+            sdPanel.SetImageSize(sdGenerationParameters.width, sdGenerationParameters.height);
         }
 
         private void numIterations_ValueChanged(object sender, EventArgs e)
         {
-            if (ignoreNumIterationsChange) return;
-
-            pbIterations.Maximum += (int)numIterations.Value - lastIterations;
-            pbIterations.CustomText = pbIterations.Value + " / " + pbIterations.Maximum;
-            
-            lastIterations = (int)numIterations.Value;
-            
-            if (numIterations.Value == 0 && InProcess)
+            if (lastNumIterationsValue != (int)numIterations.Value)
             {
-                generator.Cancel();
+                pbIterations.Maximum += (int)numIterations.Value - lastNumIterationsValue;
+                pbIterations.CustomText = pbIterations.Value + " / " + pbIterations.Maximum;
+                
+                lastNumIterationsValue = (int)numIterations.Value;
+            
+                if (numIterations.Value == 0 && InProcess)
+                {
+                    generator.Cancel();
+                }
             }
         }
+
+        private string getTooltip() => "Positive prompt:\n" + sdGenerationParameters.prompt + "\n\n"
+                                     + "Negative prompt:\n" + sdGenerationParameters.negative;
     }
 }
