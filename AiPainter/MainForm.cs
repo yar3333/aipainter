@@ -53,7 +53,7 @@ namespace AiPainter
             hPicScroll.SmallChange = 1;
             hPicScroll.Scroll += (_, ee) => updateImages(ee.NewValue);
 
-            splitContainer.Panel2.MouseWheel += (_, ee) =>
+            panImages.MouseWheel += (_, ee) =>
             {
                 hPicScroll.Value = Math.Max(hPicScroll.Minimum, Math.Min(hPicScroll.Maximum - hPicScroll.LargeChange + 1, hPicScroll.Value + (ee.Delta > 0 ? -1 : 1)));
                 updateImages(null);
@@ -106,8 +106,6 @@ namespace AiPainter
                         {
                             lock (storedImageList)
                             {
-                                var panImages = splitContainer.Panel2;
-                                
                                 if (hPicScroll.Value == Math.Max(0, hPicScroll.Maximum - hPicScroll.LargeChange + 1) && !panImages.ClientRectangle.Contains(panImages.PointToClient(Cursor.Position)))
                                 {
                                     hPicScroll.Maximum = Math.Max(0, storedImageList.Count - 1);
@@ -128,23 +126,21 @@ namespace AiPainter
 
         private void updateImages(int? hPicScrollValue)
         {
-            var panel = splitContainer.Panel2;
-
-            var sz = Math.Max(50, panel.ClientSize.Height);
+            var sz = Math.Max(50, panImages.ClientSize.Height);
             var x = 0;
             var n = 0;
 
             lock (storedImageList)
             {
-                hPicScroll.LargeChange = (panel.ClientSize.Width + 5) / (sz + 5);
+                hPicScroll.LargeChange = (panImages.ClientSize.Width + 5) / (sz + 5);
                 hPicScroll.Maximum = Math.Max(0, storedImageList.Count - 1);
                 hPicScroll.Value = Math.Max(0, Math.Min(hPicScroll.Value, hPicScroll.Maximum - hPicScroll.LargeChange + 1));
                 if (hPicScrollValue != null) hPicScrollValue = Math.Max(0, Math.Min(hPicScrollValue.Value, hPicScroll.Maximum - hPicScroll.LargeChange + 1));
 
                 var i = hPicScrollValue ?? hPicScroll.Value;
-                while (x < panel.ClientSize.Width && i < storedImageList.Count)
+                while (x < panImages.ClientSize.Width && i < storedImageList.Count)
                 {
-                    var pb = (SmartImageListItem?)panel.Controls.Find("pic" + n, false).SingleOrDefault() ?? createSmartImagePreview(n);
+                    var pb = (SmartImageListItem?)panImages.Controls.Find("pic" + n, false).SingleOrDefault() ?? createSmartImagePreview(n);
 
                     pb.Image = storedImageList.GetAt(i).Bitmap!;
                     pb.Location = new Point(x, 0);
@@ -159,22 +155,22 @@ namespace AiPainter
                 }
             }
 
-            while (x < panel.ClientSize.Width)
+            while (x < panImages.ClientSize.Width)
             {
-                var pb = (SmartImageListItem?)panel.Controls.Find("pic" + n, false).FirstOrDefault();
+                var pb = (SmartImageListItem?)panImages.Controls.Find("pic" + n, false).FirstOrDefault();
                 if (pb != null) pb.Visible = false;
                 x += sz + 5;
                 n++;
             }
 
-            panel.Refresh();
+            panImages.Refresh();
         }
 
         private SmartImageListItem createSmartImagePreview(int n)
         {
             var pb = new SmartImageListItem();
             pb.Name = "pic" + n;
-            pb.Parent = splitContainer.Panel2;
+            pb.Parent = panImages;
 
             pb.OnImageClick = () => OpenImageFile(pb.FilePath, false);
 

@@ -32,7 +32,7 @@ namespace AiPainter
         {
             components = new System.ComponentModel.Container();
             System.Windows.Forms.Timer controlsStateUpdater;
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
+            var resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             toolbar = new ToolStrip();
             btClearActiveImage = new ToolStripButton();
             btLoad = new ToolStripButton();
@@ -61,6 +61,7 @@ namespace AiPainter
             panel1 = new Panel();
             panStableDiffusion = new Adapters.StableDiffusion.StableDiffusionPanel();
             panGenerationList = new GenerationList();
+            panImages = new SmartImageList();
             hPicScroll = new HScrollBar();
             toolTip = new ToolTip(components);
             updateImageListWorker = new System.ComponentModel.BackgroundWorker();
@@ -68,6 +69,7 @@ namespace AiPainter
             toolbar.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)splitContainer).BeginInit();
             splitContainer.Panel1.SuspendLayout();
+            splitContainer.Panel2.SuspendLayout();
             splitContainer.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)splitContainer1).BeginInit();
             splitContainer1.Panel1.SuspendLayout();
@@ -291,6 +293,7 @@ namespace AiPainter
             // 
             // splitContainer.Panel2
             // 
+            splitContainer.Panel2.Controls.Add(panImages);
             splitContainer.Panel2.Resize += splitContainer_Panel2_Resize;
             splitContainer.Size = new Size(1150, 757);
             splitContainer.SplitterDistance = 593;
@@ -377,6 +380,14 @@ namespace AiPainter
             panGenerationList.Size = new Size(329, 593);
             panGenerationList.TabIndex = 0;
             // 
+            // panImages
+            // 
+            panImages.Dock = DockStyle.Fill;
+            panImages.Location = new Point(0, 0);
+            panImages.Name = "panImages";
+            panImages.Size = new Size(1150, 160);
+            panImages.TabIndex = 0;
+            // 
             // hPicScroll
             // 
             hPicScroll.Dock = DockStyle.Bottom;
@@ -406,6 +417,7 @@ namespace AiPainter
             toolbar.ResumeLayout(false);
             toolbar.PerformLayout();
             splitContainer.Panel1.ResumeLayout(false);
+            splitContainer.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)splitContainer).EndInit();
             splitContainer.ResumeLayout(false);
             splitContainer1.Panel1.ResumeLayout(false);
@@ -454,5 +466,6 @@ namespace AiPainter
         private ToolStripSplitButton sbResize;
         private ToolStripSeparator toolStripSeparator4;
         private ToolStripButton btRemoveObjectFromImage;
+        private SmartImageList panImages;
     }
 }

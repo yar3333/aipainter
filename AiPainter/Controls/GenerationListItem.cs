@@ -16,9 +16,9 @@
             InitializeComponent();
         }
 
-        public void Init(IImageGenerator generator)
+        public void Init(IImageGenerator imageGenerator)
         {
-            this.generator = generator;
+            generator = imageGenerator;
 
             generator.SetControl(this);
             
@@ -34,7 +34,7 @@
             tbPrompt.Text = generator.GetBasePromptText();
 
             pbSteps.Value = 0;
-            pbSteps.Maximum = this.generator.GetStepsMax();
+            pbSteps.Maximum = generator.GetStepsMax();
             pbSteps.CustomText = "";
             pbSteps.Refresh();
 
