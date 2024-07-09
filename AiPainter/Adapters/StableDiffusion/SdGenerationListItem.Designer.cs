@@ -1,6 +1,8 @@
-﻿namespace AiPainter.Controls
+﻿using AiPainter.Controls;
+
+namespace AiPainter.Adapters.StableDiffusion
 {
-    partial class GenerationListItem
+    partial class SdGenerationListItem
     {
         /// <summary> 
         /// Required designer variable.

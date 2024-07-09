@@ -1,4 +1,4 @@
-﻿namespace AiPainter.Controls;
+﻿namespace AiPainter.Adapters.StableDiffusion;
 
 [Serializable]
 public class SdGenerationParameters
@@ -9,10 +9,10 @@ public class SdGenerationParameters
     public string negative { get; set; } = null!;
     public int steps { get; set; }
     public decimal cfgScale { get; set; }
-    
+
     public long seed { get; set; }
     public decimal seedVariationStrength { get; set; }
-    
+
     public int width { get; set; } = 512;
     public int height { get; set; } = 512;
     public string sampler { get; set; } = "Euler a";

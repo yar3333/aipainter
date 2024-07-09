@@ -1,6 +1,4 @@
-﻿using System.Drawing.Imaging;
-using System.Text.Json;
-using AiPainter.Helpers;
+﻿using AiPainter.Helpers;
 using System.Text.RegularExpressions;
 using AiPainter.Controls;
 using AiPainter.Adapters.StableDiffusion.SdApiClientStuff;
@@ -9,8 +7,9 @@ using AiPainter.Adapters.StableDiffusion.SdVaeStuff;
 
 namespace AiPainter.Adapters.StableDiffusion;
 
-class SdImageGenerator : IImageGenerator
+public class SdGenerationListItemGenerator
 {
+    private readonly SdGenerationListItem control;
     private readonly StableDiffusionPanel sdPanel;
     private readonly SmartPictureBox pictureBox;
     private readonly MainForm mainForm;
@@ -27,10 +26,9 @@ class SdImageGenerator : IImageGenerator
     private readonly Primitive[] savedMask;
     private readonly string destDir;
 
-    private GenerationListItem control = null;
-
-    public SdImageGenerator(StableDiffusionPanel sdPanel, SmartPictureBox pictureBox, MainForm mainForm)
+    public SdGenerationListItemGenerator(SdGenerationListItem control, StableDiffusionPanel sdPanel, SmartPictureBox pictureBox, MainForm mainForm)
     {
+        this.control = control;
         this.sdPanel = sdPanel;
         this.pictureBox = pictureBox;
         this.mainForm = mainForm;
@@ -75,12 +73,6 @@ class SdImageGenerator : IImageGenerator
 
     public string GetTooltip() => "Positive prompt:\n" + sdGenerationParameters.prompt + "\n\n"
                                 + "Negative prompt:\n" + sdGenerationParameters.negative;
-
-    // ReSharper disable once ParameterHidesMember
-    public void SetControl(GenerationListItem control)
-    {
-        this.control = control;
-    }
 
     public void LoadParamsBackToPanel()
     {

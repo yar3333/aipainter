@@ -1,26 +1,23 @@
-﻿namespace AiPainter.Controls
-{
-    public partial class GenerationListItem : UserControl
-    {
-        private IImageGenerator generator = null!;
+﻿using AiPainter.Controls;
 
-        public int ImagesdInQueue => (int)numIterations.Value;
-        public bool InProcess { get; private set; }
-        public bool WantToBeRemoved;
+namespace AiPainter.Adapters.StableDiffusion
+{
+    public partial class SdGenerationListItem : UserControl, IGenerationListItem
+    {
+        public bool InProcess { get; private set;}
+        public bool WantToBeRemoved { get; set;}
+        public bool HasWorkToRun => numIterations.Value > 0;
 
         private bool ignoreNumIterationsChange;
         private int lastIterations;
 
-        public GenerationListItem()
+        private readonly SdGenerationListItemGenerator generator;
+
+        public SdGenerationListItem(StableDiffusionPanel sdPanel, SmartPictureBox pictureBox, MainForm mainForm)
         {
             InitializeComponent();
-        }
 
-        public void Init(IImageGenerator imageGenerator)
-        {
-            generator = imageGenerator;
-
-            generator.SetControl(this);
+            generator = new SdGenerationListItemGenerator(this, sdPanel, pictureBox, mainForm);
             
             ignoreNumIterationsChange = true;
             numIterations.Value = generator.GetOriginalCount();

@@ -1,5 +1,4 @@
-﻿using AiPainter.Controls;
-using AiPainter.Helpers;
+﻿using AiPainter.Helpers;
 using System.Globalization;
 
 namespace AiPainter.Adapters.StableDiffusion;

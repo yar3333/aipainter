@@ -2,17 +2,15 @@
 {
     public partial class GenerationList : UserControl
     {
-        private readonly List<GenerationListItem> items = new();
+        private readonly List<IGenerationListItem> items = new();
 
         public GenerationList()
         {
             InitializeComponent();            
         }
 
-        public void AddGeneration(IImageGenerator generator)
+        public void AddGeneration(IGenerationListItem item)
         {
-            var item = new GenerationListItem();
-            item.Init(generator);
             item.Width = ClientSize.Width;
             item.Anchor = AnchorStyles.Left | AnchorStyles.Top | AnchorStyles.Right;
 
@@ -21,7 +19,7 @@
 
             arrangeItems();
 
-            ScrollControlIntoView(item);
+            ScrollControlIntoView((Control)item);
         }
 
         private void arrangeItems()
@@ -38,7 +36,7 @@
             foreach (var itemToRemove in items.Where(x => !x.InProcess && x.WantToBeRemoved).ToArray())
             {
                 wasRemoved = true;
-                Controls.Remove(itemToRemove);
+                Controls.Remove((Control)itemToRemove);
                 items.Remove(itemToRemove);
                 itemToRemove.Dispose();
             }
@@ -46,7 +44,7 @@
 
             if (items.All(x => !x.InProcess))
             {
-                var item = items.Find(x => x.ImagesdInQueue > 0);
+                var item = items.Find(x => x.HasWorkToRun);
                 item?.Run();
             }
         }

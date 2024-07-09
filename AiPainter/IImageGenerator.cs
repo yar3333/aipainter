@@ -1,18 +1,15 @@
-﻿using AiPainter.Controls;
+﻿namespace AiPainter;
 
-namespace AiPainter;
-
-public interface IImageGenerator
+/*public interface IBaseGenerationQueueItem
 {
-    int GetOriginalCount();
-    string GetBasePromptText();
-    int GetStepsMax();
+    Control Control { get; }
+    
+    bool InProcess { get;}
+    bool WantToBeRemoved { get;}
+    bool HasWorkToRun { get;}
+    
     string GetTooltip();
-
-    void SetControl(GenerationListItem control);
-
     Task RunAsync();
-
-    void LoadParamsBackToPanel();
     void Cancel();
 }
+*/

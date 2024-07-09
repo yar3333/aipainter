@@ -32,7 +32,7 @@ namespace AiPainter
 
             panStableDiffusion.OnGenerate = () =>
             {
-                panGenerationList.AddGeneration(new SdImageGenerator(panStableDiffusion, pictureBox, this));
+                panGenerationList.AddGeneration(new SdGenerationListItem(panStableDiffusion, pictureBox, this));
             };
 
             updateImageListWorker.RunWorkerAsync();
