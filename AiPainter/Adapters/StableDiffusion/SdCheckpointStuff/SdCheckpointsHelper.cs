@@ -9,8 +9,6 @@ static class SdCheckpointsHelper
 {
     public static readonly string BaseDir = Path.Join(Application.StartupPath, "stable_diffusion_checkpoints");
 
-    private static readonly Dictionary<string, SdCheckpointConfig> configCache = new();
-
     public static string[] GetNames(string nameToEnsureExists)
     {
         var basePath = BaseDir;
@@ -91,15 +89,11 @@ static class SdCheckpointsHelper
 
     public static SdCheckpointConfig GetConfig(string name)
     {
-        if (configCache.ContainsKey(name)) return configCache[name];
-
         var configFilePath = Path.Combine(GetDirPath(name), "config.json");
 
         var r = File.Exists(configFilePath)
                    ? JsonSerializer.Deserialize<SdCheckpointConfig>(File.ReadAllText(configFilePath)) ?? new SdCheckpointConfig()
                    : new SdCheckpointConfig();
-
-        configCache[name] = r;
 
         return r;
     }
@@ -160,8 +154,6 @@ static class SdCheckpointsHelper
                 WriteIndented = true,
             }));
 
-            configCache[name] = config;
-            
             return true;
         }
         catch

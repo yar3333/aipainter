@@ -4,9 +4,9 @@ namespace AiPainter.Adapters.StableDiffusion.SdVaeStuff;
 
 static class SdVaeHelper
 {
-    public static readonly string BaseDir = Path.Join(Application.StartupPath, "stable_diffusion_vae");
+    static readonly string BaseDir = Path.Join(Application.StartupPath, "stable_diffusion_vae");
 
-    public static string[] GetNames()
+    static string[] GetNames()
     {
         var basePath = BaseDir;
 
@@ -61,12 +61,5 @@ static class SdVaeHelper
         return File.Exists(configFilePath)
                    ? JsonSerializer.Deserialize<SdVaeConfig>(File.ReadAllText(configFilePath)) ?? new SdVaeConfig()
                    : new SdVaeConfig();
-    }
-
-    public static string GetStatus(string name)
-    {
-        var file = GetPathToVae(name);
-        var url = GetConfig(name).downloadUrl;
-        return file != null ? "file" : !string.IsNullOrWhiteSpace(url) ? "URL" : "-";
     }
 }

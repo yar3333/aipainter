@@ -5,9 +5,7 @@ namespace AiPainter.Adapters.StableDiffusion.SdLoraStuff;
 
 static class SdLoraHelper
 {
-    public static readonly string BaseDir = Path.Join(Application.StartupPath, "stable_diffusion_lora");
-
-    private static readonly Dictionary<string, SdLoraConfig> configCache = new();
+    static readonly string BaseDir = Path.Join(Application.StartupPath, "stable_diffusion_lora");
 
     public static string[] GetNames()
     {
@@ -60,15 +58,11 @@ static class SdLoraHelper
 
     public static SdLoraConfig GetConfig(string name)
     {
-        if (configCache.ContainsKey(name)) return configCache[name];
-
         var configFilePath = Path.Combine(BaseDir, name + ".json");
 
         var r = File.Exists(configFilePath)
                     ? JsonSerializer.Deserialize<SdLoraConfig>(File.ReadAllText(configFilePath)) ?? new SdLoraConfig()
                     : new SdLoraConfig();
-
-        configCache[name] = r;
 
         return r;
     }
@@ -102,8 +96,6 @@ static class SdLoraHelper
                 WriteIndented = true,
             }));
 
-            configCache[name] = config;
-            
             return true;
         }
         catch

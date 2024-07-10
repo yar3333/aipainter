@@ -5,9 +5,7 @@ namespace AiPainter.Adapters.StableDiffusion.SdEmbeddingStuff;
 
 static class SdEmbeddingHelper
 {
-    public static string BaseDir => Path.Join(Application.StartupPath, "stable_diffusion_embeddings");
-
-    private static readonly Dictionary<string, SdEmbeddingConfig> configCache = new();
+    static string BaseDir => Path.Join(Application.StartupPath, "stable_diffusion_embeddings");
 
     public static string[] GetNames()
     {
@@ -52,15 +50,11 @@ static class SdEmbeddingHelper
 
     public static SdEmbeddingConfig GetConfig(string name)
     {
-        if (configCache.ContainsKey(name)) return configCache[name];
-
         var configFilePath = Path.Combine(BaseDir, name + ".json");
 
         var r = File.Exists(configFilePath)
                     ? JsonSerializer.Deserialize<SdEmbeddingConfig>(File.ReadAllText(configFilePath)) ?? new SdEmbeddingConfig()
                     : new SdEmbeddingConfig();
-
-        configCache[name] = r;
 
         return r;
     }
@@ -93,8 +87,6 @@ static class SdEmbeddingHelper
                 DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
                 WriteIndented = true,
             }));
-
-            configCache[name] = config;
             
             return true;
         }
