@@ -29,7 +29,7 @@
         {
             lock (items)
             {
-                return items.FirstOrDefault(x => ((Control)x).Name == name);
+                return items.FirstOrDefault(x => x.Name == name);
             }
         }
 

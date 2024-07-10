@@ -7,8 +7,8 @@ static class ImportModelHelper
 {
     public static string GetCheckpointName(string modelName, string versionName)
     {
-        return UnderscoresToCapitalisation(SanitizeText(modelName))
-                              + "-" + SanitizeText(trimCheckpointVersionName(versionName));
+        return underscoresToCapitalisation(sanitizeText(modelName))
+                              + "-" + sanitizeText(trimCheckpointVersionName(versionName));
     }
 
     private static string trimCheckpointVersionName(string versionName)
@@ -22,17 +22,16 @@ static class ImportModelHelper
     public static string GetLoraOrEmbeddingName(CivitaiModel model, CivitaiVersion version)
     {
         var modelName = processLoraNameAndDetectForModels(model.name, out var forModelNames);
-
         if (!string.IsNullOrEmpty(version.baseModel))
         {
-            forModelNames = forModelNames.Concat(new []{ version.baseModel }).Distinct().ToArray();
+            forModelNames = forModelNames.Concat(new []{ version.baseModel.Replace(" ", "") }).Distinct().ToArray();
         }
 
-        forModelNames = forModelNames.Select(x => x.Replace(" ", "")).ToArray();
+        var versionName = trimCheckpointVersionName(version.name);
 
-        return UnderscoresToCapitalisation(SanitizeText(modelName))
+        return underscoresToCapitalisation(sanitizeText(modelName))
              + (forModelNames.Length > 0 ? "_for_" + string.Join('_', forModelNames) : "")
-             + "-" + SanitizeText(version.name);
+             + "-" + sanitizeText(versionName);
     }
 
     public static string GetInpaintDownloadUrl(CivitaiModel model, CivitaiVersion version)
@@ -56,22 +55,23 @@ static class ImportModelHelper
 
     private static string processLoraNameAndDetectForModels(string name, out string[] forModelNames)
     {
-        var r = new List<string>();
+        name = trimEnd(name, "lora").Trim();
+        
+        var forModelList = new List<string>();
 
         if (name.StartsWith("[Pony]"))
         {
             name = name.Substring("[Pony]".Length).Trim();
-            r.Add("PonyXL");
+            forModelList.Add("PonyXL");
         }
         if (name.StartsWith("[PonyXL]"))
         {
             name = name.Substring("[PonyXL]".Length).Trim();
-            r.Add("PonyXL");
+            forModelList.Add("PonyXL");
         }
-        if (name.Contains("Pony")) r.Add("PonyXL");
+        if (name.Contains("Pony")) forModelList.Add("PonyXL");
 
-        forModelNames = r.Distinct().OrderBy(x => x).ToArray();
-
+        forModelNames = forModelList.Distinct().OrderBy(x => x).ToArray();
         return name;
     }
 
@@ -93,15 +93,15 @@ static class ImportModelHelper
         switch (type)
         {
             case "Model":
-                return GetBestModelDownloadUrlInner(files, "Pruned Model") 
-                    ?? GetBestModelDownloadUrlInner(files, "Model") 
+                return getBestModelDownloadUrlInner(files, "Pruned Model") 
+                    ?? getBestModelDownloadUrlInner(files, "Model") 
                     ?? "";
             default:
-                return GetBestModelDownloadUrlInner(files, type) ?? "";
+                return getBestModelDownloadUrlInner(files, type) ?? "";
         }
     }
 
-    private static string? GetBestModelDownloadUrlInner(CivitaiFile[]? files, string type)
+    private static string? getBestModelDownloadUrlInner(CivitaiFile[]? files, string type)
     {
         return files?.FirstOrDefault(x => x.type == type && x.metadata?.format == "SafeTensor"   && x.metadata?.size == "pruned")?.downloadUrl
             ?? files?.FirstOrDefault(x => x.type == type && x.metadata?.format == "SafeTensor")?.downloadUrl
@@ -109,7 +109,7 @@ static class ImportModelHelper
             ?? files?.FirstOrDefault(x => x.type == type && x.metadata?.format == "PickleTensor")?.downloadUrl;
     }
 
-    private static string SanitizeText(string? s)
+    private static string sanitizeText(string? s)
     {
         if (s == null) return "";
         s = s.Replace("'", "");
@@ -119,9 +119,14 @@ static class ImportModelHelper
         return s;
     }
 
-    private static string UnderscoresToCapitalisation(string s)
+    private static string underscoresToCapitalisation(string s)
     {
         s = Regex.Replace(s, "_[a-zA-Z]", m => m.Value.Substring(1).ToUpperInvariant());
         return s;
+    }
+
+    private static string trimEnd(string input,  string end)
+    {
+        return input.ToLowerInvariant().EndsWith(end.ToLowerInvariant()) ? input.Substring(0, input.Length - end.Length) : input;
     }
 }
