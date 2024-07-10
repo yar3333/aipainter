@@ -2,11 +2,13 @@
 
 public interface IGenerationListItem
 {
+    public GenerationParallelGroup ParallelGroup { get; }
     public bool HasWorkToRun { get; }
     public bool InProcess { get; }
     public bool WantToBeRemoved { get; }
 
     public void Run();
+    public void Cancel();
     
     ///////////////////////////////////////////
     public int Width { get; set; }

@@ -1,19 +1,23 @@
-﻿using System.ComponentModel;
+﻿using AiPainter.Controls;
 using AiPainter.Helpers;
 
 namespace AiPainter.Adapters.StableDiffusion.SdCheckpointStuff
 {
     public partial class SdCheckpointsForm : Form
     {
-        private string[] checkedNames = { };
+        private static bool isNeedUpdateStatusLight;
+        private static bool isNeedUpdateStatusDeep;
+        private static bool isProvidedKeyInvalid;
+
+        private readonly GenerationList generationList;
 
         private bool ignoreCheckedChange = true;
 
-        private bool isProvidedKeyInvalid = false;
-
-        public SdCheckpointsForm()
+        public SdCheckpointsForm(GenerationList generationList)
         {
             InitializeComponent();
+
+            this.generationList = generationList;
         }
 
         private void SdModelsForm_Load(object sender, EventArgs e)
@@ -21,8 +25,6 @@ namespace AiPainter.Adapters.StableDiffusion.SdCheckpointStuff
             tbCivitaiApiKey.Text = Program.Config.CivitaiApiKey;
 
             updateList();
-
-            bwDownloading.RunWorkerAsync();
         }
 
         private void updateList()
@@ -31,17 +33,18 @@ namespace AiPainter.Adapters.StableDiffusion.SdCheckpointStuff
 
             lvModels.Items.Clear();
 
-            var newChecked = new List<string>();
-
             foreach (var name in SdCheckpointsHelper.GetNames("").Where(x => x != ""))
             {
-                var filePath = SdCheckpointsHelper.GetPathToMainCheckpoint(name);
-                if (!string.IsNullOrEmpty(filePath) && File.Exists(filePath)
+                if (SdCheckpointsHelper.GetPathToMainCheckpoint(name) != null
                  || !string.IsNullOrEmpty(SdCheckpointsHelper.GetConfig(name).mainCheckpointUrl)
                  || !string.IsNullOrEmpty(SdCheckpointsHelper.GetConfig(name).inpaintCheckpointUrl))
                 {
-                    var item = new ListViewItem();
-                    item.UseItemStyleForSubItems = false;
+                    var item = new ListViewItem
+                    {
+                        Name = name,
+                        UseItemStyleForSubItems = false,
+                        Checked = SdCheckpointsHelper.IsEnabled(name) && SdCheckpointsHelper.GetPathToMainCheckpoint(name) != null,
+                    };
                     item.SubItems.Add(SdCheckpointsHelper.GetStatusMain(name));
                     item.SubItems.Add(SdCheckpointsHelper.GetStatusInpaint(name));
                     item.SubItems.Add(SdCheckpointsHelper.GetStatusVae(name));
@@ -49,184 +52,158 @@ namespace AiPainter.Adapters.StableDiffusion.SdCheckpointStuff
                     item.SubItems.Add(SdCheckpointsHelper.GetConfig(name).description);
                     item.SubItems.Add(SdCheckpointsHelper.GetConfig(name).homeUrl, Color.Blue, Color.White, item.Font);
 
-                    item.Name = name;
-                    item.Checked = SdCheckpointsHelper.IsEnabled(name) && SdCheckpointsHelper.GetPathToMainCheckpoint(name) != null;
-
                     lvModels.Items.Add(item);
-
-                    if (item.Checked) newChecked.Add(name);
                 }
             }
-
-            checkedNames = newChecked.ToArray();
 
             ignoreCheckedChange = false;
         }
 
-        private void bwDownloading_DoWork(object sender, DoWorkEventArgs _)
+        private void updateStatus()
         {
-            while (!bwDownloading.CancellationPending)
+            if (!isNeedUpdateStatusLight && !isNeedUpdateStatusDeep) return;
+            
+            var deep = isNeedUpdateStatusDeep;
+
+            isNeedUpdateStatusLight = false;
+            isNeedUpdateStatusDeep = false;
+
+            foreach (ListViewItem item in lvModels.Items)
             {
-                foreach (var name in checkedNames)
-                {
-                    downloadModelMain(name);
-                    if (bwDownloading.CancellationPending) break;
-
-                    downloadModelInpaint(name);
-                    if (bwDownloading.CancellationPending) break;
-
-                    downloadModelVae(name);
-                    if (bwDownloading.CancellationPending) break;
-                }
-
-                if (bwDownloading.CancellationPending) break;
-                Thread.Sleep(250);
+                SdModelDownloadHelper.UpdateFileStatusInListView(generationList, item, "download_checkpoint_main_",    1, deep, SdCheckpointsHelper.GetStatusMain);
+                SdModelDownloadHelper.UpdateFileStatusInListView(generationList, item, "download_checkpoint_inpaint_", 2, deep, SdCheckpointsHelper.GetStatusInpaint);
+                SdModelDownloadHelper.UpdateFileStatusInListView(generationList, item, "download_checkpoint_vae_",     3, deep, SdCheckpointsHelper.GetStatusVae);
             }
         }
 
-        private void downloadModelMain(string name)
+        private static void addCheckpointMainToDownloadQueue(GenerationList generationList, string name)
         {
             if (SdCheckpointsHelper.GetPathToMainCheckpoint(name) != null) return;
 
             var url = SdCheckpointsHelper.GetConfig(name).mainCheckpointUrl;
             if (string.IsNullOrWhiteSpace(url)) return;
 
-            if (SdCheckpointsHelper.GetConfig(name).isNeedAuthToDownload && (string.IsNullOrEmpty(Program.Config.CivitaiApiKey) || isProvidedKeyInvalid)) return;
-
-            var resultFilePath = downloadFile(name, url, status => updateStatus(name, status, null, null), new DownloadFileOptions
-            {
-                FileNameIfNotDetected = SdModelDownloadHelper.GetModelFileNameFromUrl(url, "main.safetensors"),
-                AuthorizationBearer = SdModelDownloadHelper.GetCheckpointAuthorizationBearer(name),
-            });
-
-            analyzeDownloadedModel(name, resultFilePath, status => updateStatus(name, status, null, null));
+            generationList.AddGeneration(new SdDownloadingListItem
+            (
+                "download_checkpoint_main_" + name,
+                "Download " + name + " / Main model",
+                () => isReadyToDownload(name),
+                async (progress, cancelationTokenSource) =>
+                {
+                    var resultFilePath = await SdModelDownloadHelper.DownloadFileAsync
+                    (
+                        url,
+                        SdCheckpointsHelper.GetDirPath(name),
+                        s => { progress(s); isNeedUpdateStatusLight = true; },
+                        new DownloadFileOptions
+                        {
+                            FileNameIfNotDetected = SdModelDownloadHelper.GetModelFileNameFromUrl(url, "main.safetensors"),
+                            AuthorizationBearer = SdModelDownloadHelper.GetCheckpointAuthorizationBearer(name),
+                        },
+                        cancelationTokenSource
+                    );
+                    analyzeDownloadedModel(name, resultFilePath, progress);
+                }
+            ));
         }
 
-        private void downloadModelInpaint(string name)
+        private static void addCheckpointInpaintToDownloadQueue(GenerationList generationList, string name)
         {
             if (SdCheckpointsHelper.GetPathToInpaintCheckpoint(name) != null) return;
 
             var url = SdCheckpointsHelper.GetConfig(name).inpaintCheckpointUrl;
             if (string.IsNullOrWhiteSpace(url)) return;
 
-            if (SdCheckpointsHelper.GetConfig(name).isNeedAuthToDownload && (string.IsNullOrEmpty(Program.Config.CivitaiApiKey) || isProvidedKeyInvalid)) return;
-
-            var resultFilePath = downloadFile(name, url, status => updateStatus(name, null, status, null), new DownloadFileOptions
-            {
-                FileNameIfNotDetected = SdModelDownloadHelper.GetModelFileNameFromUrl(url, "inpaint.safetensors"),
-                AuthorizationBearer = SdModelDownloadHelper.GetCheckpointAuthorizationBearer(name),
-            });
-
-            analyzeDownloadedModel(name, resultFilePath, status => updateStatus(name, null, status, null));
+            generationList.AddGeneration(new SdDownloadingListItem
+            (
+                "download_checkpoint_inpaint_" + name,
+                "Download " + name + " / Inpaint model",
+                () => isReadyToDownload(name),
+                async (progress, cancelationTokenSource) =>
+                {
+                    var resultFilePath = await SdModelDownloadHelper.DownloadFileAsync
+                    (
+                         url,
+                         SdCheckpointsHelper.GetDirPath(name),
+                         s => { progress(s); isNeedUpdateStatusLight = true; },
+                         new DownloadFileOptions
+                         {
+                             FileNameIfNotDetected = SdModelDownloadHelper.GetModelFileNameFromUrl(url, "inpaint.safetensors"),
+                             AuthorizationBearer = SdModelDownloadHelper.GetCheckpointAuthorizationBearer(name),
+                         },
+                         cancelationTokenSource
+                    );
+                    analyzeDownloadedModel(name, resultFilePath, progress);
+                }
+            ));
         }
 
-        private void downloadModelVae(string name)
+        private static void addVaeToDownloadQueue(GenerationList generationList, string name)
         {
             if (SdCheckpointsHelper.GetPathToVae(name) != null) return;
 
             var url = SdCheckpointsHelper.GetConfig(name).vaeUrl;
             if (string.IsNullOrWhiteSpace(url)) return;
 
-            if (SdCheckpointsHelper.GetConfig(name).isNeedAuthToDownload && (string.IsNullOrEmpty(Program.Config.CivitaiApiKey) || isProvidedKeyInvalid)) return;
-
-            var resultFilePath = downloadFile(name, url, status => updateStatus(name, null, null, status), new DownloadFileOptions
-            {
-                FileNameIfNotDetected = prepareVaeFileName(SdModelDownloadHelper.GetModelFileNameFromUrl(url, "vae.pt")),
-                PreprocessFileName = prepareVaeFileName!,
-                AuthorizationBearer = SdModelDownloadHelper.GetCheckpointAuthorizationBearer(name),
-            });
-
-            analyzeDownloadedModel(name, resultFilePath, status => updateStatus(name, null, null, status));
+            generationList.AddGeneration(new SdDownloadingListItem
+            (
+                "download_checkpoint_vae_" + name,
+                "Download " + name + " / VAE model",
+                () => isReadyToDownload(name),
+                async (progress, cancelationTokenSource) =>
+                {
+                    var resultFilePath = await SdModelDownloadHelper.DownloadFileAsync
+                    (
+                         url,
+                         SdCheckpointsHelper.GetDirPath(name),
+                         s => { progress(s); isNeedUpdateStatusLight = true; },
+                         new DownloadFileOptions
+                         {
+                             FileNameIfNotDetected = prepareVaeFileName(SdModelDownloadHelper.GetModelFileNameFromUrl(url, "vae.pt")),
+                             PreprocessFileName = prepareVaeFileName!,
+                             AuthorizationBearer = SdModelDownloadHelper.GetCheckpointAuthorizationBearer(name),
+                         },
+                         cancelationTokenSource
+                    );
+                    analyzeDownloadedModel(name, resultFilePath, progress);
+                }
+            ));
         }
 
-        private void analyzeDownloadedModel(string name, string? resultFilePath, Action<string> onUpdateStatus)
+        private static void analyzeDownloadedModel(string name, string? resultFilePath, Action<string> progress)
         {
-            SdModelDownloadHelper.AnalyzeDownloadedModel(resultFilePath, () =>
+            var success = SdModelDownloadHelper.AnalyzeDownloadedModel(resultFilePath, () =>
             {
                 if (!SdCheckpointsHelper.GetConfig(name).isNeedAuthToDownload)
                 {
                     SdCheckpointsHelper.GetConfig(name).isNeedAuthToDownload = true;
-                    onUpdateStatus("need API key");
+                    progress("need API key");
                 }
                 else
                 {
-                    onUpdateStatus("invalid API key");
+                    progress("invalid API key");
                     isProvidedKeyInvalid = true;
                 }
             });
+            if (success)
+            {
+                progress("+");
+                isNeedUpdateStatusDeep = true;
+            }
         }
 
         private void lvModels_ItemChecked(object sender, ItemCheckedEventArgs e)
         {
+            if (ignoreCheckedChange) return;
+            
+            SdCheckpointsHelper.SetEnabled(e.Item.Name, e.Item.Checked);
+            
             if (e.Item.Checked)
             {
-                if (!checkedNames.Contains(e.Item.Name)) checkedNames = checkedNames.Concat(new[] { e.Item.Name }).OrderBy(x => x).ToArray();
+                addCheckpointMainToDownloadQueue(generationList, e.Item.Name);
+                addCheckpointInpaintToDownloadQueue(generationList, e.Item.Name);
+                addVaeToDownloadQueue(generationList, e.Item.Name);
             }
-            else
-            {
-                if (checkedNames.Contains(e.Item.Name)) checkedNames = checkedNames.Where(x => x != e.Item.Name).ToArray();
-            }
-
-            if (!ignoreCheckedChange) SdCheckpointsHelper.SetEnabled(e.Item.Name, e.Item.Checked);
-        }
-
-        private string? downloadFile(string name, string url, Action<string> progress, DownloadFileOptions options)
-        {
-            Invoke(() =>
-            {
-                btOk.Enabled = false;
-                btImportFromCivitai.Enabled = false;
-            });
-
-            var cancelationTokenSource = new CancellationTokenSource();
-
-            string? resultFilePath = null;
-            try
-            {
-                var newOptions = options.Clone();
-                newOptions.Progress = (size, total) =>
-                {
-                    progress(total != null ? Math.Round(size / (double)total * 100) + "%" : size + " bytes");
-
-                    if (bwDownloading.CancellationPending || !checkedNames.Contains(name))
-                    {
-                        cancelationTokenSource.Cancel();
-                    }
-                };
-                resultFilePath = DownloadTools.DownloadFileAsync(url, SdCheckpointsHelper.GetDirPath(name), newOptions, cancelationTokenSource.Token).Result;
-            }
-            catch (AggregateException e)
-            {
-                Program.Log.WriteLine("Downloading " + url + " ERROR: " + e.Message);
-            }
-
-            Invoke(() =>
-            {
-                updateStatus(name, null, null, null);
-                btOk.Enabled = true;
-                btImportFromCivitai.Enabled = true;
-            });
-
-            return resultFilePath;
-        }
-
-        private void updateStatus(string name, string? textMain, string? textInapint, string? textVae)
-        {
-            Invoke(() =>
-            {
-                var item = lvModels.Items.Cast<ListViewItem>().FirstOrDefault(x => x.Name == name);
-                if (item != null)
-                {
-                    textMain ??= SdCheckpointsHelper.GetStatusMain(name);
-                    if (item.SubItems[1].Text != textMain) item.SubItems[1].Text = textMain;
-
-                    textInapint ??= SdCheckpointsHelper.GetStatusInpaint(name);
-                    if (item.SubItems[2].Text != textInapint) item.SubItems[2].Text = textInapint;
-
-                    textVae ??= SdCheckpointsHelper.GetStatusVae(name);
-                    if (item.SubItems[3].Text != textVae) item.SubItems[3].Text = textVae;
-                }
-            });
         }
 
         private void lvModels_MouseClick(object sender, MouseEventArgs e)
@@ -240,7 +217,7 @@ namespace AiPainter.Adapters.StableDiffusion.SdCheckpointStuff
             }
         }
 
-        private string prepareVaeFileName(string fileName)
+        private static string prepareVaeFileName(string fileName)
         {
             return !SdCheckpointsHelper.IsFilePathLikeVae(fileName)
                             ? Path.GetFileNameWithoutExtension(fileName) + "-vae" + Path.GetExtension(fileName)
@@ -270,9 +247,15 @@ namespace AiPainter.Adapters.StableDiffusion.SdCheckpointStuff
             updateList();
         }
 
-        private void SdCheckpointsForm_FormClosing(object sender, FormClosingEventArgs e)
+        private static bool isReadyToDownload(string name)
         {
-            bwDownloading.CancelAsync();
+            return !SdCheckpointsHelper.GetConfig(name).isNeedAuthToDownload
+                || !string.IsNullOrEmpty(Program.Config.CivitaiApiKey) && !isProvidedKeyInvalid;
+        }
+
+        private void updateTimer_Tick(object sender, EventArgs e)
+        {
+            updateStatus();
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel;
 using AiPainter.Helpers;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace AiPainter.Adapters.StableDiffusion.SdEmbeddingStuff
 {
@@ -85,14 +86,30 @@ namespace AiPainter.Adapters.StableDiffusion.SdEmbeddingStuff
 
             if (SdEmbeddingHelper.GetConfig(name).isNeedAuthToDownload && (string.IsNullOrEmpty(Program.Config.CivitaiApiKey) || isProvidedKeyInvalid)) return;
 
-            var resultFilePath = downloadFile(name, url, text => updateStatus(name, text), new DownloadFileOptions
-            {
-                FileNameIfNotDetected = SdModelDownloadHelper.GetModelFileNameFromUrl(url, name + ".safetensors"),
-                PreprocessFileName = x => name + Path.GetExtension(x),
-                AuthorizationBearer = Program.Config.CivitaiApiKey,
-            });
+            var cancelationTokenSource = new CancellationTokenSource();
 
-            SdModelDownloadHelper.AnalyzeDownloadedModel(resultFilePath, () =>
+            var resultFilePath = SdModelDownloadHelper.DownloadFileAsync
+            (
+                url,
+                SdEmbeddingHelper.GetDir(),
+                s =>
+                {
+                    updateStatus(name, s);
+                    if (bwDownloading.CancellationPending || !checkedNames.Contains(name))
+                    {
+                        cancelationTokenSource.Cancel();
+                    }
+                },
+                new DownloadFileOptions
+                {
+                    FileNameIfNotDetected = SdModelDownloadHelper.GetModelFileNameFromUrl(url, name + ".safetensors"),
+                    PreprocessFileName = x => name + Path.GetExtension(x),
+                    AuthorizationBearer = Program.Config.CivitaiApiKey,
+                },
+                cancelationTokenSource
+            ).Result;
+
+            var success = SdModelDownloadHelper.AnalyzeDownloadedModel(resultFilePath, () =>
             {
                 if (!SdEmbeddingHelper.GetConfig(name).isNeedAuthToDownload)
                 {
@@ -104,6 +121,13 @@ namespace AiPainter.Adapters.StableDiffusion.SdEmbeddingStuff
                     updateStatus(name, "invalid API key");
                     isProvidedKeyInvalid = true;
                 }
+            });
+
+            Invoke(() =>
+            {
+                if (success) updateStatus(name, null);
+                btOk.Enabled = true;
+                btImportFromCivitai.Enabled = true;
             });
         }
 
@@ -119,47 +143,6 @@ namespace AiPainter.Adapters.StableDiffusion.SdEmbeddingStuff
             }
 
             if (!ignoreCheckedChange) SdEmbeddingHelper.SetEnabled(e.Item.Name, e.Item.Checked);
-        }
-
-        private string? downloadFile(string name, string url, Action<string> progress, DownloadFileOptions options)
-        {
-            Invoke(() =>
-            {
-                btOk.Enabled = false;
-                btImportFromCivitai.Enabled = false;
-            });
-
-            var cancelationTokenSource = new CancellationTokenSource();
-
-            string? resultFilePath = null;
-            try
-            {
-                var newOptions = options.Clone();
-                newOptions.Progress = (size, total) =>
-                {
-                    progress(total != null ? Math.Round(size / (double)total * 100) + "%" : size + " bytes");
-
-                    if (bwDownloading.CancellationPending || !checkedNames.Contains(name))
-                    {
-                        cancelationTokenSource.Cancel();
-                    }
-                };
-
-                resultFilePath = DownloadTools.DownloadFileAsync(url, SdEmbeddingHelper.GetDir(), newOptions, cancelationTokenSource.Token).Result;
-            }
-            catch (AggregateException e)
-            {
-                Program.Log.WriteLine("Downloading " + url + " ERROR: " + e.Message);
-            }
-
-            Invoke(() =>
-            {
-                updateStatus(name, null);
-                btOk.Enabled = true;
-                btImportFromCivitai.Enabled = true;
-            });
-
-            return resultFilePath;
         }
 
         private void updateStatus(string name, string? text)

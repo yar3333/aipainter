@@ -7,6 +7,8 @@ namespace AiPainter.Adapters.StableDiffusion
 {
     public partial class SdGenerationListItem : UserControl, IGenerationListItem
     {
+        public GenerationParallelGroup ParallelGroup => GenerationParallelGroup.GENERATION;
+
         public bool HasWorkToRun => numIterations.Value > 0;
         public bool InProcess { get; private set; }
         public bool WantToBeRemoved { get; private set; }
@@ -103,6 +105,14 @@ namespace AiPainter.Adapters.StableDiffusion
             });
         }
 
+        public void Cancel()
+        {
+            numIterations.Value = 0;
+            btRemove.Enabled = false;
+            numIterations.Enabled = false;
+            WantToBeRemoved = true;
+        }
+
         private async Task runInnerAsync()
         {
             try
@@ -162,11 +172,7 @@ namespace AiPainter.Adapters.StableDiffusion
 
         private void btRemove_Click(object sender, EventArgs e)
         {
-            numIterations.Value = 0;
-            btRemove.Enabled = false;
-            numIterations.Enabled = false;
-            
-            WantToBeRemoved = true;
+            Cancel();
         }
 
         private void btLoadParamsBackToPanel_Click(object sender, EventArgs e)

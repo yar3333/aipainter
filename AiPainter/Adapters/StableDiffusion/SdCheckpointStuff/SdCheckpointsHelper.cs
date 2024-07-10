@@ -85,8 +85,8 @@ static class SdCheckpointsHelper
     {
         if (string.IsNullOrEmpty(name)) return "<Select Checkpoint>";
         var path = GetPathToMainCheckpoint(name);
-        var size = path != null ? new FileInfo(path).Length : 0;
-        return name + " (" + Math.Round(size / 1024.0 / 1024 / 1024, 1).ToString(CultureInfo.InvariantCulture) + " GB)";
+        var size = path != null ? new FileInfo(path).Length : (long?)null;
+        return name + (size != null ? " (" + Math.Round(size.Value / 1024.0 / 1024 / 1024, 1).ToString(CultureInfo.InvariantCulture) + " GB)" : null);
     }
 
     public static SdCheckpointConfig GetConfig(string name)

@@ -1,20 +1,24 @@
-﻿using System.ComponentModel;
+﻿using AiPainter.Adapters.StableDiffusion.SdCheckpointStuff;
+using AiPainter.Controls;
 using AiPainter.Helpers;
 
 namespace AiPainter.Adapters.StableDiffusion.SdLoraStuff
 {
     public partial class SdLorasForm : Form
     {
-        //private string[] modelNames = null;
-        private string[] checkedNames = { };
+        private static bool isNeedUpdateStatusLight;
+        private static bool isNeedUpdateStatusDeep;
+        private static bool isProvidedKeyInvalid;
+
+        private readonly GenerationList generationList;
 
         private bool ignoreCheckedChange = true;
 
-        private bool isProvidedKeyInvalid = false;
-
-        public SdLorasForm()
+        public SdLorasForm(GenerationList generationList)
         {
             InitializeComponent();
+
+            this.generationList = generationList;
         }
 
         private void SdLorasForm_Load(object sender, EventArgs e)
@@ -22,8 +26,6 @@ namespace AiPainter.Adapters.StableDiffusion.SdLoraStuff
             tbCivitaiApiKey.Text = Program.Config.CivitaiApiKey;
 
             updateList();
-
-            bwDownloading.RunWorkerAsync();
         }
 
         private void updateList()
@@ -32,147 +34,108 @@ namespace AiPainter.Adapters.StableDiffusion.SdLoraStuff
 
             lvModels.Items.Clear();
 
-            var newChecked = new List<string>();
-            
             foreach (var name in SdLoraHelper.GetNames())
             {
-                var filePath = SdLoraHelper.GetPathToModel(name);
-                if (!string.IsNullOrEmpty(filePath) && File.Exists(filePath)
+                if (SdLoraHelper.GetPathToModel(name) != null
                  || !string.IsNullOrEmpty(SdLoraHelper.GetConfig(name).downloadUrl))
                 {
-                    var item = new ListViewItem();
-                    item.UseItemStyleForSubItems = false;
+                    var item = new ListViewItem
+                    {
+                        Name = name,
+                        UseItemStyleForSubItems = false,
+                        Checked = SdLoraHelper.IsEnabled(name) && SdLoraHelper.GetPathToModel(name) != null,
+                    };
                     item.SubItems.Add(SdLoraHelper.GetStatus(name));
                     item.SubItems.Add(SdLoraHelper.GetHumanName(name));
                     item.SubItems.Add(SdLoraHelper.GetConfig(name).description);
                     item.SubItems.Add(SdLoraHelper.GetConfig(name).homeUrl, Color.Blue, Color.White, item.Font);
 
-                    item.Name = name;
-                    item.Checked = SdLoraHelper.IsEnabled(name) && SdLoraHelper.GetPathToModel(name) != null;
-
                     lvModels.Items.Add(item);
-
-                    if (item.Checked) newChecked.Add(name);
                 }
             }
-
-            checkedNames = newChecked.ToArray();
 
             ignoreCheckedChange = false;
         }
 
-        private void bwDownloading_DoWork(object sender, DoWorkEventArgs _)
+        private void updateStatus()
         {
-            while (!bwDownloading.CancellationPending)
-            {
-                foreach (var name in checkedNames)
-                {
-                    downloadModel(name);
-                    if (bwDownloading.CancellationPending) break;
-                }
+            if (!isNeedUpdateStatusLight && !isNeedUpdateStatusDeep) return;
 
-                if (bwDownloading.CancellationPending) break;
-                Thread.Sleep(500);
+            var deep = isNeedUpdateStatusDeep;
+
+            isNeedUpdateStatusLight = false;
+            isNeedUpdateStatusDeep = false;
+
+            foreach (ListViewItem item in lvModels.Items)
+            {
+                SdModelDownloadHelper.UpdateFileStatusInListView(generationList, item, "download_lora_", 1, deep, SdLoraHelper.GetStatus);
             }
         }
 
-        private void downloadModel(string name)
+        private static void addLoraToDownloadQueue(GenerationList generationList, string name)
         {
             if (SdLoraHelper.GetPathToModel(name) != null) return;
 
             var url = SdLoraHelper.GetConfig(name).downloadUrl;
             if (string.IsNullOrWhiteSpace(url)) return;
 
-            if (SdLoraHelper.GetConfig(name).isNeedAuthToDownload && (string.IsNullOrEmpty(Program.Config.CivitaiApiKey) || isProvidedKeyInvalid)) return;
+            generationList.AddGeneration(new SdDownloadingListItem
+            (
+                "download_lora_" + name,
+                "Download " + name + " / LoRA model",
+                () => isReadyToDownload(name),
+                async (progress, cancelationTokenSource) =>
+                {
+                    var resultFilePath = await SdModelDownloadHelper.DownloadFileAsync
+                    (
+                        url,
+                        SdLoraHelper.GetDir(),
+                        s => { progress(s); isNeedUpdateStatusLight = true; },
+                        new DownloadFileOptions
+                        {
+                            FileNameIfNotDetected = SdModelDownloadHelper.GetModelFileNameFromUrl(url, name + ".safetensors"),
+                            PreprocessFileName = x => name + Path.GetExtension(x),
+                            AuthorizationBearer = Program.Config.CivitaiApiKey,
+                        },
+                        cancelationTokenSource
+                    );
+                    analyzeDownloadedModel(name, resultFilePath, progress);
+                }
+            ));
+        }
 
-            var resultFilePath = downloadFile(name, url, text => updateStatus(name, text), new DownloadFileOptions
-            {
-                FileNameIfNotDetected = SdModelDownloadHelper.GetModelFileNameFromUrl(url, name + ".safetensors"),
-                PreprocessFileName = x => name + Path.GetExtension(x),
-                AuthorizationBearer = Program.Config.CivitaiApiKey,
-            });
-
-            SdModelDownloadHelper.AnalyzeDownloadedModel(resultFilePath, () =>
+        private static void analyzeDownloadedModel(string name, string? resultFilePath, Action<string> progress)
+        {
+            var success = SdModelDownloadHelper.AnalyzeDownloadedModel(resultFilePath, () =>
             {
                 if (!SdLoraHelper.GetConfig(name).isNeedAuthToDownload)
                 {
                     SdLoraHelper.GetConfig(name).isNeedAuthToDownload = true;
-                    updateStatus(name, "need API key");
+                    progress("need API key");
                 }
                 else
                 {
-                    updateStatus(name, "invalid API key");
+                    progress("invalid API key");
                     isProvidedKeyInvalid = true;
                 }
             });
+            if (success)
+            {
+                progress("+");
+                isNeedUpdateStatusDeep = true;
+            }
         }
 
         private void lvModels_ItemChecked(object sender, ItemCheckedEventArgs e)
         {
+            if (ignoreCheckedChange) return;
+
+            SdLoraHelper.SetEnabled(e.Item.Name, e.Item.Checked);
+
             if (e.Item.Checked)
             {
-                if (!checkedNames.Contains(e.Item.Name)) checkedNames = checkedNames.Concat(new[] { e.Item.Name }).OrderBy(x => x).ToArray();
+                addLoraToDownloadQueue(generationList, e.Item.Name);
             }
-            else
-            {
-                if (checkedNames.Contains(e.Item.Name)) checkedNames = checkedNames.Where(x => x != e.Item.Name).ToArray();
-            }
-
-            if (!ignoreCheckedChange) SdLoraHelper.SetEnabled(e.Item.Name, e.Item.Checked);
-        }
-
-        private string? downloadFile(string name, string url, Action<string> progress, DownloadFileOptions options)
-        {
-            Invoke(() =>
-            {
-                btOk.Enabled = false;
-                btImportFromCivitai.Enabled = false;
-            });
-
-            var cancelationTokenSource = new CancellationTokenSource();
-
-            string? resultFilePath = null;
-            try
-            {
-                var newOptions = options.Clone();
-                newOptions.Progress = (size, total) =>
-                {
-                    progress(total != null ? Math.Round(size / (double)total * 100) + "%" : size + " bytes");
-
-                    if (bwDownloading.CancellationPending || !checkedNames.Contains(name))
-                    {
-                        cancelationTokenSource.Cancel();
-                    }
-                };
-
-                resultFilePath = DownloadTools.DownloadFileAsync(url, SdLoraHelper.GetDir(), newOptions, cancelationTokenSource.Token).Result;
-            }
-            catch (AggregateException e)
-            {
-                Program.Log.WriteLine("Downloading " + url + " ERROR: " + e.Message);
-            }
-
-            Invoke(() =>
-            {
-                updateStatus(name, null);
-                btOk.Enabled = true;
-                btImportFromCivitai.Enabled = true;
-            });
-
-            return resultFilePath;
-        }
-
-        private void updateStatus(string name, string? text)
-        {
-            Invoke(() =>
-            {
-                var item = lvModels.Items.Cast<ListViewItem>().FirstOrDefault(x => x.Name == name);
-                if (item != null)
-                {
-                    text ??= SdLoraHelper.GetStatus(name);
-                    if (item.SubItems[1].Text != text) item.SubItems[1].Text = text;
-                }
-            });
         }
 
         private void lvModels_MouseClick(object sender, MouseEventArgs e)
@@ -186,11 +149,6 @@ namespace AiPainter.Adapters.StableDiffusion.SdLoraStuff
             }
         }
 
-        private void linkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
-        {
-            ProcessHelper.OpenUrlInBrowser("https://civitai.com/user/account");
-        }
-
         private void tbCivitaiApiKey_TextChanged(object sender, EventArgs e)
         {
             if (Program.Config.CivitaiApiKey != tbCivitaiApiKey.Text)
@@ -201,6 +159,11 @@ namespace AiPainter.Adapters.StableDiffusion.SdLoraStuff
             }
         }
 
+        private void linkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            ProcessHelper.OpenUrlInBrowser("https://civitai.com/user/account");
+        }
+
         private void btImportFromCivitai_Click(object sender, EventArgs e)
         {
             var form = new AddImportModelForm();
@@ -209,9 +172,15 @@ namespace AiPainter.Adapters.StableDiffusion.SdLoraStuff
             updateList();
         }
 
-        private void SdLorasForm_FormClosing(object sender, FormClosingEventArgs e)
+        private static bool isReadyToDownload(string name)
         {
-            bwDownloading.CancelAsync();
+            return !SdLoraHelper.GetConfig(name).isNeedAuthToDownload
+                || !string.IsNullOrEmpty(Program.Config.CivitaiApiKey) && !isProvidedKeyInvalid;
+        }
+
+        private void updateTimer_Tick(object sender, EventArgs e)
+        {
+            updateStatus();
         }
     }
 }

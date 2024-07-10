@@ -30,6 +30,7 @@ namespace AiPainter
             panImages.OnLoadParametersToSdGenerationPanel = panStableDiffusion.LoadParametersToSdGenerationPanel;
             panImages.OnOpenImageFile = filePath => OpenImageFile(filePath, false);
 
+            panStableDiffusion.GenerationList = panGenerationList;
             panStableDiffusion.OnGenerate = () =>
             {
                 panGenerationList.AddGeneration(new SdGenerationListItem(panStableDiffusion, pictureBox, this));

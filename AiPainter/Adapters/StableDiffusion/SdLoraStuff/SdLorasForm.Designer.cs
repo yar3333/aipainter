@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            components = new System.ComponentModel.Container();
             btOk = new Button();
             lvModels = new ListView();
             columnHeader1 = new ColumnHeader();
@@ -35,11 +36,11 @@
             columnHeader3 = new ColumnHeader();
             columnHeader4 = new ColumnHeader();
             columnHeader5 = new ColumnHeader();
-            bwDownloading = new System.ComponentModel.BackgroundWorker();
             label1 = new Label();
             tbCivitaiApiKey = new TextBox();
             linkLabel1 = new LinkLabel();
             btImportFromCivitai = new Button();
+            updateTimer = new System.Windows.Forms.Timer(components);
             SuspendLayout();
             // 
             // btOk
@@ -98,11 +99,6 @@
             columnHeader5.Text = "Link";
             columnHeader5.Width = 190;
             // 
-            // bwDownloading
-            // 
-            bwDownloading.WorkerSupportsCancellation = true;
-            bwDownloading.DoWork += bwDownloading_DoWork;
-            // 
             // label1
             // 
             label1.AutoSize = true;
@@ -144,6 +140,12 @@
             btImportFromCivitai.UseVisualStyleBackColor = true;
             btImportFromCivitai.Click += btImportFromCivitai_Click;
             // 
+            // updateTimer
+            // 
+            updateTimer.Enabled = true;
+            updateTimer.Interval = 1000;
+            updateTimer.Tick += updateTimer_Tick;
+            // 
             // SdLorasForm
             // 
             AcceptButton = btOk;
@@ -161,7 +163,6 @@
             ShowInTaskbar = false;
             StartPosition = FormStartPosition.CenterParent;
             Text = "Stable Diffusion LoRA (additional mini-checkpoints)";
-            FormClosing += SdLorasForm_FormClosing;
             Load += SdLorasForm_Load;
             ResumeLayout(false);
             PerformLayout();
@@ -172,7 +173,6 @@
         private ListView lvModels;
         private ColumnHeader columnHeader1;
         private ColumnHeader columnHeader4;
-        private System.ComponentModel.BackgroundWorker bwDownloading;
         private ColumnHeader columnHeader2;
         private ColumnHeader columnHeader3;
         private Label label1;
@@ -180,5 +180,6 @@
         private LinkLabel linkLabel1;
         private Button btImportFromCivitai;
         private ColumnHeader columnHeader5;
+        private System.Windows.Forms.Timer updateTimer;
     }
 }

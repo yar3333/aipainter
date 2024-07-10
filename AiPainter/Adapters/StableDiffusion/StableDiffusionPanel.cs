@@ -10,11 +10,12 @@ namespace AiPainter.Adapters.StableDiffusion
 {
     public partial class StableDiffusionPanel : UserControl
     {
+        private readonly string baseVaeTooltip;
+        
+        public GenerationList GenerationList = null!;
         public Action OnGenerate = null!;
 
         public bool IsTextboxInFocus => collapsablePanel.ActiveControl is TextBox;
-
-        private readonly string baseVaeTooltip;
 
         public string selectedCheckpointName
         {
@@ -45,7 +46,7 @@ namespace AiPainter.Adapters.StableDiffusion
         public StableDiffusionPanel()
         {
             InitializeComponent();
-
+            
             baseVaeTooltip = toolTip.GetToolTip(ddVae);
         }
 
@@ -71,13 +72,12 @@ namespace AiPainter.Adapters.StableDiffusion
 
         private void showManageCheckpointDialog()
         {
-            var form = new SdCheckpointsForm();
+            var form = new SdCheckpointsForm(GenerationList);
             form.ShowDialog(this);
 
             var saveName = selectedCheckpointName;
             ddCheckpoint.DataSource = SdCheckpointsHelper.GetListItems(saveName);
             selectedCheckpointName = saveName;
-
         }
 
         private void btGenerate_Click(object sender, EventArgs e)
@@ -270,7 +270,7 @@ namespace AiPainter.Adapters.StableDiffusion
 
             cmLorasMenu.Items.Add("Manage LoRAs...", null, (_, _) =>
             {
-                var form = new SdLorasForm();
+                var form = new SdLorasForm(GenerationList);
                 form.ShowDialog(this);
             });
 

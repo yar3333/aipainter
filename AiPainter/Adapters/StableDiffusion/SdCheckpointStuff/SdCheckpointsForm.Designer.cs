@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            components = new System.ComponentModel.Container();
             btOk = new Button();
             lvModels = new ListView();
             columnHeader1 = new ColumnHeader();
@@ -37,11 +38,11 @@
             columnHeader5 = new ColumnHeader();
             columnHeader6 = new ColumnHeader();
             columnHeader7 = new ColumnHeader();
-            bwDownloading = new System.ComponentModel.BackgroundWorker();
             linkLabel1 = new LinkLabel();
             tbCivitaiApiKey = new TextBox();
             label1 = new Label();
             btImportFromCivitai = new Button();
+            updateTimer = new System.Windows.Forms.Timer(components);
             SuspendLayout();
             // 
             // btOk
@@ -109,11 +110,6 @@
             columnHeader7.Text = "Link";
             columnHeader7.Width = 350;
             // 
-            // bwDownloading
-            // 
-            bwDownloading.WorkerSupportsCancellation = true;
-            bwDownloading.DoWork += bwDownloading_DoWork;
-            // 
             // linkLabel1
             // 
             linkLabel1.AutoSize = true;
@@ -155,6 +151,12 @@
             btImportFromCivitai.UseVisualStyleBackColor = true;
             btImportFromCivitai.Click += btImportFromCivitai_Click;
             // 
+            // updateTimer
+            // 
+            updateTimer.Enabled = true;
+            updateTimer.Interval = 1000;
+            updateTimer.Tick += updateTimer_Tick;
+            // 
             // SdCheckpointsForm
             // 
             AcceptButton = btOk;
@@ -172,7 +174,6 @@
             ShowInTaskbar = false;
             StartPosition = FormStartPosition.CenterParent;
             Text = "Stable Diffusion Checkpoints (image generation models)";
-            FormClosing += SdCheckpointsForm_FormClosing;
             Load += SdModelsForm_Load;
             ResumeLayout(false);
             PerformLayout();
@@ -184,7 +185,6 @@
         private ColumnHeader columnHeader1;
         private ColumnHeader columnHeader5;
         private ColumnHeader columnHeader7;
-        private System.ComponentModel.BackgroundWorker bwDownloading;
         private ColumnHeader columnHeader2;
         private ColumnHeader columnHeader3;
         private ColumnHeader columnHeader4;
@@ -193,5 +193,6 @@
         private Label label1;
         private Button btImportFromCivitai;
         private ColumnHeader columnHeader6;
+        private System.Windows.Forms.Timer updateTimer;
     }
 }
