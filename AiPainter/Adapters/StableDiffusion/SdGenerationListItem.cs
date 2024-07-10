@@ -90,7 +90,7 @@ namespace AiPainter.Adapters.StableDiffusion
                     savedOriginalImage,
                     pictureBox.ActiveBox,
                     pictureBox.GetMaskCropped(Color.Black, Color.White),
-                    mainForm.ImagesFolder!
+                    mainForm.FilePath!
                 );
             }
         }

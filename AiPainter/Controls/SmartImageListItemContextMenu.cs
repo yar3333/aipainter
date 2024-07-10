@@ -4,7 +4,7 @@ namespace AiPainter.Controls;
 
 sealed class SmartImageListItemContextMenu : ContextMenuStrip
 {
-    public SmartImageListItemContextMenu(MainForm mainForm, string imageFilePath)
+    public SmartImageListItemContextMenu(MainForm mainForm, string? imageFilePath)
     {
         Opened += (_, _) => mainForm.toolTip.Active = false;
         Closed += (_, _) => mainForm.toolTip.Active = true;
@@ -42,100 +42,104 @@ sealed class SmartImageListItemContextMenu : ContextMenuStrip
             Items.Add(new ToolStripMenuItem("Open subfolder") { Enabled = false }); 
         }
 
-        Items.Add(new ToolStripSeparator());
-        
-        {
-            var moveImageToSubfolderMenuItem = new ToolStripMenuItem("Move image to subfolder");
-            moveImageToSubfolderMenuItem.DropDownItems.Add("<NEW>", null, (_, _) =>
-            {
-                var dialog = new FolderNameDialog(Path.GetFileNameWithoutExtension(imageFilePath), null);
-                if (dialog.ShowDialog(this) == DialogResult.OK)
-                {
-                    moveImageFile(imageFilePath, Path.Combine(mainForm.ImagesFolder!, dialog.ResultFolderName));
-                }
-            });
-            if (subfolders.Length > 0)
-            {
-                moveImageToSubfolderMenuItem.DropDownItems.Add(new ToolStripSeparator());
-                foreach (var dir in subfolders)
-                {
-                    moveImageToSubfolderMenuItem.DropDownItems.Add(Path.GetFileName(dir), null, (_, _) =>
-                    {
-                        moveImageFile(imageFilePath, dir);
-                    });
-                }
-            }
-            Items.Add(moveImageToSubfolderMenuItem);
-        }
-        
-        {
-            var moveImageToSubfolderAndOpenMenuItem = new ToolStripMenuItem("Move image to subfolder and open");
-            moveImageToSubfolderAndOpenMenuItem.DropDownItems.Add("<NEW>", null, (_, _) =>
-            {
-                var dialog = new FolderNameDialog(Path.GetFileNameWithoutExtension(imageFilePath), null);
-                if (dialog.ShowDialog(this) == DialogResult.OK)
-                {
-                    var destImagePath = moveImageFile(imageFilePath, Path.Combine(mainForm.ImagesFolder!, dialog.ResultFolderName));
-                    mainForm.OpenImageFile(destImagePath);
-                    mainForm.ImagesFolder = Path.GetDirectoryName(destImagePath);
-                }
-            });
-            if (subfolders.Length > 0)
-            {
-                moveImageToSubfolderAndOpenMenuItem.DropDownItems.Add(new ToolStripSeparator());
-                foreach (var dir in subfolders)
-                {
-                    moveImageToSubfolderAndOpenMenuItem.DropDownItems.Add(Path.GetFileName(dir), null, (_, _) =>
-                    {
-                        var destImagePath = moveImageFile(imageFilePath, dir);
-                        mainForm.OpenImageFile(destImagePath);
-                        mainForm.ImagesFolder = Path.GetDirectoryName(destImagePath);
-                    });
-                }
-            }
-            Items.Add(moveImageToSubfolderAndOpenMenuItem);
-        }
-
-        if (parentFolder != Application.StartupPath.TrimEnd('\\', '/'))
+        if (imageFilePath != null)
         {
             Items.Add(new ToolStripSeparator());
-
-            Items.Add("Move image to parent folder (" + Path.GetFileName(Path.GetDirectoryName(mainForm.ImagesFolder)) + ")", null, (_, _) =>
+            
             {
-                var srcDir = Path.GetDirectoryName(imageFilePath)!;
-                var destDir = Path.GetDirectoryName(srcDir);
-                if (destDir == null) return;
-
-                moveImageFile(imageFilePath, destDir);
-
-                if (Directory.GetDirectories(srcDir).Length == 0 && Directory.GetFiles(srcDir).Length == 0)
+                var moveImageToSubfolderMenuItem = new ToolStripMenuItem("Move image to subfolder");
+                moveImageToSubfolderMenuItem.DropDownItems.Add("<NEW>", null, (_, _) =>
                 {
-                    try { Directory.Delete(srcDir); } catch { }
+                    var dialog = new FolderNameDialog(Path.GetFileNameWithoutExtension(imageFilePath), null);
+                    if (dialog.ShowDialog(this) == DialogResult.OK)
+                    {
+                        moveImageFile(imageFilePath, Path.Combine(mainForm.ImagesFolder!, dialog.ResultFolderName));
+                    }
+                });
+                if (subfolders.Length > 0)
+                {
+                    moveImageToSubfolderMenuItem.DropDownItems.Add(new ToolStripSeparator());
+                    foreach (var dir in subfolders)
+                    {
+                        moveImageToSubfolderMenuItem.DropDownItems.Add(Path.GetFileName(dir), null, (_, _) =>
+                        {
+                            moveImageFile(imageFilePath, dir);
+                        });
+                    }
                 }
-            });
-
-            Items.Add("Move image to parent folder and open (" + Path.GetFileName(Path.GetDirectoryName(mainForm.ImagesFolder)) + ")", null, (_, _) =>
+                Items.Add(moveImageToSubfolderMenuItem);
+            }
+            
             {
-                var srcDir = Path.GetDirectoryName(imageFilePath)!;
-                var destDir = Path.GetDirectoryName(srcDir);
-                if (destDir == null) return;
-
-                var destImagePath = moveImageFile(imageFilePath, destDir);
-                mainForm.OpenImageFile(destImagePath);
-                mainForm.ImagesFolder = destDir;
-
-                if (Directory.GetDirectories(srcDir).Length == 0 && Directory.GetFiles(srcDir).Length == 0)
+                var moveImageToSubfolderAndOpenMenuItem = new ToolStripMenuItem("Move image to subfolder and open");
+                moveImageToSubfolderAndOpenMenuItem.DropDownItems.Add("<NEW>", null, (_, _) =>
                 {
-                    try { Directory.Delete(srcDir); } catch { }
+                    var dialog = new FolderNameDialog(Path.GetFileNameWithoutExtension(imageFilePath), null);
+                    if (dialog.ShowDialog(this) == DialogResult.OK)
+                    {
+                        var destImagePath = moveImageFile(imageFilePath, Path.Combine(mainForm.ImagesFolder!, dialog.ResultFolderName));
+                        mainForm.OpenImageFile(destImagePath);
+                        mainForm.ImagesFolder = Path.GetDirectoryName(destImagePath);
+                    }
+                });
+                if (subfolders.Length > 0)
+                {
+                    moveImageToSubfolderAndOpenMenuItem.DropDownItems.Add(new ToolStripSeparator());
+                    foreach (var dir in subfolders)
+                    {
+                        moveImageToSubfolderAndOpenMenuItem.DropDownItems.Add(Path.GetFileName(dir), null, (_, _) =>
+                        {
+                            var destImagePath = moveImageFile(imageFilePath, dir);
+                            mainForm.OpenImageFile(destImagePath);
+                            mainForm.ImagesFolder = Path.GetDirectoryName(destImagePath);
+                        });
+                    }
                 }
-            });
+                Items.Add(moveImageToSubfolderAndOpenMenuItem);
+            }
+
+            if (parentFolder != Application.StartupPath.TrimEnd('\\', '/'))
+            {
+                Items.Add(new ToolStripSeparator());
+
+                Items.Add("Move image to parent folder (" + Path.GetFileName(Path.GetDirectoryName(mainForm.ImagesFolder)) + ")", null, (_, _) =>
+                {
+                    var srcDir = Path.GetDirectoryName(imageFilePath)!;
+                    var destDir = Path.GetDirectoryName(srcDir);
+                    if (destDir == null) return;
+
+                    moveImageFile(imageFilePath, destDir);
+
+                    if (Directory.GetDirectories(srcDir).Length == 0 && Directory.GetFiles(srcDir).Length == 0)
+                    {
+                        try { Directory.Delete(srcDir); } catch { }
+                    }
+                });
+
+                Items.Add("Move image to parent folder and open (" + Path.GetFileName(Path.GetDirectoryName(mainForm.ImagesFolder)) + ")", null, (_, _) =>
+                {
+                    var srcDir = Path.GetDirectoryName(imageFilePath)!;
+                    var destDir = Path.GetDirectoryName(srcDir);
+                    if (destDir == null) return;
+
+                    var destImagePath = moveImageFile(imageFilePath, destDir);
+                    mainForm.OpenImageFile(destImagePath);
+                    mainForm.ImagesFolder = destDir;
+
+                    if (Directory.GetDirectories(srcDir).Length == 0 && Directory.GetFiles(srcDir).Length == 0)
+                    {
+                        try { Directory.Delete(srcDir); } catch { }
+                    }
+                });
+            }
         }
 
         Items.Add(new ToolStripSeparator());
 
         Items.Add("Show in Explorer", null, (_, _) =>
         {
-            ProcessHelper.ShowFileInExplorer(imageFilePath);
+            if (imageFilePath != null) ProcessHelper.ShowFileInExplorer(imageFilePath);
+            else                       ProcessHelper.ShowFolderInExplorer(mainForm.ImagesFolder!);
         });
         
         Items.Add("Rename folder (" + Path.GetFileName(mainForm.ImagesFolder) + ")", null, (_, _) =>
@@ -154,12 +158,15 @@ sealed class SmartImageListItemContextMenu : ContextMenuStrip
             }
         });
         
-        Items.Add(new ToolStripSeparator());
-        
-        Items.Add("Open image with default application", null, (_, _) =>
+        if (imageFilePath != null)
         {
-            ProcessHelper.OpenUrlInBrowser(imageFilePath);
-        });
+            Items.Add(new ToolStripSeparator());
+            
+            Items.Add("Open image with default application", null, (_, _) =>
+            {
+                ProcessHelper.OpenUrlInBrowser(imageFilePath);
+            });
+        }
     }
 
     private static string moveImageFile(string srcFilePath, string destDir)

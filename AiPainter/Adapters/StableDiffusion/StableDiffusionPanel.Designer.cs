@@ -65,7 +65,6 @@
             cmNegativePromptHistoryMenu = new ContextMenuStrip(components);
             cmEmbeddingsMenu = new ContextMenuStrip(components);
             cmNegativeEmbeddingsMenu = new ContextMenuStrip(components);
-            cmSuggestedPromptMenu = new ContextMenuStrip(components);
             collapsablePanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)numIterations).BeginInit();
             ((System.ComponentModel.ISupportInitialize)numSteps).BeginInit();
@@ -329,6 +328,7 @@
             toolTip.SetToolTip(ddCheckpoint, "Active checkpoint (image generation model)");
             ddCheckpoint.ValueMember = "Value";
             ddCheckpoint.DropDown += ddCheckpoint_DropDown;
+            ddCheckpoint.SelectedIndexChanged += ddCheckpoint_SelectedIndexChanged;
             // 
             // tbNegative
             // 
@@ -510,12 +510,6 @@
             cmNegativeEmbeddingsMenu.Name = "contextMenuCheckpoint";
             cmNegativeEmbeddingsMenu.Size = new Size(200, 4);
             // 
-            // cmSuggestedPromptMenu
-            // 
-            cmSuggestedPromptMenu.MinimumSize = new Size(200, 0);
-            cmSuggestedPromptMenu.Name = "contextMenuCheckpoint";
-            cmSuggestedPromptMenu.Size = new Size(200, 4);
-            // 
             // StableDiffusionPanel
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -569,7 +563,6 @@
         private ContextMenuStrip cmNegativeEmbeddingsMenu;
         private Button btStyles;
         private Button btSuggestedPrompt;
-        private ContextMenuStrip cmSuggestedPromptMenu;
         private ComboBox ddVae;
         private ComboBox ddClipSkip;
         private Label label2;

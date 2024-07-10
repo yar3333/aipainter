@@ -46,6 +46,13 @@ sealed class SmartImageList : Panel
             hPicScroll.Value = Math.Max(hPicScroll.Minimum, Math.Min(hPicScroll.Maximum - hPicScroll.LargeChange + 1, hPicScroll.Value + (ee.Delta > 0 ? -1 : 1)));
             updateImages(null);
         };
+
+        MouseDown += (_, args) =>
+        {
+            if (args.Button != MouseButtons.Right) return;
+
+            new SmartImageListItemContextMenu(mainForm!, null).Show(Cursor.Position);
+        };
         
         Task.Run(backgroundAutoUpdateThread);
     }

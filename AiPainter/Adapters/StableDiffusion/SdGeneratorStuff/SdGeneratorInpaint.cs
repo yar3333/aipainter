@@ -1,7 +1,6 @@
 ﻿using AiPainter.Helpers;
 using System.Text.RegularExpressions;
 using AiPainter.Adapters.StableDiffusion.SdApiClientStuff;
-using AiPainter.Adapters.StableDiffusion.SdCheckpointStuff;
 using AiPainter.Adapters.StableDiffusion.SdGeneratorStuff.ExceptionsAndHelpers;
 
 namespace AiPainter.Adapters.StableDiffusion.SdGeneratorStuff;

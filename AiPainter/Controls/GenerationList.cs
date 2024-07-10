@@ -62,7 +62,7 @@
                 {
                     if (group.All(x => !x.InProcess))
                     {
-                        var item = items.Find(x => x.HasWorkToRun);
+                        var item = group.FirstOrDefault(x => x.HasWorkToRun);
                         item?.Run();
                     }
                 }

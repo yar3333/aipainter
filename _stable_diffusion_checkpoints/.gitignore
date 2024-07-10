@@ -1,4 +1,5 @@
 *.ckpt
 *.safetensors
 *.pt
+_disabled
 misc_*

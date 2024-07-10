@@ -11,7 +11,7 @@ namespace AiPainter.Adapters.StableDiffusion
     public partial class StableDiffusionPanel : UserControl
     {
         private readonly string baseVaeTooltip;
-        
+
         public GenerationList GenerationList = null!;
         public Action OnGenerate = null!;
 
@@ -58,7 +58,7 @@ namespace AiPainter.Adapters.StableDiffusion
         public StableDiffusionPanel()
         {
             InitializeComponent();
-            
+
             baseVaeTooltip = toolTip.GetToolTip(ddVae);
         }
 
@@ -219,15 +219,15 @@ namespace AiPainter.Adapters.StableDiffusion
             selectedVaeName = sdGenerationParameters.vaeName;
 
             numSteps.Value = sdGenerationParameters.steps;
-                
+
             tbPrompt.Text = sdGenerationParameters.prompt;
             tbNegative.Text = sdGenerationParameters.negative;
-                
+
             if (sdGenerationParameters.cfgScale != 0)
             {
                 numCfgScale.Value = Math.Max(numCfgScale.Minimum, Math.Min(numCfgScale.Maximum, sdGenerationParameters.cfgScale));
             }
-            
+
             if (sdGenerationParameters.clipSkip != 0) selectedClipSkip = sdGenerationParameters.clipSkip;
 
             tbSeed.Text = sdGenerationParameters.seed.ToString();
@@ -292,12 +292,16 @@ namespace AiPainter.Adapters.StableDiffusion
 
             cmLorasMenu.Items.Add(new ToolStripSeparator());
 
+            var usedModels = GetUsedLoras();
             var models = SdLoraHelper.GetNames().Where(x => SdLoraHelper.GetPathToModel(x) != null && SdLoraHelper.IsEnabled(x)).ToArray();
             foreach (var name in models)
             {
-                cmLorasMenu.Items.Add(SdLoraHelper.GetHumanName(name), null, (_, _) =>
+                cmLorasMenu.Items.Add(new ToolStripMenuItem(SdLoraHelper.GetHumanName(name), null, (_, _) =>
                 {
-                    tbPrompt.Text = SdLoraHelper.GetPrompt(name) + ", " + tbPrompt.Text;
+                    AddTextToPrompt(SdLoraHelper.GetPrompt(name));
+                })
+                {
+                    Checked = usedModels.Contains(name)
                 });
             }
 
@@ -336,7 +340,7 @@ namespace AiPainter.Adapters.StableDiffusion
                                                    && SdEmbeddingHelper.IsEnabled(x)
                                                    && !SdEmbeddingHelper.GetConfig(x).isNegative)
                                           .ToArray();
-            fillEmbeddingContextMenu(cmEmbeddingsMenu, tbPrompt, models);
+            fillEmbeddingContextMenu(cmEmbeddingsMenu, models, false);
         }
 
         private void btNegativeEmbeddings_Click(object sender, EventArgs e)
@@ -346,10 +350,10 @@ namespace AiPainter.Adapters.StableDiffusion
                                                    && SdEmbeddingHelper.IsEnabled(x)
                                                    && SdEmbeddingHelper.GetConfig(x).isNegative)
                                           .ToArray();
-            fillEmbeddingContextMenu(cmNegativeEmbeddingsMenu, tbNegative, models);
+            fillEmbeddingContextMenu(cmNegativeEmbeddingsMenu, models, true);
         }
 
-        private void fillEmbeddingContextMenu(ContextMenuStrip menu, TextBox tb, string[] models)
+        private void fillEmbeddingContextMenu(ContextMenuStrip menu, string[] models, bool isForNegative)
         {
             menu.Items.Clear();
 
@@ -363,9 +367,13 @@ namespace AiPainter.Adapters.StableDiffusion
 
             foreach (var name in models)
             {
-                menu.Items.Add(SdEmbeddingHelper.GetHumanName(name), null, (_, _) =>
+                menu.Items.Add(new ToolStripMenuItem(SdEmbeddingHelper.GetHumanName(name), null, (_, _) =>
                 {
-                    tb.Text = (tb.Text + ", (" + name + ":1.0), ").TrimStart(' ', ',');
+                    if (!isForNegative) AddTextToPrompt  ("(" + name + ":1.0)");
+                    else                AddTextToNegative("(" + name + ":1.0)");
+                })
+                {
+                    Checked = Regex.IsMatch(!isForNegative ? tbPrompt.Text : tbNegative.Text, @"\b" + Regex.Escape(name) + @"\b")
                 });
             }
 
@@ -382,62 +390,23 @@ namespace AiPainter.Adapters.StableDiffusion
             var form = new SdStylesForm();
             if (form.ShowDialog(this) == DialogResult.OK)
             {
-                addTextToPrompt(string.Join(", ", form.Modifiers));
+                AddTextToPrompt(string.Join(", ", form.Modifiers));
             }
         }
 
         private void btSuggestedPrompt_Click(object sender, EventArgs e)
         {
-            cmSuggestedPromptMenu.Items.Clear();
-
-            var checkpointName = selectedCheckpointName;
-            if (checkpointName != "")
-            {
-                var phrases = getSuggestedPhrases(SdCheckpointsHelper.GetConfig(checkpointName).promptSuggested);
-                if (phrases.Length > 0)
-                {
-                    cmSuggestedPromptMenu.Items.Add(new ToolStripLabel("*** " + checkpointName + " ***"));
-                    foreach (var s in phrases)
-                    {
-                        cmSuggestedPromptMenu.Items.Add(s, null, (_, _) => addTextToPrompt(s));
-                    }
-                }
-            }
-
-            var loras = Regex.Matches(tbPrompt.Text, @"<lora:([^:>]+)[:>]").Select(x => x.Groups[1].Value).ToArray();
-            foreach (var name in loras)
-            {
-                var phrases = getSuggestedPhrases(SdLoraHelper.GetConfig(name).promptSuggested);
-                if (phrases.Length > 0)
-                {
-                    cmSuggestedPromptMenu.Items.Add(new ToolStripSeparator());
-                    cmSuggestedPromptMenu.Items.Add(new ToolStripLabel("*** " + name + " ***"));
-                    foreach (var s in phrases)
-                    {
-                        cmSuggestedPromptMenu.Items.Add(s, null, (_, _) => addTextToPrompt(s));
-                    }
-                }
-            }
-
-            if (cmSuggestedPromptMenu.Items.Count == 0)
-            {
-                cmSuggestedPromptMenu.Items.Add(new ToolStripLabel("No suggested phrases"));
-            }
-
-            cmSuggestedPromptMenu.Show(Cursor.Position);
+            new SuggestedPromptContextMenu(this).Show(Cursor.Position);
         }
 
-        private void addTextToPrompt(string s)
+        public void AddTextToPrompt(string s)
         {
             tbPrompt.Text = (tbPrompt.Text.TrimEnd(',', ' ') + ", " + s).TrimStart(',', ' ');
         }
 
-        private static string[] getSuggestedPhrases(string? text)
+        public void AddTextToNegative(string s)
         {
-            if (text == null) return new string[] { };
-            var parts = text.Split(',').Select(x => x.Trim(',', ' ')).ToList();
-            parts.Insert(0, text);
-            return parts.Where(x => x != "").Distinct().ToArray();
+            tbNegative.Text = (tbNegative.Text.TrimEnd(',', ' ') + ", " + s).TrimStart(',', ' ');
         }
 
         private void ddVae_SelectedIndexChanged(object sender, EventArgs e)
@@ -450,6 +419,20 @@ namespace AiPainter.Adapters.StableDiffusion
             }
 
             toolTip.SetToolTip(ddVae, baseVaeTooltip + (vaeName != "" ? "\n\n*** " + vaeName + "\n" + SdVaeHelper.GetConfig(vaeName).description : ""));
+        }
+
+        private void ddCheckpoint_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            var config = SdCheckpointsHelper.GetConfig(selectedCheckpointName);
+            if (config.clipSkip != null) selectedClipSkip = config.clipSkip.Value;
+            if (!string.IsNullOrEmpty(config.promptRequired)) AddTextToPrompt(config.promptRequired);
+        }
+
+        public string[] GetUsedLoras()
+        {
+            return Regex.Matches(tbPrompt.Text, @"<lora:([^:>]+)[:>]")
+                        .Select(x => x.Groups[1].Value)
+                        .ToArray();
         }
     }
 }
