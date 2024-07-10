@@ -45,10 +45,10 @@ static class ImportModelHelper
 
         var trimmedVn = trimCheckpointVersionName(version.name).ToLowerInvariant();
         
-        var vv3 = vv1.Where(x => x.name.ToLowerInvariant().StartsWith(trimmedVn + "-inpaint")).ToArray();
+        var vv3 = vv1.Where(x => trimCheckpointVersionName(x.name).ToLowerInvariant().StartsWith(trimmedVn + "-inpaint")).ToArray();
         if (vv3.Length == 1) return GetBestModelDownloadUrl(vv3[0].files, "Model");
         
-        var vv4 = vv1.Where(x => x.name.ToLowerInvariant().StartsWith(trimmedVn + " inpaint")).ToArray();
+        var vv4 = vv1.Where(x => trimCheckpointVersionName(x.name).ToLowerInvariant().StartsWith(trimmedVn + " inpaint")).ToArray();
         if (vv4.Length == 1) return GetBestModelDownloadUrl(vv4[0].files, "Model");
 
         return "";

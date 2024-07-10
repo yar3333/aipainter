@@ -11,13 +11,14 @@ sealed class SmartImageList : Panel
         get => storedImageList.Folder;
         set
         {
-            var v = Path.Combine(Application.StartupPath, value ?? Program.Config.ImagesFolder);
+            var v = Path.Combine(Application.StartupPath, !string.IsNullOrEmpty(value) ? value : Program.Config.ImagesFolder);
 
             // ReSharper disable once InconsistentlySynchronizedField
             if (storedImageList.Folder != v)
             {
                 // ReSharper disable once InconsistentlySynchronizedField
                 storedImageList = new(v);
+                updateImages(null);
             }
         }
     }

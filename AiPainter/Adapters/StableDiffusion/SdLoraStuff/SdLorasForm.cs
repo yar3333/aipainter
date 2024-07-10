@@ -1,5 +1,4 @@
-﻿using AiPainter.Adapters.StableDiffusion.SdCheckpointStuff;
-using AiPainter.Controls;
+﻿using AiPainter.Controls;
 using AiPainter.Helpers;
 
 namespace AiPainter.Adapters.StableDiffusion.SdLoraStuff
@@ -8,7 +7,6 @@ namespace AiPainter.Adapters.StableDiffusion.SdLoraStuff
     {
         private static bool isNeedUpdateStatusLight;
         private static bool isNeedUpdateStatusDeep;
-        private static bool isProvidedKeyInvalid;
 
         private readonly GenerationList generationList;
 
@@ -79,11 +77,14 @@ namespace AiPainter.Adapters.StableDiffusion.SdLoraStuff
             var url = SdLoraHelper.GetConfig(name).downloadUrl;
             if (string.IsNullOrWhiteSpace(url)) return;
 
+            var genItemName = "download_lora_" + name;
+            if (generationList.FindItem(genItemName) != null) return;
+
             generationList.AddGeneration(new SdDownloadingListItem
             (
-                "download_lora_" + name,
+                genItemName,
                 "Download " + name + " / LoRA model",
-                () => isReadyToDownload(name),
+                () => true,
                 async (progress, cancelationTokenSource) =>
                 {
                     var resultFilePath = await SdModelDownloadHelper.DownloadFileAsync
@@ -99,25 +100,16 @@ namespace AiPainter.Adapters.StableDiffusion.SdLoraStuff
                         },
                         cancelationTokenSource
                     );
-                    analyzeDownloadedModel(name, resultFilePath, progress);
+                    analyzeDownloadedModel(resultFilePath, progress);
                 }
             ));
         }
 
-        private static void analyzeDownloadedModel(string name, string? resultFilePath, Action<string> progress)
+        private static void analyzeDownloadedModel(string? resultFilePath, Action<string> progress)
         {
             var success = SdModelDownloadHelper.AnalyzeDownloadedModel(resultFilePath, () =>
             {
-                if (!SdLoraHelper.GetConfig(name).isNeedAuthToDownload)
-                {
-                    SdLoraHelper.GetConfig(name).isNeedAuthToDownload = true;
-                    progress("need API key");
-                }
-                else
-                {
-                    progress("invalid API key");
-                    isProvidedKeyInvalid = true;
-                }
+                progress("Invalid API key");
             });
             if (success)
             {
@@ -153,7 +145,6 @@ namespace AiPainter.Adapters.StableDiffusion.SdLoraStuff
         {
             if (Program.Config.CivitaiApiKey != tbCivitaiApiKey.Text)
             {
-                isProvidedKeyInvalid = false;
                 Program.Config.CivitaiApiKey = tbCivitaiApiKey.Text;
                 Program.SaveConfig();
             }
@@ -170,12 +161,6 @@ namespace AiPainter.Adapters.StableDiffusion.SdLoraStuff
             form.tabs.SelectedTab = form.tabLora;
             form.ShowDialog(this);
             updateList();
-        }
-
-        private static bool isReadyToDownload(string name)
-        {
-            return !SdLoraHelper.GetConfig(name).isNeedAuthToDownload
-                || !string.IsNullOrEmpty(Program.Config.CivitaiApiKey) && !isProvidedKeyInvalid;
         }
 
         private void updateTimer_Tick(object sender, EventArgs e)

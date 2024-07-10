@@ -1,7 +1,6 @@
 using System.Drawing.Imaging;
 using AiPainter.Adapters.LamaCleaner;
 using AiPainter.Adapters.StableDiffusion;
-using AiPainter.Controls;
 using AiPainter.Helpers;
 
 #pragma warning disable CS8602

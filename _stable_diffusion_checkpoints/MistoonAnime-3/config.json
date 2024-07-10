@@ -1,0 +1,9 @@
+{
+  "homeUrl": "https://civitai.com/models/24149?modelVersionId=348981",
+  "mainCheckpointUrl": "https://civitai.com/api/download/models/348981",
+  "inpaintCheckpointUrl": "https://civitai.com/api/download/models/359904",
+  "vaeUrl": "",
+  "description": "anime, colorful, base model, cartoon",
+  "promptRequired": "",
+  "promptSuggested": ""
+}

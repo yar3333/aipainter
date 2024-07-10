@@ -49,7 +49,10 @@ class SdGeneratorMain : SdGeneratorBase
 
             sampler_index = sdGenerationParameters.sampler,
 
-            override_settings = SdCheckpointsHelper.GetConfig(sdGenerationParameters.checkpointName).overrideSettings,
+            override_settings = new SdSettings
+            {
+                CLIP_stop_at_last_layers = sdGenerationParameters.clipSkip
+            }
         };
         var response = await SdApiClient.txt2imgAsync(parameters, onProgress: step => control.NotifyProgress(step));
 

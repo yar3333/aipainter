@@ -89,6 +89,10 @@ static class SdPngHelper
                         case "aip_model":
                             generationParameters.checkpointName = v;
                             break;
+
+                        case "aip_clipskip":
+                            generationParameters.clipSkip = parseInt(v) ?? 1;
+                            break;
                     }
                 }
             }
@@ -107,7 +111,8 @@ static class SdPngHelper
                     "CFG scale: " + generationParameters.cfgScale.ToString(CultureInfo.InvariantCulture),
                     "Seed: " + seed,
                     "Size: " + generationParameters.width + "x" + generationParameters.height,
-                    "aip_Model: " + generationParameters.checkpointName
+                    "aip_Model: " + generationParameters.checkpointName,
+                    "aip_ClipSkip: " + generationParameters.clipSkip
                 );
     }
 

@@ -1,17 +1,13 @@
 ﻿using System.ComponentModel;
 using AiPainter.Helpers;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace AiPainter.Adapters.StableDiffusion.SdEmbeddingStuff
 {
     public partial class SdEmbeddingForm : Form
     {
-        //private string[] modelNames = null;
         private string[] checkedNames = { };
 
         private bool ignoreCheckedChange = true;
-
-        private bool isProvidedKeyInvalid = false;
 
         public SdEmbeddingForm()
         {
@@ -84,8 +80,6 @@ namespace AiPainter.Adapters.StableDiffusion.SdEmbeddingStuff
             var url = SdEmbeddingHelper.GetConfig(name).downloadUrl;
             if (string.IsNullOrWhiteSpace(url)) return;
 
-            if (SdEmbeddingHelper.GetConfig(name).isNeedAuthToDownload && (string.IsNullOrEmpty(Program.Config.CivitaiApiKey) || isProvidedKeyInvalid)) return;
-
             var cancelationTokenSource = new CancellationTokenSource();
 
             var resultFilePath = SdModelDownloadHelper.DownloadFileAsync
@@ -111,16 +105,7 @@ namespace AiPainter.Adapters.StableDiffusion.SdEmbeddingStuff
 
             var success = SdModelDownloadHelper.AnalyzeDownloadedModel(resultFilePath, () =>
             {
-                if (!SdEmbeddingHelper.GetConfig(name).isNeedAuthToDownload)
-                {
-                    SdEmbeddingHelper.GetConfig(name).isNeedAuthToDownload = true;
-                    updateStatus(name, "need API key");
-                }
-                else
-                {
-                    updateStatus(name, "invalid API key");
-                    isProvidedKeyInvalid = true;
-                }
+                updateStatus(name, "Invalid API key");
             });
 
             Invoke(() =>
@@ -178,7 +163,6 @@ namespace AiPainter.Adapters.StableDiffusion.SdEmbeddingStuff
         {
             if (Program.Config.CivitaiApiKey != tbCivitaiApiKey.Text)
             {
-                isProvidedKeyInvalid = false;
                 Program.Config.CivitaiApiKey = tbCivitaiApiKey.Text;
                 Program.SaveConfig();
             }

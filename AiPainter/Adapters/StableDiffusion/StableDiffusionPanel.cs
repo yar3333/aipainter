@@ -43,6 +43,18 @@ namespace AiPainter.Adapters.StableDiffusion
             }
         }
 
+        public int selectedClipSkip
+        {
+            get => int.Parse(ddClipSkip.SelectedItem!.ToString()!);
+            set
+            {
+                if (value == 1 || value == 2)
+                {
+                    ddClipSkip.SelectedItem = value.ToString();
+                }
+            }
+        }
+
         public StableDiffusionPanel()
         {
             InitializeComponent();
@@ -63,6 +75,8 @@ namespace AiPainter.Adapters.StableDiffusion
                 "Heun",
             };
             ddSampler.SelectedItem = "DPM++ 2M";
+
+            ddClipSkip.SelectedItem = "1";
 
             ddImageSize.DataSource = Program.Config.ImageSizes;
             ddImageSize.Text = Program.Config.ImageSizes.FirstOrDefault() ?? "512x512";
@@ -213,6 +227,8 @@ namespace AiPainter.Adapters.StableDiffusion
             {
                 numCfgScale.Value = Math.Max(numCfgScale.Minimum, Math.Min(numCfgScale.Maximum, sdGenerationParameters.cfgScale));
             }
+            
+            if (sdGenerationParameters.clipSkip != 0) selectedClipSkip = sdGenerationParameters.clipSkip;
 
             tbSeed.Text = sdGenerationParameters.seed.ToString();
 

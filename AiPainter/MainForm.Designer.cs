@@ -382,7 +382,7 @@ namespace AiPainter
             // panImages
             // 
             panImages.Dock = DockStyle.Fill;
-            panImages.ImagesFolder = "C:\\Users\\Yaroslav\\AppData\\Local\\Microsoft\\VisualStudio\\17.0_23370747\\WinFormsDesigner\\421t2axo.a4a\\images";
+            panImages.ImagesFolder = "";
             panImages.Location = new Point(0, 0);
             panImages.Name = "panImages";
             panImages.Size = new Size(1150, 168);

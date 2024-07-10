@@ -43,6 +43,7 @@ namespace AiPainter.Adapters.StableDiffusion
                 negative = sdPanel.tbNegative.Text.Trim(),
                 steps = (int)sdPanel.numSteps.Value,
                 cfgScale = sdPanel.numCfgScale.Value,
+                clipSkip = sdPanel.selectedClipSkip,
             
                 seed = sdPanel.cbUseSeed.Checked && sdPanel.tbSeed.Text.Trim() != "" ? long.Parse(sdPanel.tbSeed.Text.Trim()) : -1,
                 seedVariationStrength = sdPanel.trackBarSeedVariationStrength.Value / 100m,
@@ -184,6 +185,7 @@ namespace AiPainter.Adapters.StableDiffusion
             sdPanel.tbPrompt.Text = sdGenerationParameters.prompt;
             sdPanel.tbNegative.Text = sdGenerationParameters.negative;
             sdPanel.numCfgScale.Value = sdGenerationParameters.cfgScale;
+            sdPanel.selectedClipSkip = sdGenerationParameters.clipSkip;
 
             sdPanel.cbUseSeed.Checked = sdGenerationParameters.seed > 0;
             sdPanel.tbSeed.Text = sdGenerationParameters.seed.ToString();

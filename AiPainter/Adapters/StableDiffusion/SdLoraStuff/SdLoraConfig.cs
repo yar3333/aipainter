@@ -7,6 +7,4 @@ class SdLoraConfig
     public string description { get; set; } = "";
     public string promptRequired { get; set; } = "";
     public string promptSuggested { get; set; } = "";
-
-    public bool isNeedAuthToDownload = false;
 }

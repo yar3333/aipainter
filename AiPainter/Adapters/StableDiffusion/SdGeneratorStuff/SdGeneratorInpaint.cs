@@ -64,7 +64,10 @@ class SdGeneratorInpaint : SdGeneratorBase
             inpainting_fill = SdInpaintingFill.original, // looks like webui use 'fill' as default if mask specified, so force to use 'original'
             denoising_strength = sdGenerationParameters.changesLevel,
 
-            override_settings = SdCheckpointsHelper.GetConfig(sdGenerationParameters.checkpointName).overrideSettings,
+            override_settings = new SdSettings
+            {
+                CLIP_stop_at_last_layers = sdGenerationParameters.clipSkip
+            }
         };
         var response = await SdApiClient.img2imgAsync(parameters, onProgress: step => control.NotifyProgress(step));
 

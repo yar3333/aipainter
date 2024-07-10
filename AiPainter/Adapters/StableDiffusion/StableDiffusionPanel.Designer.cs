@@ -30,6 +30,7 @@
         {
             components = new System.ComponentModel.Container();
             collapsablePanel = new Controls.CollapsablePanel();
+            ddClipSkip = new ComboBox();
             cbUseSeed = new CheckBox();
             label1 = new Label();
             label5 = new Label();
@@ -41,6 +42,7 @@
             btNegativePromptHistory = new Button();
             btLoras = new Button();
             btCheckpoint = new Button();
+            label2 = new Label();
             label4 = new Label();
             ddImageSize = new ComboBox();
             ddVae = new ComboBox();
@@ -77,6 +79,7 @@
             collapsablePanel.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             collapsablePanel.BackColor = SystemColors.Control;
             collapsablePanel.Caption = "StableDiffusion";
+            collapsablePanel.Controls.Add(ddClipSkip);
             collapsablePanel.Controls.Add(cbUseSeed);
             collapsablePanel.Controls.Add(label1);
             collapsablePanel.Controls.Add(label5);
@@ -88,6 +91,7 @@
             collapsablePanel.Controls.Add(btNegativePromptHistory);
             collapsablePanel.Controls.Add(btLoras);
             collapsablePanel.Controls.Add(btCheckpoint);
+            collapsablePanel.Controls.Add(label2);
             collapsablePanel.Controls.Add(label4);
             collapsablePanel.Controls.Add(ddImageSize);
             collapsablePanel.Controls.Add(ddVae);
@@ -107,10 +111,22 @@
             collapsablePanel.IsCollapsed = false;
             collapsablePanel.Location = new Point(0, 0);
             collapsablePanel.Name = "collapsablePanel";
-            collapsablePanel.Size = new Size(426, 549);
+            collapsablePanel.Size = new Size(464, 549);
             collapsablePanel.TabIndex = 4;
             collapsablePanel.Load += collapsablePanel_Load;
             collapsablePanel.Resize += collapsablePanel_Resize;
+            // 
+            // ddClipSkip
+            // 
+            ddClipSkip.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+            ddClipSkip.DropDownStyle = ComboBoxStyle.DropDownList;
+            ddClipSkip.Font = new Font("Segoe UI", 10F, FontStyle.Regular, GraphicsUnit.Point);
+            ddClipSkip.Items.AddRange(new object[] { "1", "2" });
+            ddClipSkip.Location = new Point(411, 422);
+            ddClipSkip.Name = "ddClipSkip";
+            ddClipSkip.Size = new Size(46, 25);
+            ddClipSkip.TabIndex = 30;
+            toolTip.SetToolTip(ddClipSkip, "Default is 1 (use 2 for more variation results)");
             // 
             // cbUseSeed
             // 
@@ -127,7 +143,7 @@
             // label1
             // 
             label1.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
-            label1.Location = new Point(216, 388);
+            label1.Location = new Point(229, 388);
             label1.Name = "label1";
             label1.Size = new Size(50, 15);
             label1.TabIndex = 26;
@@ -152,7 +168,7 @@
             ddSampler.FormattingEnabled = true;
             ddSampler.Location = new Point(59, 422);
             ddSampler.Name = "ddSampler";
-            ddSampler.Size = new Size(162, 25);
+            ddSampler.Size = new Size(139, 25);
             ddSampler.TabIndex = 25;
             toolTip.SetToolTip(ddSampler, "Euler a (default, use 50+ detail level), DPM++ 2M (use 20+ detail level), Heun (useful for postprocessing)");
             // 
@@ -161,7 +177,7 @@
             btSuggestedPrompt.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             btSuggestedPrompt.BackColor = Color.White;
             btSuggestedPrompt.Font = new Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point);
-            btSuggestedPrompt.Location = new Point(367, 121);
+            btSuggestedPrompt.Location = new Point(405, 121);
             btSuggestedPrompt.Name = "btSuggestedPrompt";
             btSuggestedPrompt.Size = new Size(56, 25);
             btSuggestedPrompt.TabIndex = 24;
@@ -175,7 +191,7 @@
             btStyles.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             btStyles.BackColor = Color.White;
             btStyles.Font = new Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point);
-            btStyles.Location = new Point(367, 152);
+            btStyles.Location = new Point(405, 152);
             btStyles.Name = "btStyles";
             btStyles.Size = new Size(56, 25);
             btStyles.TabIndex = 24;
@@ -189,7 +205,7 @@
             btEmbeddings.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             btEmbeddings.BackColor = Color.White;
             btEmbeddings.Font = new Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point);
-            btEmbeddings.Location = new Point(367, 90);
+            btEmbeddings.Location = new Point(405, 90);
             btEmbeddings.Name = "btEmbeddings";
             btEmbeddings.Size = new Size(56, 25);
             btEmbeddings.TabIndex = 24;
@@ -203,7 +219,7 @@
             btNegativeEmbeddings.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
             btNegativeEmbeddings.BackColor = Color.White;
             btNegativeEmbeddings.Font = new Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point);
-            btNegativeEmbeddings.Location = new Point(367, 306);
+            btNegativeEmbeddings.Location = new Point(405, 306);
             btNegativeEmbeddings.Name = "btNegativeEmbeddings";
             btNegativeEmbeddings.Size = new Size(56, 25);
             btNegativeEmbeddings.TabIndex = 24;
@@ -217,7 +233,7 @@
             btNegativePromptHistory.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
             btNegativePromptHistory.BackColor = Color.White;
             btNegativePromptHistory.Font = new Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point);
-            btNegativePromptHistory.Location = new Point(367, 275);
+            btNegativePromptHistory.Location = new Point(405, 275);
             btNegativePromptHistory.Name = "btNegativePromptHistory";
             btNegativePromptHistory.Size = new Size(56, 25);
             btNegativePromptHistory.TabIndex = 24;
@@ -231,7 +247,7 @@
             btLoras.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             btLoras.BackColor = Color.White;
             btLoras.Font = new Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point);
-            btLoras.Location = new Point(367, 59);
+            btLoras.Location = new Point(405, 59);
             btLoras.Name = "btLoras";
             btLoras.Size = new Size(56, 25);
             btLoras.TabIndex = 24;
@@ -245,7 +261,7 @@
             btCheckpoint.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             btCheckpoint.BackColor = Color.White;
             btCheckpoint.Font = new Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point);
-            btCheckpoint.Location = new Point(367, 28);
+            btCheckpoint.Location = new Point(405, 28);
             btCheckpoint.Name = "btCheckpoint";
             btCheckpoint.Size = new Size(56, 25);
             btCheckpoint.TabIndex = 24;
@@ -253,12 +269,22 @@
             btCheckpoint.UseVisualStyleBackColor = false;
             btCheckpoint.Click += btCheckpoint_Click;
             // 
+            // label2
+            // 
+            label2.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+            label2.Location = new Point(339, 427);
+            label2.Name = "label2";
+            label2.Size = new Size(66, 15);
+            label2.TabIndex = 23;
+            label2.Text = "Clip Skip";
+            label2.TextAlign = ContentAlignment.MiddleRight;
+            // 
             // label4
             // 
             label4.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
-            label4.Location = new Point(227, 427);
+            label4.Location = new Point(204, 427);
             label4.Name = "label4";
-            label4.Size = new Size(78, 15);
+            label4.Size = new Size(75, 15);
             label4.TabIndex = 23;
             label4.Text = "Detail level";
             label4.TextAlign = ContentAlignment.MiddleRight;
@@ -268,9 +294,9 @@
             ddImageSize.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
             ddImageSize.Font = new Font("Segoe UI", 11.25F, FontStyle.Regular, GraphicsUnit.Point);
             ddImageSize.FormattingEnabled = true;
-            ddImageSize.Location = new Point(272, 381);
+            ddImageSize.Location = new Point(285, 381);
             ddImageSize.Name = "ddImageSize";
-            ddImageSize.Size = new Size(151, 28);
+            ddImageSize.Size = new Size(172, 28);
             ddImageSize.TabIndex = 22;
             ddImageSize.Text = "512x512";
             toolTip.SetToolTip(ddImageSize, "Generated image size");
@@ -281,7 +307,7 @@
             ddVae.DisplayMember = "Text";
             ddVae.DropDownStyle = ComboBoxStyle.DropDownList;
             ddVae.FormattingEnabled = true;
-            ddVae.Location = new Point(297, 29);
+            ddVae.Location = new Point(335, 29);
             ddVae.Name = "ddVae";
             ddVae.Size = new Size(64, 23);
             ddVae.TabIndex = 18;
@@ -298,7 +324,7 @@
             ddCheckpoint.FormattingEnabled = true;
             ddCheckpoint.Location = new Point(3, 29);
             ddCheckpoint.Name = "ddCheckpoint";
-            ddCheckpoint.Size = new Size(288, 23);
+            ddCheckpoint.Size = new Size(326, 23);
             ddCheckpoint.TabIndex = 18;
             toolTip.SetToolTip(ddCheckpoint, "Active checkpoint (image generation model)");
             ddCheckpoint.ValueMember = "Value";
@@ -314,7 +340,7 @@
             tbNegative.Name = "tbNegative";
             tbNegative.PlaceholderText = "Negative prompt (don't want to get)";
             tbNegative.ScrollBars = ScrollBars.Vertical;
-            tbNegative.Size = new Size(358, 57);
+            tbNegative.Size = new Size(396, 57);
             tbNegative.TabIndex = 17;
             // 
             // cbUseInitImage
@@ -331,7 +357,7 @@
             // 
             btReset.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
             btReset.Font = new Font("Segoe UI", 9.75F, FontStyle.Regular, GraphicsUnit.Point);
-            btReset.Location = new Point(327, 498);
+            btReset.Location = new Point(365, 498);
             btReset.Name = "btReset";
             btReset.Size = new Size(96, 39);
             btReset.TabIndex = 11;
@@ -351,7 +377,7 @@
             tbPrompt.Name = "tbPrompt";
             tbPrompt.PlaceholderText = "Prompt (describe desired picture)";
             tbPrompt.ScrollBars = ScrollBars.Vertical;
-            tbPrompt.Size = new Size(358, 210);
+            tbPrompt.Size = new Size(396, 210);
             tbPrompt.TabIndex = 0;
             // 
             // numIterations
@@ -376,7 +402,7 @@
             btGenerate.ForeColor = Color.White;
             btGenerate.Location = new Point(68, 498);
             btGenerate.Name = "btGenerate";
-            btGenerate.Size = new Size(254, 39);
+            btGenerate.Size = new Size(292, 39);
             btGenerate.TabIndex = 8;
             btGenerate.Text = "Add to generation queue";
             btGenerate.UseVisualStyleBackColor = false;
@@ -387,7 +413,7 @@
             numSteps.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
             numSteps.Font = new Font("Segoe UI", 11F, FontStyle.Regular, GraphicsUnit.Point);
             numSteps.Increment = new decimal(new int[] { 5, 0, 0, 0 });
-            numSteps.Location = new Point(311, 421);
+            numSteps.Location = new Point(285, 421);
             numSteps.Maximum = new decimal(new int[] { 200, 0, 0, 0 });
             numSteps.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
             numSteps.Name = "numSteps";
@@ -435,10 +461,10 @@
             // trackBarChangesLevel
             // 
             trackBarChangesLevel.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
-            trackBarChangesLevel.Location = new Point(186, 346);
+            trackBarChangesLevel.Location = new Point(161, 346);
             trackBarChangesLevel.Maximum = 100;
             trackBarChangesLevel.Name = "trackBarChangesLevel";
-            trackBarChangesLevel.Size = new Size(237, 45);
+            trackBarChangesLevel.Size = new Size(296, 45);
             trackBarChangesLevel.TabIndex = 27;
             trackBarChangesLevel.TickStyle = TickStyle.None;
             toolTip.SetToolTip(trackBarChangesLevel, "Changes level");
@@ -450,7 +476,7 @@
             trackBarSeedVariationStrength.Location = new Point(186, 462);
             trackBarSeedVariationStrength.Maximum = 100;
             trackBarSeedVariationStrength.Name = "trackBarSeedVariationStrength";
-            trackBarSeedVariationStrength.Size = new Size(237, 45);
+            trackBarSeedVariationStrength.Size = new Size(271, 45);
             trackBarSeedVariationStrength.TabIndex = 27;
             trackBarSeedVariationStrength.TickStyle = TickStyle.None;
             toolTip.SetToolTip(trackBarSeedVariationStrength, "Seed variation strength");
@@ -497,7 +523,7 @@
             Controls.Add(collapsablePanel);
             MinimumSize = new Size(426, 0);
             Name = "StableDiffusionPanel";
-            Size = new Size(426, 552);
+            Size = new Size(464, 552);
             collapsablePanel.ResumeLayout(false);
             collapsablePanel.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)numIterations).EndInit();
@@ -545,5 +571,7 @@
         private Button btSuggestedPrompt;
         private ContextMenuStrip cmSuggestedPromptMenu;
         private ComboBox ddVae;
+        private ComboBox ddClipSkip;
+        private Label label2;
     }
 }

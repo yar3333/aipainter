@@ -19,7 +19,9 @@ static class SdModelDownloadHelper
 
     public static string? GetCheckpointAuthorizationBearer(string name)
     {
-        return SdCheckpointsHelper.GetConfig(name).isNeedAuthToDownload ? Program.Config.CivitaiApiKey : null;
+        return new Uri(SdCheckpointsHelper.GetConfig(name).mainCheckpointUrl!).Host.ToLowerInvariant() == "civitai.com" 
+                   ? Program.Config.CivitaiApiKey 
+                   : null;
     }
 
     public static async Task<string?> DownloadFileAsync(string url, string destDir, Action<string> progress, DownloadFileOptions options, CancellationTokenSource cancelationTokenSource)

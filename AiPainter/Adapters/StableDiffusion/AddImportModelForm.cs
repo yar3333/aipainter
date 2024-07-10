@@ -1,6 +1,5 @@
 ﻿using AiPainter.Helpers;
 using System.Text.RegularExpressions;
-using AiPainter.Adapters.StableDiffusion.SdApiClientStuff;
 using AiPainter.Adapters.StableDiffusion.SdCheckpointStuff;
 using AiPainter.Adapters.StableDiffusion.SdLoraStuff;
 using AiPainter.SiteClients.CivitaiClientStuff;
@@ -207,10 +206,7 @@ namespace AiPainter.Adapters.StableDiffusion
                 promptRequired = tbCheckpointRequiredPrompt.Text.Trim(),
                 promptSuggested = tbCheckpointSuggestedPrompt.Text.Trim(),
                 description = tbCheckpointDescription.Text.Trim(),
-                overrideSettings = numCheckpointClipSkip.Value == 1 ? null : new SdSettings
-                {
-                    CLIP_stop_at_last_layers = (int)numCheckpointClipSkip.Value
-                },
+                clipSkip = numCheckpointClipSkip.Value == 1 ? null : (int)numCheckpointClipSkip.Value,
             };
 
             var saveBtOkName = btCheckpointOk.Text;

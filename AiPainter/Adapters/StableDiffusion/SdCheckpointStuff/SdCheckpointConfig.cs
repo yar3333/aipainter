@@ -1,6 +1,4 @@
-﻿using AiPainter.Adapters.StableDiffusion.SdApiClientStuff;
-
-namespace AiPainter.Adapters.StableDiffusion.SdCheckpointStuff;
+﻿namespace AiPainter.Adapters.StableDiffusion.SdCheckpointStuff;
 
 class SdCheckpointConfig
 {
@@ -11,7 +9,5 @@ class SdCheckpointConfig
     public string? description { get; set; }
     public string? promptRequired { get; set; }
     public string? promptSuggested { get; set; }
-    public SdSettings? overrideSettings { get; set; }
-
-    public bool isNeedAuthToDownload = false;
+    public int? clipSkip { get; set; }
 }
