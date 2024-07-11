@@ -60,7 +60,8 @@ class SdGeneratorInpaint : SdGeneratorBase
 
             sampler_index = sdGenerationParameters.sampler,
 
-            inpainting_fill = SdInpaintingFill.original, // looks like webui use 'fill' as default if mask specified, so force to use 'original'
+            // looks like webui use 'fill' as default if mask specified, so force to use 'original'
+            inpainting_fill = sdGenerationParameters.inpaintingFill ?? SdInpaintingFill.original, 
             denoising_strength = sdGenerationParameters.changesLevel,
 
             override_settings = new SdSettings

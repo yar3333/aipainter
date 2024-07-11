@@ -10,6 +10,7 @@ public class SdGenerationParameters
     public int steps { get; set; }
     public decimal cfgScale { get; set; }
     public int clipSkip { get; set; }
+    public SdInpaintingFill? inpaintingFill { get; set; }
 
     public long seed { get; set; }
     public decimal seedVariationStrength { get; set; }

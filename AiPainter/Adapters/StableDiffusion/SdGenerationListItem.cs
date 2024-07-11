@@ -52,6 +52,7 @@ namespace AiPainter.Adapters.StableDiffusion
                 height = int.Parse(sdPanel.ddImageSize.SelectedItem.ToString()!.Split("x")[1]),
                 sampler = sdPanel.ddSampler.SelectedItem.ToString()!,
                 changesLevel = sdPanel.cbUseInitImage.Checked ? sdPanel.trackBarChangesLevel.Value / 100.0m : -1,
+                inpaintingFill = sdPanel.cbUseInitImage.Checked ? sdPanel.selectedInpaintingFill : null,
             };
 
             lastNumIterationsValue = (int)sdPanel.numIterations.Value;
@@ -193,6 +194,7 @@ namespace AiPainter.Adapters.StableDiffusion
         
             sdPanel.ddSampler.SelectedItem = sdGenerationParameters.sampler;
             if (sdGenerationParameters.changesLevel >= 0) sdPanel.trackBarChangesLevel.Value = (int)Math.Round(sdGenerationParameters.changesLevel * 100);
+            if (sdGenerationParameters.inpaintingFill != null) sdPanel.selectedInpaintingFill = sdGenerationParameters.inpaintingFill.Value;
 
             sdPanel.cbUseInitImage.Checked = savedOriginalImage != null;
 

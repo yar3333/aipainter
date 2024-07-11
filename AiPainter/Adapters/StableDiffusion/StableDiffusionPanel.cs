@@ -55,6 +55,12 @@ namespace AiPainter.Adapters.StableDiffusion
             }
         }
 
+        public SdInpaintingFill selectedInpaintingFill
+        {
+            get => Enum.TryParse<SdInpaintingFill>(ddInpaintingFill.SelectedItem?.ToString() ?? "", true, out var r) ? r : SdInpaintingFill.original;
+            set => ddInpaintingFill.SelectedItem = value.ToString();
+        }
+
         public StableDiffusionPanel()
         {
             InitializeComponent();
@@ -77,6 +83,8 @@ namespace AiPainter.Adapters.StableDiffusion
             ddSampler.SelectedItem = "DPM++ 2M";
 
             ddClipSkip.SelectedItem = "1";
+
+            selectedInpaintingFill = SdInpaintingFill.original;
 
             ddImageSize.DataSource = Program.Config.ImageSizes;
             ddImageSize.Text = Program.Config.ImageSizes.FirstOrDefault() ?? "512x512";
@@ -179,6 +187,7 @@ namespace AiPainter.Adapters.StableDiffusion
             numSteps.Value = 35;
             cbUseSeed.Checked = false;
             trackBarSeedVariationStrength.Value = 0;
+            selectedInpaintingFill = SdInpaintingFill.original;
         }
 
         public void UpdateState(SmartPictureBox pb)
@@ -206,6 +215,7 @@ namespace AiPainter.Adapters.StableDiffusion
             trackBarSeedVariationStrength.Enabled = cbUseSeed.Checked;
 
             trackBarChangesLevel.Enabled = cbUseInitImage.Checked;
+            ddInpaintingFill.Enabled = cbUseInitImage.Checked;
         }
 
         public void SetImageSize(int w, int h)
@@ -234,6 +244,8 @@ namespace AiPainter.Adapters.StableDiffusion
 
             SetImageSize(sdGenerationParameters.width, sdGenerationParameters.height);
             ddSampler.SelectedItem = sdGenerationParameters.sampler;
+
+            if (sdGenerationParameters.inpaintingFill != null) selectedInpaintingFill = sdGenerationParameters.inpaintingFill.Value;
         }
 
         private void collapsablePanel_Resize(object sender, EventArgs e)

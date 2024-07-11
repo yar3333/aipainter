@@ -1,6 +1,6 @@
 ﻿namespace AiPainter.Adapters.StableDiffusion;
 
-enum SdInpaintingFill
+public enum SdInpaintingFill
 {
     fill,
     original,

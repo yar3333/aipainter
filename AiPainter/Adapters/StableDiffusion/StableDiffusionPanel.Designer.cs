@@ -30,6 +30,7 @@
         {
             components = new System.ComponentModel.Container();
             collapsablePanel = new Controls.CollapsablePanel();
+            ddInpaintingFill = new ComboBox();
             ddClipSkip = new ComboBox();
             cbUseSeed = new CheckBox();
             label1 = new Label();
@@ -78,6 +79,7 @@
             collapsablePanel.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             collapsablePanel.BackColor = SystemColors.Control;
             collapsablePanel.Caption = "StableDiffusion";
+            collapsablePanel.Controls.Add(ddInpaintingFill);
             collapsablePanel.Controls.Add(ddClipSkip);
             collapsablePanel.Controls.Add(cbUseSeed);
             collapsablePanel.Controls.Add(label1);
@@ -114,6 +116,18 @@
             collapsablePanel.TabIndex = 4;
             collapsablePanel.Load += collapsablePanel_Load;
             collapsablePanel.Resize += collapsablePanel_Resize;
+            // 
+            // ddInpaintingFill
+            // 
+            ddInpaintingFill.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+            ddInpaintingFill.DropDownStyle = ComboBoxStyle.DropDownList;
+            ddInpaintingFill.Font = new Font("Segoe UI", 10F, FontStyle.Regular, GraphicsUnit.Point);
+            ddInpaintingFill.Items.AddRange(new object[] { "fill", "original", "latent_noise", "latent_nothing" });
+            ddInpaintingFill.Location = new Point(93, 342);
+            ddInpaintingFill.Name = "ddInpaintingFill";
+            ddInpaintingFill.Size = new Size(87, 25);
+            ddInpaintingFill.TabIndex = 30;
+            toolTip.SetToolTip(ddInpaintingFill, "Inpainting Fill");
             // 
             // ddClipSkip
             // 
@@ -348,9 +362,10 @@
             cbUseInitImage.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
             cbUseInitImage.Location = new Point(3, 346);
             cbUseInitImage.Name = "cbUseInitImage";
-            cbUseInitImage.Size = new Size(186, 19);
+            cbUseInitImage.Size = new Size(84, 19);
             cbUseInitImage.TabIndex = 12;
-            cbUseInitImage.Text = "Use active image as start point";
+            cbUseInitImage.Text = "Use image";
+            toolTip.SetToolTip(cbUseInitImage, "Use active image as start point");
             cbUseInitImage.UseVisualStyleBackColor = true;
             // 
             // btReset
@@ -461,10 +476,10 @@
             // trackBarChangesLevel
             // 
             trackBarChangesLevel.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
-            trackBarChangesLevel.Location = new Point(161, 346);
+            trackBarChangesLevel.Location = new Point(186, 344);
             trackBarChangesLevel.Maximum = 100;
             trackBarChangesLevel.Name = "trackBarChangesLevel";
-            trackBarChangesLevel.Size = new Size(296, 45);
+            trackBarChangesLevel.Size = new Size(271, 45);
             trackBarChangesLevel.TabIndex = 27;
             trackBarChangesLevel.TickStyle = TickStyle.None;
             toolTip.SetToolTip(trackBarChangesLevel, "Changes level");
@@ -566,5 +581,6 @@
         private ComboBox ddVae;
         private ComboBox ddClipSkip;
         private Label label2;
+        private ComboBox ddInpaintingFill;
     }
 }
