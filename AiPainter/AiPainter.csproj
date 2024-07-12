@@ -57,15 +57,14 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Update="Adapters\StableDiffusion\SdEmbeddingStuff\SdEmbeddingForm.cs">
+    <Compile Update="Adapters\StableDiffusion\SdModelsForm.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Update="Adapters\StableDiffusion\SdEmbeddingStuff\SdEmbeddingForm.cs" />
     <Compile Update="Adapters\StableDiffusion\SdDownloadingListItem.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Update="Adapters\StableDiffusion\SdLoraStuff\SdLorasForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
+    <Compile Update="Adapters\StableDiffusion\SdLoraStuff\SdLorasForm.cs" />
     <Compile Update="Controls\SmartImageList.cs">
       <SubType>Component</SubType>
     </Compile>

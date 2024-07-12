@@ -1,6 +1,6 @@
-﻿namespace AiPainter.Adapters.StableDiffusion.SdLoraStuff
+﻿namespace AiPainter.Adapters.StableDiffusion
 {
-    partial class SdLorasForm
+    partial class SdModelsForm
     {
         /// <summary>
         /// Required designer variable.
@@ -31,16 +31,13 @@
             components = new System.ComponentModel.Container();
             btOk = new Button();
             lvModels = new ListView();
-            columnHeader1 = new ColumnHeader();
-            columnHeader2 = new ColumnHeader();
-            columnHeader3 = new ColumnHeader();
-            columnHeader4 = new ColumnHeader();
-            columnHeader5 = new ColumnHeader();
-            label1 = new Label();
-            tbCivitaiApiKey = new TextBox();
             linkLabel1 = new LinkLabel();
+            tbCivitaiApiKey = new TextBox();
+            label1 = new Label();
             btImportFromCivitai = new Button();
             updateTimer = new System.Windows.Forms.Timer(components);
+            label2 = new Label();
+            tbSearch = new TextBox();
             SuspendLayout();
             // 
             // btOk
@@ -48,7 +45,7 @@
             btOk.Anchor = AnchorStyles.Bottom;
             btOk.DialogResult = DialogResult.OK;
             btOk.Font = new Font("Segoe UI", 9.75F, FontStyle.Regular, GraphicsUnit.Point);
-            btOk.Location = new Point(485, 571);
+            btOk.Location = new Point(453, 529);
             btOk.Name = "btOk";
             btOk.Size = new Size(172, 40);
             btOk.TabIndex = 5;
@@ -59,83 +56,57 @@
             // 
             lvModels.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             lvModels.CheckBoxes = true;
-            lvModels.Columns.AddRange(new ColumnHeader[] { columnHeader1, columnHeader2, columnHeader3, columnHeader4, columnHeader5 });
+            lvModels.Columns.AddRange(new ColumnHeader[] {});
             lvModels.FullRowSelect = true;
             lvModels.GridLines = true;
             lvModels.HeaderStyle = ColumnHeaderStyle.Nonclickable;
-            lvModels.Location = new Point(12, 50);
+            lvModels.Location = new Point(12, 91);
             lvModels.MultiSelect = false;
             lvModels.Name = "lvModels";
-            lvModels.Size = new Size(1114, 509);
+            lvModels.Size = new Size(1050, 426);
             lvModels.TabIndex = 6;
             lvModels.UseCompatibleStateImageBehavior = false;
             lvModels.View = View.Details;
             lvModels.ItemChecked += lvModels_ItemChecked;
             lvModels.MouseClick += lvModels_MouseClick;
             // 
-            // columnHeader1
+            // linkLabel1
             // 
-            columnHeader1.Text = "Enabled";
-            columnHeader1.Width = 35;
+            linkLabel1.AutoSize = true;
+            linkLabel1.Location = new Point(554, 17);
+            linkLabel1.Name = "linkLabel1";
+            linkLabel1.Size = new Size(91, 15);
+            linkLabel1.TabIndex = 12;
+            linkLabel1.TabStop = true;
+            linkLabel1.Text = "visit Civitai.com";
+            linkLabel1.UseMnemonic = false;
+            linkLabel1.LinkClicked += linkLabel1_LinkClicked;
             // 
-            // columnHeader2
+            // tbCivitaiApiKey
             // 
-            columnHeader2.Text = "File";
-            columnHeader2.TextAlign = HorizontalAlignment.Center;
-            columnHeader2.Width = 100;
-            // 
-            // columnHeader3
-            // 
-            columnHeader3.Text = "Name";
-            columnHeader3.Width = 330;
-            // 
-            // columnHeader4
-            // 
-            columnHeader4.Text = "Description";
-            columnHeader4.Width = 430;
-            // 
-            // columnHeader5
-            // 
-            columnHeader5.Text = "Link";
-            columnHeader5.Width = 190;
+            tbCivitaiApiKey.Location = new Point(336, 12);
+            tbCivitaiApiKey.Name = "tbCivitaiApiKey";
+            tbCivitaiApiKey.PlaceholderText = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
+            tbCivitaiApiKey.Size = new Size(212, 23);
+            tbCivitaiApiKey.TabIndex = 11;
+            tbCivitaiApiKey.TextChanged += tbCivitaiApiKey_TextChanged;
             // 
             // label1
             // 
             label1.AutoSize = true;
             label1.Location = new Point(12, 15);
             label1.Name = "label1";
-            label1.Size = new Size(315, 15);
-            label1.TabIndex = 7;
-            label1.Text = "Downloading some models require API key for Civitai.com";
-            // 
-            // tbCivitaiApiKey
-            // 
-            tbCivitaiApiKey.Location = new Point(333, 12);
-            tbCivitaiApiKey.Name = "tbCivitaiApiKey";
-            tbCivitaiApiKey.PlaceholderText = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
-            tbCivitaiApiKey.Size = new Size(212, 23);
-            tbCivitaiApiKey.TabIndex = 8;
-            tbCivitaiApiKey.TextChanged += tbCivitaiApiKey_TextChanged;
-            // 
-            // linkLabel1
-            // 
-            linkLabel1.AutoSize = true;
-            linkLabel1.Location = new Point(551, 15);
-            linkLabel1.Name = "linkLabel1";
-            linkLabel1.Size = new Size(91, 15);
-            linkLabel1.TabIndex = 9;
-            linkLabel1.TabStop = true;
-            linkLabel1.Text = "visit Civitai.com";
-            linkLabel1.UseMnemonic = false;
-            linkLabel1.LinkClicked += linkLabel1_LinkClicked;
+            label1.Size = new Size(318, 15);
+            label1.TabIndex = 10;
+            label1.Text = "Downloading some models require API key for Civitai.com:";
             // 
             // btImportFromCivitai
             // 
             btImportFromCivitai.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            btImportFromCivitai.Location = new Point(1032, 10);
+            btImportFromCivitai.Location = new Point(968, 9);
             btImportFromCivitai.Name = "btImportFromCivitai";
             btImportFromCivitai.Size = new Size(94, 30);
-            btImportFromCivitai.TabIndex = 14;
+            btImportFromCivitai.TabIndex = 13;
             btImportFromCivitai.Text = "Import...";
             btImportFromCivitai.UseVisualStyleBackColor = true;
             btImportFromCivitai.Click += btImportFromCivitai_Click;
@@ -146,24 +117,44 @@
             updateTimer.Interval = 1000;
             updateTimer.Tick += updateTimer_Tick;
             // 
-            // SdLorasForm
+            // label2
+            // 
+            label2.AutoSize = true;
+            label2.Location = new Point(12, 55);
+            label2.Name = "label2";
+            label2.Size = new Size(45, 15);
+            label2.TabIndex = 10;
+            label2.Text = "Search:";
+            // 
+            // tbSearch
+            // 
+            tbSearch.Location = new Point(63, 52);
+            tbSearch.Name = "tbSearch";
+            tbSearch.PlaceholderText = "words to filter list";
+            tbSearch.Size = new Size(999, 23);
+            tbSearch.TabIndex = 11;
+            tbSearch.TextChanged += tbSearch_TextChanged;
+            // 
+            // SdCheckpointsForm
             // 
             AcceptButton = btOk;
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(1138, 623);
+            ClientSize = new Size(1074, 581);
             Controls.Add(btImportFromCivitai);
             Controls.Add(linkLabel1);
+            Controls.Add(tbSearch);
             Controls.Add(tbCivitaiApiKey);
+            Controls.Add(label2);
             Controls.Add(label1);
             Controls.Add(lvModels);
             Controls.Add(btOk);
             FormBorderStyle = FormBorderStyle.SizableToolWindow;
-            Name = "SdLorasForm";
+            Name = "SdCheckpointsForm";
             ShowInTaskbar = false;
             StartPosition = FormStartPosition.CenterParent;
-            Text = "Stable Diffusion LoRA (additional mini-checkpoints)";
-            Load += SdLorasForm_Load;
+            Text = "Stable Diffusion Checkpoints (image generation models)";
+            Load += SdModelsForm_Load;
             ResumeLayout(false);
             PerformLayout();
         }
@@ -171,15 +162,12 @@
         #endregion
         private Button btOk;
         private ListView lvModels;
-        private ColumnHeader columnHeader1;
-        private ColumnHeader columnHeader4;
-        private ColumnHeader columnHeader2;
-        private ColumnHeader columnHeader3;
-        private Label label1;
-        private TextBox tbCivitaiApiKey;
         private LinkLabel linkLabel1;
+        private TextBox tbCivitaiApiKey;
+        private Label label1;
         private Button btImportFromCivitai;
-        private ColumnHeader columnHeader5;
         private System.Windows.Forms.Timer updateTimer;
+        private Label label2;
+        private TextBox tbSearch;
     }
 }

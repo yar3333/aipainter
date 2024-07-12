@@ -94,7 +94,7 @@ namespace AiPainter.Adapters.StableDiffusion
 
         private void showManageCheckpointDialog()
         {
-            var form = new SdCheckpointsForm(GenerationList);
+            var form = new SdModelsForm(GenerationList, new SdCheckpointsFormAdapter());
             form.ShowDialog(this);
 
             var saveName = selectedCheckpointName;
@@ -298,7 +298,7 @@ namespace AiPainter.Adapters.StableDiffusion
 
             cmLorasMenu.Items.Add("Manage LoRAs...", null, (_, _) =>
             {
-                var form = new SdLorasForm(GenerationList);
+                var form = new SdModelsForm(GenerationList, new SdLorasFormAdapter());
                 form.ShowDialog(this);
             });
 
@@ -371,7 +371,7 @@ namespace AiPainter.Adapters.StableDiffusion
 
             menu.Items.Add("Manage Embeddings...", null, (_, _) =>
             {
-                var form = new SdEmbeddingForm();
+                var form = new SdModelsForm(GenerationList, new SdEmbeddingFormAdapter());
                 form.ShowDialog(this);
             });
 
