@@ -62,7 +62,7 @@ public class SdLorasFormAdapter : ISdModelsFormAdapter
         return form.tabLora;
     }
 
-    public void StartDownloading(string name, GenerationList generationList, Action callOnProgress, Action<string?, Action<string>> callAfterDownload)
+    public void StartDownloading(string name, GenerationList generationList)
     {
         if (SdLoraHelper.GetPathToModel(name) != null) return;
 
@@ -72,28 +72,47 @@ public class SdLorasFormAdapter : ISdModelsFormAdapter
         var genItemName = "download_lora_" + name;
         if (generationList.FindItem(genItemName) != null) return;
 
-        generationList.AddGeneration(new SdDownloadingListItem
-        (
-            genItemName,
-            "Download " + name + " / LoRA model",
-            () => true,
-            async (progress, cancelationTokenSource) =>
+        var downItem = new SdDownloadingListItem(genItemName, "Download " + name + " / LoRA model", () => true);
+        downItem.WorkAsync = async cancelationTokenSource =>
+        {
+            var resultFilePath = await SdModelDownloadHelper.DownloadFileAsync
+                                 (
+                                     url,
+                                     SdLoraHelper.GetDir(),
+                                     s => { downItem.NotifyProgress(s); GlobalEvents.LoraDownloadProgress?.Invoke(name); },
+                                     new DownloadFileOptions
+                                     {
+                                         FileNameIfNotDetected = SdModelDownloadHelper.GetModelFileNameFromUrl(url, name + ".safetensors"),
+                                         PreprocessFileName = x => name + Path.GetExtension(x),
+                                         AuthorizationBearer = Program.Config.CivitaiApiKey,
+                                     },
+                                     cancelationTokenSource
+                                 );
+            if (SdModelDownloadHelper.AnalyzeDownloadedModel(resultFilePath, downItem.NotifyProgress))
             {
-                var resultFilePath = await SdModelDownloadHelper.DownloadFileAsync
-                                     (
-                                         url,
-                                         SdLoraHelper.GetDir(),
-                                         s => { progress(s); callOnProgress(); },
-                                         new DownloadFileOptions
-                                         {
-                                             FileNameIfNotDetected = SdModelDownloadHelper.GetModelFileNameFromUrl(url, name + ".safetensors"),
-                                             PreprocessFileName = x => name + Path.GetExtension(x),
-                                             AuthorizationBearer = Program.Config.CivitaiApiKey,
-                                         },
-                                         cancelationTokenSource
-                                     );
-                callAfterDownload(resultFilePath, progress);
+                GlobalEvents.LoraFileDownloaded?.Invoke();
             }
-        ));
+        };
+        generationList.AddGeneration(downItem);
+    }
+
+    public void AddUpdateListEventHandler(Action handler)
+    {
+        GlobalEvents.LoraFileDownloaded += handler;
+    }
+
+    public void RemoveUpdateListEventHandler(Action handler)
+    {
+        GlobalEvents.LoraFileDownloaded -= handler;
+    }
+
+    public void AddDownloadProgressEventHandler(Action<string> handler)
+    {
+        GlobalEvents.LoraDownloadProgress += handler;
+    }
+
+    public void RemoveDownloadProgressEventHandler(Action<string> handler)
+    {
+        GlobalEvents.LoraDownloadProgress -= handler;
     }
 }

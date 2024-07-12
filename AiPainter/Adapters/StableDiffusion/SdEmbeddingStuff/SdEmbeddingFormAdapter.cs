@@ -66,7 +66,7 @@ public class SdEmbeddingFormAdapter : ISdModelsFormAdapter
         return form.tabEmbedding;
     }
 
-    public void StartDownloading(string name, GenerationList generationList, Action callOnProgress, Action<string?, Action<string>> callAfterDownload)
+    public void StartDownloading(string name, GenerationList generationList)
     {
         if (SdEmbeddingHelper.GetPathToModel(name) != null) return;
 
@@ -79,7 +79,7 @@ public class SdEmbeddingFormAdapter : ISdModelsFormAdapter
             (
                 url,
                 SdEmbeddingHelper.GetDir(),
-                s => {},
+                s => { GlobalEvents.EmbeddingDownloadProgress?.Invoke(name); },
                 new DownloadFileOptions
                 {
                     FileNameIfNotDetected = SdModelDownloadHelper.GetModelFileNameFromUrl(url, name + ".safetensors"),
@@ -88,8 +88,30 @@ public class SdEmbeddingFormAdapter : ISdModelsFormAdapter
                 },
                 new CancellationTokenSource()
             );
-
-            callAfterDownload(resultFilePath, null);
+            if (SdModelDownloadHelper.AnalyzeDownloadedModel(resultFilePath, null))
+            {
+                GlobalEvents.EmbeddingFileDownloaded?.Invoke();
+            }
         });
+    }
+
+    public void AddUpdateListEventHandler(Action handler)
+    {
+        GlobalEvents.EmbeddingFileDownloaded += handler;
+    }
+
+    public void RemoveUpdateListEventHandler(Action handler)
+    {
+        GlobalEvents.EmbeddingFileDownloaded -= handler;
+    }
+
+    public void AddDownloadProgressEventHandler(Action<string> handler)
+    {
+        GlobalEvents.EmbeddingDownloadProgress += handler;
+    }
+
+    public void RemoveDownloadProgressEventHandler(Action<string> handler)
+    {
+        GlobalEvents.EmbeddingDownloadProgress -= handler;
     }
 }

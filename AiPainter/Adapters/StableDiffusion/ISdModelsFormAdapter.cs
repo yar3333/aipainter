@@ -14,6 +14,11 @@ public interface ISdModelsFormAdapter
     public void SetEnabled(string name, bool enabled);
     public TabPage? GetDefaultTab(AddImportModelForm form);
     
-    // void callAfterDownload(string? resultFilePath, Action<string> progress)
-    public void StartDownloading(string name, GenerationList generationList, Action callOnProgress, Action<string?, Action<string>> callAfterDownload);
+    public void StartDownloading(string name, GenerationList generationList);
+
+    public void AddUpdateListEventHandler(Action handler);
+    public void RemoveUpdateListEventHandler(Action handler);
+    
+    public void AddDownloadProgressEventHandler(Action<string> handler);
+    public void RemoveDownloadProgressEventHandler(Action<string> handler);
 }

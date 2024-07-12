@@ -5,14 +5,11 @@ namespace AiPainter.Adapters.StableDiffusion
 {
     public partial class SdModelsForm : Form
     {
-        private static bool isNeedUpdateStatusLight;
-        private static bool isNeedUpdateStatusDeep;
-
         private readonly GenerationList generationList;
         private readonly ISdModelsFormAdapter modelsAdapter;
 
         private bool ignoreCheckedChange = true;
-        private ListViewItem[] allItems = {};
+        private ListViewItem[] allItems = { };
 
         public SdModelsForm(GenerationList generationList, ISdModelsFormAdapter modelsAdapter)
         {
@@ -29,12 +26,24 @@ namespace AiPainter.Adapters.StableDiffusion
             tbCivitaiApiKey.Text = Program.Config.CivitaiApiKey;
 
             updateList();
+
+            modelsAdapter.AddUpdateListEventHandler(updateList);
+            modelsAdapter.AddDownloadProgressEventHandler(updateItemDownloadProgress);
+        }
+
+        private void SdModelsForm_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            modelsAdapter.RemoveUpdateListEventHandler(updateList);
+            modelsAdapter.RemoveDownloadProgressEventHandler(updateItemDownloadProgress);
         }
 
         private void updateList()
         {
-            allItems = modelsAdapter.GetItems();
-            fillModelListFiltered();
+            Invoke(() =>
+            {
+                allItems = modelsAdapter.GetItems();
+                fillModelListFiltered();
+            });
         }
 
         private void fillModelListFiltered()
@@ -45,19 +54,13 @@ namespace AiPainter.Adapters.StableDiffusion
             ignoreCheckedChange = false;
         }
 
-        private void updateStatus()
+        private void updateItemDownloadProgress(string name)
         {
-            if (!isNeedUpdateStatusLight && !isNeedUpdateStatusDeep) return;
-
-            var deep = isNeedUpdateStatusDeep;
-
-            isNeedUpdateStatusLight = false;
-            isNeedUpdateStatusDeep = false;
-
-            foreach (var item in allItems)
+            Invoke(() =>
             {
-                modelsAdapter.UpdateItemStatus(generationList, item, deep);
-            }
+                var item = allItems.FirstOrDefault(x => x.Name == name);
+                if (item != null) modelsAdapter.UpdateItemStatus(generationList, item, false);
+            });
         }
 
         private void lvModels_ItemChecked(object sender, ItemCheckedEventArgs e)
@@ -68,26 +71,7 @@ namespace AiPainter.Adapters.StableDiffusion
 
             if (e.Item.Checked)
             {
-                modelsAdapter.StartDownloading
-                (
-                    e.Item.Name, 
-                    generationList, 
-                    () => isNeedUpdateStatusLight = true, // on progress
-                    analyzeDownloadedModel // after download
-                );
-            }
-        }
-
-        private static void analyzeDownloadedModel(string? resultFilePath, Action<string> progress)
-        {
-            var success = SdModelDownloadHelper.AnalyzeDownloadedModel(resultFilePath, () =>
-            {
-                progress("Invalid API key");
-            });
-            if (success)
-            {
-                progress("+");
-                isNeedUpdateStatusDeep = true;
+                modelsAdapter.StartDownloading(e.Item.Name, generationList);
             }
         }
 
@@ -122,11 +106,6 @@ namespace AiPainter.Adapters.StableDiffusion
             form.tabs.SelectedTab = modelsAdapter.GetDefaultTab(form) ?? form.tabs.SelectedTab;
             form.ShowDialog(this);
             updateList();
-        }
-
-        private void updateTimer_Tick(object sender, EventArgs e)
-        {
-            updateStatus();
         }
 
         private void tbSearch_TextChanged(object sender, EventArgs e)

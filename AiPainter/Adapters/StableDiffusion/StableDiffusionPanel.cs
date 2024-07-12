@@ -68,6 +68,12 @@ namespace AiPainter.Adapters.StableDiffusion
             baseVaeTooltip = toolTip.GetToolTip(ddVae);
         }
 
+        public void updateCheckpoints()
+        {
+            var saveName = selectedCheckpointName;
+            ddCheckpoint.DataSource = SdCheckpointsHelper.GetListItems(saveName);
+            ddCheckpoint.SelectedValue = saveName;
+        }
 
         private void collapsablePanel_Load(object sender, EventArgs e)
         {
@@ -90,6 +96,8 @@ namespace AiPainter.Adapters.StableDiffusion
             ddImageSize.Text = Program.Config.ImageSizes.FirstOrDefault() ?? "512x512";
 
             tbNegative.Text = Program.Config.NegativePrompts.FirstOrDefault() ?? "";
+
+            GlobalEvents.CheckpointFileDownloaded += () => Invoke(updateCheckpoints);
         }
 
         private void showManageCheckpointDialog()
@@ -97,9 +105,7 @@ namespace AiPainter.Adapters.StableDiffusion
             var form = new SdModelsForm(GenerationList, new SdCheckpointsFormAdapter());
             form.ShowDialog(this);
 
-            var saveName = selectedCheckpointName;
-            ddCheckpoint.DataSource = SdCheckpointsHelper.GetListItems(saveName);
-            selectedCheckpointName = saveName;
+            updateCheckpoints();
         }
 
         private void btGenerate_Click(object sender, EventArgs e)

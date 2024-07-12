@@ -28,14 +28,12 @@
         /// </summary>
         private void InitializeComponent()
         {
-            components = new System.ComponentModel.Container();
             btOk = new Button();
             lvModels = new ListView();
             linkLabel1 = new LinkLabel();
             tbCivitaiApiKey = new TextBox();
             label1 = new Label();
             btImportFromCivitai = new Button();
-            updateTimer = new System.Windows.Forms.Timer(components);
             label2 = new Label();
             tbSearch = new TextBox();
             SuspendLayout();
@@ -56,7 +54,6 @@
             // 
             lvModels.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             lvModels.CheckBoxes = true;
-            lvModels.Columns.AddRange(new ColumnHeader[] {});
             lvModels.FullRowSelect = true;
             lvModels.GridLines = true;
             lvModels.HeaderStyle = ColumnHeaderStyle.Nonclickable;
@@ -111,12 +108,6 @@
             btImportFromCivitai.UseVisualStyleBackColor = true;
             btImportFromCivitai.Click += btImportFromCivitai_Click;
             // 
-            // updateTimer
-            // 
-            updateTimer.Enabled = true;
-            updateTimer.Interval = 1000;
-            updateTimer.Tick += updateTimer_Tick;
-            // 
             // label2
             // 
             label2.AutoSize = true;
@@ -135,7 +126,7 @@
             tbSearch.TabIndex = 11;
             tbSearch.TextChanged += tbSearch_TextChanged;
             // 
-            // SdCheckpointsForm
+            // SdModelsForm
             // 
             AcceptButton = btOk;
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -150,10 +141,11 @@
             Controls.Add(lvModels);
             Controls.Add(btOk);
             FormBorderStyle = FormBorderStyle.SizableToolWindow;
-            Name = "SdCheckpointsForm";
+            Name = "SdModelsForm";
             ShowInTaskbar = false;
             StartPosition = FormStartPosition.CenterParent;
             Text = "Stable Diffusion Checkpoints (image generation models)";
+            FormClosed += SdModelsForm_FormClosed;
             Load += SdModelsForm_Load;
             ResumeLayout(false);
             PerformLayout();

@@ -44,20 +44,26 @@ static class SdModelDownloadHelper
         return resultFilePath;
     }
 
-    public static bool AnalyzeDownloadedModel(string? resultFilePath, Action onAuthErrorFound)
+    public static bool AnalyzeDownloadedModel(string? resultFilePath, Action<string>? progress)
     {
-        if (resultFilePath == null) return false;
-        if (new FileInfo(resultFilePath).Length > 2048) return true;
-            
-        var text = File.ReadAllText(resultFilePath);
-        File.Delete(resultFilePath);
-
-        if (text.Contains("\"error\":\"Unauthorized\""))
+        if (resultFilePath == null)
         {
-            onAuthErrorFound();
+            progress?.Invoke("Unknown error");
+            return false;
         }
 
-        return false;
+        if (new FileInfo(resultFilePath).Length < 2048)
+        {
+            var text = File.ReadAllText(resultFilePath);
+            File.Delete(resultFilePath);
+
+            progress?.Invoke(text.Contains("\"error\":\"Unauthorized\"") ? "Invalid API key" : "Unknown error");
+
+            return false;
+        }
+            
+        progress?.Invoke("+");
+        return true;
     }
 
     public static void UpdateFileStatusInListView(GenerationList generationList, ListViewItem item, string genListItemNamePrefix, int subItemIndex, bool deep, Func<string, string?> getStatusFunc)

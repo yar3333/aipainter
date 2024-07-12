@@ -14,18 +14,18 @@ public partial class SdDownloadingListItem : UserControl, IGenerationListItem
     public string DownloadStatus => pbProgress.CustomText ?? "";
 
     private readonly Func<bool> isReadyToStartWork;
-    private readonly Func<Action<string>, CancellationTokenSource, Task> workAsync;
+    
+    public Func<CancellationTokenSource, Task> WorkAsync;
         
     public bool IsDone { get; private set; }
 
     private readonly CancellationTokenSource cancellationTokenSource = new();
 
-    public SdDownloadingListItem(string name, string text, Func<bool> isReadyToStartWork, Func<Action<string>, CancellationTokenSource, Task> workAsync)
+    public SdDownloadingListItem(string name, string text, Func<bool> isReadyToStartWork)
     {
         InitializeComponent();
             
         this.isReadyToStartWork = isReadyToStartWork;
-        this.workAsync = workAsync;
 
         pbProgress.Maximum = 100;
         pbProgress.Value = 0;
@@ -49,23 +49,22 @@ public partial class SdDownloadingListItem : UserControl, IGenerationListItem
         });
     }
 
+    public void NotifyProgress(string s)
+    {
+        Invoke(() =>
+        {
+            pbProgress.CustomText = s;
+            pbProgress.Value = Regex.IsMatch(s, @"^\d+%$") ? int.Parse(s.TrimEnd('%')) : 0;
+            pbProgress.Refresh();
+        });
+    }
+
     private async Task runInnerAsync()
     {
         try
         {
-            await workAsync(percent =>
-            {
-                Invoke(() =>
-                {
-                    pbProgress.CustomText = percent;
-                    pbProgress.Value = Regex.IsMatch(percent, @"^\d+%$") ? int.Parse(percent.TrimEnd('%')) : 0;
-                    pbProgress.Refresh();
-                });
-            }, cancellationTokenSource);
-                
-            pbProgress.Value = 100;
-            pbProgress.CustomText = "100%";
-            pbProgress.Refresh();
+            await WorkAsync(cancellationTokenSource);
+            NotifyProgress("100%");
         }
         catch (Exception e)
         {
