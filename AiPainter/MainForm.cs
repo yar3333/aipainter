@@ -1,6 +1,5 @@
 using System.Drawing.Imaging;
 using AiPainter.Adapters.LamaCleaner;
-using AiPainter.Adapters.StableDiffusion;
 using AiPainter.Helpers;
 
 #pragma warning disable CS8602
@@ -13,7 +12,7 @@ namespace AiPainter
 
         public string? FilePath;
 
-        public string? ImagesFolder
+        public string ImagesFolder
         {
             get => panImages.ImagesFolder;
             set => panImages.ImagesFolder = value;
@@ -26,14 +25,7 @@ namespace AiPainter
             InitializeComponent();
 
             panImages.mainForm = this;
-            panImages.OnLoadParametersToSdGenerationPanel = panStableDiffusion.LoadParametersToSdGenerationPanel;
-            panImages.OnOpenImageFile = filePath => OpenImageFile(filePath, false);
-
-            panStableDiffusion.GenerationList = panGenerationList;
-            panStableDiffusion.OnGenerate = () =>
-            {
-                panGenerationList.AddGeneration(new SdGenerationListItem(panStableDiffusion, pictureBox, this));
-            };
+            panStableDiffusion.mainForm = this;
 
             updateImageListWorker.RunWorkerAsync();
         }
@@ -47,7 +39,7 @@ namespace AiPainter
                 {
                     var filePath = Path.GetFullPath(args[1]);
                     OpenImageFile(filePath);
-                    ImagesFolder = Path.GetDirectoryName(filePath);
+                    ImagesFolder = Path.GetDirectoryName(filePath)!;
                 }
             }
 
@@ -132,7 +124,7 @@ namespace AiPainter
             if (openFileDialog.ShowDialog() == DialogResult.OK)
             {
                 OpenImageFile(openFileDialog.FileName);
-                ImagesFolder = Path.GetDirectoryName(FilePath);
+                ImagesFolder = Path.GetDirectoryName(FilePath)!;
             }
         }
 
@@ -239,15 +231,14 @@ namespace AiPainter
 
         private void btResetMask_Click(object sender, EventArgs e)
         {
-            pictureBox.HistoryAddCurrentState(); // TODO: ???
-
+            pictureBox.HistoryAddCurrentState();
             pictureBox.ResetMask();
             pictureBox.Refresh();
         }
 
         private void controlsStateUpdater_Tick(object sender, EventArgs e)
         {
-            panStableDiffusion.UpdateState(pictureBox);
+            panStableDiffusion.UpdateState();
             lamaCleaner.UpdateState(pictureBox, btRemoveObjectFromImage);
 
             pictureBox.Enabled = !lamaCleaner.InProcess;

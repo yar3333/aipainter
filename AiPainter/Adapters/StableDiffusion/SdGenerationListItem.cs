@@ -78,7 +78,7 @@ namespace AiPainter.Adapters.StableDiffusion
             
             if (!sdPanel.cbUseInitImage.Checked)
             {
-                generator = new SdGeneratorMain(sdGenerationParameters, this, mainForm.ImagesFolder!);
+                generator = new SdGeneratorMain(sdGenerationParameters, this, mainForm.ImagesFolder);
             }
             else
             {

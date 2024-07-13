@@ -1,9 +1,10 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.Diagnostics;
+using System.Text.RegularExpressions;
+using AiPainter.Adapters.StableDiffusion.SdApiClientStuff;
 using AiPainter.Adapters.StableDiffusion.SdCheckpointStuff;
 using AiPainter.Adapters.StableDiffusion.SdEmbeddingStuff;
 using AiPainter.Adapters.StableDiffusion.SdLoraStuff;
 using AiPainter.Adapters.StableDiffusion.SdVaeStuff;
-using AiPainter.Controls;
 using AiPainter.Helpers;
 
 namespace AiPainter.Adapters.StableDiffusion
@@ -12,10 +13,12 @@ namespace AiPainter.Adapters.StableDiffusion
     {
         private readonly string baseVaeTooltip;
 
-        public GenerationList GenerationList = null!;
-        public Action OnGenerate = null!;
+        // ReSharper disable once InconsistentNaming
+        public MainForm mainForm = null!;
 
         public bool IsTextboxInFocus => collapsablePanel.ActiveControl is TextBox;
+
+        private bool inProcess = false;
 
         public string selectedCheckpointName
         {
@@ -102,7 +105,7 @@ namespace AiPainter.Adapters.StableDiffusion
 
         private void showManageCheckpointDialog()
         {
-            var form = new SdModelsForm(GenerationList, new SdCheckpointsFormAdapter());
+            var form = new SdModelsForm(mainForm.panGenerationList, new SdCheckpointsFormAdapter());
             form.ShowDialog(this);
 
             updateCheckpoints();
@@ -122,7 +125,7 @@ namespace AiPainter.Adapters.StableDiffusion
                 return;
             }
 
-            OnGenerate();
+            mainForm.panGenerationList.AddGeneration(new SdGenerationListItem(this, mainForm.pictureBox, mainForm));
         }
 
         private void saveSelectedValuesToMainConfig()
@@ -196,8 +199,10 @@ namespace AiPainter.Adapters.StableDiffusion
             selectedInpaintingFill = SdInpaintingFill.original;
         }
 
-        public void UpdateState(SmartPictureBox pb)
+        public void UpdateState()
         {
+            var pb = mainForm.pictureBox;
+
             if (pb.Image != null && pb.HasMask)
             {
                 cbUseInitImage.Enabled = false;
@@ -222,6 +227,12 @@ namespace AiPainter.Adapters.StableDiffusion
 
             trackBarChangesLevel.Enabled = cbUseInitImage.Checked;
             ddInpaintingFill.Enabled = cbUseInitImage.Checked;
+            
+            btInterrogate.Enabled = !inProcess && pb.Image != null;
+            btGenerate.Enabled = !inProcess;
+            btReset.Enabled = !inProcess;
+            btSuggestedPrompt.Enabled = !inProcess;
+            btStyles.Enabled = !inProcess;
         }
 
         public void SetImageSize(int w, int h)
@@ -304,7 +315,7 @@ namespace AiPainter.Adapters.StableDiffusion
 
             cmLorasMenu.Items.Add("Manage LoRAs...", null, (_, _) =>
             {
-                var form = new SdModelsForm(GenerationList, new SdLorasFormAdapter());
+                var form = new SdModelsForm(mainForm.panGenerationList, new SdLorasFormAdapter());
                 form.ShowDialog(this);
             });
 
@@ -327,6 +338,8 @@ namespace AiPainter.Adapters.StableDiffusion
             {
                 cmLorasMenu.Items.Add(new ToolStripLabel("No enabled LoRA found"));
             }
+
+            if (inProcess) foreach (ToolStripItem item in cmLorasMenu.Items) item.Enabled = false;
 
             cmLorasMenu.Show(Cursor.Position);
         }
@@ -377,7 +390,7 @@ namespace AiPainter.Adapters.StableDiffusion
 
             menu.Items.Add("Manage Embeddings...", null, (_, _) =>
             {
-                var form = new SdModelsForm(GenerationList, new SdEmbeddingFormAdapter());
+                var form = new SdModelsForm(mainForm.panGenerationList, new SdEmbeddingFormAdapter());
                 form.ShowDialog(this);
             });
 
@@ -387,8 +400,8 @@ namespace AiPainter.Adapters.StableDiffusion
             {
                 menu.Items.Add(new ToolStripMenuItem(SdEmbeddingHelper.GetHumanName(name), null, (_, _) =>
                 {
-                    if (!isForNegative) AddTextToPrompt  ("(" + name + ":1.0)");
-                    else                AddTextToNegative("(" + name + ":1.0)");
+                    if (!isForNegative) AddTextToPrompt("(" + name + ":1.0)");
+                    else AddTextToNegative("(" + name + ":1.0)");
                 })
                 {
                     Checked = Regex.IsMatch(!isForNegative ? tbPrompt.Text : tbNegative.Text, @"\b" + Regex.Escape(name) + @"\b")
@@ -399,6 +412,8 @@ namespace AiPainter.Adapters.StableDiffusion
             {
                 menu.Items.Add(new ToolStripLabel("No enabled Embeddings found"));
             }
+
+            if (inProcess) foreach (ToolStripItem item in menu.Items) item.Enabled = false;
 
             menu.Show(Cursor.Position);
         }
@@ -451,6 +466,32 @@ namespace AiPainter.Adapters.StableDiffusion
             return Regex.Matches(tbPrompt.Text, @"<lora:([^:>]+)[:>]")
                         .Select(x => x.Groups[1].Value)
                         .ToArray();
+        }
+
+        private void btInterrogate_Click(object sender, EventArgs e)
+        {
+            inProcess = true;
+            tbPrompt.ReadOnly = true;
+            
+            var croppedImage = BitmapTools.GetCropped(mainForm.pictureBox.Image!, mainForm.pictureBox.ActiveBox, Color.Black);
+            
+            Task.Run(async () =>
+            {
+                var result = await SdApiClient.interrogate(new SdInterrogateRequest
+                {
+                    image = BitmapTools.GetBase64String(croppedImage),
+                    //model = "model_base_caption_capfilt_large",
+                });
+
+                Invoke(() =>
+                {
+                    if (result != null) tbPrompt.Text = result;
+
+                    inProcess = false;
+                    tbPrompt.ReadOnly = false;
+                });
+            });
+
         }
     }
 }

@@ -37,6 +37,7 @@
             label5 = new Label();
             ddSampler = new ComboBox();
             btSuggestedPrompt = new Button();
+            btInterrogate = new Button();
             btStyles = new Button();
             btEmbeddings = new Button();
             btNegativeEmbeddings = new Button();
@@ -86,6 +87,7 @@
             collapsablePanel.Controls.Add(label5);
             collapsablePanel.Controls.Add(ddSampler);
             collapsablePanel.Controls.Add(btSuggestedPrompt);
+            collapsablePanel.Controls.Add(btInterrogate);
             collapsablePanel.Controls.Add(btStyles);
             collapsablePanel.Controls.Add(btEmbeddings);
             collapsablePanel.Controls.Add(btNegativeEmbeddings);
@@ -198,6 +200,20 @@
             toolTip.SetToolTip(btSuggestedPrompt, "Suggested prompt (for selected Checkpoint and LoRAs)");
             btSuggestedPrompt.UseVisualStyleBackColor = false;
             btSuggestedPrompt.Click += btSuggestedPrompt_Click;
+            // 
+            // btInterrogate
+            // 
+            btInterrogate.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            btInterrogate.BackColor = Color.White;
+            btInterrogate.Font = new Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point);
+            btInterrogate.Location = new Point(405, 183);
+            btInterrogate.Name = "btInterrogate";
+            btInterrogate.Size = new Size(56, 25);
+            btInterrogate.TabIndex = 24;
+            btInterrogate.Text = "<=";
+            toolTip.SetToolTip(btInterrogate, "Generate prompt from image");
+            btInterrogate.UseVisualStyleBackColor = false;
+            btInterrogate.Click += btInterrogate_Click;
             // 
             // btStyles
             // 
@@ -582,5 +598,6 @@
         private ComboBox ddClipSkip;
         private Label label2;
         private ComboBox ddInpaintingFill;
+        private Button btInterrogate;
     }
 }

@@ -24,6 +24,18 @@ static class SdApiClient
         return await runGenerateAsync("sdapi/v1/img2img", request, onProgress);
     }
     
+    public static async Task<string?> interrogate(SdInterrogateRequest request)
+    {
+        try
+        {
+            return (await postAsync<SdInterrogateResponse>("sdapi/v1/interrogate", request)).caption;
+        }
+        catch (Exception e)
+        {
+            return null;
+        }
+    }
+    
     private static async Task<SdGenerationResponse?> runGenerateAsync(string url, SdBaseGenerationRequest request, Action<int> onProgress)
     {
         request = request.Clone();

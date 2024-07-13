@@ -10,7 +10,7 @@ sealed class SmartImageListItemContextMenu : ContextMenuStrip
         Closed += (_, _) => mainForm.toolTip.Active = true;
         
         var parentFolder = Path.GetDirectoryName(mainForm.ImagesFolder);
-        if (parentFolder != Application.StartupPath.TrimEnd('\\', '/'))
+        if (parentFolder != null && parentFolder != Application.StartupPath.TrimEnd('\\', '/'))
         {
             Items.Add("Open parent folder (" + Path.GetFileName(parentFolder) + ")", null, (_, _) =>
             {
@@ -23,8 +23,8 @@ sealed class SmartImageListItemContextMenu : ContextMenuStrip
         }
 
         var subfolders = Directory.Exists(mainForm.ImagesFolder) 
-                             ? Directory.GetDirectories(mainForm.ImagesFolder!)
-                             : new string?[] {};
+                             ? Directory.GetDirectories(mainForm.ImagesFolder)
+                             : new string[] {};
         if (subfolders.Length > 0)
         {
             var openSubfolderMenuItem = new ToolStripMenuItem("Open subfolder");
@@ -53,7 +53,7 @@ sealed class SmartImageListItemContextMenu : ContextMenuStrip
                     var dialog = new FolderNameDialog(Path.GetFileNameWithoutExtension(imageFilePath), null);
                     if (dialog.ShowDialog(this) == DialogResult.OK)
                     {
-                        moveImageFile(imageFilePath, Path.Combine(mainForm.ImagesFolder!, dialog.ResultFolderName));
+                        moveImageFile(imageFilePath, Path.Combine(mainForm.ImagesFolder, dialog.ResultFolderName));
                     }
                 });
                 if (subfolders.Length > 0)
@@ -77,9 +77,9 @@ sealed class SmartImageListItemContextMenu : ContextMenuStrip
                     var dialog = new FolderNameDialog(Path.GetFileNameWithoutExtension(imageFilePath), null);
                     if (dialog.ShowDialog(this) == DialogResult.OK)
                     {
-                        var destImagePath = moveImageFile(imageFilePath, Path.Combine(mainForm.ImagesFolder!, dialog.ResultFolderName));
+                        var destImagePath = moveImageFile(imageFilePath, Path.Combine(mainForm.ImagesFolder, dialog.ResultFolderName));
                         mainForm.OpenImageFile(destImagePath);
-                        mainForm.ImagesFolder = Path.GetDirectoryName(destImagePath);
+                        mainForm.ImagesFolder = Path.GetDirectoryName(destImagePath)!;
                     }
                 });
                 if (subfolders.Length > 0)
@@ -91,7 +91,7 @@ sealed class SmartImageListItemContextMenu : ContextMenuStrip
                         {
                             var destImagePath = moveImageFile(imageFilePath, dir);
                             mainForm.OpenImageFile(destImagePath);
-                            mainForm.ImagesFolder = Path.GetDirectoryName(destImagePath);
+                            mainForm.ImagesFolder = Path.GetDirectoryName(destImagePath)!;
                         });
                     }
                 }
@@ -139,19 +139,19 @@ sealed class SmartImageListItemContextMenu : ContextMenuStrip
         Items.Add("Show in Explorer", null, (_, _) =>
         {
             if (imageFilePath != null) ProcessHelper.ShowFileInExplorer(imageFilePath);
-            else                       ProcessHelper.ShowFolderInExplorer(mainForm.ImagesFolder!);
+            else                       ProcessHelper.ShowFolderInExplorer(mainForm.ImagesFolder);
         });
         
         Items.Add("Rename folder (" + Path.GetFileName(mainForm.ImagesFolder) + ")", null, (_, _) =>
         {
-            var name = Path.GetFileName(mainForm.ImagesFolder)!;
+            var name = Path.GetFileName(mainForm.ImagesFolder);
             var dialog = new FolderNameDialog(name, null);
             if (dialog.ShowDialog(this) == DialogResult.OK && dialog.ResultFolderName != name)
             {
                 var destFolder = Path.Combine(Path.GetDirectoryName(mainForm.ImagesFolder)!, dialog.ResultFolderName!);
                 if (!Directory.Exists(destFolder))
                 {
-                    var srcFolder = mainForm.ImagesFolder!;
+                    var srcFolder = mainForm.ImagesFolder;
                     mainForm.ImagesFolder = destFolder;
                     Directory.Move(srcFolder, destFolder);
                 }

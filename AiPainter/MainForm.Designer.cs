@@ -436,8 +436,8 @@ namespace AiPainter
         private ToolStripButton btRight;
         private ToolStripButton btResetMask;
         public ToolTip toolTip;
-        private SmartPictureBox pictureBox;
-        private Adapters.StableDiffusion.StableDiffusionPanel panStableDiffusion;
+        public SmartPictureBox pictureBox;
+        public Adapters.StableDiffusion.StableDiffusionPanel panStableDiffusion;
         private ToolStripButton btRestorePrevMask;
         private ToolStripButton btAbout;
         private ToolStripButton btCopyToClipboard;
@@ -448,7 +448,7 @@ namespace AiPainter
         private SplitContainer splitContainer1;
         private SplitContainer splitContainer2;
         private System.ComponentModel.BackgroundWorker updateImageListWorker;
-        private GenerationList panGenerationList;
+        public GenerationList panGenerationList;
         private ToolStripSplitButton sbResize;
         private ToolStripSeparator toolStripSeparator4;
         private ToolStripButton btRemoveObjectFromImage;

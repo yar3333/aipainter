@@ -5,7 +5,7 @@ namespace AiPainter.Controls;
 
 sealed class SmartImageList : Panel
 {
-    public string? ImagesFolder
+    public string ImagesFolder
     {
         // ReSharper disable once InconsistentlySynchronizedField
         get => storedImageList.Folder;
@@ -27,10 +27,8 @@ sealed class SmartImageList : Panel
     
     private readonly HScrollBar hPicScroll;
 
+    // ReSharper disable once InconsistentNaming
     public MainForm mainForm = null;
-
-    public Action<SdGenerationParameters> OnLoadParametersToSdGenerationPanel = null;
-    public Action<string> OnOpenImageFile = null;
 
     public SmartImageList()
     {
@@ -149,14 +147,14 @@ sealed class SmartImageList : Panel
         pb.Name = "pic" + n;
         pb.Parent = this;
 
-        pb.OnImageClick = () => OnOpenImageFile(pb.FilePath);
+        pb.OnImageClick = () => mainForm.OpenImageFile(pb.FilePath, false);
 
         pb.OnImageDoubleClick = () =>
         {
             var sdGenerationParameters = SdPngHelper.LoadGenerationParameters(pb.FilePath);
             if (sdGenerationParameters != null)
             {
-                OnLoadParametersToSdGenerationPanel(sdGenerationParameters);
+                mainForm.panStableDiffusion.LoadParametersToSdGenerationPanel(sdGenerationParameters);
             }
         };
 
