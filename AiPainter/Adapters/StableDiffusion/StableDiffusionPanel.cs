@@ -400,8 +400,8 @@ namespace AiPainter.Adapters.StableDiffusion
             {
                 menu.Items.Add(new ToolStripMenuItem(SdEmbeddingHelper.GetHumanName(name), null, (_, _) =>
                 {
-                    if (!isForNegative) AddTextToPrompt("(" + name + ":1.0)");
-                    else AddTextToNegative("(" + name + ":1.0)");
+                    if (!isForNegative) AddTextToPrompt  ("(" + name + ":1.0)");
+                    else                AddTextToNegative("(" + name + ":1.0)");
                 })
                 {
                     Checked = Regex.IsMatch(!isForNegative ? tbPrompt.Text : tbNegative.Text, @"\b" + Regex.Escape(name) + @"\b")
