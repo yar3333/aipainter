@@ -20,19 +20,19 @@
         public string LabelText
         {
             get => label.Text;
-            set { Invoke(() => label.Text = value); }
+            set { if (Visible) Invoke(() => label.Text = value); }
         }
 
         public int ProgressValue
         {
             get => progressBar.Value;
-            set { Invoke(() => progressBar.Value = value); }
+            set { if (Visible) Invoke(() => progressBar.Value = value); }
         }
 
         public ProgressBarStyle ProgressStyle
         {
             get => progressBar.Style;
-            set { Invoke(() => progressBar.Style = value); }
+            set { if (Visible) Invoke(() => progressBar.Style = value); }
         }
 
         // ReSharper disable once ParameterHidesMember
@@ -68,6 +68,11 @@
         }
 
         private void WaitingDialog_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            cancellationTokenSource.Cancel();
+        }
+
+        private void btCancel_Click(object sender, EventArgs e)
         {
             cancellationTokenSource.Cancel();
         }

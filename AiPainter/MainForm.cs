@@ -366,25 +366,13 @@ namespace AiPainter
             upscale("R-ESRGAN 4x+ Anime6B", 4);
         }
 
-        private void upscale(string scaler, int resizeFactor)
+        private void upscale(string upscaler, int resizeFactor)
         {
-            var image = BitmapTools.GetBase64String(pictureBox.Image!);
-
-            Task.Run(async () =>
+            var form = new UpscaleForm(pictureBox.Image!, upscaler, resizeFactor, Path.Combine(Path.GetDirectoryName(FilePath)!, Path.GetFileNameWithoutExtension(FilePath) + "-upscaled") + ".png");
+            if (form.ShowDialog(this) == DialogResult.OK)
             {
-                var r = await SdApiClient.extraImageAsync(new SdExtraImageRequest
-                {
-                    upscaler_1 = scaler,
-                    upscaling_resize = resizeFactor,
-                    image = image,
-                });
-                
-                if (r?.image != null)
-                {
-                    var image = BitmapTools.FromBase64(r.image);
-                    image.Save(Path.Combine(Path.GetDirectoryName(FilePath)!, Path.GetFileNameWithoutExtension(FilePath) + "-upscaled") + ".png", ImageFormat.Png );
-                }
-            });
+                OpenImageFile(form.ResultFilePath);
+            }
         }
     }
 }

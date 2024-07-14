@@ -52,13 +52,13 @@
             // 
             // btCancel
             // 
-            btCancel.DialogResult = DialogResult.Cancel;
             btCancel.Location = new Point(269, 87);
             btCancel.Name = "btCancel";
             btCancel.Size = new Size(142, 33);
             btCancel.TabIndex = 2;
             btCancel.Text = "Cancel";
             btCancel.UseVisualStyleBackColor = true;
+            btCancel.Click += btCancel_Click;
             // 
             // WaitingDialog
             // 

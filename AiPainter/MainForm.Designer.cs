@@ -292,7 +292,7 @@ namespace AiPainter
             btUpscale.ImageTransparentColor = Color.Magenta;
             btUpscale.Name = "btUpscale";
             btUpscale.Size = new Size(50, 37);
-            btUpscale.Text = "toolStripSplitButton1";
+            btUpscale.Text = "Upscale";
             // 
             // btUpscaleCommon2x
             // 

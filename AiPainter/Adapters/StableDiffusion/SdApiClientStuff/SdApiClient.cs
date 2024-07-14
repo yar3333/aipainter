@@ -1,4 +1,5 @@
-﻿using System.Net.Http.Json;
+﻿using System.Diagnostics;
+using System.Net.Http.Json;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
@@ -15,20 +16,26 @@ static class SdApiClient
     // ReSharper disable once InconsistentNaming
     public static async Task<SdGenerationResponse?> txt2imgAsync(SdTxt2ImgRequest request, Action<int> onProgress)
     {
-        return await runGenerateAsync("sdapi/v1/txt2img", request, onProgress);
+        request = request.Clone();
+        request.n_iter = 1;
+
+        return await runWithProgressAsync<SdGenerationResponse>("sdapi/v1/txt2img", request, onProgress);
     }
 
     // ReSharper disable once InconsistentNaming
     public static async Task<SdGenerationResponse?> img2imgAsync(SdImg2ImgRequest request, Action<int> onProgress)
     {
-        return await runGenerateAsync("sdapi/v1/img2img", request, onProgress);
+        request = request.Clone();
+        request.n_iter = 1;
+        
+        return await runWithProgressAsync<SdGenerationResponse?>("sdapi/v1/img2img", request, onProgress);
     }
     
     public static async Task<string?> interrogateAsync(SdInterrogateRequest request)
     {
         try
         {
-            return (await postAsync<SdInterrogateResponse>("sdapi/v1/interrogate", request)).caption;
+            return (await postAsync<SdInterrogateResponse?>("sdapi/v1/interrogate", request))?.caption;
         }
         catch (Exception e)
         {
@@ -36,29 +43,33 @@ static class SdApiClient
         }
     }
     
-    public static async Task<SdExtraImageResponse?> extraImageAsync(SdExtraImageRequest request)
+    public static async Task<SdExtraImageResponse?> extraImageAsync(SdExtraImageRequest request, Action<int> onProgress)
     {
+        inProcess = true;
+        StableDiffusionProcess.OnUpscaleProgress += onProgress;
         try
         {
-            return await postAsync<SdExtraImageResponse>("sdapi/v1/extra-single-image", request);
+            return await postAsync<SdExtraImageResponse?>("sdapi/v1/extra-single-image", request);
         }
         catch (Exception e)
         {
             return null;
         }
+        finally
+        {
+            StableDiffusionProcess.OnUpscaleProgress -= onProgress;
+            inProcess = false;
+        }
     }
     
-    private static async Task<SdGenerationResponse?> runGenerateAsync(string url, SdBaseGenerationRequest request, Action<int> onProgress)
+    private static async Task<T?> runWithProgressAsync<T>(string url, object request, Action<int> onProgress) where T : class?
     {
-        request = request.Clone();
-        request.n_iter = 1;
-
         inProcess = true;
         var cancelation = new CancellationTokenSource();
 
         try
         {
-            var resultTask = postAsync<SdGenerationResponse>(url, request);
+            var resultTask = postAsync<T?>(url, request);
             runProgressUpdateTask(onProgress, cancelation.Token);
             var result = await resultTask;
             cancelation.Cancel();
@@ -98,14 +109,30 @@ static class SdApiClient
     {
         Task.Run(async () =>
         {
+            var startTime = DateTime.UtcNow;
+            
             await DelayTools.WaitForExitAsync(1000, cancellationToken);
 
             while (inProcess && !cancellationToken.IsCancellationRequested)
             {
                 try
                 {
-                    var r = await getAsync<SdGenerationProgess>("sdapi/v1/progress", false);
-                    if (r.state?.sampling_step > 0) onProgress(r.state.sampling_step);
+                    var r = await getAsync<SdGenerationProgess?>("sdapi/v1/progress", true);
+                    switch (r?.state?.job)
+                    {
+                        case "Upscale":
+                            //Log.WriteLine(JsonSerializer.Serialize(r, new JsonSerializerOptions {  WriteIndented = true }));
+                            var secondsTotal = Math.Ceiling(Math.Abs(r.eta_relative) * 1000);
+                            var percent = (decimal)(DateTime.UtcNow - startTime).TotalSeconds / secondsTotal * 100;
+                            onProgress((int)Math.Round(percent));
+                            break;
+
+                        default:
+                            if (r.state?.sampling_step > 0) onProgress(r.state.sampling_step);
+                            break;
+                    }
+
+                    
                 }
                 catch (Exception e)
                 {

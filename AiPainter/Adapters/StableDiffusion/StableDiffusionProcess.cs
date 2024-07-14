@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Text.RegularExpressions;
 using AiPainter.Adapters.StableDiffusion.SdApiClientStuff;
 using AiPainter.Helpers;
 
@@ -11,6 +12,8 @@ static class StableDiffusionProcess
     public static bool Running { get; private set; }
     public static string ActiveCheckpointFilePath { get; private set; } = "";
     public static string ActiveVaeFilePath { get; private set; } = "";
+
+    public static Action<int>? OnUpscaleProgress = null;
 
     public static bool IsReady()
     {
@@ -61,7 +64,15 @@ static class StableDiffusionProcess
             
             directory: Path.Join(Application.StartupPath, @"external\StableDiffusion"),
             
-            logFunc: s => log.WriteLine("[process] " + s),
+            logFunc: s =>
+            {
+                if (s != null)
+                {
+                    log.WriteLine("[process] " + s);
+                    var m = Regex.Match(s, @"^tiled upscale:\s*(\d+)%");
+                    if (m.Success) OnUpscaleProgress?.Invoke(int.Parse(m.Groups[1].Value));
+                }
+            },
             
             onExit: code =>
             {
