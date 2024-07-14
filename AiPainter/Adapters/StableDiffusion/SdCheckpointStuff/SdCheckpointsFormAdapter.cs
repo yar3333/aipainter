@@ -108,7 +108,7 @@ public class SdCheckpointsFormAdapter : ISdModelsFormAdapter
 
 
         var downItem = new SdDownloadingListItem(genItemName, "Download " + name + " / Main model", () => true);
-        downItem.WorkAsync = async cancelationTokenSource =>
+        downItem.WorkAsync = async cancellationTokenSource =>
         {
             var resultFilePath = await SdModelDownloadHelper.DownloadFileAsync
             (
@@ -124,7 +124,7 @@ public class SdCheckpointsFormAdapter : ISdModelsFormAdapter
                     FileNameIfNotDetected = SdModelDownloadHelper.GetModelFileNameFromUrl(url, "main.safetensors"),
                     AuthorizationBearer = SdModelDownloadHelper.GetCheckpointAuthorizationBearer(name),
                 },
-                cancelationTokenSource
+                cancellationTokenSource
             );
             if (SdModelDownloadHelper.AnalyzeDownloadedModel(resultFilePath, downItem.NotifyProgress))
             {
@@ -145,7 +145,7 @@ public class SdCheckpointsFormAdapter : ISdModelsFormAdapter
         if (generationList.FindItem(genItemName) != null) return;
 
         var downItem = new SdDownloadingListItem(genItemName, "Download " + name + " / Inpaint model", () => true);
-        downItem.WorkAsync = async cancelationTokenSource =>
+        downItem.WorkAsync = async cancellationTokenSource =>
         {
             var resultFilePath = await SdModelDownloadHelper.DownloadFileAsync
                                  (
@@ -161,7 +161,7 @@ public class SdCheckpointsFormAdapter : ISdModelsFormAdapter
                                          FileNameIfNotDetected = SdModelDownloadHelper.GetModelFileNameFromUrl(url, "inpaint.safetensors"),
                                          AuthorizationBearer = SdModelDownloadHelper.GetCheckpointAuthorizationBearer(name),
                                      },
-                                     cancelationTokenSource
+                                     cancellationTokenSource
                                  );
             if (SdModelDownloadHelper.AnalyzeDownloadedModel(resultFilePath, downItem.NotifyProgress))
             {
@@ -182,7 +182,7 @@ public class SdCheckpointsFormAdapter : ISdModelsFormAdapter
         if (generationList.FindItem(genItemName) != null) return;
 
         var downItem = new SdDownloadingListItem(genItemName, "Download " + name + " / VAE model", () => true);
-        downItem.WorkAsync = async cancelationTokenSource =>
+        downItem.WorkAsync = async cancellationTokenSource =>
         {
             var resultFilePath = await SdModelDownloadHelper.DownloadFileAsync
                                  (
@@ -199,7 +199,7 @@ public class SdCheckpointsFormAdapter : ISdModelsFormAdapter
                                          PreprocessFileName = prepareVaeFileName!,
                                          AuthorizationBearer = SdModelDownloadHelper.GetCheckpointAuthorizationBearer(name),
                                      },
-                                     cancelationTokenSource
+                                     cancellationTokenSource
                                  );
             if (SdModelDownloadHelper.AnalyzeDownloadedModel(resultFilePath, downItem.NotifyProgress))
             {

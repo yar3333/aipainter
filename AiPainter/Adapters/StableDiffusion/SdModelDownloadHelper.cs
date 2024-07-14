@@ -24,7 +24,7 @@ static class SdModelDownloadHelper
                    : null;
     }
 
-    public static async Task<string?> DownloadFileAsync(string url, string destDir, Action<string> progress, DownloadFileOptions options, CancellationTokenSource cancelationTokenSource)
+    public static async Task<string?> DownloadFileAsync(string url, string destDir, Action<string> progress, DownloadFileOptions options, CancellationTokenSource cancellationTokenSource)
     {
         string? resultFilePath = null;
         try
@@ -34,7 +34,7 @@ static class SdModelDownloadHelper
             {
                 progress(total != null ? Math.Round(size / (double)total * 100) + "%" : size + " bytes");
             };
-            resultFilePath = await DownloadTools.DownloadFileAsync(url, destDir, newOptions, cancelationTokenSource.Token);
+            resultFilePath = await DownloadTools.DownloadFileAsync(url, destDir, newOptions, cancellationTokenSource.Token);
         }
         catch (AggregateException e)
         {

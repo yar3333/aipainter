@@ -73,7 +73,7 @@ public class SdLorasFormAdapter : ISdModelsFormAdapter
         if (generationList.FindItem(genItemName) != null) return;
 
         var downItem = new SdDownloadingListItem(genItemName, "Download " + name + " / LoRA model", () => true);
-        downItem.WorkAsync = async cancelationTokenSource =>
+        downItem.WorkAsync = async cancellationTokenSource =>
         {
             var resultFilePath = await SdModelDownloadHelper.DownloadFileAsync
                                  (
@@ -86,7 +86,7 @@ public class SdLorasFormAdapter : ISdModelsFormAdapter
                                          PreprocessFileName = x => name + Path.GetExtension(x),
                                          AuthorizationBearer = Program.Config.CivitaiApiKey,
                                      },
-                                     cancelationTokenSource
+                                     cancellationTokenSource
                                  );
             if (SdModelDownloadHelper.AnalyzeDownloadedModel(resultFilePath, downItem.NotifyProgress))
             {

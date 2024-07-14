@@ -54,6 +54,11 @@ namespace AiPainter
             toolStripSeparator4 = new ToolStripSeparator();
             btAbout = new ToolStripButton();
             btRemoveObjectFromImage = new ToolStripButton();
+            btUpscale = new ToolStripSplitButton();
+            btUpscaleCommon2x = new ToolStripMenuItem();
+            btUpscaleAnime2x = new ToolStripMenuItem();
+            btUpscaleCommon4x = new ToolStripMenuItem();
+            btUpscaleAnime4x = new ToolStripMenuItem();
             splitContainer = new SplitContainer();
             splitContainer1 = new SplitContainer();
             pictureBox = new SmartPictureBox();
@@ -91,7 +96,7 @@ namespace AiPainter
             // 
             toolbar.AutoSize = false;
             toolbar.ImageScalingSize = new Size(34, 34);
-            toolbar.Items.AddRange(new ToolStripItem[] { btClearActiveImage, btLoad, btSave, btSaveAs, btCopyToClipboard, toolStripSeparator2, btResizeAndMoveActiveBoxToFitImage, sbResize, toolStripSeparator3, btResetMask, btDeAlpha, btRestorePrevMask, toolStripSeparator1, btLeft, btDown, btUp, btRight, toolStripSeparator4, btAbout, btRemoveObjectFromImage });
+            toolbar.Items.AddRange(new ToolStripItem[] { btClearActiveImage, btLoad, btSave, btSaveAs, btCopyToClipboard, toolStripSeparator2, btResizeAndMoveActiveBoxToFitImage, sbResize, toolStripSeparator3, btResetMask, btDeAlpha, btRestorePrevMask, toolStripSeparator1, btLeft, btDown, btUp, btRight, toolStripSeparator4, btAbout, btRemoveObjectFromImage, btUpscale });
             toolbar.Location = new Point(0, 0);
             toolbar.Name = "toolbar";
             toolbar.Size = new Size(1150, 40);
@@ -279,6 +284,44 @@ namespace AiPainter
             btRemoveObjectFromImage.ToolTipText = "Remove masked object from image";
             btRemoveObjectFromImage.Click += btRemoveObjectFromImage_Click;
             // 
+            // btUpscale
+            // 
+            btUpscale.DisplayStyle = ToolStripItemDisplayStyle.Image;
+            btUpscale.DropDownItems.AddRange(new ToolStripItem[] { btUpscaleCommon2x, btUpscaleAnime2x, btUpscaleCommon4x, btUpscaleAnime4x });
+            btUpscale.Image = (Image)resources.GetObject("btUpscale.Image");
+            btUpscale.ImageTransparentColor = Color.Magenta;
+            btUpscale.Name = "btUpscale";
+            btUpscale.Size = new Size(50, 37);
+            btUpscale.Text = "toolStripSplitButton1";
+            // 
+            // btUpscaleCommon2x
+            // 
+            btUpscaleCommon2x.Name = "btUpscaleCommon2x";
+            btUpscaleCommon2x.Size = new Size(190, 22);
+            btUpscaleCommon2x.Text = "Upscale 2x (common)";
+            btUpscaleCommon2x.Click += btUpscaleCommon2x_Click;
+            // 
+            // btUpscaleAnime2x
+            // 
+            btUpscaleAnime2x.Name = "btUpscaleAnime2x";
+            btUpscaleAnime2x.Size = new Size(190, 22);
+            btUpscaleAnime2x.Text = "Upscale 2x (anime)";
+            btUpscaleAnime2x.Click += btUpscaleAnime2x_Click;
+            // 
+            // btUpscaleCommon4x
+            // 
+            btUpscaleCommon4x.Name = "btUpscaleCommon4x";
+            btUpscaleCommon4x.Size = new Size(190, 22);
+            btUpscaleCommon4x.Text = "Upscale 4x (common)";
+            btUpscaleCommon4x.Click += btUpscaleCommon4x_Click;
+            // 
+            // btUpscaleAnime4x
+            // 
+            btUpscaleAnime4x.Name = "btUpscaleAnime4x";
+            btUpscaleAnime4x.Size = new Size(190, 22);
+            btUpscaleAnime4x.Text = "Upscale 4x (anime)";
+            btUpscaleAnime4x.Click += btUpscaleAnime4x_Click;
+            // 
             // splitContainer
             // 
             splitContainer.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
@@ -364,6 +407,7 @@ namespace AiPainter
             panStableDiffusion.MinimumSize = new Size(426, 0);
             panStableDiffusion.Name = "panStableDiffusion";
             panStableDiffusion.selectedCheckpointName = "";
+            panStableDiffusion.selectedInpaintingFill = Adapters.StableDiffusion.SdInpaintingFill.original;
             panStableDiffusion.selectedVaeName = "";
             panStableDiffusion.Size = new Size(430, 569);
             panStableDiffusion.TabIndex = 6;
@@ -382,7 +426,7 @@ namespace AiPainter
             // panImages
             // 
             panImages.Dock = DockStyle.Fill;
-            panImages.ImagesFolder = "";
+            panImages.ImagesFolder = "C:\\Users\\Yaroslav\\AppData\\Local\\Microsoft\\VisualStudio\\17.0_23370747\\WinFormsDesigner\\okkbuvm2.cm2\\images";
             panImages.Location = new Point(0, 0);
             panImages.Name = "panImages";
             panImages.Size = new Size(1150, 168);
@@ -453,5 +497,10 @@ namespace AiPainter
         private ToolStripSeparator toolStripSeparator4;
         private ToolStripButton btRemoveObjectFromImage;
         private SmartImageList panImages;
+        private ToolStripSplitButton btUpscale;
+        private ToolStripMenuItem btUpscaleCommon2x;
+        private ToolStripMenuItem btUpscaleAnime2x;
+        private ToolStripMenuItem btUpscaleCommon4x;
+        private ToolStripMenuItem btUpscaleAnime4x;
     }
 }

@@ -448,7 +448,10 @@ namespace AiPainter.Adapters.StableDiffusion
             if (vaeName != "" && SdVaeHelper.GetPathToVae(vaeName) == null)
             {
                 var form = new SdVaeForm(vaeName);
-                form.ShowDialog(this);
+                if (form.ShowDialog(this) != DialogResult.OK)
+                {
+                    selectedVaeName = "";
+                }
             }
 
             toolTip.SetToolTip(ddVae, baseVaeTooltip + (vaeName != "" ? "\n\n*** " + vaeName + "\n" + SdVaeHelper.GetConfig(vaeName).description : ""));
@@ -477,7 +480,7 @@ namespace AiPainter.Adapters.StableDiffusion
             
             Task.Run(async () =>
             {
-                var result = await SdApiClient.interrogate(new SdInterrogateRequest
+                var result = await SdApiClient.interrogateAsync(new SdInterrogateRequest
                 {
                     image = BitmapTools.GetBase64String(croppedImage),
                     //model = "model_base_caption_capfilt_large",

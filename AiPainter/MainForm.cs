@@ -1,5 +1,6 @@
 using System.Drawing.Imaging;
 using AiPainter.Adapters.LamaCleaner;
+using AiPainter.Adapters.StableDiffusion.SdApiClientStuff;
 using AiPainter.Helpers;
 
 #pragma warning disable CS8602
@@ -266,6 +267,8 @@ namespace AiPainter
             btRight.Enabled = pictureBox.Image != null && pictureBox.Enabled;
 
             sbResize.Enabled = pictureBox.Image != null && pictureBox.Enabled;
+
+            btUpscale.Enabled = pictureBox.Image != null;
         }
 
         private void btRestorePrevMask_Click(object sender, EventArgs e)
@@ -340,6 +343,47 @@ namespace AiPainter
                     pictureBox.ResetMask();
                     pictureBox.Refresh();
                 });
+            });
+        }
+
+        private void btUpscaleCommon2x_Click(object sender, EventArgs e)
+        {
+            upscale("R-ESRGAN 4x+", 2);
+        }
+
+        private void btUpscaleAnime2x_Click(object sender, EventArgs e)
+        {
+            upscale("R-ESRGAN 4x+ Anime6B", 2);
+        }
+
+        private void btUpscaleCommon4x_Click(object sender, EventArgs e)
+        {
+            upscale("R-ESRGAN 4x+", 4);
+        }
+
+        private void btUpscaleAnime4x_Click(object sender, EventArgs e)
+        {
+            upscale("R-ESRGAN 4x+ Anime6B", 4);
+        }
+
+        private void upscale(string scaler, int resizeFactor)
+        {
+            var image = BitmapTools.GetBase64String(pictureBox.Image!);
+
+            Task.Run(async () =>
+            {
+                var r = await SdApiClient.extraImageAsync(new SdExtraImageRequest
+                {
+                    upscaler_1 = scaler,
+                    upscaling_resize = resizeFactor,
+                    image = image,
+                });
+                
+                if (r?.image != null)
+                {
+                    var image = BitmapTools.FromBase64(r.image);
+                    image.Save(Path.Combine(Path.GetDirectoryName(FilePath)!, Path.GetFileNameWithoutExtension(FilePath) + "-upscaled") + ".png", ImageFormat.Png );
+                }
             });
         }
     }

@@ -1,56 +1,39 @@
-﻿using AiPainter.Helpers;
+﻿using AiPainter.Controls;
+using AiPainter.Helpers;
 
-namespace AiPainter.Adapters.StableDiffusion.SdVaeStuff
+namespace AiPainter.Adapters.StableDiffusion.SdVaeStuff;
+
+public class SdVaeForm
 {
-    public partial class SdVaeForm : Form
+    private readonly string vaeName;
+    private readonly WaitingDialog dialog;
+
+    public SdVaeForm(string vaeName)
     {
-        private readonly string vaeName;
-        private readonly CancellationTokenSource cancelationTokenSource;
+        this.vaeName = vaeName;
+        
+        dialog = new WaitingDialog("VAE downloading", "Downloading " + vaeName);
+    }
 
-        public SdVaeForm(string vaeName)
+    public DialogResult ShowDialog(IWin32Window parent)
+    {
+        var url = SdVaeHelper.GetConfig(vaeName).downloadUrl;
+        if (url == null) return DialogResult.Abort;
+        
+        return dialog.ShowDialog(parent, async cancellationTokenSource =>
         {
-            InitializeComponent();
-
-            this.vaeName = vaeName;
-            cancelationTokenSource = new CancellationTokenSource();
-        }
-
-        private void SdVaeForm_Load(object sender, EventArgs e)
-        {
-            var url = SdVaeHelper.GetConfig(vaeName).downloadUrl;
-            if (url == null) return;
-
-            Task.Run(() =>
+            await DownloadTools.DownloadFileAsync(url, SdVaeHelper.GetDirPath(vaeName), new DownloadFileOptions
             {
-                try
+                FileNameIfNotDetected = Path.GetFileName(new Uri(url).LocalPath),
+                Progress = (size, total) =>
                 {
-                    DownloadTools.DownloadFileAsync(url, SdVaeHelper.GetDirPath(vaeName), new DownloadFileOptions
+                    dialog.ProgressStyle = total != null ? ProgressBarStyle.Blocks : ProgressBarStyle.Marquee;
+                    if (total != null)
                     {
-                        FileNameIfNotDetected = Path.GetFileName(new Uri(url).LocalPath),
-                        Progress = (size, total) =>
-                        {
-                            Invoke(() =>
-                            {
-                                progressBar.Style = total != null ? ProgressBarStyle.Blocks : ProgressBarStyle.Marquee;
-                                if (total != null)
-                                {
-                                    progressBar.Value = (int)Math.Round(size / (double)total * 100);
-                                }
-                            });
-                        }
-                    }, cancelationTokenSource.Token).Wait();
-                }
-                catch (AggregateException)
-                {
-                }
-
-                Invoke(Close);
-            });
-        }
-
-        private void SdVaeForm_FormClosing(object sender, FormClosingEventArgs e)
-        {
-            cancelationTokenSource.Cancel();
-        }
+                        dialog.ProgressValue = (int)Math.Round(size / (double)total * 100);
+                    }
+                },
+            }, cancellationTokenSource.Token);
+        });
     }
 }

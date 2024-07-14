@@ -65,6 +65,9 @@
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Update="Adapters\StableDiffusion\SdLoraStuff\SdLorasForm.cs" />
+    <Compile Update="Controls\WaitingDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Update="Controls\SmartImageList.cs">
       <SubType>Component</SubType>
     </Compile>

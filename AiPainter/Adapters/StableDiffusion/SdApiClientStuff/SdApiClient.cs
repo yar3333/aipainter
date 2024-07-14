@@ -24,11 +24,23 @@ static class SdApiClient
         return await runGenerateAsync("sdapi/v1/img2img", request, onProgress);
     }
     
-    public static async Task<string?> interrogate(SdInterrogateRequest request)
+    public static async Task<string?> interrogateAsync(SdInterrogateRequest request)
     {
         try
         {
             return (await postAsync<SdInterrogateResponse>("sdapi/v1/interrogate", request)).caption;
+        }
+        catch (Exception e)
+        {
+            return null;
+        }
+    }
+    
+    public static async Task<SdExtraImageResponse?> extraImageAsync(SdExtraImageRequest request)
+    {
+        try
+        {
+            return await postAsync<SdExtraImageResponse>("sdapi/v1/extra-single-image", request);
         }
         catch (Exception e)
         {
