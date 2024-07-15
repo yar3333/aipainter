@@ -197,7 +197,7 @@
             btSuggestedPrompt.Size = new Size(56, 25);
             btSuggestedPrompt.TabIndex = 24;
             btSuggestedPrompt.Text = "Sug>";
-            toolTip.SetToolTip(btSuggestedPrompt, "Suggested prompt (for selected Checkpoint and LoRAs)");
+            toolTip.SetToolTip(btSuggestedPrompt, "Suggested phrases (for selected Checkpoint and used LoRAs)");
             btSuggestedPrompt.UseVisualStyleBackColor = false;
             btSuggestedPrompt.Click += btSuggestedPrompt_Click;
             // 
@@ -239,7 +239,7 @@
             btEmbeddings.Size = new Size(56, 25);
             btEmbeddings.TabIndex = 24;
             btEmbeddings.Text = "Emb>";
-            toolTip.SetToolTip(btEmbeddings, "Embeddings");
+            toolTip.SetToolTip(btEmbeddings, "Embeddings (special models which determine new keywords to use in prompt)");
             btEmbeddings.UseVisualStyleBackColor = false;
             btEmbeddings.Click += btEmbeddings_Click;
             // 
@@ -281,7 +281,7 @@
             btLoras.Size = new Size(56, 25);
             btLoras.TabIndex = 24;
             btLoras.Text = "LoRA>";
-            toolTip.SetToolTip(btLoras, "LoRA models");
+            toolTip.SetToolTip(btLoras, "LoRA (additional image generation models)");
             btLoras.UseVisualStyleBackColor = false;
             btLoras.Click += btLoras_Click;
             // 
@@ -295,6 +295,7 @@
             btCheckpoint.Size = new Size(56, 25);
             btCheckpoint.TabIndex = 24;
             btCheckpoint.Text = ">>";
+            toolTip.SetToolTip(btCheckpoint, "Manage checkpoints (main image generation models)");
             btCheckpoint.UseVisualStyleBackColor = false;
             btCheckpoint.Click += btCheckpoint_Click;
             // 

@@ -1,5 +1,4 @@
-﻿using System.Diagnostics;
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
 using AiPainter.Adapters.StableDiffusion.SdApiClientStuff;
 using AiPainter.Adapters.StableDiffusion.SdCheckpointStuff;
 using AiPainter.Adapters.StableDiffusion.SdEmbeddingStuff;
@@ -270,14 +269,6 @@ namespace AiPainter.Adapters.StableDiffusion
             Height = collapsablePanel.Height;
         }
 
-        private void ddCheckpoint_DropDown(object sender, EventArgs e)
-        {
-            if (ddCheckpoint.Items.Count == 0 || ddCheckpoint.Items.Count == 1 && string.IsNullOrEmpty(((ListItem)ddCheckpoint.Items[0]).Value))
-            {
-                showManageCheckpointDialog();
-            }
-        }
-
         private void btCheckpoint_Click(object sender, EventArgs e)
         {
             cmCheckpointMenu.Items.Clear();
@@ -434,12 +425,40 @@ namespace AiPainter.Adapters.StableDiffusion
 
         public void AddTextToPrompt(string s)
         {
-            tbPrompt.Text = (tbPrompt.Text.TrimEnd(',', ' ') + ", " + s).TrimStart(',', ' ');
+            if (!Regex.IsMatch(tbPrompt.Text, @"\b" + Regex.Escape(s) + @"\b"))
+            {
+                tbPrompt.Text = (tbPrompt.Text.TrimEnd(',', ' ') + ", " + s).TrimStart(',', ' ');
+            }
         }
 
         public void AddTextToNegative(string s)
         {
-            tbNegative.Text = (tbNegative.Text.TrimEnd(',', ' ') + ", " + s).TrimStart(',', ' ');
+            if (!Regex.IsMatch(tbNegative.Text, @"\b" + Regex.Escape(s) + @"\b"))
+            {
+                tbNegative.Text = (tbNegative.Text.TrimEnd(',', ' ') + ", " + s).TrimStart(',', ' ');
+            }
+        }
+
+        public string[] GetUsedLoras()
+        {
+            return Regex.Matches(tbPrompt.Text, @"<lora:([^:>]+)[:>]")
+                        .Select(x => x.Groups[1].Value)
+                        .ToArray();
+        }
+
+        private void ddCheckpoint_DropDown(object sender, EventArgs e)
+        {
+            if (ddCheckpoint.Items.Count == 0 || ddCheckpoint.Items.Count == 1 && string.IsNullOrEmpty(((ListItem)ddCheckpoint.Items[0]).Value))
+            {
+                showManageCheckpointDialog();
+            }
+        }
+
+        private void ddCheckpoint_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            var config = SdCheckpointsHelper.GetConfig(selectedCheckpointName);
+            if (config.clipSkip != null) selectedClipSkip = config.clipSkip.Value;
+            if (!string.IsNullOrEmpty(config.promptRequired)) AddTextToPrompt(config.promptRequired);
         }
 
         private void ddVae_SelectedIndexChanged(object sender, EventArgs e)
@@ -455,20 +474,6 @@ namespace AiPainter.Adapters.StableDiffusion
             }
 
             toolTip.SetToolTip(ddVae, baseVaeTooltip + (vaeName != "" ? "\n\n*** " + vaeName + "\n" + SdVaeHelper.GetConfig(vaeName).description : ""));
-        }
-
-        private void ddCheckpoint_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            var config = SdCheckpointsHelper.GetConfig(selectedCheckpointName);
-            if (config.clipSkip != null) selectedClipSkip = config.clipSkip.Value;
-            if (!string.IsNullOrEmpty(config.promptRequired)) AddTextToPrompt(config.promptRequired);
-        }
-
-        public string[] GetUsedLoras()
-        {
-            return Regex.Matches(tbPrompt.Text, @"<lora:([^:>]+)[:>]")
-                        .Select(x => x.Groups[1].Value)
-                        .ToArray();
         }
 
         private void btInterrogate_Click(object sender, EventArgs e)

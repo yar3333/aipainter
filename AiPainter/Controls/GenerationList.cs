@@ -4,6 +4,8 @@
     {
         private readonly List<IGenerationListItem> items = new();
 
+        private bool isGenerationPaused = false;
+
         public GenerationList()
         {
             InitializeComponent();            
@@ -30,6 +32,46 @@
             lock (items)
             {
                 return items.FirstOrDefault(x => x.Name == name);
+            }
+        }
+
+        private bool isGenerationInProcess
+        {
+            get
+            {
+                lock (items)
+                {
+                    return items.Any(x => x.ParallelGroup == GenerationParallelGroup.GENERATION && x.InProcess);
+                }
+            }
+        }
+
+        public async Task RunGenerationAsSoonAsPossibleAsync(Action onNeedWait, Func<Task> workAsync, CancellationToken cancellationToken)
+        {
+            isGenerationPaused = true;
+            
+            if (isGenerationInProcess)
+            {
+                onNeedWait();
+                while (isGenerationInProcess && !cancellationToken.IsCancellationRequested)
+                {
+                    cancellationToken.WaitHandle.WaitOne(200);
+                }
+            }
+            
+            if (cancellationToken.IsCancellationRequested)
+            {
+                isGenerationPaused = false;
+                return;
+            }
+
+            try
+            {
+                await workAsync();
+            }
+            finally
+            {
+                isGenerationPaused = false;
             }
         }
 
@@ -60,10 +102,13 @@
 
                 foreach (var group in items.GroupBy(x => x.ParallelGroup))
                 {
-                    if (group.All(x => !x.InProcess))
+                    if (group.Key != GenerationParallelGroup.GENERATION || !isGenerationPaused)
                     {
-                        var item = group.FirstOrDefault(x => x.HasWorkToRun);
-                        item?.Run();
+                        if (group.All(x => !x.InProcess))
+                        {
+                            var item = group.FirstOrDefault(x => x.HasWorkToRun);
+                            item?.Run();
+                        }
                     }
                 }
             }

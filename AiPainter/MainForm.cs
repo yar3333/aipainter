@@ -1,6 +1,5 @@
 using System.Drawing.Imaging;
 using AiPainter.Adapters.LamaCleaner;
-using AiPainter.Adapters.StableDiffusion.SdApiClientStuff;
 using AiPainter.Helpers;
 
 #pragma warning disable CS8602
@@ -368,7 +367,15 @@ namespace AiPainter
 
         private void upscale(string upscaler, int resizeFactor)
         {
-            var form = new UpscaleForm(pictureBox.Image!, upscaler, resizeFactor, Path.Combine(Path.GetDirectoryName(FilePath)!, Path.GetFileNameWithoutExtension(FilePath) + "-upscaled") + ".png");
+            var form = new UpscaleForm
+            (
+                panGenerationList,
+                pictureBox.Image!,
+                upscaler,
+                resizeFactor,
+                Path.Combine(Path.GetDirectoryName(FilePath)!, Path.GetFileNameWithoutExtension(FilePath) + "-upscaled") + ".png"
+            );
+            
             if (form.ShowDialog(this) == DialogResult.OK)
             {
                 OpenImageFile(form.ResultFilePath);

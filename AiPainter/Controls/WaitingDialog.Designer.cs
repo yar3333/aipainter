@@ -43,10 +43,9 @@
             // 
             // label
             // 
-            label.AutoSize = true;
             label.Location = new Point(12, 21);
             label.Name = "label";
-            label.Size = new Size(35, 15);
+            label.Size = new Size(658, 15);
             label.TabIndex = 1;
             label.Text = "Label";
             // 
@@ -77,7 +76,6 @@
             FormClosing += WaitingDialog_FormClosing;
             Load += WaitingDialog_Load;
             ResumeLayout(false);
-            PerformLayout();
         }
 
         #endregion
