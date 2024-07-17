@@ -6,5 +6,6 @@
   "description": "western art, my little pony, base model",
   "promptRequired": "",
   "promptSuggested": "",
-  "baseModel": "PonyXL"
+  "baseModel": "PonyXL",
+  "clipSkip": 2
 }

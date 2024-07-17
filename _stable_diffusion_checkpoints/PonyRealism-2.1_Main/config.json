@@ -6,5 +6,6 @@
   "description": "photorealistic, porn, realism, base model, woman, girls, photography, realistic, nsfw, sfw, ponyxl",
   "promptRequired": "",
   "promptSuggested": "",
-  "baseModel": "PonyXL"
+  "baseModel": "PonyXL",
+  "clipSkip": 2
 }
