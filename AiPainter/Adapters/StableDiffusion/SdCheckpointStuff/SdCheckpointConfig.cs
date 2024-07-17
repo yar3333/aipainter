@@ -9,6 +9,6 @@ class SdCheckpointConfig
     public string? description { get; set; }
     public string? promptRequired { get; set; }
     public string? promptSuggested { get; set; }
-    public int? clipSkip { get; set; }
     public string? baseModel { get; set; }
+    public int? clipSkip { get; set; }
 }

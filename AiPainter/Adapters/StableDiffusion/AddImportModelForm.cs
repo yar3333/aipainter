@@ -103,7 +103,7 @@ namespace AiPainter.Adapters.StableDiffusion
             tbCheckpointInpaintUrl.Text = config.inpaintCheckpointUrl;
             tbCheckpointVaeUrl.Text = config.vaeUrl;
             numCheckpointClipSkip.Value = config.clipSkip ?? 1;
-            tbBaseModel.Text = config.baseModel;
+            tbCheckpointBaseModel.Text = config.baseModel;
         }
 
         private void importLora(CivitaiModel model, CivitaiVersion version)
@@ -118,6 +118,7 @@ namespace AiPainter.Adapters.StableDiffusion
             tbLoraSuggestedPrompt.Text = config.promptSuggested;
             tbLoraDescription.Text = config.description;
             tbLoraDownloadUrl.Text = config.downloadUrl;
+            tbLoraBaseModel.Text = config.baseModel;
         }
 
         private void importEmbedding(CivitaiModel model, CivitaiVersion version)
@@ -126,17 +127,12 @@ namespace AiPainter.Adapters.StableDiffusion
 
             tbEmbeddingName.Text = CivitaiParserHelper.GetLoraOrEmbeddingName(model, version);
 
-            tbEmbeddingDescription.Text = "";
-            if (model.tags != null)
-            {
-                tbEmbeddingDescription.Text = string.Join(", ", model.tags);
-            }
+            var config = CivitaiHelper.DataToEmbeddingConfig(model, version);
 
-            tbEmbeddingDownloadUrl.Text = CivitaiParserHelper.GetBestModelDownloadUrl(version.files, "Model");
-
-            cbEmbeddingIsNegative.Checked = model.name.ToLowerInvariant().Contains("negative")
-                || (model.tags?.Contains("negative") ?? false)
-                || (model.tags?.Contains("negative embedding") ?? false);
+            tbEmbeddingDescription.Text = config.description;
+            tbEmbeddingDownloadUrl.Text = config.downloadUrl;
+            tbEmbeddingBaseModel.Text = config.baseModel;
+            cbEmbeddingIsNegative.Checked = config.isNegative;
         }
 
 
@@ -163,8 +159,8 @@ namespace AiPainter.Adapters.StableDiffusion
                 promptRequired = tbCheckpointRequiredPrompt.Text.Trim(),
                 promptSuggested = tbCheckpointSuggestedPrompt.Text.Trim(),
                 description = tbCheckpointDescription.Text.Trim(),
+                baseModel = tbCheckpointBaseModel.Text.Trim(),
                 clipSkip = numCheckpointClipSkip.Value == 1 ? null : (int)numCheckpointClipSkip.Value,
-                baseModel = tbBaseModel.Text.Trim(),
             };
 
             var saveBtOkName = btCheckpointOk.Text;
@@ -236,6 +232,7 @@ namespace AiPainter.Adapters.StableDiffusion
                 promptRequired = tbLoraRequiredPrompt.Text.Trim(),
                 promptSuggested = tbLoraSuggestedPrompt.Text.Trim(),
                 description = tbLoraDescription.Text.Trim(),
+                baseModel = tbLoraBaseModel.Text.Trim(),
             };
 
             var saveBtOkName = btLoraOk.Text;
@@ -318,6 +315,7 @@ namespace AiPainter.Adapters.StableDiffusion
                 homeUrl = "https://civitai.com/models/" + modelId + "?modelVersionId=" + versionId,
                 downloadUrl = tbEmbeddingDownloadUrl.Text.Trim(),
                 description = tbEmbeddingDescription.Text.Trim(),
+                baseModel = tbEmbeddingBaseModel.Text.Trim(),
                 isNegative = cbEmbeddingIsNegative.Checked,
             };
 

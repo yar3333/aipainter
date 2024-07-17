@@ -2,5 +2,6 @@
   "homeUrl": "https://civitai.com/models/543248?modelVersionId=604048",
   "downloadUrl": "https://civitai.com/api/download/models/604048",
   "description": "photorealistic, sexy, woman, celebrity, realistic, chlo\u00EB grace moretz",
+  "baseModel": "SD-1.5",
   "isNegative": false
 }

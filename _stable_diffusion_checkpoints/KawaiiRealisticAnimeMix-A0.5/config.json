@@ -6,6 +6,6 @@
   "description": "anime, sexy, manga, base model, kawaii, woman, illustration, girls, portraits, realistic",
   "promptRequired": "",
   "promptSuggested": "",
-  "clipSkip": 2,
-  "baseModel": "SD-1.5"
+  "baseModel": "SD-1.5",
+  "clipSkip": 2
 }

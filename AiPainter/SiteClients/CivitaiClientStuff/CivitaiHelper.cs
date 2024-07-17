@@ -1,5 +1,6 @@
-﻿using AiPainter.Adapters.StableDiffusion.SdCheckpointStuff;
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
+using AiPainter.Adapters.StableDiffusion.SdCheckpointStuff;
+using AiPainter.Adapters.StableDiffusion.SdEmbeddingStuff;
 using AiPainter.Adapters.StableDiffusion.SdLoraStuff;
 
 namespace AiPainter.SiteClients.CivitaiClientStuff;
@@ -19,6 +20,7 @@ static class CivitaiHelper
 
         await updateCheckpointsAsync(log);
         await updateLorasAsync(log);
+        await updateEmbeddingsAsync(log);
     }
 
     public static bool ParseUrl(string? url, out string? modelId, out string? versionId)
@@ -89,13 +91,10 @@ static class CivitaiHelper
         }
 
         config.description = model.tags != null ? string.Join(", ", model.tags) : "";
-
         config.mainCheckpointUrl = CivitaiParserHelper.GetBestModelDownloadUrl(version.files, "Model");
         config.inpaintCheckpointUrl = CivitaiParserHelper.GetInpaintDownloadUrl(model, version);
         config.vaeUrl = CivitaiParserHelper.GetBestModelDownloadUrl(version.files, "VAE");
-
         //config.clipSkip = 1;
-        
         config.baseModel = CivitaiParserHelper.NormalizeBaseModelName(version.baseModel);
 
         return config;
@@ -105,7 +104,7 @@ static class CivitaiHelper
     {
         foreach (var name in SdCheckpointsHelper.GetNames("").Where(x => x != "").ToArray())
         {
-            log.WriteLine("Process checkpoint: " + name);
+            log.WriteLine("Process Checkpoint: " + name);
             
             var config = SdCheckpointsHelper.GetConfig(name);
             
@@ -152,15 +151,11 @@ static class CivitaiHelper
         }
 
         config.description = model.tags != null ? string.Join(", ", model.tags) : "";
-
         config.downloadUrl = CivitaiParserHelper.GetBestModelDownloadUrl(version.files, "Model");
-        config.downloadUrl = CivitaiParserHelper.GetBestModelDownloadUrl(version.files, "Model");
-        
         config.baseModel = CivitaiParserHelper.NormalizeBaseModelName(version.baseModel);
         
         return config;
     }
-
 
     private static async Task updateLorasAsync(Log log)
     {
@@ -192,6 +187,54 @@ static class CivitaiHelper
             config.baseModel = newConfig.baseModel;
 
             SdLoraHelper.SaveConfig(name, config);
+        }
+    }
+
+    public static SdEmbeddingConfig DataToEmbeddingConfig(CivitaiModel model, CivitaiVersion version)
+    {
+        var config = new SdEmbeddingConfig();
+
+        config.homeUrl = "https://civitai.com/models/" + model.id + "?modelVersionId=" + version.id;
+        
+        config.description = model.tags != null ? string.Join(", ", model.tags) : "";
+        config.downloadUrl = CivitaiParserHelper.GetBestModelDownloadUrl(version.files, "Model");
+        config.baseModel = CivitaiParserHelper.NormalizeBaseModelName(version.baseModel);
+        config.isNegative = model.name.ToLowerInvariant().Contains("negative")
+                         || (model.tags?.Contains("negative") ?? false)
+                         || (model.tags?.Contains("negative embedding") ?? false);
+
+        return config;
+    }
+
+    private static async Task updateEmbeddingsAsync(Log log)
+    {
+        foreach (var name in SdEmbeddingHelper.GetNames())
+        {
+            log.WriteLine("Process Embedding: " + name);
+            
+            var config = SdEmbeddingHelper.GetConfig(name);
+            
+            if (!ParseUrl(config.homeUrl, out var modelId, out var versionId))
+            {
+                log.WriteLine("  homeUrl not specified");
+                continue;
+            }
+            
+            var modelAndVersion = await LoadModelDataAsync(modelId, versionId);
+            if (modelAndVersion == null)
+            {
+                log.WriteLine("  bad homeUrl or load error");
+                continue;
+            }
+
+            var newConfig = DataToEmbeddingConfig(modelAndVersion.Item1, modelAndVersion.Item2);
+
+            config.description = newConfig.description;
+            config.downloadUrl = newConfig.downloadUrl;
+            config.baseModel = newConfig.baseModel;
+            config.isNegative = newConfig.isNegative;
+
+            SdEmbeddingHelper.SaveConfig(name, config);
         }
     }
 }

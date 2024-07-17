@@ -2,5 +2,6 @@
   "homeUrl": "https://civitai.com/models/98259?modelVersionId=539032",
   "downloadUrl": "https://civitai.com/api/download/models/539032",
   "description": "textual inversion, style, embedding, hair, detail, skin",
+  "baseModel": "SDXL-1.0",
   "isNegative": false
 }

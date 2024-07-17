@@ -2,5 +2,6 @@
   "homeUrl": "https://civitai.com/models/500301?modelVersionId=556119",
   "downloadUrl": "https://civitai.com/api/download/models/556119",
   "description": "photorealistic, sexy, woman, celebrity, realistic, felicity jones",
+  "baseModel": "SD-1.5",
   "isNegative": false
 }
