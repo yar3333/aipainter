@@ -5,5 +5,6 @@
   "vaeUrl": "",
   "description": "comic book, dcau, sexy, marvel, western art, base model, dc comics, woman, western animation, western anime, dcamu",
   "promptRequired": "",
-  "promptSuggested": ""
+  "promptSuggested": "",
+  "baseModel": "SD-1.5"
 }

@@ -1,5 +1,4 @@
 ﻿using AiPainter.Helpers;
-using System.Text.RegularExpressions;
 using AiPainter.Adapters.StableDiffusion.SdCheckpointStuff;
 using AiPainter.Adapters.StableDiffusion.SdLoraStuff;
 using AiPainter.SiteClients.CivitaiClientStuff;
@@ -29,34 +28,17 @@ namespace AiPainter.Adapters.StableDiffusion
         {
             labUrlError.Text = "";
 
-            var url = tbUrl.Text;
-            if (string.IsNullOrWhiteSpace(url)) { tbUrl.Focus(); return; }
-
-            var uri = new Uri(url);
-
-            var m1 = Regex.Match(uri.PathAndQuery, @"models/(\d+)\?modelVersionId=(\d+)");
-            if (m1.Success)
+            if (CivitaiHelper.ParseUrl(tbUrl.Text, out modelId, out versionId))
             {
                 btImport.Enabled = false;
                 tabs.Enabled = false;
-                modelId = m1.Groups[1].Value;
-                versionId = m1.Groups[2].Value;
                 importModel();
-                return;
-            }
 
-            var m2 = Regex.Match(uri.LocalPath, @"models/(\d+)");
-            if (m2.Success)
+            }
+            else
             {
-                btImport.Enabled = false;
-                tabs.Enabled = false;
-                modelId = m2.Groups[1].Value;
-                versionId = null;
-                importModel();
-                return;
+                tbUrl.Focus();
             }
-
-            tbUrl.Focus();
         }
 
         private void importModel()
@@ -85,15 +67,11 @@ namespace AiPainter.Adapters.StableDiffusion
 
         private async Task importModelInner()
         {
-            var model = await CivitaiClient.GetModelAsync(modelId!);
+            var modelAndVersion = await CivitaiHelper.LoadModelDataAsync(modelId!, versionId);
+            if (modelAndVersion == null) return;
 
-            if (versionId == null)
-            {
-                versionId = model.modelVersions.FirstOrDefault()?.id.ToString();
-                if (versionId == null) return;
-            }
-
-            var version = model.modelVersions.Single(x => x.id.ToString() == versionId);
+            var model = modelAndVersion.Item1;
+            var version = modelAndVersion.Item2;
 
             Invoke(() =>
             {
@@ -115,28 +93,16 @@ namespace AiPainter.Adapters.StableDiffusion
         {
             tabs.SelectedTab = tabCheckpoint;
 
-            tbCheckpointName.Text = ImportModelHelper.GetCheckpointName(model.name, version.name);
+            var (name, config) = CivitaiHelper.DataToCheckpointConfig(model, version);
 
-            tbCheckpointRequiredPrompt.Text = "";
-            tbCheckpointRequiredPrompt.Text = "";
-            if (version.trainedWords != null)
-            {
-                ImportModelHelper.ParsePhrases(string.Join(", ", version.trainedWords), out var reqWords, out var sugWords);
-                tbCheckpointRequiredPrompt.Text = reqWords;
-                tbCheckpointSuggestedPrompt.Text = sugWords;
-            }
-
-            tbCheckpointDescription.Text = "";
-            if (model.tags != null)
-            {
-                tbCheckpointDescription.Text = string.Join(", ", model.tags);
-            }
-
-            tbCheckpointMainUrl.Text = ImportModelHelper.GetBestModelDownloadUrl(version.files, "Model");
-            tbCheckpointInpaintUrl.Text = ImportModelHelper.GetInpaintDownloadUrl(model, version);
-            tbCheckpointVaeUrl.Text = ImportModelHelper.GetBestModelDownloadUrl(version.files, "VAE");
-
-            numCheckpointClipSkip.Value = 1;
+            tbCheckpointName.Text = name;
+            tbCheckpointRequiredPrompt.Text = config.promptRequired;
+            tbCheckpointSuggestedPrompt.Text = config.promptSuggested;
+            tbCheckpointDescription.Text = config.description;
+            tbCheckpointMainUrl.Text = config.mainCheckpointUrl;
+            tbCheckpointInpaintUrl.Text = config.inpaintCheckpointUrl;
+            tbCheckpointVaeUrl.Text = config.vaeUrl;
+            numCheckpointClipSkip.Value = config.clipSkip ?? 1;
         }
 
         private void importLora(CivitaiModel model, CivitaiVersion version)

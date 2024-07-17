@@ -5,5 +5,6 @@
   "vaeUrl": "",
   "description": "photorealistic, analog, style, photography",
   "promptRequired": "analog style",
-  "promptSuggested": ""
+  "promptSuggested": "",
+  "baseModel": "SD-1.5"
 }

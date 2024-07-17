@@ -5,8 +5,6 @@
   "vaeUrl": "https://civitai.com/api/download/models/290640?type=VAE\u0026format=SafeTensor",
   "description": "western art, my little pony, base model",
   "promptRequired": "",
-  "promptSuggested": "score_9, score_8_up, score_7_up, score_6_up, score_5_up, score_4_up",
-  "overrideSettings": {
-    "CLIP_stop_at_last_layers": 2
-  }
+  "promptSuggested": "",
+  "baseModel": "PonyXL"
 }

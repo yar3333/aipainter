@@ -5,5 +5,6 @@
   "vaeUrl": "",
   "description": "drawing, lineart, style, illustration",
   "promptRequired": "ComplexLA style",
-  "promptSuggested": ""
+  "promptSuggested": "",
+  "baseModel": "SD-1.5"
 }

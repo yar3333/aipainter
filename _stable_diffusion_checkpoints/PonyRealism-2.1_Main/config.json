@@ -4,7 +4,7 @@
   "inpaintCheckpointUrl": "https://civitai.com/api/download/models/610021",
   "vaeUrl": "",
   "description": "photorealistic, porn, realism, base model, woman, girls, photography, realistic, nsfw, sfw, ponyxl",
-  "overrideSettings": {
-    "CLIP_stop_at_last_layers": 2
-  }
+  "promptRequired": "",
+  "promptSuggested": "",
+  "baseModel": "PonyXL"
 }

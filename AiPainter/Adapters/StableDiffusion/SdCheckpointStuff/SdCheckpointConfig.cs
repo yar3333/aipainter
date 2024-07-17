@@ -10,4 +10,5 @@ class SdCheckpointConfig
     public string? promptRequired { get; set; }
     public string? promptSuggested { get; set; }
     public int? clipSkip { get; set; }
+    public string? baseModel { get; set; }
 }

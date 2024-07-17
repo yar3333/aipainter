@@ -3,5 +3,8 @@
   "mainCheckpointUrl": "https://civitai.com/api/download/models/329420",
   "inpaintCheckpointUrl": "",
   "vaeUrl": "",
-  "description": "anime, 3d, photorealistic, all in one, base model, 2d, cinematic, game, ultimate, unify"
+  "description": "anime, 3d, photorealistic, all in one, base model, 2d, cinematic, game, ultimate, unify",
+  "promptRequired": "",
+  "promptSuggested": "",
+  "baseModel": "SDXL-1.0"
 }

@@ -5,5 +5,6 @@
   "vaeUrl": "",
   "description": "anime, landscapes, 3d, photorealistic, inpainting, digital art, scifi, base model, fantasy art, art style, paintings, woman, illustration, 2d, digital illustration, fantasy, girls, portraits, realistic, video game",
   "promptRequired": "",
-  "promptSuggested": ""
+  "promptSuggested": "",
+  "baseModel": "SD-1.5"
 }

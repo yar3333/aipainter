@@ -1,5 +1,10 @@
 {
-	"homeUrl": "https://civitai.com/models/28059?modelVersionId=306898",
-	"mainCheckpointUrl": "https://huggingface.co/sam749/ICBINP-New-Year/resolve/main/icbinpICantBelieveIts_newYear.safetensors?download=true",
-	"inpaintCheckpointUrl": "https://civitai.com/api/download/models/306943?type=Model&format=SafeTensor&size=pruned&fp=fp16"
+  "homeUrl": "https://civitai.com/models/28059?modelVersionId=306898",
+  "mainCheckpointUrl": "https://civitai.com/api/download/models/306898",
+  "inpaintCheckpointUrl": "",
+  "vaeUrl": "https://civitai.com/api/download/models/306898?type=VAE\u0026format=PickleTensor",
+  "description": "person, realism, base model, portrait, photo, hyperrealistic character portraits, photography",
+  "promptRequired": "",
+  "promptSuggested": "",
+  "baseModel": "SD-1.5"
 }

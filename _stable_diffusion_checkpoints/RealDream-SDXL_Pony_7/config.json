@@ -5,5 +5,6 @@
   "vaeUrl": "",
   "description": "photorealistic, base model, photo, girls, men, real, photorealim",
   "promptRequired": "",
-  "promptSuggested": "realistic lighting, photo, photorealistic, score_9, score_8_up, score_7_up, score_6_up, score_5_up, score_4_up"
+  "promptSuggested": "realistic lighting, photo, photorealistic, score_9, score_8_up, score_7_up, score_6_up, score_5_up, score_4_up",
+  "baseModel": "PonyXL"
 }

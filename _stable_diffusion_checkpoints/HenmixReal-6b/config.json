@@ -5,5 +5,6 @@
   "vaeUrl": "",
   "description": "photorealistic, realistic",
   "promptRequired": "",
-  "promptSuggested": ""
+  "promptSuggested": "",
+  "baseModel": "SD-1.5"
 }

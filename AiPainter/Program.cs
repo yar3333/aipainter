@@ -4,6 +4,7 @@ using AiPainter.Adapters.StableDiffusion;
 using AiPainter.Adapters.StableDiffusion.SdCheckpointStuff;
 using AiPainter.Adapters.StableDiffusion.SdVaeStuff;
 using AiPainter.Helpers;
+using AiPainter.SiteClients.CivitaiClientStuff;
 
 namespace AiPainter;
 
@@ -14,19 +15,27 @@ static class Program
     public static readonly Job Job = new();
 
     [STAThread]
-    static void Main()
+    static void Main(string[] args)
     {
-        LoadConfig();
-        SaveConfig();
+        if (args.Length == 0)
+        {
+            LoadConfig();
+            SaveConfig();
 
-        StableDiffusionProcess.Start(SdCheckpointsHelper.GetPathToMainCheckpoint(Config.StableDiffusionCheckpoint), SdVaeHelper.GetPathToVae(Config.StableDiffusionVae));
-        LamaCleanerProcess.Start();
+            StableDiffusionProcess.Start(SdCheckpointsHelper.GetPathToMainCheckpoint(Config.StableDiffusionCheckpoint), SdVaeHelper.GetPathToVae(Config.StableDiffusionVae));
+            LamaCleanerProcess.Start();
 
-        ApplicationConfiguration.Initialize();
-        Application.Run(new MainForm());
+            ApplicationConfiguration.Initialize();
+            Application.Run(new MainForm());
 
-        LamaCleanerProcess.Stop();
-        StableDiffusionProcess.Stop();
+            LamaCleanerProcess.Stop();
+            StableDiffusionProcess.Stop();
+        }
+        else if (DataTools.IsSequencesEqual(args, new []{ "--update-metadata-from-civitai" }))
+        {
+            LoadConfig();
+            CivitaiHelper.UpdateAsync(Log).Wait();
+        }
     }
     
     public static void LoadConfig()

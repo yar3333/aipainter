@@ -5,5 +5,6 @@
   "vaeUrl": "",
   "description": "disney, 3d, style",
   "promptRequired": "modern disney style",
-  "promptSuggested": ""
+  "promptSuggested": "",
+  "baseModel": "SD-1.5"
 }

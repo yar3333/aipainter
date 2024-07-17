@@ -1,0 +1,12 @@
+{
+  "profiles": {
+    "AiPainter-Form": {
+      "commandName": "Project",
+      "commandLineArgs": "--update-metadata-from-civitai"
+    },
+    "AiPainter-Update": {
+      "commandName": "Project",
+      "commandLineArgs": "--update-metadata-from-civitai"
+    }
+  }
+}
