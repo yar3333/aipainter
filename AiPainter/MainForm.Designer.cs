@@ -444,6 +444,7 @@ namespace AiPainter
             Name = "MainForm";
             Text = "AiPainter";
             WindowState = FormWindowState.Maximized;
+            FormClosing += MainForm_FormClosing;
             Load += MainForm_Load;
             toolbar.ResumeLayout(false);
             toolbar.PerformLayout();

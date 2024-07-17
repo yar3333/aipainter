@@ -91,7 +91,6 @@ namespace AiPainter.Adapters.StableDiffusion
             if (Program.Config.CivitaiApiKey != tbCivitaiApiKey.Text)
             {
                 Program.Config.CivitaiApiKey = tbCivitaiApiKey.Text;
-                Program.SaveConfig();
             }
         }
 

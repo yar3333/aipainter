@@ -129,24 +129,19 @@ namespace AiPainter.Adapters.StableDiffusion
 
         private void saveSelectedValuesToMainConfig()
         {
-            var needSave = false;
-
             if (selectedCheckpointName != Program.Config.StableDiffusionCheckpoint)
             {
-                needSave = true;
                 Program.Config.StableDiffusionCheckpoint = selectedCheckpointName;
             }
 
             if (selectedVaeName != Program.Config.StableDiffusionVae)
             {
-                needSave = true;
                 Program.Config.StableDiffusionVae = selectedVaeName;
             }
 
             var negativeText = tbNegative.Text.Trim(' ', ',', ';', '\r', '\n');
             if (negativeText != "" && Program.Config.NegativePrompts.FirstOrDefault() != negativeText)
             {
-                needSave = true;
                 Program.Config.NegativePrompts.Remove(negativeText);
                 Program.Config.NegativePrompts.Insert(0, negativeText);
                 Program.Config.NegativePrompts = Program.Config.NegativePrompts.Take(10).ToList();
@@ -154,12 +149,9 @@ namespace AiPainter.Adapters.StableDiffusion
 
             if (!Program.Config.ImageSizes.Contains(ddImageSize.Text))
             {
-                needSave = true;
                 Program.Config.ImageSizes.Insert(0, ddImageSize.Text);
                 Program.Config.ImageSizes = Program.Config.ImageSizes.Take(20).ToList();
             }
-
-            if (needSave) Program.SaveConfig();
         }
 
         private string getNormalizedImageSize()

@@ -375,11 +375,16 @@ namespace AiPainter
                 resizeFactor,
                 Path.Combine(Path.GetDirectoryName(FilePath)!, Path.GetFileNameWithoutExtension(FilePath) + "-upscaled") + ".png"
             );
-            
+
             if (form.ShowDialog(this) == DialogResult.OK)
             {
                 OpenImageFile(form.ResultFilePath);
             }
+        }
+
+        private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            Program.Config.MainWindowPosition = GlobalConfig.WindowPosition.Create(this);
         }
     }
 }
