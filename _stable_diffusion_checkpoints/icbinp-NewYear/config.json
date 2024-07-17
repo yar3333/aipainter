@@ -1,7 +1,7 @@
 {
   "homeUrl": "https://civitai.com/models/28059?modelVersionId=306898",
   "mainCheckpointUrl": "https://civitai.com/api/download/models/306898",
-  "inpaintCheckpointUrl": "",
+  "inpaintCheckpointUrl": "https://civitai.com/api/download/models/306943",
   "vaeUrl": "https://civitai.com/api/download/models/306898?type=VAE\u0026format=PickleTensor",
   "description": "person, realism, base model, portrait, photo, hyperrealistic character portraits, photography",
   "promptRequired": "",

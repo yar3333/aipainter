@@ -109,13 +109,13 @@ namespace AiPainter.Adapters.StableDiffusion
         {
             tabs.SelectedTab = tabLora;
 
-            tbLoraName.Text = ImportModelHelper.GetLoraOrEmbeddingName(model, version);
+            tbLoraName.Text = CivitaiParserHelper.GetLoraOrEmbeddingName(model, version);
 
             tbLoraRequiredPrompt.Text = "";
             tbLoraSuggestedPrompt.Text = "";
             if (version.trainedWords != null)
             {
-                ImportModelHelper.ParsePhrases(string.Join(", ", version.trainedWords), out var reqWords, out var sugWords);
+                CivitaiParserHelper.ParsePhrases(string.Join(", ", version.trainedWords), out var reqWords, out var sugWords);
                 tbLoraRequiredPrompt.Text = reqWords;
                 tbLoraSuggestedPrompt.Text = sugWords;
             }
@@ -126,14 +126,14 @@ namespace AiPainter.Adapters.StableDiffusion
                 tbLoraDescription.Text = string.Join(", ", model.tags);
             }
 
-            tbLoraDownloadUrl.Text = ImportModelHelper.GetBestModelDownloadUrl(version.files, "Model");
+            tbLoraDownloadUrl.Text = CivitaiParserHelper.GetBestModelDownloadUrl(version.files, "Model");
         }
 
         private void importEmbedding(CivitaiModel model, CivitaiVersion version)
         {
             tabs.SelectedTab = tabEmbedding;
 
-            tbEmbeddingName.Text = ImportModelHelper.GetLoraOrEmbeddingName(model, version);
+            tbEmbeddingName.Text = CivitaiParserHelper.GetLoraOrEmbeddingName(model, version);
 
             tbEmbeddingDescription.Text = "";
             if (model.tags != null)
@@ -141,7 +141,7 @@ namespace AiPainter.Adapters.StableDiffusion
                 tbEmbeddingDescription.Text = string.Join(", ", model.tags);
             }
 
-            tbEmbeddingDownloadUrl.Text = ImportModelHelper.GetBestModelDownloadUrl(version.files, "Model");
+            tbEmbeddingDownloadUrl.Text = CivitaiParserHelper.GetBestModelDownloadUrl(version.files, "Model");
 
             cbEmbeddingIsNegative.Checked = model.name.ToLowerInvariant().Contains("negative")
                 || (model.tags?.Contains("negative") ?? false)

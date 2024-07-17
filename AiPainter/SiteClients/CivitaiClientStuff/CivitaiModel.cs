@@ -1,5 +1,6 @@
 ﻿namespace AiPainter.SiteClients.CivitaiClientStuff;
 
+[Serializable]
 class CivitaiModel
 {
     public CivitaiVersion[] modelVersions { get; set; }

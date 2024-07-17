@@ -1,9 +1,8 @@
 ﻿using System.Text.RegularExpressions;
-using AiPainter.SiteClients.CivitaiClientStuff;
 
-namespace AiPainter.Adapters.StableDiffusion;
+namespace AiPainter.SiteClients.CivitaiClientStuff;
 
-static class ImportModelHelper
+static class CivitaiParserHelper
 {
     public static string GetCheckpointName(string modelName, string versionName)
     {
@@ -39,15 +38,13 @@ static class ImportModelHelper
         var vv1 = model.modelVersions.Where(x => x.name.ToLowerInvariant().Contains("inpaint")).ToArray();
         if (vv1.Length == 1) return GetBestModelDownloadUrl(vv1[0].files, "Model");
 
-        var vv2 = vv1.Where(x => x.name.ToLowerInvariant().StartsWith(version.name.ToLowerInvariant() + "-inpaint")).ToArray();
+        var vv2 = vv1.Where(x => Regex.IsMatch(x.name, "^" + Regex.Escape(version.name), RegexOptions.IgnoreCase)).ToArray();
         if (vv2.Length == 1) return GetBestModelDownloadUrl(vv2[0].files, "Model");
 
-        var trimmedVn = trimCheckpointVersionName(version.name).ToLowerInvariant();
-        
-        var vv3 = vv1.Where(x => trimCheckpointVersionName(x.name).ToLowerInvariant().StartsWith(trimmedVn + "-inpaint")).ToArray();
+        var vv3 = vv1.Where(x => Regex.IsMatch(trimCheckpointVersionName(x.name), "^" + Regex.Escape(trimCheckpointVersionName(version.name)), RegexOptions.IgnoreCase)).ToArray();
         if (vv3.Length == 1) return GetBestModelDownloadUrl(vv3[0].files, "Model");
         
-        var vv4 = vv1.Where(x => trimCheckpointVersionName(x.name).ToLowerInvariant().StartsWith(trimmedVn + " inpaint")).ToArray();
+        var vv4 = vv1.Where(x => Regex.IsMatch(trimCheckpointVersionName(x.name), "^" + Regex.Escape(trimCheckpointVersionName(version.name)) + "[ -]", RegexOptions.IgnoreCase)).ToArray();
         if (vv4.Length == 1) return GetBestModelDownloadUrl(vv4[0].files, "Model");
 
         return "";

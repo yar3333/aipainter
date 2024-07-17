@@ -1,5 +1,4 @@
-﻿using AiPainter.Adapters.StableDiffusion;
-using AiPainter.Adapters.StableDiffusion.SdCheckpointStuff;
+﻿using AiPainter.Adapters.StableDiffusion.SdCheckpointStuff;
 using System.Text.RegularExpressions;
 
 namespace AiPainter.SiteClients.CivitaiClientStuff;
@@ -67,7 +66,7 @@ static class CivitaiHelper
 
     public static Tuple<string, SdCheckpointConfig> DataToCheckpointConfig(CivitaiModel model, CivitaiVersion version)
     {
-        var name = ImportModelHelper.GetCheckpointName(model.name, version.name);
+        var name = CivitaiParserHelper.GetCheckpointName(model.name, version.name);
         
         var config = new SdCheckpointConfig();
 
@@ -77,7 +76,7 @@ static class CivitaiHelper
         config.promptSuggested = "";
         if (version.trainedWords != null)
         {
-            ImportModelHelper.ParsePhrases(string.Join(", ", version.trainedWords), out var reqWords, out var sugWords);
+            CivitaiParserHelper.ParsePhrases(string.Join(", ", version.trainedWords), out var reqWords, out var sugWords);
             config.promptRequired = reqWords;
             config.promptSuggested = sugWords;
         }
@@ -88,9 +87,9 @@ static class CivitaiHelper
             config.description = string.Join(", ", model.tags);
         }
 
-        config.mainCheckpointUrl = ImportModelHelper.GetBestModelDownloadUrl(version.files, "Model");
-        config.inpaintCheckpointUrl = ImportModelHelper.GetInpaintDownloadUrl(model, version);
-        config.vaeUrl = ImportModelHelper.GetBestModelDownloadUrl(version.files, "VAE");
+        config.mainCheckpointUrl = CivitaiParserHelper.GetBestModelDownloadUrl(version.files, "Model");
+        config.inpaintCheckpointUrl = CivitaiParserHelper.GetInpaintDownloadUrl(model, version);
+        config.vaeUrl = CivitaiParserHelper.GetBestModelDownloadUrl(version.files, "VAE");
 
         //config.clipSkip = 1;
         
