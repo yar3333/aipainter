@@ -103,6 +103,7 @@ namespace AiPainter.Adapters.StableDiffusion
             tbCheckpointInpaintUrl.Text = config.inpaintCheckpointUrl;
             tbCheckpointVaeUrl.Text = config.vaeUrl;
             numCheckpointClipSkip.Value = config.clipSkip ?? 1;
+            tbBaseModel.Text = config.baseModel;
         }
 
         private void importLora(CivitaiModel model, CivitaiVersion version)
@@ -173,6 +174,7 @@ namespace AiPainter.Adapters.StableDiffusion
                 promptSuggested = tbCheckpointSuggestedPrompt.Text.Trim(),
                 description = tbCheckpointDescription.Text.Trim(),
                 clipSkip = numCheckpointClipSkip.Value == 1 ? null : (int)numCheckpointClipSkip.Value,
+                baseModel = tbBaseModel.Text.Trim(),
             };
 
             var saveBtOkName = btCheckpointOk.Text;

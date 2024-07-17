@@ -79,6 +79,8 @@
             toolTip1 = new ToolTip(components);
             labUrlError = new Label();
             linkLabel1 = new LinkLabel();
+            tbBaseModel = new TextBox();
+            label18 = new Label();
             tabs.SuspendLayout();
             tabCheckpoint.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)numCheckpointClipSkip).BeginInit();
@@ -127,7 +129,7 @@
             tabs.Location = new Point(12, 68);
             tabs.Name = "tabs";
             tabs.SelectedIndex = 0;
-            tabs.Size = new Size(776, 380);
+            tabs.Size = new Size(776, 429);
             tabs.TabIndex = 17;
             // 
             // tabCheckpoint
@@ -138,6 +140,7 @@
             tabCheckpoint.Controls.Add(numCheckpointClipSkip);
             tabCheckpoint.Controls.Add(label8);
             tabCheckpoint.Controls.Add(label10);
+            tabCheckpoint.Controls.Add(label18);
             tabCheckpoint.Controls.Add(label7);
             tabCheckpoint.Controls.Add(label6);
             tabCheckpoint.Controls.Add(labCheckpointNameError);
@@ -149,12 +152,13 @@
             tabCheckpoint.Controls.Add(label3);
             tabCheckpoint.Controls.Add(tbCheckpointMainUrl);
             tabCheckpoint.Controls.Add(tbCheckpointDescription);
+            tabCheckpoint.Controls.Add(tbBaseModel);
             tabCheckpoint.Controls.Add(tbCheckpointRequiredPrompt);
             tabCheckpoint.Controls.Add(tbCheckpointName);
             tabCheckpoint.Location = new Point(4, 24);
             tabCheckpoint.Name = "tabCheckpoint";
             tabCheckpoint.Padding = new Padding(3);
-            tabCheckpoint.Size = new Size(768, 352);
+            tabCheckpoint.Size = new Size(768, 401);
             tabCheckpoint.TabIndex = 0;
             tabCheckpoint.Text = "Checkpoint (main model)";
             tabCheckpoint.UseVisualStyleBackColor = true;
@@ -181,7 +185,7 @@
             // 
             btCheckpointOk.BackColor = Color.FromArgb(226, 241, 227);
             btCheckpointOk.Font = new Font("Segoe UI", 9.75F, FontStyle.Regular, GraphicsUnit.Point);
-            btCheckpointOk.Location = new Point(300, 287);
+            btCheckpointOk.Location = new Point(300, 330);
             btCheckpointOk.Name = "btCheckpointOk";
             btCheckpointOk.Size = new Size(179, 48);
             btCheckpointOk.TabIndex = 16;
@@ -191,7 +195,7 @@
             // 
             // numCheckpointClipSkip
             // 
-            numCheckpointClipSkip.Location = new Point(652, 207);
+            numCheckpointClipSkip.Location = new Point(652, 288);
             numCheckpointClipSkip.Maximum = new decimal(new int[] { 2, 0, 0, 0 });
             numCheckpointClipSkip.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
             numCheckpointClipSkip.Name = "numCheckpointClipSkip";
@@ -203,7 +207,7 @@
             // 
             // label8
             // 
-            label8.Location = new Point(576, 207);
+            label8.Location = new Point(576, 288);
             label8.Name = "label8";
             label8.Size = new Size(73, 18);
             label8.TabIndex = 13;
@@ -348,14 +352,14 @@
             tabLora.Location = new Point(4, 24);
             tabLora.Name = "tabLora";
             tabLora.Padding = new Padding(3);
-            tabLora.Size = new Size(768, 352);
+            tabLora.Size = new Size(768, 401);
             tabLora.TabIndex = 1;
             tabLora.Text = "LoRA/LyCORIS (additional model)";
             tabLora.UseVisualStyleBackColor = true;
             // 
             // label11
             // 
-            label11.Location = new Point(6, 217);
+            label11.Location = new Point(6, 223);
             label11.Name = "label11";
             label11.Size = new Size(158, 15);
             label11.TabIndex = 25;
@@ -365,7 +369,7 @@
             // tbLoraSuggestedPrompt
             // 
             tbLoraSuggestedPrompt.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
-            tbLoraSuggestedPrompt.Location = new Point(170, 214);
+            tbLoraSuggestedPrompt.Location = new Point(170, 220);
             tbLoraSuggestedPrompt.Name = "tbLoraSuggestedPrompt";
             tbLoraSuggestedPrompt.PlaceholderText = "first phrase, second phase...";
             tbLoraSuggestedPrompt.Size = new Size(537, 23);
@@ -375,7 +379,7 @@
             // 
             btLoraOk.BackColor = Color.FromArgb(226, 241, 227);
             btLoraOk.Font = new Font("Segoe UI", 9.75F, FontStyle.Regular, GraphicsUnit.Point);
-            btLoraOk.Location = new Point(295, 272);
+            btLoraOk.Location = new Point(295, 278);
             btLoraOk.Name = "btLoraOk";
             btLoraOk.Size = new Size(179, 48);
             btLoraOk.TabIndex = 24;
@@ -385,7 +389,7 @@
             // 
             // label1
             // 
-            label1.Location = new Point(6, 142);
+            label1.Location = new Point(6, 148);
             label1.Name = "label1";
             label1.Size = new Size(158, 15);
             label1.TabIndex = 15;
@@ -394,7 +398,7 @@
             // 
             // label12
             // 
-            label12.Location = new Point(6, 188);
+            label12.Location = new Point(6, 194);
             label12.Name = "label12";
             label12.Size = new Size(158, 15);
             label12.TabIndex = 16;
@@ -405,7 +409,7 @@
             // 
             labLoraNameError.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point);
             labLoraNameError.ForeColor = Color.IndianRed;
-            labLoraNameError.Location = new Point(523, 59);
+            labLoraNameError.Location = new Point(523, 65);
             labLoraNameError.Name = "labLoraNameError";
             labLoraNameError.Size = new Size(239, 15);
             labLoraNameError.TabIndex = 17;
@@ -413,7 +417,7 @@
             // 
             // label14
             // 
-            label14.Location = new Point(6, 100);
+            label14.Location = new Point(6, 106);
             label14.Name = "label14";
             label14.Size = new Size(158, 15);
             label14.TabIndex = 18;
@@ -422,7 +426,7 @@
             // 
             // label15
             // 
-            label15.Location = new Point(104, 59);
+            label15.Location = new Point(104, 65);
             label15.Name = "label15";
             label15.Size = new Size(60, 15);
             label15.TabIndex = 19;
@@ -432,7 +436,7 @@
             // tbLoraDownloadUrl
             // 
             tbLoraDownloadUrl.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
-            tbLoraDownloadUrl.Location = new Point(170, 97);
+            tbLoraDownloadUrl.Location = new Point(170, 103);
             tbLoraDownloadUrl.Name = "tbLoraDownloadUrl";
             tbLoraDownloadUrl.Size = new Size(537, 23);
             tbLoraDownloadUrl.TabIndex = 20;
@@ -440,7 +444,7 @@
             // tbLoraDescription
             // 
             tbLoraDescription.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
-            tbLoraDescription.Location = new Point(170, 139);
+            tbLoraDescription.Location = new Point(170, 145);
             tbLoraDescription.Name = "tbLoraDescription";
             tbLoraDescription.Size = new Size(537, 23);
             tbLoraDescription.TabIndex = 21;
@@ -448,7 +452,7 @@
             // tbLoraRequiredPrompt
             // 
             tbLoraRequiredPrompt.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
-            tbLoraRequiredPrompt.Location = new Point(170, 185);
+            tbLoraRequiredPrompt.Location = new Point(170, 191);
             tbLoraRequiredPrompt.Name = "tbLoraRequiredPrompt";
             tbLoraRequiredPrompt.Size = new Size(537, 23);
             tbLoraRequiredPrompt.TabIndex = 22;
@@ -456,7 +460,7 @@
             // tbLoraName
             // 
             tbLoraName.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
-            tbLoraName.Location = new Point(170, 56);
+            tbLoraName.Location = new Point(170, 62);
             tbLoraName.Name = "tbLoraName";
             tbLoraName.Size = new Size(347, 23);
             tbLoraName.TabIndex = 23;
@@ -476,7 +480,7 @@
             tabEmbedding.Location = new Point(4, 24);
             tabEmbedding.Name = "tabEmbedding";
             tabEmbedding.Padding = new Padding(3);
-            tabEmbedding.Size = new Size(768, 352);
+            tabEmbedding.Size = new Size(768, 401);
             tabEmbedding.TabIndex = 2;
             tabEmbedding.Text = "Embedding (model-helper)";
             tabEmbedding.UseVisualStyleBackColor = true;
@@ -484,7 +488,7 @@
             // cbEmbeddingIsNegative
             // 
             cbEmbeddingIsNegative.AutoSize = true;
-            cbEmbeddingIsNegative.Location = new Point(170, 197);
+            cbEmbeddingIsNegative.Location = new Point(170, 204);
             cbEmbeddingIsNegative.Name = "cbEmbeddingIsNegative";
             cbEmbeddingIsNegative.Size = new Size(195, 19);
             cbEmbeddingIsNegative.TabIndex = 32;
@@ -495,7 +499,7 @@
             // 
             btEmbeddingOk.BackColor = Color.FromArgb(226, 241, 227);
             btEmbeddingOk.Font = new Font("Segoe UI", 9.75F, FontStyle.Regular, GraphicsUnit.Point);
-            btEmbeddingOk.Location = new Point(290, 245);
+            btEmbeddingOk.Location = new Point(290, 252);
             btEmbeddingOk.Name = "btEmbeddingOk";
             btEmbeddingOk.Size = new Size(179, 48);
             btEmbeddingOk.TabIndex = 31;
@@ -505,7 +509,7 @@
             // 
             // label17
             // 
-            label17.Location = new Point(6, 155);
+            label17.Location = new Point(6, 162);
             label17.Name = "label17";
             label17.Size = new Size(158, 15);
             label17.TabIndex = 24;
@@ -516,7 +520,7 @@
             // 
             labEmbeddingNameError.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point);
             labEmbeddingNameError.ForeColor = Color.IndianRed;
-            labEmbeddingNameError.Location = new Point(523, 72);
+            labEmbeddingNameError.Location = new Point(523, 79);
             labEmbeddingNameError.Name = "labEmbeddingNameError";
             labEmbeddingNameError.Size = new Size(239, 15);
             labEmbeddingNameError.TabIndex = 25;
@@ -524,7 +528,7 @@
             // 
             // label19
             // 
-            label19.Location = new Point(6, 113);
+            label19.Location = new Point(6, 120);
             label19.Name = "label19";
             label19.Size = new Size(158, 15);
             label19.TabIndex = 26;
@@ -533,7 +537,7 @@
             // 
             // label20
             // 
-            label20.Location = new Point(104, 72);
+            label20.Location = new Point(104, 79);
             label20.Name = "label20";
             label20.Size = new Size(60, 15);
             label20.TabIndex = 27;
@@ -543,7 +547,7 @@
             // tbEmbeddingDownloadUrl
             // 
             tbEmbeddingDownloadUrl.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
-            tbEmbeddingDownloadUrl.Location = new Point(170, 110);
+            tbEmbeddingDownloadUrl.Location = new Point(170, 117);
             tbEmbeddingDownloadUrl.Name = "tbEmbeddingDownloadUrl";
             tbEmbeddingDownloadUrl.Size = new Size(537, 23);
             tbEmbeddingDownloadUrl.TabIndex = 28;
@@ -551,7 +555,7 @@
             // tbEmbeddingDescription
             // 
             tbEmbeddingDescription.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
-            tbEmbeddingDescription.Location = new Point(170, 152);
+            tbEmbeddingDescription.Location = new Point(170, 159);
             tbEmbeddingDescription.Name = "tbEmbeddingDescription";
             tbEmbeddingDescription.Size = new Size(537, 23);
             tbEmbeddingDescription.TabIndex = 29;
@@ -559,7 +563,7 @@
             // tbEmbeddingName
             // 
             tbEmbeddingName.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
-            tbEmbeddingName.Location = new Point(170, 69);
+            tbEmbeddingName.Location = new Point(170, 76);
             tbEmbeddingName.Name = "tbEmbeddingName";
             tbEmbeddingName.Size = new Size(347, 23);
             tbEmbeddingName.TabIndex = 30;
@@ -587,11 +591,28 @@
             linkLabel1.TextAlign = ContentAlignment.MiddleRight;
             linkLabel1.LinkClicked += linkLabel1_LinkClicked_1;
             // 
+            // tbBaseModel
+            // 
+            tbBaseModel.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            tbBaseModel.Location = new Point(170, 287);
+            tbBaseModel.Name = "tbBaseModel";
+            tbBaseModel.Size = new Size(347, 23);
+            tbBaseModel.TabIndex = 14;
+            // 
+            // label18
+            // 
+            label18.Location = new Point(6, 290);
+            label18.Name = "label18";
+            label18.Size = new Size(158, 15);
+            label18.TabIndex = 13;
+            label18.Text = "Base model";
+            label18.TextAlign = ContentAlignment.MiddleRight;
+            // 
             // AddImportModelForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(800, 473);
+            ClientSize = new Size(800, 509);
             Controls.Add(linkLabel1);
             Controls.Add(tabs);
             Controls.Add(btImport);
@@ -668,5 +689,7 @@
         private TextBox tbEmbeddingDescription;
         private TextBox tbEmbeddingName;
         private CheckBox cbEmbeddingIsNegative;
+        private Label label18;
+        private TextBox tbBaseModel;
     }
 }
