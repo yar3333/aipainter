@@ -17,13 +17,6 @@ static class SdModelDownloadHelper
                    : defaultFileName;
     }
 
-    public static string? GetCheckpointAuthorizationBearer(string name)
-    {
-        return new Uri(SdCheckpointsHelper.GetConfig(name).mainCheckpointUrl!).Host.ToLowerInvariant() == "civitai.com" 
-                   ? Program.Config.CivitaiApiKey 
-                   : null;
-    }
-
     public static async Task<string?> DownloadFileAsync(string url, string destDir, Action<string> progress, DownloadFileOptions options, CancellationTokenSource cancellationTokenSource)
     {
         string? resultFilePath = null;

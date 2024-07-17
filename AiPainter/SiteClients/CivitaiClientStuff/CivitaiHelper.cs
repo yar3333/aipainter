@@ -5,6 +5,13 @@ namespace AiPainter.SiteClients.CivitaiClientStuff;
 
 static class CivitaiHelper
 {
+    public static string? GetCheckpointAuthorizationBearer(string name)
+    {
+        return new Uri(SdCheckpointsHelper.GetConfig(name).mainCheckpointUrl!).Host.ToLowerInvariant() == "civitai.com" 
+                   ? Program.Config.CivitaiApiKey 
+                   : null;
+    }
+
     public static async Task UpdateAsync(Log log)
     {
         log.WriteLine("Start updating metadata from civitai.com");

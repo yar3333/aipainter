@@ -1,5 +1,6 @@
 ﻿using AiPainter.Controls;
 using AiPainter.Helpers;
+using AiPainter.SiteClients.CivitaiClientStuff;
 
 namespace AiPainter.Adapters.StableDiffusion.SdCheckpointStuff;
 
@@ -122,7 +123,7 @@ public class SdCheckpointsFormAdapter : ISdModelsFormAdapter
                 new DownloadFileOptions
                 {
                     FileNameIfNotDetected = SdModelDownloadHelper.GetModelFileNameFromUrl(url, "main.safetensors"),
-                    AuthorizationBearer = SdModelDownloadHelper.GetCheckpointAuthorizationBearer(name),
+                    AuthorizationBearer = CivitaiHelper.GetCheckpointAuthorizationBearer(name),
                 },
                 cancellationTokenSource
             );
@@ -159,7 +160,7 @@ public class SdCheckpointsFormAdapter : ISdModelsFormAdapter
                                      new DownloadFileOptions
                                      {
                                          FileNameIfNotDetected = SdModelDownloadHelper.GetModelFileNameFromUrl(url, "inpaint.safetensors"),
-                                         AuthorizationBearer = SdModelDownloadHelper.GetCheckpointAuthorizationBearer(name),
+                                         AuthorizationBearer = CivitaiHelper.GetCheckpointAuthorizationBearer(name),
                                      },
                                      cancellationTokenSource
                                  );
@@ -197,7 +198,7 @@ public class SdCheckpointsFormAdapter : ISdModelsFormAdapter
                                      {
                                          FileNameIfNotDetected = prepareVaeFileName(SdModelDownloadHelper.GetModelFileNameFromUrl(url, "vae.pt")),
                                          PreprocessFileName = prepareVaeFileName!,
-                                         AuthorizationBearer = SdModelDownloadHelper.GetCheckpointAuthorizationBearer(name),
+                                         AuthorizationBearer = CivitaiHelper.GetCheckpointAuthorizationBearer(name),
                                      },
                                      cancellationTokenSource
                                  );
