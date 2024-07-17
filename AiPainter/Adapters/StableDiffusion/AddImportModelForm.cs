@@ -3,6 +3,7 @@ using AiPainter.Adapters.StableDiffusion.SdCheckpointStuff;
 using AiPainter.Adapters.StableDiffusion.SdLoraStuff;
 using AiPainter.SiteClients.CivitaiClientStuff;
 using AiPainter.Adapters.StableDiffusion.SdEmbeddingStuff;
+using AiPainter.Adapters.StableDiffusion.SdVaeStuff;
 
 namespace AiPainter.Adapters.StableDiffusion
 {
@@ -22,6 +23,8 @@ namespace AiPainter.Adapters.StableDiffusion
             labCheckpointNameError.Text = "";
             labLoraNameError.Text = "";
             labEmbeddingNameError.Text = "";
+
+            ddCheckpointPredefinedVae.DataSource = SdVaeHelper.GetListItems();
         }
 
         private void btImport_Click(object sender, EventArgs e)
@@ -93,6 +96,8 @@ namespace AiPainter.Adapters.StableDiffusion
         {
             tabs.SelectedTab = tabCheckpoint;
 
+            ddCheckpointPredefinedVae.SelectedValue = "";
+
             tbCheckpointName.Text = CivitaiParserHelper.GetCheckpointName(model.name, version.name);
             
             var config = CivitaiHelper.DataToCheckpointConfig(model, version);
@@ -160,6 +165,7 @@ namespace AiPainter.Adapters.StableDiffusion
                 promptSuggested = tbCheckpointSuggestedPrompt.Text.Trim(),
                 description = tbCheckpointDescription.Text.Trim(),
                 baseModel = tbCheckpointBaseModel.Text.Trim(),
+                usePredefinedVae = (string)ddCheckpointPredefinedVae.SelectedValue,
                 clipSkip = numCheckpointClipSkip.Value == 1 ? null : (int)numCheckpointClipSkip.Value,
             };
 

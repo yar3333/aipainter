@@ -34,6 +34,7 @@
             btImport = new Button();
             tabs = new TabControl();
             tabCheckpoint = new TabPage();
+            ddCheckpointPredefinedVae = new ComboBox();
             label16 = new Label();
             tbCheckpointSuggestedPrompt = new TextBox();
             btCheckpointOk = new Button();
@@ -42,6 +43,7 @@
             label10 = new Label();
             label18 = new Label();
             label7 = new Label();
+            label22 = new Label();
             label6 = new Label();
             labCheckpointNameError = new Label();
             label5 = new Label();
@@ -56,6 +58,8 @@
             tbCheckpointRequiredPrompt = new TextBox();
             tbCheckpointName = new TextBox();
             tabLora = new TabPage();
+            label13 = new Label();
+            tbLoraBaseModel = new TextBox();
             label11 = new Label();
             tbLoraSuggestedPrompt = new TextBox();
             btLoraOk = new Button();
@@ -69,6 +73,8 @@
             tbLoraRequiredPrompt = new TextBox();
             tbLoraName = new TextBox();
             tabEmbedding = new TabPage();
+            label21 = new Label();
+            tbEmbeddingBaseModel = new TextBox();
             cbEmbeddingIsNegative = new CheckBox();
             btEmbeddingOk = new Button();
             label17 = new Label();
@@ -81,10 +87,6 @@
             toolTip1 = new ToolTip(components);
             labUrlError = new Label();
             linkLabel1 = new LinkLabel();
-            label13 = new Label();
-            tbLoraBaseModel = new TextBox();
-            label21 = new Label();
-            tbEmbeddingBaseModel = new TextBox();
             tabs.SuspendLayout();
             tabCheckpoint.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)numCheckpointClipSkip).BeginInit();
@@ -138,6 +140,7 @@
             // 
             // tabCheckpoint
             // 
+            tabCheckpoint.Controls.Add(ddCheckpointPredefinedVae);
             tabCheckpoint.Controls.Add(label16);
             tabCheckpoint.Controls.Add(tbCheckpointSuggestedPrompt);
             tabCheckpoint.Controls.Add(btCheckpointOk);
@@ -146,6 +149,7 @@
             tabCheckpoint.Controls.Add(label10);
             tabCheckpoint.Controls.Add(label18);
             tabCheckpoint.Controls.Add(label7);
+            tabCheckpoint.Controls.Add(label22);
             tabCheckpoint.Controls.Add(label6);
             tabCheckpoint.Controls.Add(labCheckpointNameError);
             tabCheckpoint.Controls.Add(label5);
@@ -166,6 +170,17 @@
             tabCheckpoint.TabIndex = 0;
             tabCheckpoint.Text = "Checkpoint (main model)";
             tabCheckpoint.UseVisualStyleBackColor = true;
+            // 
+            // ddCheckpointPredefinedVae
+            // 
+            ddCheckpointPredefinedVae.DisplayMember = "Text";
+            ddCheckpointPredefinedVae.DropDownStyle = ComboBoxStyle.DropDownList;
+            ddCheckpointPredefinedVae.FormattingEnabled = true;
+            ddCheckpointPredefinedVae.Location = new Point(586, 126);
+            ddCheckpointPredefinedVae.Name = "ddCheckpointPredefinedVae";
+            ddCheckpointPredefinedVae.Size = new Size(121, 23);
+            ddCheckpointPredefinedVae.TabIndex = 19;
+            ddCheckpointPredefinedVae.ValueMember = "Value";
             // 
             // label16
             // 
@@ -245,6 +260,15 @@
             label7.Text = "Required Prompt";
             label7.TextAlign = ContentAlignment.MiddleRight;
             // 
+            // label22
+            // 
+            label22.Location = new Point(476, 129);
+            label22.Name = "label22";
+            label22.Size = new Size(104, 15);
+            label22.TabIndex = 13;
+            label22.Text = "or use predefined";
+            label22.TextAlign = ContentAlignment.MiddleRight;
+            // 
             // label6
             // 
             label6.Location = new Point(6, 129);
@@ -286,7 +310,7 @@
             tbCheckpointVaeUrl.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             tbCheckpointVaeUrl.Location = new Point(170, 126);
             tbCheckpointVaeUrl.Name = "tbCheckpointVaeUrl";
-            tbCheckpointVaeUrl.Size = new Size(537, 23);
+            tbCheckpointVaeUrl.Size = new Size(300, 23);
             tbCheckpointVaeUrl.TabIndex = 14;
             // 
             // label4
@@ -379,6 +403,23 @@
             tabLora.TabIndex = 1;
             tabLora.Text = "LoRA/LyCORIS (additional model)";
             tabLora.UseVisualStyleBackColor = true;
+            // 
+            // label13
+            // 
+            label13.Location = new Point(6, 253);
+            label13.Name = "label13";
+            label13.Size = new Size(158, 15);
+            label13.TabIndex = 27;
+            label13.Text = "Base model";
+            label13.TextAlign = ContentAlignment.MiddleRight;
+            // 
+            // tbLoraBaseModel
+            // 
+            tbLoraBaseModel.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            tbLoraBaseModel.Location = new Point(170, 250);
+            tbLoraBaseModel.Name = "tbLoraBaseModel";
+            tbLoraBaseModel.Size = new Size(347, 23);
+            tbLoraBaseModel.TabIndex = 28;
             // 
             // label11
             // 
@@ -510,6 +551,23 @@
             tabEmbedding.Text = "Embedding (model-helper)";
             tabEmbedding.UseVisualStyleBackColor = true;
             // 
+            // label21
+            // 
+            label21.Location = new Point(6, 187);
+            label21.Name = "label21";
+            label21.Size = new Size(158, 15);
+            label21.TabIndex = 33;
+            label21.Text = "Base model";
+            label21.TextAlign = ContentAlignment.MiddleRight;
+            // 
+            // tbEmbeddingBaseModel
+            // 
+            tbEmbeddingBaseModel.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            tbEmbeddingBaseModel.Location = new Point(170, 184);
+            tbEmbeddingBaseModel.Name = "tbEmbeddingBaseModel";
+            tbEmbeddingBaseModel.Size = new Size(347, 23);
+            tbEmbeddingBaseModel.TabIndex = 34;
+            // 
             // cbEmbeddingIsNegative
             // 
             cbEmbeddingIsNegative.AutoSize = true;
@@ -616,40 +674,6 @@
             linkLabel1.TextAlign = ContentAlignment.MiddleRight;
             linkLabel1.LinkClicked += linkLabel1_LinkClicked_1;
             // 
-            // label13
-            // 
-            label13.Location = new Point(6, 253);
-            label13.Name = "label13";
-            label13.Size = new Size(158, 15);
-            label13.TabIndex = 27;
-            label13.Text = "Base model";
-            label13.TextAlign = ContentAlignment.MiddleRight;
-            // 
-            // tbLoraBaseModel
-            // 
-            tbLoraBaseModel.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
-            tbLoraBaseModel.Location = new Point(170, 250);
-            tbLoraBaseModel.Name = "tbLoraBaseModel";
-            tbLoraBaseModel.Size = new Size(347, 23);
-            tbLoraBaseModel.TabIndex = 28;
-            // 
-            // label21
-            // 
-            label21.Location = new Point(6, 187);
-            label21.Name = "label21";
-            label21.Size = new Size(158, 15);
-            label21.TabIndex = 33;
-            label21.Text = "Base model";
-            label21.TextAlign = ContentAlignment.MiddleRight;
-            // 
-            // tbEmbeddingBaseModel
-            // 
-            tbEmbeddingBaseModel.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
-            tbEmbeddingBaseModel.Location = new Point(170, 184);
-            tbEmbeddingBaseModel.Name = "tbEmbeddingBaseModel";
-            tbEmbeddingBaseModel.Size = new Size(347, 23);
-            tbEmbeddingBaseModel.TabIndex = 34;
-            // 
             // AddImportModelForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -736,5 +760,7 @@
         private TextBox tbLoraBaseModel;
         private Label label21;
         private TextBox tbEmbeddingBaseModel;
+        private ComboBox ddCheckpointPredefinedVae;
+        private Label label22;
     }
 }
