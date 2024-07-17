@@ -2,6 +2,7 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
+using AiPainter.Adapters.StableDiffusion.SdVaeStuff;
 
 namespace AiPainter.Adapters.StableDiffusion.SdCheckpointStuff;
 
@@ -71,7 +72,13 @@ static class SdCheckpointsHelper
              .Concat(Directory.GetFiles(GetDirPath(name), "*.pt"))
              .ToArray();
 
-        return models.Where(IsFilePathLikeVae).Min();
+        var r = models.Where(IsFilePathLikeVae).Min();
+        if (r != null) return r;
+
+        var config = GetConfig(name);
+        if (string.IsNullOrEmpty(config.usePredefinedVae)) return null;
+
+        return SdVaeHelper.GetPathToVae(config.usePredefinedVae);
     }
 
     public static string GetDirPath(string name)
@@ -139,6 +146,18 @@ static class SdCheckpointsHelper
 
     public static bool SaveConfig(string name, SdCheckpointConfig config)
     {
+        config = config.Clone();
+
+        if (config.homeUrl == "")              config.homeUrl = null;
+        if (config.mainCheckpointUrl == "")    config.mainCheckpointUrl = null;
+        if (config.inpaintCheckpointUrl == "") config.inpaintCheckpointUrl = null;
+        if (config.vaeUrl == "")               config.vaeUrl = null;
+        if (config.usePredefinedVae == "")     config.usePredefinedVae = null;
+        if (config.description == "")          config.description = null;
+        if (config.promptRequired == "")       config.promptRequired = null;
+        if (config.promptSuggested == "")      config.promptSuggested = null;
+        if (config.baseModel == "")            config.baseModel = null;
+
         var configFilePath = Path.Combine(GetDirPath(name), "config.json");
         if (!Directory.Exists(Path.GetDirectoryName(configFilePath)))
         {

@@ -129,15 +129,8 @@ namespace AiPainter.Adapters.StableDiffusion
 
         private void saveSelectedValuesToMainConfig()
         {
-            if (selectedCheckpointName != Program.Config.StableDiffusionCheckpoint)
-            {
-                Program.Config.StableDiffusionCheckpoint = selectedCheckpointName;
-            }
-
-            if (selectedVaeName != Program.Config.StableDiffusionVae)
-            {
-                Program.Config.StableDiffusionVae = selectedVaeName;
-            }
+            Program.Config.StableDiffusionCheckpoint = selectedCheckpointName;
+            Program.Config.StableDiffusionVae = selectedVaeName;
 
             var negativeText = tbNegative.Text.Trim(' ', ',', ';', '\r', '\n');
             if (negativeText != "" && Program.Config.NegativePrompts.FirstOrDefault() != negativeText)
