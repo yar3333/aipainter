@@ -25,7 +25,7 @@ class SdLorasContextMenu : ContextMenuStrip
             })
             {
                 Checked = usedModels.Contains(name),
-                ForeColor = isCompatibleToCheckpoint(panStableDiffusion.selectedCheckpointName, name) ? Color.Black : Color.Gray,
+                ForeColor = isCompatibleToCheckpoint(panStableDiffusion.selectedCheckpointName, name) ? Color.Black : Color.DarkGray,
             });
         }
 

@@ -31,7 +31,7 @@ class SdEmbeddingsContextMenu : ContextMenuStrip
             })
             {
                 Checked = Regex.IsMatch(!isNegative ? panStableDiffusion.tbPrompt.Text : panStableDiffusion.tbNegative.Text, @"\b" + Regex.Escape(name) + @"\b"),
-                ForeColor = isCompatibleToCheckpoint(panStableDiffusion.selectedCheckpointName, name) ? Color.Black : Color.Gray,
+                ForeColor = isCompatibleToCheckpoint(panStableDiffusion.selectedCheckpointName, name) ? Color.Black : Color.DarkGray,
             });
         }
 
