@@ -3,5 +3,6 @@
   "downloadUrl": "https://civitai.com/api/download/models/173623",
   "description": "clothes, tools, woman, man, tool, styles, clotheing, slider, sdxl 1,0",
   "promptRequired": "",
-  "promptSuggested": ""
+  "promptSuggested": "",
+  "baseModel": "SDXL-1.0"
 }

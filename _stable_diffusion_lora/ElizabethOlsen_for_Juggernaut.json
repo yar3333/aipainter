@@ -2,5 +2,7 @@
   "homeUrl": "https://civitai.com/models/122518?modelVersionId=562325",
   "downloadUrl": "https://civitai.com/api/download/models/562325",
   "description": "photorealistic, marvel, woman, celebrity",
-  "promptRequired": "elixolsen"
+  "promptRequired": "elixolsen",
+  "promptSuggested": "",
+  "baseModel": "SDXL-1.0"
 }

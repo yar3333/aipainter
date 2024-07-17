@@ -98,6 +98,18 @@ static class CivitaiParserHelper
         }
     }
 
+
+    public static string NormalizeBaseModelName(string? name)
+    {
+        switch (name)
+        {
+            case "SDXL 1.0": return "SDXL-1.0";
+            case "SD 1.5": return "SD-1.5";
+            case "Pony": return "PonyXL";
+        }
+        return name ?? "";
+    }
+
     private static string? getBestModelDownloadUrlInner(CivitaiFile[]? files, string type)
     {
         return files?.FirstOrDefault(x => x.type == type && x.metadata?.format == "SafeTensor"   && x.metadata?.size == "pruned")?.downloadUrl

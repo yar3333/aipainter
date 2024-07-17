@@ -3,5 +3,6 @@
   "downloadUrl": "https://civitai.com/api/download/models/552772",
   "description": "photorealistic, woman, celebrity",
   "promptRequired": "fukuharaXL",
-  "promptSuggested": ""
+  "promptSuggested": "",
+  "baseModel": "SDXL-1.0"
 }

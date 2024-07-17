@@ -3,5 +3,6 @@
   "downloadUrl": "https://civitai.com/api/download/models/573497",
   "description": "celebrity",
   "promptRequired": "",
-  "promptSuggested": ""
+  "promptSuggested": "",
+  "baseModel": "SD-1.5"
 }

@@ -1,5 +1,6 @@
 ﻿using AiPainter.Adapters.StableDiffusion.SdCheckpointStuff;
 using System.Text.RegularExpressions;
+using AiPainter.Adapters.StableDiffusion.SdLoraStuff;
 
 namespace AiPainter.SiteClients.CivitaiClientStuff;
 
@@ -17,6 +18,7 @@ static class CivitaiHelper
         log.WriteLine("Start updating metadata from civitai.com");
 
         await updateCheckpointsAsync(log);
+        await updateLorasAsync(log);
     }
 
     public static bool ParseUrl(string? url, out string? modelId, out string? versionId)
@@ -71,13 +73,11 @@ static class CivitaiHelper
         return Tuple.Create(model, version);
     }
 
-    public static Tuple<string, SdCheckpointConfig> DataToCheckpointConfig(CivitaiModel model, CivitaiVersion version)
+    public static SdCheckpointConfig DataToCheckpointConfig(CivitaiModel model, CivitaiVersion version)
     {
-        var name = CivitaiParserHelper.GetCheckpointName(model.name, version.name);
-        
         var config = new SdCheckpointConfig();
 
-        //config.homeUrl = "https://civitai.com/models/" + version. + "?modelVersionId=" + versionId;
+        config.homeUrl = "https://civitai.com/models/" + model.id + "?modelVersionId=" + version.id;
         
         config.promptRequired = "";
         config.promptSuggested = "";
@@ -88,11 +88,7 @@ static class CivitaiHelper
             config.promptSuggested = sugWords;
         }
 
-        config.description = "";
-        if (model.tags != null)
-        {
-            config.description = string.Join(", ", model.tags);
-        }
+        config.description = model.tags != null ? string.Join(", ", model.tags) : "";
 
         config.mainCheckpointUrl = CivitaiParserHelper.GetBestModelDownloadUrl(version.files, "Model");
         config.inpaintCheckpointUrl = CivitaiParserHelper.GetInpaintDownloadUrl(model, version);
@@ -100,9 +96,9 @@ static class CivitaiHelper
 
         //config.clipSkip = 1;
         
-        config.baseModel = version.baseModel;
+        config.baseModel = CivitaiParserHelper.NormalizeBaseModelName(version.baseModel);
 
-        return Tuple.Create(name, config);
+        return config;
     }
 
     private static async Task updateCheckpointsAsync(Log log)
@@ -126,7 +122,7 @@ static class CivitaiHelper
                 continue;
             }
 
-            var newConfig = DataToCheckpointConfig(modelAndVersion.Item1, modelAndVersion.Item2).Item2;
+            var newConfig = DataToCheckpointConfig(modelAndVersion.Item1, modelAndVersion.Item2);
 
             config.description = newConfig.description;
             config.promptRequired = newConfig.promptRequired;
@@ -134,20 +130,68 @@ static class CivitaiHelper
             config.mainCheckpointUrl = newConfig.mainCheckpointUrl;
             config.inpaintCheckpointUrl = newConfig.inpaintCheckpointUrl;
             config.vaeUrl = newConfig.vaeUrl;
-            config.baseModel = normalizeBaseModelName(newConfig.baseModel);
+            config.baseModel = newConfig.baseModel;
 
             SdCheckpointsHelper.SaveConfig(name, config);
         }
     }
 
-    private static string? normalizeBaseModelName(string? name)
+    public static SdLoraConfig DataToLoraConfig(CivitaiModel model, CivitaiVersion version)
     {
-        switch (name)
+        var config = new SdLoraConfig();
+
+        config.homeUrl = "https://civitai.com/models/" + model.id + "?modelVersionId=" + version.id;
+        
+        config.promptRequired = "";
+        config.promptSuggested = "";
+        if (version.trainedWords != null)
         {
-            case "SDXL 1.0": return "SDXL-1.0";
-            case "SD 1.5": return "SD-1.5";
-            case "Pony": return "PonyXL";
+            CivitaiParserHelper.ParsePhrases(string.Join(", ", version.trainedWords), out var reqWords, out var sugWords);
+            config.promptRequired = reqWords;
+            config.promptSuggested = sugWords;
         }
-        return name;
+
+        config.description = model.tags != null ? string.Join(", ", model.tags) : "";
+
+        config.downloadUrl = CivitaiParserHelper.GetBestModelDownloadUrl(version.files, "Model");
+        config.downloadUrl = CivitaiParserHelper.GetBestModelDownloadUrl(version.files, "Model");
+        
+        config.baseModel = CivitaiParserHelper.NormalizeBaseModelName(version.baseModel);
+        
+        return config;
+    }
+
+
+    private static async Task updateLorasAsync(Log log)
+    {
+        foreach (var name in SdLoraHelper.GetNames())
+        {
+            log.WriteLine("Process LoRA: " + name);
+            
+            var config = SdLoraHelper.GetConfig(name);
+            
+            if (!ParseUrl(config.homeUrl, out var modelId, out var versionId))
+            {
+                log.WriteLine("  homeUrl not specified");
+                continue;
+            }
+            
+            var modelAndVersion = await LoadModelDataAsync(modelId, versionId);
+            if (modelAndVersion == null)
+            {
+                log.WriteLine("  bad homeUrl or load error");
+                continue;
+            }
+
+            var newConfig = DataToLoraConfig(modelAndVersion.Item1, modelAndVersion.Item2);
+
+            config.description = newConfig.description;
+            config.promptRequired = newConfig.promptRequired;
+            config.promptSuggested = newConfig.promptSuggested;
+            config.downloadUrl = newConfig.downloadUrl;
+            config.baseModel = newConfig.baseModel;
+
+            SdLoraHelper.SaveConfig(name, config);
+        }
     }
 }

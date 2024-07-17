@@ -93,9 +93,9 @@ namespace AiPainter.Adapters.StableDiffusion
         {
             tabs.SelectedTab = tabCheckpoint;
 
-            var (name, config) = CivitaiHelper.DataToCheckpointConfig(model, version);
-
-            tbCheckpointName.Text = name;
+            tbCheckpointName.Text = CivitaiParserHelper.GetCheckpointName(model.name, version.name);
+            
+            var config = CivitaiHelper.DataToCheckpointConfig(model, version);
             tbCheckpointRequiredPrompt.Text = config.promptRequired;
             tbCheckpointSuggestedPrompt.Text = config.promptSuggested;
             tbCheckpointDescription.Text = config.description;
@@ -112,22 +112,12 @@ namespace AiPainter.Adapters.StableDiffusion
 
             tbLoraName.Text = CivitaiParserHelper.GetLoraOrEmbeddingName(model, version);
 
-            tbLoraRequiredPrompt.Text = "";
-            tbLoraSuggestedPrompt.Text = "";
-            if (version.trainedWords != null)
-            {
-                CivitaiParserHelper.ParsePhrases(string.Join(", ", version.trainedWords), out var reqWords, out var sugWords);
-                tbLoraRequiredPrompt.Text = reqWords;
-                tbLoraSuggestedPrompt.Text = sugWords;
-            }
+            var config = CivitaiHelper.DataToLoraConfig(model, version);
 
-            tbLoraDescription.Text = "";
-            if (model.tags != null)
-            {
-                tbLoraDescription.Text = string.Join(", ", model.tags);
-            }
-
-            tbLoraDownloadUrl.Text = CivitaiParserHelper.GetBestModelDownloadUrl(version.files, "Model");
+            tbLoraRequiredPrompt.Text = config.promptRequired;
+            tbLoraSuggestedPrompt.Text = config.promptSuggested;
+            tbLoraDescription.Text = config.description;
+            tbLoraDownloadUrl.Text = config.downloadUrl;
         }
 
         private void importEmbedding(CivitaiModel model, CivitaiVersion version)

@@ -3,5 +3,6 @@
   "downloadUrl": "https://civitai.com/api/download/models/62833",
   "description": "anime, photorealistic, concept, detailed, lora, undetailed",
   "promptRequired": "",
-  "promptSuggested": ""
+  "promptSuggested": "",
+  "baseModel": "SD-1.5"
 }

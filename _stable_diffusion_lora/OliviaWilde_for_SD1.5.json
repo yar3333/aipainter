@@ -3,5 +3,6 @@
   "downloadUrl": "https://civitai.com/api/download/models/577251",
   "description": "woman, actress, celebrity",
   "promptRequired": "0l1v14W1ld3",
-  "promptSuggested": ""
+  "promptSuggested": "",
+  "baseModel": "SD-1.5"
 }

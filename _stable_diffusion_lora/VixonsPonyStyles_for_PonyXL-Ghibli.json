@@ -2,5 +2,7 @@
   "homeUrl": "https://civitai.com/models/352581?modelVersionId=461821",
   "downloadUrl": "https://civitai.com/api/download/models/461821",
   "description": "horror, neon, art, lighting, ink, gothic, style, galaxy, pony, long exposure",
-  "promptRequired": "gh1bl1"
+  "promptRequired": "gh1bl1",
+  "promptSuggested": "",
+  "baseModel": "PonyXL"
 }

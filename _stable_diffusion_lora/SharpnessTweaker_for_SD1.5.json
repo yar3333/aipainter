@@ -3,5 +3,6 @@
   "downloadUrl": "https://civitai.com/api/download/models/76092",
   "description": "style",
   "promptRequired": "",
-  "promptSuggested": ""
+  "promptSuggested": "",
+  "baseModel": "SD-1.5"
 }

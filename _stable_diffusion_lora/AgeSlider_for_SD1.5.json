@@ -3,5 +3,6 @@
   "downloadUrl": "https://civitai.com/api/download/models/143150",
   "description": "aged, tools, woman, tool, age slider, concepts, slider",
   "promptRequired": "",
-  "promptSuggested": ""
+  "promptSuggested": "",
+  "baseModel": "SD-1.5"
 }

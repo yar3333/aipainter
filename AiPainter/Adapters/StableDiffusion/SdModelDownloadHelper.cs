@@ -1,5 +1,4 @@
-﻿using AiPainter.Adapters.StableDiffusion.SdCheckpointStuff;
-using AiPainter.Controls;
+﻿using AiPainter.Controls;
 using AiPainter.Helpers;
 
 namespace AiPainter.Adapters.StableDiffusion;

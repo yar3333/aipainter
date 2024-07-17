@@ -3,5 +3,6 @@
   "downloadUrl": "https://civitai.com/api/download/models/7804",
   "description": "anime, girl, samdoesarts, sam yang, style, art style, woman, artstyle, digital illustration, girls, women",
   "promptRequired": "sam yang",
-  "promptSuggested": ""
+  "promptSuggested": "",
+  "baseModel": "SD-1.5"
 }
