@@ -1,8 +1,7 @@
 {
   "profiles": {
     "AiPainter-Form": {
-      "commandName": "Project",
-      "commandLineArgs": "--update-metadata-from-civitai"
+      "commandName": "Project"
     },
     "AiPainter-Update": {
       "commandName": "Project",

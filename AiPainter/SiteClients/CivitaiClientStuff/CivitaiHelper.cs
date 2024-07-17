@@ -94,7 +94,6 @@ static class CivitaiHelper
         config.mainCheckpointUrl = CivitaiParserHelper.GetBestModelDownloadUrl(version.files, "Model");
         config.inpaintCheckpointUrl = CivitaiParserHelper.GetInpaintDownloadUrl(model, version);
         config.vaeUrl = CivitaiParserHelper.GetBestModelDownloadUrl(version.files, "VAE");
-        //config.clipSkip = 1;
         config.baseModel = CivitaiParserHelper.NormalizeBaseModelName(version.baseModel);
 
         return config;

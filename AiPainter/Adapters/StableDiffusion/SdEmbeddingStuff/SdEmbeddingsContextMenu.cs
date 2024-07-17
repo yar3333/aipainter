@@ -1,4 +1,5 @@
 ﻿using System.Text.RegularExpressions;
+using AiPainter.Adapters.StableDiffusion.SdCheckpointStuff;
 using AiPainter.Controls;
 
 namespace AiPainter.Adapters.StableDiffusion.SdEmbeddingStuff;
@@ -29,7 +30,8 @@ class SdEmbeddingsContextMenu : ContextMenuStrip
                 else             panStableDiffusion.AddTextToNegative("(" + name + ":1.0)");
             })
             {
-                Checked = Regex.IsMatch(!isNegative ? panStableDiffusion.tbPrompt.Text : panStableDiffusion.tbNegative.Text, @"\b" + Regex.Escape(name) + @"\b")
+                Checked = Regex.IsMatch(!isNegative ? panStableDiffusion.tbPrompt.Text : panStableDiffusion.tbNegative.Text, @"\b" + Regex.Escape(name) + @"\b"),
+                ForeColor = isCompatibleToCheckpoint(panStableDiffusion.selectedCheckpointName, name) ? Color.Black : Color.Gray,
             });
         }
 
@@ -39,5 +41,15 @@ class SdEmbeddingsContextMenu : ContextMenuStrip
         }
 
         if (panStableDiffusion.InProcess) foreach (ToolStripItem item in Items) item.Enabled = false;
+    }
+
+    private static bool isCompatibleToCheckpoint(string checkpoint, string embedding)
+    {
+        if (string.IsNullOrEmpty(checkpoint)) return true;
+        var checkpointBaseModel = SdCheckpointsHelper.GetConfig(checkpoint).baseModel;
+        if (string.IsNullOrEmpty(checkpointBaseModel)) return true;
+        var loraBaseModel = SdEmbeddingHelper.GetConfig(embedding).baseModel;
+        if (string.IsNullOrEmpty(loraBaseModel)) return true;
+        return loraBaseModel == checkpointBaseModel;
     }
 }
