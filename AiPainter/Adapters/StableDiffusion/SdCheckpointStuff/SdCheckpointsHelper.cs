@@ -146,18 +146,6 @@ static class SdCheckpointsHelper
 
     public static bool SaveConfig(string name, SdCheckpointConfig config)
     {
-        config = config.Clone();
-
-        if (config.homeUrl == "")              config.homeUrl = null;
-        if (config.mainCheckpointUrl == "")    config.mainCheckpointUrl = null;
-        if (config.inpaintCheckpointUrl == "") config.inpaintCheckpointUrl = null;
-        if (config.vaeUrl == "")               config.vaeUrl = null;
-        if (config.usePredefinedVae == "")     config.usePredefinedVae = null;
-        if (config.description == "")          config.description = null;
-        if (config.promptRequired == "")       config.promptRequired = null;
-        if (config.promptSuggested == "")      config.promptSuggested = null;
-        if (config.baseModel == "")            config.baseModel = null;
-
         var configFilePath = Path.Combine(GetDirPath(name), "config.json");
         if (!Directory.Exists(Path.GetDirectoryName(configFilePath)))
         {

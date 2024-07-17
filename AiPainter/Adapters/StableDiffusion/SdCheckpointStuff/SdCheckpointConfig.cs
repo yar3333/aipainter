@@ -12,6 +12,4 @@ class SdCheckpointConfig
     public string? promptSuggested { get; set; }
     public string? baseModel { get; set; }
     public int? clipSkip { get; set; }
-
-    public SdCheckpointConfig Clone() => (SdCheckpointConfig)MemberwiseClone();
 }
