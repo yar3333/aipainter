@@ -72,19 +72,6 @@ static class CivitaiParserHelper
         return name;
     }
 
-    public static void ParsePhrases(string text, out string phrasesOutsideSquareBrackets, out string phrasesInsideSquareBrackets)
-    {
-        var phrasesInsideSquareBracketsList = new List<string>();
-        text = Regex.Replace(text, @"\[([^]]+)\]", m =>
-        {
-            phrasesInsideSquareBracketsList.AddRange(m.Groups[1].Value.Trim().Split(','));
-            return "";
-        });
-
-        phrasesInsideSquareBrackets  = string.Join(", ", phrasesInsideSquareBracketsList .Select(x => x.Trim()).Where(x => x != ""));
-        phrasesOutsideSquareBrackets = string.Join(", ", text.Split(',').Select(x => x.Trim()).Where(x => x != ""));
-    }
-
     public static string GetBestModelDownloadUrl(CivitaiFile[]? files, string type)
     {
         switch (type)

@@ -1,4 +1,5 @@
 ﻿using System.Text.RegularExpressions;
+using AiPainter.Adapters.StableDiffusion;
 using AiPainter.Adapters.StableDiffusion.SdCheckpointStuff;
 using AiPainter.Adapters.StableDiffusion.SdEmbeddingStuff;
 using AiPainter.Adapters.StableDiffusion.SdLoraStuff;
@@ -81,14 +82,9 @@ static class CivitaiHelper
 
         config.homeUrl = "https://civitai.com/models/" + model.id + "?modelVersionId=" + version.id;
         
-        config.promptRequired = "";
-        config.promptSuggested = "";
-        if (version.trainedWords != null)
-        {
-            CivitaiParserHelper.ParsePhrases(string.Join(", ", version.trainedWords), out var reqWords, out var sugWords);
-            config.promptRequired = reqWords;
-            config.promptSuggested = sugWords;
-        }
+        var phrases = SdPromptNormalizer.GetNormalizedPhrases(SdPromptNormalizer.Parse(version.trainedWords)).ToArray();
+        config.promptRequired  = phrases.Length == 1 ? phrases[0] : "";
+        config.promptSuggested =  phrases.Length > 1 ? string.Join(", ", phrases) : "";
 
         config.description = model.tags != null ? string.Join(", ", model.tags) : "";
         config.mainCheckpointUrl = CivitaiParserHelper.GetBestModelDownloadUrl(version.files, "Model");
@@ -140,14 +136,9 @@ static class CivitaiHelper
 
         config.homeUrl = "https://civitai.com/models/" + model.id + "?modelVersionId=" + version.id;
         
-        config.promptRequired = "";
-        config.promptSuggested = "";
-        if (version.trainedWords != null)
-        {
-            CivitaiParserHelper.ParsePhrases(string.Join(", ", version.trainedWords), out var reqWords, out var sugWords);
-            config.promptRequired = reqWords;
-            config.promptSuggested = sugWords;
-        }
+        var phrases = SdPromptNormalizer.GetNormalizedPhrases(SdPromptNormalizer.Parse(version.trainedWords)).ToArray();
+        config.promptRequired  = phrases.Length == 1 ? phrases[0] : "";
+        config.promptSuggested =  phrases.Length > 1 ? string.Join(", ", phrases) : "";
 
         config.description = model.tags != null ? string.Join(", ", model.tags) : "";
         config.downloadUrl = CivitaiParserHelper.GetBestModelDownloadUrl(version.files, "Model");

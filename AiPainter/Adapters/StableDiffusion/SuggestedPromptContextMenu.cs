@@ -66,9 +66,11 @@ class SuggestedPromptContextMenu : ContextMenuStrip
 
     private static string[] getSuggestedPhrases(string? text)
     {
-        if (text == null) return new string[] { };
-        var parts = text.Split(',').Select(x => x.Trim(',', ' ')).ToList();
-        parts.Insert(0, text);
-        return parts.Where(x => x != "").Distinct().ToArray();
+        if (text == null) return Array.Empty<string>();
+        return text.Split(',')
+                   .Select(x => x.Trim(',', ' '))
+                   .Where(x => x != "")
+                   .Distinct()
+                   .ToArray();
     }
 }
