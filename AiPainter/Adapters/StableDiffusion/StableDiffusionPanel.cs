@@ -17,7 +17,7 @@ namespace AiPainter.Adapters.StableDiffusion
 
         public bool IsTextboxInFocus => collapsablePanel.ActiveControl is TextBox;
 
-        private bool inProcess = false;
+        public bool InProcess = false;
 
         public string selectedCheckpointName
         {
@@ -102,7 +102,7 @@ namespace AiPainter.Adapters.StableDiffusion
             GlobalEvents.CheckpointFileDownloaded += () => Invoke(updateCheckpoints);
         }
 
-        private void showManageCheckpointDialog()
+        public void ShowManageCheckpointDialog()
         {
             var form = new SdModelsForm(mainForm.panGenerationList, new SdCheckpointsFormAdapter());
             form.ShowDialog(this);
@@ -227,11 +227,11 @@ namespace AiPainter.Adapters.StableDiffusion
             trackBarChangesLevel.Enabled = cbUseInitImage.Checked;
             ddInpaintingFill.Enabled = cbUseInitImage.Checked;
             
-            btInterrogate.Enabled = !inProcess && pb.Image != null;
-            btGenerate.Enabled = !inProcess;
-            btReset.Enabled = !inProcess;
-            btSuggestedPrompt.Enabled = !inProcess;
-            btStyles.Enabled = !inProcess;
+            btInterrogate.Enabled = !InProcess && pb.Image != null;
+            btGenerate.Enabled = !InProcess;
+            btReset.Enabled = !InProcess;
+            btSuggestedPrompt.Enabled = !InProcess;
+            btStyles.Enabled = !InProcess;
         }
 
         public void SetImageSize(int w, int h)
@@ -271,68 +271,12 @@ namespace AiPainter.Adapters.StableDiffusion
 
         private void btCheckpoint_Click(object sender, EventArgs e)
         {
-            cmCheckpointMenu.Items.Clear();
-
-            cmCheckpointMenu.Items.Add("Manage checkpoints...", null, (_, _) =>
-            {
-                showManageCheckpointDialog();
-            });
-
-            cmCheckpointMenu.Items.Add(new ToolStripSeparator());
-
-            cmCheckpointMenu.Items.Add("Show in Explorer", null, (_, _) =>
-            {
-                if (selectedCheckpointName != "")
-                {
-                    ProcessHelper.ShowFolderInExplorer(SdCheckpointsHelper.GetDirPath(selectedCheckpointName));
-                }
-            });
-
-            cmCheckpointMenu.Items.Add("Visit home page", null, (_, _) =>
-            {
-                if (selectedCheckpointName != "")
-                {
-                    var config = SdCheckpointsHelper.GetConfig(selectedCheckpointName);
-                    if (!string.IsNullOrEmpty(config.homeUrl)) ProcessHelper.OpenUrlInBrowser(config.homeUrl);
-                }
-            });
-
-            cmCheckpointMenu.Show(Cursor.Position);
+            new SdCheckpointsContextMenu(this).Show(Cursor.Position);
         }
 
         private void btLoras_Click(object sender, EventArgs e)
         {
-            cmLorasMenu.Items.Clear();
-
-            cmLorasMenu.Items.Add("Manage LoRAs...", null, (_, _) =>
-            {
-                var form = new SdModelsForm(mainForm.panGenerationList, new SdLorasFormAdapter());
-                form.ShowDialog(this);
-            });
-
-            cmLorasMenu.Items.Add(new ToolStripSeparator());
-
-            var usedModels = GetUsedLoras();
-            var models = SdLoraHelper.GetNames().Where(x => SdLoraHelper.GetPathToModel(x) != null && SdLoraHelper.IsEnabled(x)).ToArray();
-            foreach (var name in models)
-            {
-                cmLorasMenu.Items.Add(new ToolStripMenuItem(SdLoraHelper.GetHumanName(name), null, (_, _) =>
-                {
-                    AddTextToPrompt(SdLoraHelper.GetPrompt(name));
-                })
-                {
-                    Checked = usedModels.Contains(name)
-                });
-            }
-
-            if (models.Length == 0)
-            {
-                cmLorasMenu.Items.Add(new ToolStripLabel("No enabled LoRA found"));
-            }
-
-            if (inProcess) foreach (ToolStripItem item in cmLorasMenu.Items) item.Enabled = false;
-
-            cmLorasMenu.Show(Cursor.Position);
+            new SdLorasContextMenu(this, mainForm.panGenerationList).Show(Cursor.Position);
         }
 
         private void btNegativePromptHistory_Click(object sender, EventArgs e)
@@ -357,56 +301,12 @@ namespace AiPainter.Adapters.StableDiffusion
 
         private void btEmbeddings_Click(object sender, EventArgs e)
         {
-            var models = SdEmbeddingHelper.GetNames()
-                                          .Where(x => SdEmbeddingHelper.GetPathToModel(x) != null
-                                                   && SdEmbeddingHelper.IsEnabled(x)
-                                                   && !SdEmbeddingHelper.GetConfig(x).isNegative)
-                                          .ToArray();
-            fillEmbeddingContextMenu(cmEmbeddingsMenu, models, false);
+            new SdEmbeddingsContextMenu(this, mainForm.panGenerationList, false).Show(Cursor.Position);
         }
 
         private void btNegativeEmbeddings_Click(object sender, EventArgs e)
         {
-            var models = SdEmbeddingHelper.GetNames()
-                                          .Where(x => SdEmbeddingHelper.GetPathToModel(x) != null
-                                                   && SdEmbeddingHelper.IsEnabled(x)
-                                                   && SdEmbeddingHelper.GetConfig(x).isNegative)
-                                          .ToArray();
-            fillEmbeddingContextMenu(cmNegativeEmbeddingsMenu, models, true);
-        }
-
-        private void fillEmbeddingContextMenu(ContextMenuStrip menu, string[] models, bool isForNegative)
-        {
-            menu.Items.Clear();
-
-            menu.Items.Add("Manage Embeddings...", null, (_, _) =>
-            {
-                var form = new SdModelsForm(mainForm.panGenerationList, new SdEmbeddingFormAdapter());
-                form.ShowDialog(this);
-            });
-
-            menu.Items.Add(new ToolStripSeparator());
-
-            foreach (var name in models)
-            {
-                menu.Items.Add(new ToolStripMenuItem(SdEmbeddingHelper.GetHumanName(name), null, (_, _) =>
-                {
-                    if (!isForNegative) AddTextToPrompt  ("(" + name + ":1.0)");
-                    else                AddTextToNegative("(" + name + ":1.0)");
-                })
-                {
-                    Checked = Regex.IsMatch(!isForNegative ? tbPrompt.Text : tbNegative.Text, @"\b" + Regex.Escape(name) + @"\b")
-                });
-            }
-
-            if (models.Length == 0)
-            {
-                menu.Items.Add(new ToolStripLabel("No enabled Embeddings found"));
-            }
-
-            if (inProcess) foreach (ToolStripItem item in menu.Items) item.Enabled = false;
-
-            menu.Show(Cursor.Position);
+            new SdEmbeddingsContextMenu(this, mainForm.panGenerationList, true).Show(Cursor.Position);
         }
 
         private void btStyles_Click(object sender, EventArgs e)
@@ -450,7 +350,7 @@ namespace AiPainter.Adapters.StableDiffusion
         {
             if (ddCheckpoint.Items.Count == 0 || ddCheckpoint.Items.Count == 1 && string.IsNullOrEmpty(((ListItem)ddCheckpoint.Items[0]).Value))
             {
-                showManageCheckpointDialog();
+                ShowManageCheckpointDialog();
             }
         }
 
@@ -478,7 +378,7 @@ namespace AiPainter.Adapters.StableDiffusion
 
         private void btInterrogate_Click(object sender, EventArgs e)
         {
-            inProcess = true;
+            InProcess = true;
             tbPrompt.ReadOnly = true;
             
             var croppedImage = BitmapTools.GetCropped(mainForm.pictureBox.Image!, mainForm.pictureBox.ActiveBox, Color.Black);
@@ -495,7 +395,7 @@ namespace AiPainter.Adapters.StableDiffusion
                 {
                     if (result != null) tbPrompt.Text = result;
 
-                    inProcess = false;
+                    InProcess = false;
                     tbPrompt.ReadOnly = false;
                 });
             });

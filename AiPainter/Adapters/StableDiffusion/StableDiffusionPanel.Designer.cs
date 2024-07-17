@@ -62,11 +62,7 @@
             trackBarChangesLevel = new TrackBar();
             trackBarSeedVariationStrength = new TrackBar();
             toolTip = new ToolTip(components);
-            cmCheckpointMenu = new ContextMenuStrip(components);
-            cmLorasMenu = new ContextMenuStrip(components);
             cmNegativePromptHistoryMenu = new ContextMenuStrip(components);
-            cmEmbeddingsMenu = new ContextMenuStrip(components);
-            cmNegativeEmbeddingsMenu = new ContextMenuStrip(components);
             collapsablePanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)numIterations).BeginInit();
             ((System.ComponentModel.ISupportInitialize)numSteps).BeginInit();
@@ -513,34 +509,11 @@
             trackBarSeedVariationStrength.TickStyle = TickStyle.None;
             toolTip.SetToolTip(trackBarSeedVariationStrength, "Seed variation strength");
             // 
-            // cmCheckpointMenu
-            // 
-            cmCheckpointMenu.Name = "contextMenuCheckpoint";
-            cmCheckpointMenu.Size = new Size(61, 4);
-            // 
-            // cmLorasMenu
-            // 
-            cmLorasMenu.MinimumSize = new Size(220, 0);
-            cmLorasMenu.Name = "contextMenuCheckpoint";
-            cmLorasMenu.Size = new Size(220, 4);
-            // 
             // cmNegativePromptHistoryMenu
             // 
             cmNegativePromptHistoryMenu.MinimumSize = new Size(200, 0);
             cmNegativePromptHistoryMenu.Name = "contextMenuCheckpoint";
             cmNegativePromptHistoryMenu.Size = new Size(200, 4);
-            // 
-            // cmEmbeddingsMenu
-            // 
-            cmEmbeddingsMenu.MinimumSize = new Size(220, 0);
-            cmEmbeddingsMenu.Name = "contextMenuCheckpoint";
-            cmEmbeddingsMenu.Size = new Size(220, 4);
-            // 
-            // cmNegativeEmbeddingsMenu
-            // 
-            cmNegativeEmbeddingsMenu.MinimumSize = new Size(200, 0);
-            cmNegativeEmbeddingsMenu.Name = "contextMenuCheckpoint";
-            cmNegativeEmbeddingsMenu.Size = new Size(200, 4);
             // 
             // StableDiffusionPanel
             // 
@@ -578,7 +551,6 @@
         public ComboBox ddImageSize;
         private Label label4;
         private Button btCheckpoint;
-        private ContextMenuStrip cmCheckpointMenu;
         public ComboBox ddSampler;
         private Label label5;
         public TrackBar trackBarChangesLevel;
@@ -586,13 +558,10 @@
         public CheckBox cbUseSeed;
         private Button btNegativePromptHistory;
         private Button btLoras;
-        private ContextMenuStrip cmLorasMenu;
         private ContextMenuStrip cmNegativePromptHistoryMenu;
         private Label label1;
         private Button btNegativeEmbeddings;
         private Button btEmbeddings;
-        private ContextMenuStrip cmEmbeddingsMenu;
-        private ContextMenuStrip cmNegativeEmbeddingsMenu;
         private Button btStyles;
         private Button btSuggestedPrompt;
         private ComboBox ddVae;

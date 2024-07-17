@@ -57,6 +57,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Update="Adapters\StableDiffusion\SdEmbeddingStuff\SdEmbeddingsContextMenu.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Update="Adapters\StableDiffusion\SdLoraStuff\SdLorasContextMenu.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Update="Adapters\StableDiffusion\SdModelsForm.cs">
       <SubType>Form</SubType>
     </Compile>
