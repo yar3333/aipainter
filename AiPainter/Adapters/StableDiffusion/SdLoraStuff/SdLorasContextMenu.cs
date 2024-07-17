@@ -3,6 +3,8 @@ using AiPainter.Controls;
 
 namespace AiPainter.Adapters.StableDiffusion.SdLoraStuff;
 
+// ReSharper disable VirtualMemberCallInConstructor
+
 class SdLorasContextMenu : ContextMenuStrip
 {
     public SdLorasContextMenu(StableDiffusionPanel panStableDiffusion, GenerationList panGenerationList)

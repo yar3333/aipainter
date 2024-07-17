@@ -66,11 +66,9 @@ class SuggestedPromptContextMenu : ContextMenuStrip
 
     private static string[] getSuggestedPhrases(string? text)
     {
-        if (text == null) return Array.Empty<string>();
-        return text.Split(',')
-                   .Select(x => x.Trim(',', ' '))
-                   .Where(x => x != "")
-                   .Distinct()
-                   .ToArray();
+        var items = SdPromptNormalizer.Parse(text).OrderBy(x => x.phrase.ToLowerInvariant()).ThenBy(x => x.weight).ToArray();
+
+        return items.Select(x => SdPromptNormalizer.GetNormalizedPhrases(x.phrase).First())
+                    .ToArray();
     }
 }

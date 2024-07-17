@@ -2,6 +2,8 @@
 
 namespace AiPainter.Adapters.StableDiffusion.SdCheckpointStuff;
 
+// ReSharper disable VirtualMemberCallInConstructor
+
 class SdCheckpointsContextMenu : ContextMenuStrip
 {
     public SdCheckpointsContextMenu(StableDiffusionPanel panStableDiffusion)

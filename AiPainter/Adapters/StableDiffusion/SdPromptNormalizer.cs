@@ -11,8 +11,10 @@ static class SdPromptNormalizer
         public decimal weight;
     }
 
-    public static PhraseAndWeight[] Parse(string text)
+    public static PhraseAndWeight[] Parse(string? text)
     {
+        if (text == null) return Array.Empty<PhraseAndWeight>();
+        
         var r = new List<PhraseAndWeight>();
 
         var matches = Regex.Matches(text, @"([-_a-zA-Z0-9/#*$%& \t\r\n'""]+)(:\s*[-+]?\s*\d+(?:[.]\d+)?)?");
@@ -56,7 +58,7 @@ static class SdPromptNormalizer
         return GetNormalizedPhrases(Parse(texts));
     }
     
-    public static string[] GetNormalizedPhrases(string text)
+    public static string[] GetNormalizedPhrases(string? text)
     {
         return GetNormalizedPhrases(Parse(text));
     }

@@ -4,6 +4,8 @@ using AiPainter.Controls;
 
 namespace AiPainter.Adapters.StableDiffusion.SdEmbeddingStuff;
 
+// ReSharper disable VirtualMemberCallInConstructor
+
 class SdEmbeddingsContextMenu : ContextMenuStrip
 {
     public SdEmbeddingsContextMenu(StableDiffusionPanel panStableDiffusion, GenerationList panGenerationList, bool isNegative)
