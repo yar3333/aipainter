@@ -53,7 +53,8 @@ class JsonForLogConverter : JsonConverter<JsonElement>
         {
             WriteIndented = true,
             PropertyNamingPolicy = null,
-            Converters = { new JsonForLogConverter() }
+            Converters = { new JsonForLogConverter() },
+            Encoder = Program.DefaultJsonSerializerOptions.Encoder,
         };
         return JsonSerializer.Serialize(obj, options)!;
     }

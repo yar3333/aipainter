@@ -81,12 +81,7 @@ static class SdEmbeddingHelper
         
         try
         {
-            File.WriteAllText(configFilePath, JsonSerializer.Serialize(config, new JsonSerializerOptions
-            {
-                PropertyNamingPolicy = null,
-                DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
-                WriteIndented = true,
-            }));
+            File.WriteAllText(configFilePath, JsonSerializer.Serialize(config, Program.DefaultJsonSerializerOptions));
             
             return true;
         }

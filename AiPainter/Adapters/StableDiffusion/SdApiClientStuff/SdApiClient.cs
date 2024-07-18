@@ -120,7 +120,7 @@ static class SdApiClient
                     switch (r?.state?.job)
                     {
                         case "Upscale":
-                            //Log.WriteLine(JsonSerializer.Serialize(r, new JsonSerializerOptions {  WriteIndented = true }));
+                            //Log.WriteLine(JsonSerializer.Serialize(r, Program.DefaultJsonSerializerOptions));
                             var secondsTotal = Math.Ceiling(Math.Abs(r.eta_relative) * 1000);
                             var percent = (decimal)(DateTime.UtcNow - startTime).TotalSeconds / secondsTotal * 100;
                             onProgress((int)Math.Round(percent));

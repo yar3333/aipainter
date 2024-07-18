@@ -80,7 +80,7 @@ class GlobalConfig
         var pathToConfig = Path.Join(Application.StartupPath, "Config.json");
 
         var oldText = File.Exists(pathToConfig) ? File.ReadAllText(pathToConfig) : "";
-        var newText = JsonSerializer.Serialize(this, new JsonSerializerOptions { PropertyNamingPolicy = null, WriteIndented = true });
+        var newText = JsonSerializer.Serialize(this, Program.DefaultJsonSerializerOptions);
 
         if (newText != oldText)
         {
