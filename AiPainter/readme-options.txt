@@ -1,0 +1,2 @@
+--update-metadata-from-civitai
+--embed-json-into-png <path_to_dir>

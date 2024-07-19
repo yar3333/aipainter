@@ -121,6 +121,7 @@ namespace AiPainter
         {
             var openFileDialog = new OpenFileDialog();
             openFileDialog.Filter = "Image files (*.jpg;*.jpeg;*.png)|*.jpg;*.jpeg;*.png|All files (*.*)|*.*";
+            openFileDialog.InitialDirectory = ImagesFolder;
             if (openFileDialog.ShowDialog() == DialogResult.OK)
             {
                 OpenImageFile(openFileDialog.FileName);
