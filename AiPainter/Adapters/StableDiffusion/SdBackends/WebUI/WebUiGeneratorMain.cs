@@ -1,16 +1,16 @@
 ﻿using AiPainter.Helpers;
-using AiPainter.Adapters.StableDiffusion.SdBackendClients.WebUI.SdApiClientStuff;
+using AiPainter.Adapters.StableDiffusion.SdBackends.WebUI.SdApiClientStuff;
 
-namespace AiPainter.Adapters.StableDiffusion.SdBackendClients.WebUI;
+namespace AiPainter.Adapters.StableDiffusion.SdBackends.WebUI;
 
-class SdGeneratorMain : ISdGenerator
+class WebUiGeneratorMain : ISdGenerator
 {
     private readonly SdGenerationParameters sdGenerationParameters;
     private readonly SdGenerationListItem control;
 
     private readonly string destDir;
 
-    public SdGeneratorMain(SdGenerationParameters sdGenerationParameters, SdGenerationListItem control, string destDir)
+    public WebUiGeneratorMain(SdGenerationParameters sdGenerationParameters, SdGenerationListItem control, string destDir)
     {
         this.sdGenerationParameters = sdGenerationParameters;
         this.control = control;
@@ -21,7 +21,7 @@ class SdGeneratorMain : ISdGenerator
     public async Task<bool> RunAsync()
     {
         var wasProgressShown = false;
-        var isCheckpointSuccess = await SdGeneratorHelper.PrepareCheckpointAsync
+        var isCheckpointSuccess = await WebUiGeneratorHelper.PrepareCheckpointAsync
         (
             true,
             sdGenerationParameters.checkpointName,

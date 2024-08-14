@@ -1,10 +1,10 @@
 ﻿using AiPainter.Helpers;
 using System.Text.RegularExpressions;
-using AiPainter.Adapters.StableDiffusion.SdBackendClients.WebUI.SdApiClientStuff;
+using AiPainter.Adapters.StableDiffusion.SdBackends.WebUI.SdApiClientStuff;
 
-namespace AiPainter.Adapters.StableDiffusion.SdBackendClients.WebUI;
+namespace AiPainter.Adapters.StableDiffusion.SdBackends.WebUI;
 
-class SdGeneratorInpaint : ISdGenerator
+class WebUiGeneratorInpaint : ISdGenerator
 {
     private readonly SdGenerationParameters sdGenerationParameters;
     private readonly SdGenerationListItem control;
@@ -14,7 +14,7 @@ class SdGeneratorInpaint : ISdGenerator
     private readonly Bitmap? croppedMask;
     private readonly string originalFilePath;
 
-    public SdGeneratorInpaint(SdGenerationParameters sdGenerationParameters, SdGenerationListItem control, Bitmap originalImage, Rectangle activeBox, Bitmap? croppedMask, string originalFilePath)
+    public WebUiGeneratorInpaint(SdGenerationParameters sdGenerationParameters, SdGenerationListItem control, Bitmap originalImage, Rectangle activeBox, Bitmap? croppedMask, string originalFilePath)
     {
         this.sdGenerationParameters = sdGenerationParameters;
         this.control = control;
@@ -28,7 +28,7 @@ class SdGeneratorInpaint : ISdGenerator
     public async Task<bool> RunAsync()
     {
         var wasProgressShown = false;
-        var isCheckpointSuccess = await SdGeneratorHelper.PrepareCheckpointAsync
+        var isCheckpointSuccess = await WebUiGeneratorHelper.PrepareCheckpointAsync
         (
             false,
             sdGenerationParameters.checkpointName,

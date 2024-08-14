@@ -1,7 +1,7 @@
 ﻿using System.Drawing.Imaging;
 using AiPainter.Controls;
 using AiPainter.Helpers;
-using AiPainter.Adapters.StableDiffusion.SdBackendClients;
+using AiPainter.Adapters.StableDiffusion.SdBackends;
 
 namespace AiPainter;
 
@@ -34,7 +34,7 @@ public class UpscaleForm
             {
                 dialog.LabelText = "Upscaling " + resizeFactor + "x using " + upscaler + "...";
 
-                var image = await SdUpscaler.RunAsync
+                var image = await SdBackend.Instance.UpscaleAsync
                 (
                     upscaler, 
                     resizeFactor, 

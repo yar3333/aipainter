@@ -1,7 +1,7 @@
-﻿using AiPainter.Adapters.StableDiffusion.SdBackendClients.WebUI.SdApiClientStuff;
+﻿using AiPainter.Adapters.StableDiffusion.SdBackends.WebUI.SdApiClientStuff;
 using AiPainter.Helpers;
 
-namespace AiPainter.Adapters.StableDiffusion.SdBackendClients.WebUI;
+namespace AiPainter.Adapters.StableDiffusion.SdBackends.WebUI;
 
 static class WebUiUpscaler
 {

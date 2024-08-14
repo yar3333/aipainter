@@ -2,9 +2,9 @@
 using AiPainter.Adapters.StableDiffusion.SdVaeStuff;
 using AiPainter.Helpers;
 
-namespace AiPainter.Adapters.StableDiffusion.SdBackendClients.WebUI;
+namespace AiPainter.Adapters.StableDiffusion.SdBackends.WebUI;
 
-static class SdGeneratorHelper
+static class WebUiGeneratorHelper
 {
     public static async Task<bool> PrepareCheckpointAsync(bool isMainCheckpoint, string checkpointName, string vaeName, Func<bool> wantToCancel, Action<string> progress)
     {

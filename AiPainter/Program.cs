@@ -1,6 +1,6 @@
 using System.Text.Json;
 using AiPainter.Adapters.LamaCleaner;
-using AiPainter.Adapters.StableDiffusion.SdBackendClients;
+using AiPainter.Adapters.StableDiffusion.SdBackends;
 using AiPainter.Adapters.StableDiffusion.SdCheckpointStuff;
 using AiPainter.Adapters.StableDiffusion.SdVaeStuff;
 using AiPainter.Helpers;
@@ -26,7 +26,7 @@ static class Program
     {
         if (args.Length == 0)
         {
-            SdProcess.Start(SdCheckpointsHelper.GetPathToMainCheckpoint(Config.StableDiffusionCheckpoint), SdVaeHelper.GetPathToVae(Config.StableDiffusionVae));
+            SdBackend.Instance.ProcessStart(SdCheckpointsHelper.GetPathToMainCheckpoint(Config.StableDiffusionCheckpoint), SdVaeHelper.GetPathToVae(Config.StableDiffusionVae));
             LamaCleanerProcess.Start();
 
             ApplicationConfiguration.Initialize();
@@ -37,7 +37,7 @@ static class Program
             Config.Save();
 
             LamaCleanerProcess.Stop();
-            SdProcess.Stop();
+            SdBackend.Instance.ProcessStop();
         }
         else if (args.Length == 1 && args[0] == "--update-metadata-from-civitai")
         {

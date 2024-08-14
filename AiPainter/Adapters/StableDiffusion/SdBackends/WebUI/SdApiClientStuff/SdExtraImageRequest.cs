@@ -1,4 +1,4 @@
-﻿namespace AiPainter.Adapters.StableDiffusion.SdBackendClients.WebUI.SdApiClientStuff;
+﻿namespace AiPainter.Adapters.StableDiffusion.SdBackends.WebUI.SdApiClientStuff;
 
 [Serializable]
 class SdExtraImageRequest

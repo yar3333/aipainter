@@ -4,7 +4,7 @@ using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
 using AiPainter.Helpers;
 
-namespace AiPainter.Adapters.StableDiffusion.SdBackendClients.WebUI.SdApiClientStuff;
+namespace AiPainter.Adapters.StableDiffusion.SdBackends.WebUI.SdApiClientStuff;
 
 static class SdApiClient
 {
