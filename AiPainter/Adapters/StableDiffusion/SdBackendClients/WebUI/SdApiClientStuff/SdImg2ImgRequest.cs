@@ -1,4 +1,4 @@
-﻿namespace AiPainter.Adapters.StableDiffusion.SdApiClientStuff;
+﻿namespace AiPainter.Adapters.StableDiffusion.SdBackendClients.WebUI.SdApiClientStuff;
 
 [Serializable]
 class SdImg2ImgRequest : SdBaseGenerationRequest
@@ -9,7 +9,7 @@ class SdImg2ImgRequest : SdBaseGenerationRequest
     public int resize_mode { get; set; }
 
     public string? mask { get; set; }
-    
+
     /// <summary>
     /// Mask blur refers to the feathering of a mask (from edges to inside the mask),
     /// adjusted between 0-64. A smaller value results in sharper edges. Default to 4

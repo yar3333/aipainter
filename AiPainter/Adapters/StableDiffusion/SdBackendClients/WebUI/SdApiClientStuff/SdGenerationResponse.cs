@@ -1,7 +1,7 @@
 ﻿using System.Text.Json;
 using System.Text.Json.Nodes;
 
-namespace AiPainter.Adapters.StableDiffusion.SdApiClientStuff;
+namespace AiPainter.Adapters.StableDiffusion.SdBackendClients.WebUI.SdApiClientStuff;
 
 [Serializable]
 class SdGenerationResponse

@@ -1,4 +1,4 @@
-﻿namespace AiPainter.Adapters.StableDiffusion.SdApiClientStuff;
+﻿namespace AiPainter.Adapters.StableDiffusion.SdBackendClients.WebUI.SdApiClientStuff;
 
 [Serializable]
 abstract class SdBaseGenerationRequest
@@ -59,6 +59,6 @@ abstract class SdBaseGenerationRequest
     public bool? override_settings_restore_afterwards { get; set; } = null;
 
     ////////////////////////////////////////////////////////////////////////////////
-    
+
     public abstract SdBaseGenerationRequest Clone();
 }

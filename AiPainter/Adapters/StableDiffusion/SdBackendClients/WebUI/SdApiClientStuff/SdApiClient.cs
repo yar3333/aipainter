@@ -4,7 +4,7 @@ using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
 using AiPainter.Helpers;
 
-namespace AiPainter.Adapters.StableDiffusion.SdApiClientStuff;
+namespace AiPainter.Adapters.StableDiffusion.SdBackendClients.WebUI.SdApiClientStuff;
 
 static class SdApiClient
 {
@@ -26,10 +26,10 @@ static class SdApiClient
     {
         request = request.Clone();
         request.n_iter = 1;
-        
+
         return await runWithProgressAsync<SdGenerationResponse?>("sdapi/v1/img2img", request, onProgress);
     }
-    
+
     public static async Task<string?> interrogateAsync(SdInterrogateRequest request)
     {
         try
@@ -41,11 +41,11 @@ static class SdApiClient
             return null;
         }
     }
-    
+
     public static async Task<SdExtraImageResponse?> extraImageAsync(SdExtraImageRequest request, Action<int> onProgress)
     {
         inProcess = true;
-        StableDiffusionProcess.OnUpscaleProgress += onProgress;
+        WebUiProcess.OnUpscaleProgress += onProgress;
         try
         {
             return await postAsync<SdExtraImageResponse?>("sdapi/v1/extra-single-image", request);
@@ -56,11 +56,11 @@ static class SdApiClient
         }
         finally
         {
-            StableDiffusionProcess.OnUpscaleProgress -= onProgress;
+            WebUiProcess.OnUpscaleProgress -= onProgress;
             inProcess = false;
         }
     }
-    
+
     private static async Task<T?> runWithProgressAsync<T>(string url, object request, Action<int> onProgress) where T : class?
     {
         inProcess = true;
@@ -109,7 +109,7 @@ static class SdApiClient
         Task.Run(async () =>
         {
             var startTime = DateTime.UtcNow;
-            
+
             await DelayTools.WaitForExitAsync(1000, cancellationToken);
 
             while (inProcess && !cancellationToken.IsCancellationRequested)
@@ -131,7 +131,7 @@ static class SdApiClient
                             break;
                     }
 
-                    
+
                 }
                 catch (Exception e)
                 {

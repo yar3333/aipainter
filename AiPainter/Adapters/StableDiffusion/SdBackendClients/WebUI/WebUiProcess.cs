@@ -1,14 +1,14 @@
 using System.Diagnostics;
 using System.Text.RegularExpressions;
-using AiPainter.Adapters.StableDiffusion.SdApiClientStuff;
+using AiPainter.Adapters.StableDiffusion.SdBackendClients.WebUI.SdApiClientStuff;
 using AiPainter.Helpers;
 
-namespace AiPainter.Adapters.StableDiffusion;
+namespace AiPainter.Adapters.StableDiffusion.SdBackendClients.WebUI;
 
-static class StableDiffusionProcess
+static class WebUiProcess
 {
     private static Process? process;
-    
+
     public static bool Running { get; private set; }
     public static string ActiveCheckpointFilePath { get; private set; } = "";
     public static string ActiveVaeFilePath { get; private set; } = "";
@@ -47,23 +47,23 @@ static class StableDiffusionProcess
 
         var pathToLoraDir = Path.Join(Application.StartupPath, "stable_diffusion_lora");
         var pathToEmbeddingsDir = Path.Join(Application.StartupPath, "stable_diffusion_embeddings");
-        
+
         process = ProcessHelper.RunInBackground
         (
             "run.bat",
             string.Join(' ', new[]
-            { 
+            {
                 "--api",
-                (uri.Host != "127.0.0.1" && uri.Host.ToLowerInvariant() != "localhost" ? "--listen" : ""),
+                uri.Host != "127.0.0.1" && uri.Host.ToLowerInvariant() != "localhost" ? "--listen" : "",
                 "--port=" + uri.Port,
                 "--ckpt=\"" + checkpointFilePath + "\"",
                 !string.IsNullOrEmpty(vaeFilePath) ? " --vae-path=\"" + vaeFilePath + "\"" : "",
                 "--lora-dir=\"" + pathToLoraDir + "\"",
                 "--embeddings-dir=\"" + pathToEmbeddingsDir + "\"",
             }.Where(x => !string.IsNullOrEmpty(x))),
-            
+
             directory: Path.Join(Application.StartupPath, @"external\StableDiffusion"),
-            
+
             logFunc: s =>
             {
                 if (s != null)
@@ -73,7 +73,7 @@ static class StableDiffusionProcess
                     if (m.Success) OnUpscaleProgress?.Invoke(int.Parse(m.Groups[1].Value));
                 }
             },
-            
+
             onExit: code =>
             {
                 Running = false;
@@ -88,7 +88,7 @@ static class StableDiffusionProcess
     {
         Running = false;
 
-        try { process?.Kill(true); } catch {}
-        try { process?.WaitForExit(); } catch {}
+        try { process?.Kill(true); } catch { }
+        try { process?.WaitForExit(); } catch { }
     }
 }

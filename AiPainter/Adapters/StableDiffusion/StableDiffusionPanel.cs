@@ -1,5 +1,5 @@
 ﻿using System.Text.RegularExpressions;
-using AiPainter.Adapters.StableDiffusion.SdApiClientStuff;
+using AiPainter.Adapters.StableDiffusion.SdBackendClients;
 using AiPainter.Adapters.StableDiffusion.SdCheckpointStuff;
 using AiPainter.Adapters.StableDiffusion.SdEmbeddingStuff;
 using AiPainter.Adapters.StableDiffusion.SdLoraStuff;
@@ -370,11 +370,7 @@ namespace AiPainter.Adapters.StableDiffusion
             
             Task.Run(async () =>
             {
-                var result = await SdApiClient.interrogateAsync(new SdInterrogateRequest
-                {
-                    image = BitmapTools.GetBase64String(croppedImage),
-                    //model = "model_base_caption_capfilt_large",
-                });
+                var result = await SdInterrogater.RunAsync(croppedImage);
 
                 Invoke(() =>
                 {

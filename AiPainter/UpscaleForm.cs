@@ -1,7 +1,7 @@
 ﻿using System.Drawing.Imaging;
 using AiPainter.Controls;
 using AiPainter.Helpers;
-using AiPainter.Adapters.StableDiffusion.SdApiClientStuff;
+using AiPainter.Adapters.StableDiffusion.SdBackendClients;
 
 namespace AiPainter;
 
@@ -33,30 +33,17 @@ public class UpscaleForm
             await generationList.RunGenerationAsSoonAsPossibleAsync(() => dialog.LabelText = "Waiting generation queue paused...", async () =>
             {
                 dialog.LabelText = "Upscaling " + resizeFactor + "x using " + upscaler + "...";
-            
-                var cancelCalled = false;
-                
-                var request = new SdExtraImageRequest
-                {
-                    upscaler_1 = upscaler,
-                    upscaling_resize = resizeFactor,
-                    image = imageBase64,
-                };
-                var r = await SdApiClient.extraImageAsync(request, percent =>
-                {
-                    dialog.ProgressValue = percent;
-                    if (!cancelCalled && cancellationTokenSource.IsCancellationRequested)
-                    {
-                        cancelCalled = true;
-                        SdApiClient.Cancel();
-                    }
-                });
-            
-                if (!cancellationTokenSource.IsCancellationRequested && r?.image != null)
-                {
-                    var image = BitmapTools.FromBase64(r.image);
-                    image.Save(ResultFilePath, ImageFormat.Png);
-                }
+
+                var image = await SdUpscaler.RunAsync
+                (
+                    upscaler, 
+                    resizeFactor, 
+                    imageBase64, 
+                    percent => dialog.ProgressValue = percent, 
+                    cancellationTokenSource
+                );
+                image?.Save(ResultFilePath, ImageFormat.Png);
+
             }, cancellationTokenSource.Token);
         });
     }

@@ -1,11 +1,10 @@
 ﻿using AiPainter.Helpers;
 using System.Text.RegularExpressions;
-using AiPainter.Adapters.StableDiffusion.SdApiClientStuff;
-using AiPainter.Adapters.StableDiffusion.SdGeneratorStuff.ExceptionsAndHelpers;
+using AiPainter.Adapters.StableDiffusion.SdBackendClients.WebUI.SdApiClientStuff;
 
-namespace AiPainter.Adapters.StableDiffusion.SdGeneratorStuff;
+namespace AiPainter.Adapters.StableDiffusion.SdBackendClients.WebUI;
 
-class SdGeneratorInpaint : SdGeneratorBase
+class SdGeneratorInpaint : ISdGenerator
 {
     private readonly SdGenerationParameters sdGenerationParameters;
     private readonly SdGenerationListItem control;
@@ -26,7 +25,7 @@ class SdGeneratorInpaint : SdGeneratorBase
         this.originalFilePath = originalFilePath;
     }
 
-    public override async Task<bool> RunAsync()
+    public async Task<bool> RunAsync()
     {
         var wasProgressShown = false;
         var isCheckpointSuccess = await SdGeneratorHelper.PrepareCheckpointAsync
@@ -61,7 +60,7 @@ class SdGeneratorInpaint : SdGeneratorBase
             sampler_index = sdGenerationParameters.sampler,
 
             // looks like webui use 'fill' as default if mask specified, so force to use 'original'
-            inpainting_fill = sdGenerationParameters.inpaintingFill ?? SdInpaintingFill.original, 
+            inpainting_fill = sdGenerationParameters.inpaintingFill ?? SdInpaintingFill.original,
             denoising_strength = sdGenerationParameters.changesLevel,
 
             override_settings = new SdSettings
@@ -93,6 +92,11 @@ class SdGeneratorInpaint : SdGeneratorBase
         return true;
     }
 
+    public void Cancel()
+    {
+        Task.Run(SdApiClient.Cancel);
+    }
+    
     private void processGenerationResult(Bitmap resultImage, long seed)
     {
         try

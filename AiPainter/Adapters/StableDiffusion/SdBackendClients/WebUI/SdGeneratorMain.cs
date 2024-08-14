@@ -1,11 +1,9 @@
 ﻿using AiPainter.Helpers;
-using AiPainter.Adapters.StableDiffusion.SdApiClientStuff;
-using AiPainter.Adapters.StableDiffusion.SdCheckpointStuff;
-using AiPainter.Adapters.StableDiffusion.SdGeneratorStuff.ExceptionsAndHelpers;
+using AiPainter.Adapters.StableDiffusion.SdBackendClients.WebUI.SdApiClientStuff;
 
-namespace AiPainter.Adapters.StableDiffusion.SdGeneratorStuff;
+namespace AiPainter.Adapters.StableDiffusion.SdBackendClients.WebUI;
 
-class SdGeneratorMain : SdGeneratorBase
+class SdGeneratorMain : ISdGenerator
 {
     private readonly SdGenerationParameters sdGenerationParameters;
     private readonly SdGenerationListItem control;
@@ -20,7 +18,7 @@ class SdGeneratorMain : SdGeneratorBase
         this.destDir = destDir;
     }
 
-    public override async Task<bool> RunAsync()
+    public async Task<bool> RunAsync()
     {
         var wasProgressShown = false;
         var isCheckpointSuccess = await SdGeneratorHelper.PrepareCheckpointAsync
@@ -78,6 +76,10 @@ class SdGeneratorMain : SdGeneratorBase
         return true;
     }
 
+    public void Cancel()
+    {
+        Task.Run(SdApiClient.Cancel);
+    }
 
     private void processGenerationResult(Bitmap resultImage, long seed)
     {

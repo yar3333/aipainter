@@ -1,5 +1,4 @@
-﻿using AiPainter.Adapters.StableDiffusion.SdGeneratorStuff;
-using AiPainter.Adapters.StableDiffusion.SdGeneratorStuff.ExceptionsAndHelpers;
+﻿using AiPainter.Adapters.StableDiffusion.SdBackendClients;
 using AiPainter.Controls;
 using AiPainter.Helpers;
 
@@ -20,7 +19,7 @@ namespace AiPainter.Adapters.StableDiffusion
         private int lastNumIterationsValue;
 
         private readonly SdGenerationParameters sdGenerationParameters;
-        private readonly SdGeneratorBase generator;
+        private readonly ISdGenerator generator;
 
         private readonly string? savedFilePath;
         private readonly Primitive[] savedMask;
@@ -78,13 +77,13 @@ namespace AiPainter.Adapters.StableDiffusion
             
             if (!sdPanel.cbUseInitImage.Checked)
             {
-                generator = new SdGeneratorMain(sdGenerationParameters, this, mainForm.ImagesFolder);
+                generator = SdGeneratorFactory.CreateGeneratorMain(sdGenerationParameters, this, mainForm.ImagesFolder);
             }
             else
             {
                 savedActiveBox = pictureBox.ActiveBox;
                 savedOriginalImage = BitmapTools.Clone(pictureBox.Image!);
-                generator = new SdGeneratorInpaint
+                generator = SdGeneratorFactory.CreateGeneratorInpaint
                 (
                     sdGenerationParameters,
                     this,

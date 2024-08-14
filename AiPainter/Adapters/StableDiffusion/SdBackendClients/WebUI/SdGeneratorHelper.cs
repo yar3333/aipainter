@@ -2,7 +2,7 @@
 using AiPainter.Adapters.StableDiffusion.SdVaeStuff;
 using AiPainter.Helpers;
 
-namespace AiPainter.Adapters.StableDiffusion.SdGeneratorStuff.ExceptionsAndHelpers;
+namespace AiPainter.Adapters.StableDiffusion.SdBackendClients.WebUI;
 
 static class SdGeneratorHelper
 {
@@ -19,33 +19,33 @@ static class SdGeneratorHelper
                        ?? SdCheckpointsHelper.GetPathToVae(checkpointName)
                        ?? "";
 
-        if (Program.Config.UseEmbeddedStableDiffusion && StableDiffusionProcess.Running)
+        if (Program.Config.UseEmbeddedStableDiffusion && WebUiProcess.Running)
         {
-            if (StableDiffusionProcess.ActiveCheckpointFilePath != checkpointFilePath || StableDiffusionProcess.ActiveVaeFilePath != vaeFilePath)
+            if (WebUiProcess.ActiveCheckpointFilePath != checkpointFilePath || WebUiProcess.ActiveVaeFilePath != vaeFilePath)
             {
                 progress("Stopping...");
-                StableDiffusionProcess.Stop();
-                while (StableDiffusionProcess.IsReady())
+                WebUiProcess.Stop();
+                while (WebUiProcess.IsReady())
                 {
                     if (await DelayTools.WaitForExitAsync(500) || wantToCancel()) return false;
                 }
             }
         }
 
-        if (Program.Config.UseEmbeddedStableDiffusion && !StableDiffusionProcess.Running)
+        if (Program.Config.UseEmbeddedStableDiffusion && !WebUiProcess.Running)
         {
             progress("Starting...");
-            StableDiffusionProcess.Start(checkpointFilePath, vaeFilePath);
-            while (!StableDiffusionProcess.IsReady())
+            WebUiProcess.Start(checkpointFilePath, vaeFilePath);
+            while (!WebUiProcess.IsReady())
             {
                 if (await DelayTools.WaitForExitAsync(500) || wantToCancel()) return false;
             }
         }
 
-        if (!StableDiffusionProcess.IsReady())
+        if (!WebUiProcess.IsReady())
         {
             progress("Waiting ready...");
-            while (!StableDiffusionProcess.IsReady())
+            while (!WebUiProcess.IsReady())
             {
                 if (await DelayTools.WaitForExitAsync(500) || wantToCancel()) return false;
             }

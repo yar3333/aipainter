@@ -1,4 +1,4 @@
-﻿namespace AiPainter.Adapters.StableDiffusion.SdApiClientStuff;
+﻿namespace AiPainter.Adapters.StableDiffusion.SdBackendClients.WebUI.SdApiClientStuff;
 
 class SdApiException : Exception
 {

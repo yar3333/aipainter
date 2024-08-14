@@ -1,4 +1,4 @@
-﻿namespace AiPainter.Adapters.StableDiffusion.SdGeneratorStuff.ExceptionsAndHelpers;
+﻿namespace AiPainter.Adapters.StableDiffusion.SdBackendClients;
 
 class SdGeneratorFatalErrorException : Exception
 {
