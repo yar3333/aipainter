@@ -1,10 +1,10 @@
 ﻿using System.Text.Json;
 using System.Text.Json.Nodes;
-using AiPainter.Helpers;
-using AiPainter.Adapters.StableDiffusion.SdBackends.ComfyUI.SdApiClientStuff;
+using System.Text.RegularExpressions;
 using AiPainter.Adapters.StableDiffusion.SdBackends.ComfyUI.WorkflowNodes;
 using AiPainter.Adapters.StableDiffusion.SdCheckpointStuff;
 using AiPainter.Adapters.StableDiffusion.SdVaeStuff;
+using AiPainter.Adapters.StableDiffusion.SdEmbeddingStuff;
 
 namespace AiPainter.Adapters.StableDiffusion.SdBackends.ComfyUI;
 
@@ -62,11 +62,15 @@ class ComfyUiGeneratorMain : ISdGenerator
         var response = await SdApiClient.txt2imgAsync(parameters, onProgress: step => control.NotifyProgress(step));*/
 
         var seed = sdGenerationParameters.seed > 0 ? sdGenerationParameters.seed : random.NextInt64(1, uint.MaxValue);
-        var loras = SdPromptNormalizer.GetUsedLoras(sdGenerationParameters.prompt, out var promptWoLoras);
+        var loras = SdPromptNormalizer.GetUsedLoras(sdGenerationParameters.prompt, out var prompt);
+        foreach (var embedding in getActiveEmbeddingNames())
+        {
+            prompt = Regex.Replace(prompt, @"\b" + Regex.Escape(embedding) + @"\b", "embedding:$0");
+        }
         
         var client = await ComfyUiApiClient.ConnectAsync();
 
-        var workflow = JsonSerializer.Deserialize<JsonObject>(File.ReadAllText(Path.Join(Application.StartupPath, "ComfyWorkflowTemplates\\txt2img_api.json")))!;
+        var workflow = JsonSerializer.Deserialize<JsonObject>(File.ReadAllText(Path.Join(Application.StartupPath, "ComfyWorkflowTemplates\\txt2img.json")))!;
 
         // KSampler
         {
@@ -74,7 +78,7 @@ class ComfyUiGeneratorMain : ISdGenerator
             inputs["seed"] = JsonValue.Create(seed);
             inputs["steps"] = JsonValue.Create(sdGenerationParameters.steps);
             inputs["cfg"] = JsonValue.Create(sdGenerationParameters.cfgScale);
-            inputs["sampler_name"] = JsonValue.Create(ComfyNamesHelper.GetSamplerName(sdGenerationParameters.sampler));
+            inputs["sampler_name"] = JsonValue.Create(ComfyUiNamesHelper.GetSamplerName(sdGenerationParameters.sampler));
             //inputs["scheduler"] = JsonValue.Create("normal"); // karras
             //inputs["denoise"] = JsonValue.Create(1.0);
         }
@@ -95,21 +99,30 @@ class ComfyUiGeneratorMain : ISdGenerator
         // CLIPTextEncode (positive)
         {
             var inputs = workflow["6"]!.AsObject()["inputs"]!.AsObject();
-            inputs["text"] = JsonValue.Create(promptWoLoras);
+            inputs["text"] = JsonValue.Create(prompt);
         }        
         
         // CLIPTextEncode (negative)
         {
             var inputs = workflow["7"]!.AsObject()["inputs"]!.AsObject();
             inputs["text"] = JsonValue.Create(sdGenerationParameters.negative);
-        }        
+        }
+
+        if (sdGenerationParameters.clipSkip > 0)
+        {
+            // CLIPSetLastLayer
+            {
+                var inputs = workflow["13"]!.AsObject()["inputs"]!.AsObject();
+                inputs["stop_at_clip_layer"] = JsonValue.Create(-sdGenerationParameters.clipSkip);
+            }
+        }
         
         // VAEDecode
         {
             var inputs = workflow["8"]!.AsObject()["inputs"]!.AsObject();
             inputs["vae"] = string.IsNullOrEmpty(sdGenerationParameters.vaeName)
-                ? JsonSerializer.SerializeToNode(ComfyNodeOutputHelper.CheckpointLoaderSimple_vae("4"))
-                : JsonSerializer.SerializeToNode(ComfyNodeOutputHelper.VAELoader_vae("11"));
+                ? JsonSerializer.SerializeToNode(ComfyUiNodeOutputHelper.CheckpointLoaderSimple_vae("4"))
+                : JsonSerializer.SerializeToNode(ComfyUiNodeOutputHelper.VAELoader_vae("11"));
         }
 
         if (!string.IsNullOrEmpty(sdGenerationParameters.vaeName))
@@ -158,16 +171,16 @@ class ComfyUiGeneratorMain : ISdGenerator
 
     private static void createLoraNodes(Dictionary<string, decimal> loras, int startNodeId, JsonObject workflow)
     {
-        var parentModel = ComfyNodeOutputHelper.CheckpointLoaderSimple_model("4");
-        var parentClip = ComfyNodeOutputHelper.CheckpointLoaderSimple_clip("4");
+        var parentModel = ComfyUiNodeOutputHelper.CheckpointLoaderSimple_model("4");
+        var parentClip = ComfyUiNodeOutputHelper.CLIPSetLastLayer_clip("13");
 
         foreach (var lora in loras)
         {
             var loraNode = createLoraNode(parentModel, parentClip, lora.Key, lora.Value);
             workflow.Add(startNodeId.ToString(), loraNode);
 
-            parentModel = ComfyNodeOutputHelper.LoraLoader_model(startNodeId.ToString());
-            parentClip = ComfyNodeOutputHelper.LoraLoader_clip(startNodeId.ToString());
+            parentModel = ComfyUiNodeOutputHelper.LoraLoader_model(startNodeId.ToString());
+            parentClip = ComfyUiNodeOutputHelper.LoraLoader_clip(startNodeId.ToString());
 
             startNodeId++;
         }
@@ -193,7 +206,7 @@ class ComfyUiGeneratorMain : ISdGenerator
 
     private static JsonObject createLoraNode(object[] parentModel, object[] parentClip, string lora_name, decimal weight)
     {
-        return (JsonObject)JsonSerializer.SerializeToNode(ComfyNode.Create(new LoraLoaderInputs
+        return (JsonObject)JsonSerializer.SerializeToNode(ComfyUiNode.Create(new LoraLoaderInputs
         {
             model = parentModel,
             clip = parentClip,
@@ -201,5 +214,13 @@ class ComfyUiGeneratorMain : ISdGenerator
             strength_model = weight,
             strength_clip = weight,
         }))!;
+    }
+
+    private static string[] getActiveEmbeddingNames()
+    {
+        return SdEmbeddingHelper.GetNames()
+                                .Where(x => SdEmbeddingHelper.GetPathToModel(x) != null
+                                         && SdEmbeddingHelper.IsEnabled(x))
+                                .ToArray();
     }
 }

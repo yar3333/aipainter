@@ -1,6 +1,5 @@
 ﻿using AiPainter.Helpers;
 using System.Text.RegularExpressions;
-using AiPainter.Adapters.StableDiffusion.SdBackends.ComfyUI.SdApiClientStuff;
 
 namespace AiPainter.Adapters.StableDiffusion.SdBackends.ComfyUI;
 
@@ -27,7 +26,7 @@ class ComfyUiGeneratorInpaint : ISdGenerator
 
     public async Task<bool> RunAsync()
     {
-        var wasProgressShown = false;
+        /*var wasProgressShown = false;
         var isCheckpointSuccess = await WebUiGeneratorHelper.PrepareCheckpointAsync
         (
             false,
@@ -68,7 +67,7 @@ class ComfyUiGeneratorInpaint : ISdGenerator
                 CLIP_stop_at_last_layers = sdGenerationParameters.clipSkip
             }
         };
-        var response = await SdApiClient.img2imgAsync(parameters, onProgress: step => control.NotifyProgress(step));
+        var response = await SdApiClient.img2imgAsync(parameters, onProgress: step => control.NotifyProgress(step));*/
 
         if (response == null)
         {
@@ -94,7 +93,7 @@ class ComfyUiGeneratorInpaint : ISdGenerator
 
     public void Cancel()
     {
-        Task.Run(SdApiClient.Cancel);
+        Task.Run(async () => await ComfyUiApiClient.interrupt());
     }
     
     private void processGenerationResult(Bitmap resultImage, long seed)

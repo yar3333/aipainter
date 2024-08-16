@@ -1,6 +1,6 @@
 ﻿namespace AiPainter.Adapters.StableDiffusion.SdBackends.ComfyUI;
 
-enum ComfyNodeType
+enum ComfyUiNodeType
 {
     KSampler,
     CheckpointLoaderSimple,

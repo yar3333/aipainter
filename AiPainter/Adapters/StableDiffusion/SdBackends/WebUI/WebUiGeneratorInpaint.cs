@@ -68,7 +68,7 @@ class WebUiGeneratorInpaint : ISdGenerator
                 CLIP_stop_at_last_layers = sdGenerationParameters.clipSkip
             }
         };
-        var response = await SdApiClient.img2imgAsync(parameters, onProgress: step => control.NotifyProgress(step));
+        var response = await WebUiApiClient.img2imgAsync(parameters, onProgress: step => control.NotifyProgress(step));
 
         if (response == null)
         {
@@ -94,7 +94,7 @@ class WebUiGeneratorInpaint : ISdGenerator
 
     public void Cancel()
     {
-        Task.Run(SdApiClient.Cancel);
+        Task.Run(WebUiApiClient.Cancel);
     }
     
     private void processGenerationResult(Bitmap resultImage, long seed)
@@ -108,7 +108,7 @@ class WebUiGeneratorInpaint : ISdGenerator
         }
         catch (Exception ee)
         {
-            SdApiClient.Log.WriteLine(ee.ToString());
+            WebUiApiClient.Log.WriteLine(ee.ToString());
         }
     }
 

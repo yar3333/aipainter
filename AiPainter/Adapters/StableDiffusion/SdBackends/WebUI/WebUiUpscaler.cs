@@ -15,13 +15,13 @@ static class WebUiUpscaler
             upscaling_resize = resizeFactor,
             image = imageBase64,
         };
-        var r = await SdApiClient.extraImageAsync(request, percent =>
+        var r = await WebUiApiClient.extraImageAsync(request, percent =>
         {
             progressPercent(percent);
             if (!cancelCalled && cancellationTokenSource.IsCancellationRequested)
             {
                 cancelCalled = true;
-                SdApiClient.Cancel();
+                WebUiApiClient.Cancel();
             }
         });
 

@@ -2,11 +2,12 @@
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
+using AiPainter.Adapters.StableDiffusion.SdBackends.WebUI.SdApiClientStuff;
 using AiPainter.Helpers;
 
-namespace AiPainter.Adapters.StableDiffusion.SdBackends.WebUI.SdApiClientStuff;
+namespace AiPainter.Adapters.StableDiffusion.SdBackends.WebUI;
 
-static class SdApiClient
+static class WebUiApiClient
 {
     public static readonly Log Log = new("StableDiffusion_WebUI");
 

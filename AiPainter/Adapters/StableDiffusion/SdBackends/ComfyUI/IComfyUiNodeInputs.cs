@@ -6,6 +6,6 @@ using System.Threading.Tasks;
 
 namespace AiPainter.Adapters.StableDiffusion.SdBackends.ComfyUI;
 
-interface IComfyNodeInputs
+interface IComfyUiNodeInputs
 {
 }

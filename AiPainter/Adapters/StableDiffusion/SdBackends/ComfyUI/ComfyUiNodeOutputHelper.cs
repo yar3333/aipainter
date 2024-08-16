@@ -1,6 +1,6 @@
 ﻿namespace AiPainter.Adapters.StableDiffusion.SdBackends.ComfyUI;
 
-static class ComfyNodeOutputHelper
+static class ComfyUiNodeOutputHelper
 {
     public static object[] CheckpointLoaderSimple_model(string nodeId)
     {
@@ -30,5 +30,10 @@ static class ComfyNodeOutputHelper
     public static object[] LoraLoader_clip(string nodeId)
     {
         return new object[] { nodeId, 1 };
+    }
+
+    public static object[] CLIPSetLastLayer_clip(string nodeId)
+    {
+        return new object[] { nodeId, 0 };
     }
 }

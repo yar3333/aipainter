@@ -1,14 +1,14 @@
 ﻿using System.Net.Http.Json;
 using System.Net.WebSockets;
-using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
+using AiPainter.Adapters.StableDiffusion.SdBackends.ComfyUI.SdApiClientStuff;
 using AiPainter.Helpers;
 
 //using System.Web;
 
-namespace AiPainter.Adapters.StableDiffusion.SdBackends.ComfyUI.SdApiClientStuff;
+namespace AiPainter.Adapters.StableDiffusion.SdBackends.ComfyUI;
 
 class ComfyUiApiClient
 {
@@ -38,12 +38,12 @@ class ComfyUiApiClient
 
     private async Task<PromptResponse> queue_prompt(object prompt)
     {
-        return await postAsync<PromptResponse>("prompt", new { prompt = prompt, client_id = client_id });
-    }    
-    
+        return await postAsync<PromptResponse>("prompt", new { prompt, client_id });
+    }
+
     public static async Task interrupt()
     {
-        await postAsync<JsonObject>("interrupt", new {});
+        await postAsync<JsonObject>("interrupt", new { });
     }
 
     /*public static async Task<string> get_image(string filename, string subfolder, string folder_type)
@@ -100,7 +100,7 @@ class ComfyUiApiClient
 
         return output_images.ToArray();
     }
-    
+
     private static async Task<T> postAsync<T>(string url, object request)
     {
         using var httpClient = new HttpClient(new LoggerHttpClientHandler(Log))

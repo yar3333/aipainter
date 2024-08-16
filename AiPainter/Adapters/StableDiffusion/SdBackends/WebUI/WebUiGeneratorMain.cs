@@ -52,7 +52,7 @@ class WebUiGeneratorMain : ISdGenerator
                 CLIP_stop_at_last_layers = sdGenerationParameters.clipSkip
             }
         };
-        var response = await SdApiClient.txt2imgAsync(parameters, onProgress: step => control.NotifyProgress(step));
+        var response = await WebUiApiClient.txt2imgAsync(parameters, onProgress: step => control.NotifyProgress(step));
 
         if (response == null)
         {
@@ -69,7 +69,7 @@ class WebUiGeneratorMain : ISdGenerator
             return false;
         }
 
-        SdGeneratorHelper.SaveMain(SdApiClient.Log, sdGenerationParameters, response.infoParsed.seed, destDir, BitmapTools.FromBase64(response.images[0]));
+        SdGeneratorHelper.SaveMain(WebUiApiClient.Log, sdGenerationParameters, response.infoParsed.seed, destDir, BitmapTools.FromBase64(response.images[0]));
 
         control.NotifyProgress(sdGenerationParameters.steps);
 
@@ -78,6 +78,6 @@ class WebUiGeneratorMain : ISdGenerator
 
     public void Cancel()
     {
-        Task.Run(SdApiClient.Cancel);
+        Task.Run(WebUiApiClient.Cancel);
     }
 }

@@ -1,6 +1,6 @@
 ﻿namespace AiPainter.Adapters.StableDiffusion.SdBackends.ComfyUI.WorkflowNodes;
 
-class KSamplerInputs : IComfyNodeInputs
+class KSamplerInputs : IComfyUiNodeInputs
 {
     public long seed { get; set; } // 278559787642457,
     public int steps { get; set; } // 20,

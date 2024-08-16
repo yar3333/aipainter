@@ -1,6 +1,5 @@
 using System.Diagnostics;
 using System.Text.RegularExpressions;
-using AiPainter.Adapters.StableDiffusion.SdBackends.ComfyUI.SdApiClientStuff;
 using AiPainter.Helpers;
 
 namespace AiPainter.Adapters.StableDiffusion.SdBackends.ComfyUI;
@@ -22,7 +21,7 @@ static class ComfyUiProcess
 
     public static void Start()
     {
-        var log = SdApiClient.Log;
+        var log = ComfyUiApiClient.Log;
 
         if (!Program.Config.UseEmbeddedStableDiffusion) return;
 

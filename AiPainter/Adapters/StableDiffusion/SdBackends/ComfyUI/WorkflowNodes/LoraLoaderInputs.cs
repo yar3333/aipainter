@@ -1,6 +1,6 @@
 ﻿namespace AiPainter.Adapters.StableDiffusion.SdBackends.ComfyUI.WorkflowNodes;
 
-class LoraLoaderInputs : IComfyNodeInputs
+class LoraLoaderInputs : IComfyUiNodeInputs
 {
     public object[] model { get; set; }
     public object[] clip { get; set; }

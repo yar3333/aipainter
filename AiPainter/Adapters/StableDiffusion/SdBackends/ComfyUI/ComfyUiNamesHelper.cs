@@ -1,6 +1,6 @@
 ﻿namespace AiPainter.Adapters.StableDiffusion.SdBackends.ComfyUI;
 
-static class ComfyNamesHelper
+static class ComfyUiNamesHelper
 {
     public static string GetSamplerName(string humanName)
     {

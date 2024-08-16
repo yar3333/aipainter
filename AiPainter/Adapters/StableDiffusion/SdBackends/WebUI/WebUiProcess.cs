@@ -1,6 +1,5 @@
 using System.Diagnostics;
 using System.Text.RegularExpressions;
-using AiPainter.Adapters.StableDiffusion.SdBackends.WebUI.SdApiClientStuff;
 using AiPainter.Helpers;
 
 namespace AiPainter.Adapters.StableDiffusion.SdBackends.WebUI;
@@ -22,7 +21,7 @@ static class WebUiProcess
 
     public static void Start(string? checkpointFilePath, string? vaeFilePath)
     {
-        var log = SdApiClient.Log;
+        var log = WebUiApiClient.Log;
 
         if (!Program.Config.UseEmbeddedStableDiffusion || checkpointFilePath == null) return;
 
