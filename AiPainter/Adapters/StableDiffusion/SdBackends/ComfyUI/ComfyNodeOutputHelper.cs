@@ -13,4 +13,9 @@ static class ComfyNodeOutputHelper
     {
         return new JsonArray(JsonValue.Create(nodeId), JsonValue.Create(2));
     }
+    
+    public static JsonArray VAELoader_vae(string nodeId)
+    {
+        return new JsonArray(JsonValue.Create(nodeId), JsonValue.Create(0));
+    }
 }

@@ -4,6 +4,7 @@ using AiPainter.Helpers;
 using AiPainter.Adapters.StableDiffusion.SdBackends.ComfyUI.SdApiClientStuff;
 using AiPainter.Adapters.StableDiffusion.SdBackends.ComfyUI.WorkflowNodes;
 using AiPainter.Adapters.StableDiffusion.SdCheckpointStuff;
+using AiPainter.Adapters.StableDiffusion.SdVaeStuff;
 
 namespace AiPainter.Adapters.StableDiffusion.SdBackends.ComfyUI;
 
@@ -64,7 +65,7 @@ class ComfyUiGeneratorMain : ISdGenerator
 
         var client = await ComfyUiApiClient.ConnectAsync();
 
-        var workflow = JsonSerializer.Deserialize<JsonObject>(File.ReadAllText(Path.Join(Application.StartupPath, "ComfyWorkflowTemplates\\txt2img.json")))!;
+        var workflow = JsonSerializer.Deserialize<JsonObject>(File.ReadAllText(Path.Join(Application.StartupPath, "ComfyWorkflowTemplates\\txt2img_api.json")))!;
 
         // KSampler
         {
@@ -105,7 +106,18 @@ class ComfyUiGeneratorMain : ISdGenerator
         // VAEDecode
         {
             var inputs = workflow["8"]!.AsObject()["inputs"]!.AsObject();
-            inputs["vae"] = ComfyNodeOutputHelper.CheckpointLoaderSimple_vae("4");
+            inputs["vae"] = string.IsNullOrEmpty(sdGenerationParameters.vaeName)
+                ? ComfyNodeOutputHelper.CheckpointLoaderSimple_vae("4")
+                : ComfyNodeOutputHelper.VAELoader_vae("11");
+        }
+
+        if (!string.IsNullOrEmpty(sdGenerationParameters.vaeName))
+        {
+            // VAELoader
+            {
+                var inputs = workflow["11"]!.AsObject()["inputs"]!.AsObject();
+                inputs["vae_name"] = SdVaeHelper.GetPathToVae(sdGenerationParameters.vaeName);
+            }
         }
 
         var images = await client.RunPromptAsync(workflow);
@@ -115,9 +127,6 @@ class ComfyUiGeneratorMain : ISdGenerator
             control.NotifyProgress(sdGenerationParameters.steps);
             throw new SdGeneratorFatalErrorException("ERROR");
         }
-
-        // SD not ready, need retry later
-        //if (response.images == null) throw new SdGeneratorNeedRetryException();
 
         if (control.IsWantToCancelProcessingResultOfCurrentGeneration)
         {

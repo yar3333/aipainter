@@ -4,7 +4,7 @@
       "seed": 278559787642457,
       "steps": 20,
       "cfg": 8,
-      "sampler_name": "dpmpp_2m",
+      "sampler_name": "euler_ancestral",
       "scheduler": "normal",
       "denoise": 1,
       "model": [
