@@ -120,4 +120,14 @@
     <EditorConfigFiles Remove="C:\MyProg\AiPainter\AiPainter\.editorconfig" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="ComfyWorkflowTemplates\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="ComfyWorkflowTemplates\txt2img.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

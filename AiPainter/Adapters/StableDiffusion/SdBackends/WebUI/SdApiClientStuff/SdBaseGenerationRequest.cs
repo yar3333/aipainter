@@ -25,7 +25,7 @@ abstract class SdBaseGenerationRequest
     ('DPM2 Karras', 'sample_dpm_2', ['k_dpm_2_ka'], {'scheduler': 'karras'}),
     ('DPM2 a Karras', 'sample_dpm_2_ancestral', ['k_dpm_2_a_ka'], {'scheduler': 'karras'}),
      */
-    public string sampler_index { get; set; } = "Euler";
+    public string sampler_index { get; set; } = "Euler a";
 
     public decimal cfg_scale { get; set; } = new(7.5);
 

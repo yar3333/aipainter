@@ -8,7 +8,7 @@ namespace AiPainter.Adapters.StableDiffusion.SdBackends.WebUI.SdApiClientStuff;
 
 static class SdApiClient
 {
-    public static readonly Log Log = new("StableDiffusion");
+    public static readonly Log Log = new("StableDiffusion_WebUI");
 
     private static bool inProcess;
 

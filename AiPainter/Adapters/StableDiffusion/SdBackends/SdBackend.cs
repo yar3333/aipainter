@@ -12,7 +12,7 @@ static class SdBackend
                 switch (Program.Config.StableDiffusionBackend)
                 {
                     case "ComfyUI":
-                        instance = new WebUI.WebUiBackend();
+                        instance = new ComfyUI.ComfyUiBackend();
                         break;
 
                     default:

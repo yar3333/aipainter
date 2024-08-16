@@ -69,7 +69,7 @@ class WebUiGeneratorMain : ISdGenerator
             return false;
         }
 
-        processGenerationResult(BitmapTools.FromBase64(response.images[0]), response.infoParsed.seed);
+        SdGeneratorHelper.SaveMain(SdApiClient.Log, sdGenerationParameters, response.infoParsed.seed, destDir, BitmapTools.FromBase64(response.images[0]));
 
         control.NotifyProgress(sdGenerationParameters.steps);
 
@@ -79,20 +79,5 @@ class WebUiGeneratorMain : ISdGenerator
     public void Cancel()
     {
         Task.Run(SdApiClient.Cancel);
-    }
-
-    private void processGenerationResult(Bitmap resultImage, long seed)
-    {
-        try
-        {
-            if (!Directory.Exists(destDir)) Directory.CreateDirectory(destDir);
-            var destImageFilePath = Path.Combine(destDir, DateTime.UtcNow.Ticks / 10000 + ".png");
-            SdPngHelper.Save(resultImage, sdGenerationParameters, seed, destImageFilePath);
-            resultImage.Dispose();
-        }
-        catch (Exception ee)
-        {
-            SdApiClient.Log.WriteLine(ee.ToString());
-        }
     }
 }
