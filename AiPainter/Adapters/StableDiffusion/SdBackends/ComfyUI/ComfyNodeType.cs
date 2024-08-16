@@ -9,4 +9,5 @@ enum ComfyNodeType
     VAEDecode,
     SaveImage,
     SaveImageWebsocket,
+    LoraLoader,
 }

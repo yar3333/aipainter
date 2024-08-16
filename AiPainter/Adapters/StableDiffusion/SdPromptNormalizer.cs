@@ -63,6 +63,14 @@ static class SdPromptNormalizer
         return GetNormalizedPhrases(Parse(text));
     }
 
+    public static Dictionary<string, decimal> GetUsedLoras(string prompt, out string promptWoLoras)
+    {
+        var r = Regex.Matches(prompt, @"<lora:([^:>]+)(?:[:]([^>]+))?[>]")
+                     .ToDictionary(x => x.Groups[1].Value, x => decimal.Parse(x.Groups[2].Value, CultureInfo.InvariantCulture));
+        promptWoLoras = Regex.Replace(prompt, @"<lora:([^:>]+)(?:[:]([^>]+))?[>]", "");
+        return r;
+    }
+
     private static decimal detectWeight(string text, int index)
     {
         return 1.0m;

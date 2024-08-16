@@ -1,6 +1,4 @@
-﻿using System.Text.Json.Nodes;
-
-namespace AiPainter.Adapters.StableDiffusion.SdBackends.ComfyUI.WorkflowNodes;
+﻿namespace AiPainter.Adapters.StableDiffusion.SdBackends.ComfyUI.WorkflowNodes;
 
 class KSamplerInputs : IComfyNodeInputs
 {
@@ -10,8 +8,8 @@ class KSamplerInputs : IComfyNodeInputs
     public string sampler_name { get; set; } // "euler",
     public string scheduler { get; set; } // "normal",
     public decimal denoise { get; set; } // 1,
-    public JsonValue[] model { get; set; } // [ "4", 0 ],
-    public JsonValue[] positive { get; set; } // [ "6", 0 ],
-    public JsonValue[] negative { get; set; } // [ "7", 0 ],
-    public JsonValue[] latent_image { get; set; } // [ "5", 0 ]
+    public object[] model { get; set; } // [ "4", 0 ],
+    public object[] positive { get; set; } // [ "6", 0 ],
+    public object[] negative { get; set; } // [ "7", 0 ],
+    public object[] latent_image { get; set; } // [ "5", 0 ]
 }

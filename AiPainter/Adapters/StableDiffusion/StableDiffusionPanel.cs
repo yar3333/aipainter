@@ -326,9 +326,7 @@ namespace AiPainter.Adapters.StableDiffusion
 
         public string[] GetUsedLoras()
         {
-            return Regex.Matches(tbPrompt.Text, @"<lora:([^:>]+)[:>]")
-                        .Select(x => x.Groups[1].Value)
-                        .ToArray();
+            return SdPromptNormalizer.GetUsedLoras(tbPrompt.Text, out _).Keys.ToArray(); 
         }
 
         private void ddCheckpoint_DropDown(object sender, EventArgs e)

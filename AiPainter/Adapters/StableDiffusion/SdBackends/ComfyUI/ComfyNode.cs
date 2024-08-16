@@ -20,6 +20,7 @@ class ComfyNode
         if (inputs is CLIPTextEncodeInputs) return ComfyNodeType.CLIPTextEncode;
         if (inputs is EmptyLatentImageInputs) return ComfyNodeType.EmptyLatentImage;
         if (inputs is KSamplerInputs) return ComfyNodeType.KSampler;
+        if (inputs is LoraLoaderInputs) return ComfyNodeType.LoraLoader;
         if (inputs is SaveImageInputs) return ComfyNodeType.SaveImage;
         if (inputs is SaveImageWebsocketInputs) return ComfyNodeType.SaveImageWebsocket;
         if (inputs is VAEDecodeInputs) return ComfyNodeType.VAEDecode;

@@ -62,7 +62,8 @@ class ComfyUiGeneratorMain : ISdGenerator
         var response = await SdApiClient.txt2imgAsync(parameters, onProgress: step => control.NotifyProgress(step));*/
 
         var seed = sdGenerationParameters.seed > 0 ? sdGenerationParameters.seed : random.NextInt64(1, uint.MaxValue);
-
+        var loras = SdPromptNormalizer.GetUsedLoras(sdGenerationParameters.prompt, out var promptWoLoras);
+        
         var client = await ComfyUiApiClient.ConnectAsync();
 
         var workflow = JsonSerializer.Deserialize<JsonObject>(File.ReadAllText(Path.Join(Application.StartupPath, "ComfyWorkflowTemplates\\txt2img_api.json")))!;
@@ -94,7 +95,7 @@ class ComfyUiGeneratorMain : ISdGenerator
         // CLIPTextEncode (positive)
         {
             var inputs = workflow["6"]!.AsObject()["inputs"]!.AsObject();
-            inputs["text"] = JsonValue.Create(sdGenerationParameters.prompt);
+            inputs["text"] = JsonValue.Create(promptWoLoras);
         }        
         
         // CLIPTextEncode (negative)
@@ -107,8 +108,8 @@ class ComfyUiGeneratorMain : ISdGenerator
         {
             var inputs = workflow["8"]!.AsObject()["inputs"]!.AsObject();
             inputs["vae"] = string.IsNullOrEmpty(sdGenerationParameters.vaeName)
-                ? ComfyNodeOutputHelper.CheckpointLoaderSimple_vae("4")
-                : ComfyNodeOutputHelper.VAELoader_vae("11");
+                ? JsonSerializer.SerializeToNode(ComfyNodeOutputHelper.CheckpointLoaderSimple_vae("4"))
+                : JsonSerializer.SerializeToNode(ComfyNodeOutputHelper.VAELoader_vae("11"));
         }
 
         if (!string.IsNullOrEmpty(sdGenerationParameters.vaeName))
@@ -119,6 +120,8 @@ class ComfyUiGeneratorMain : ISdGenerator
                 inputs["vae_name"] = SdVaeHelper.GetPathToVae(sdGenerationParameters.vaeName);
             }
         }
+
+        createLoraNodes(loras, 1000, workflow);
 
         var images = await client.RunPromptAsync(workflow);
 
@@ -134,7 +137,14 @@ class ComfyUiGeneratorMain : ISdGenerator
             return false;
         }
 
-        SdGeneratorHelper.SaveMain(ComfyUiApiClient.Log, sdGenerationParameters, seed, destDir, images[0]);
+        SdGeneratorHelper.SaveMain
+        (
+            ComfyUiApiClient.Log, 
+            sdGenerationParameters, 
+            seed, 
+            destDir, 
+            images[0]
+        );
 
         control.NotifyProgress(sdGenerationParameters.steps);
 
@@ -143,6 +153,53 @@ class ComfyUiGeneratorMain : ISdGenerator
 
     public void Cancel()
     {
-        //Task.Run(SdApiClient.Cancel);
+        Task.Run(async () => await ComfyUiApiClient.interrupt());
+    }
+
+    private static void createLoraNodes(Dictionary<string, decimal> loras, int startNodeId, JsonObject workflow)
+    {
+        var parentModel = ComfyNodeOutputHelper.CheckpointLoaderSimple_model("4");
+        var parentClip = ComfyNodeOutputHelper.CheckpointLoaderSimple_clip("4");
+
+        foreach (var lora in loras)
+        {
+            var loraNode = createLoraNode(parentModel, parentClip, lora.Key, lora.Value);
+            workflow.Add(startNodeId.ToString(), loraNode);
+
+            parentModel = ComfyNodeOutputHelper.LoraLoader_model(startNodeId.ToString());
+            parentClip = ComfyNodeOutputHelper.LoraLoader_clip(startNodeId.ToString());
+
+            startNodeId++;
+        }
+
+        // CLIPTextEncode (positive)
+        {
+            var inputs = workflow["6"]!.AsObject()["inputs"]!.AsObject();
+            inputs["clip"] = JsonSerializer.SerializeToNode(parentClip);
+        }        
+        
+        // CLIPTextEncode (negative)
+        {
+            var inputs = workflow["7"]!.AsObject()["inputs"]!.AsObject();
+            inputs["clip"] = JsonSerializer.SerializeToNode(parentClip);
+        }
+        
+        // KSampler
+        {
+            var inputs = workflow["3"]!.AsObject()["inputs"]!.AsObject();
+            inputs["model"] = JsonSerializer.SerializeToNode(parentModel);
+        }
+    }
+
+    private static JsonObject createLoraNode(object[] parentModel, object[] parentClip, string lora_name, decimal weight)
+    {
+        return (JsonObject)JsonSerializer.SerializeToNode(ComfyNode.Create(new LoraLoaderInputs
+        {
+            model = parentModel,
+            clip = parentClip,
+            lora_name = lora_name,
+            strength_model = weight,
+            strength_clip = weight,
+        }))!;
     }
 }

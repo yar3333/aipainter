@@ -2,7 +2,10 @@
 using System.Net.WebSockets;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
+using AiPainter.Helpers;
+
 //using System.Web;
 
 namespace AiPainter.Adapters.StableDiffusion.SdBackends.ComfyUI.SdApiClientStuff;
@@ -36,6 +39,11 @@ class ComfyUiApiClient
     private async Task<PromptResponse> queue_prompt(object prompt)
     {
         return await postAsync<PromptResponse>("prompt", new { prompt = prompt, client_id = client_id });
+    }    
+    
+    public static async Task interrupt()
+    {
+        await postAsync<JsonObject>("interrupt", new {});
     }
 
     /*public static async Task<string> get_image(string filename, string subfolder, string folder_type)
@@ -62,7 +70,7 @@ class ComfyUiApiClient
         var done = false;
         while (!done)
         {
-            await receiveMessageAsync
+            await ws.ReceiveMessageAsync
             (
                 str =>
                 {
@@ -124,42 +132,4 @@ class ComfyUiApiClient
         var raw = await httpClient.GetAsync(url);
         return await raw.Content.ReadAsStringAsync();
     }*/
-
-    private async Task receiveMessageAsync(Action<string> onTextMessage, Action<byte[]> onBinaryMessage)
-    {
-        try
-        {
-            using var ms = new MemoryStream();
-
-            while (ws.State == WebSocketState.Open)
-            {
-                WebSocketReceiveResult result;
-                do 
-                {
-                    var messageBuffer = WebSocket.CreateClientBuffer(1024, 16);
-                    result = await ws.ReceiveAsync(messageBuffer, CancellationToken.None);
-                    ms.Write(messageBuffer.Array!, messageBuffer.Offset, result.Count);
-                }
-                while (!result.EndOfMessage);
-
-                switch (result.MessageType)
-                {
-                    case WebSocketMessageType.Text:
-                        onTextMessage(Encoding.UTF8.GetString(ms.ToArray()));
-                        break;
-
-                    case WebSocketMessageType.Binary:
-                        onBinaryMessage(ms.ToArray());
-                        break;
-                        
-                }
-                ms.Seek(0, SeekOrigin.Begin);
-                ms.Position = 0;
-            }
-        } 
-        catch (InvalidOperationException)
-        {
-            Log.WriteLine("[WS] Tried to receive message while already reading one.");
-        }
-    }
 }

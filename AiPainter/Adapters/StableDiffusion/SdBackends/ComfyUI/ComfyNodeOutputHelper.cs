@@ -1,21 +1,34 @@
-﻿using System.Text.Json.Nodes;
-
-namespace AiPainter.Adapters.StableDiffusion.SdBackends.ComfyUI;
+﻿namespace AiPainter.Adapters.StableDiffusion.SdBackends.ComfyUI;
 
 static class ComfyNodeOutputHelper
 {
-    public static JsonArray CheckpointLoaderSimple_clip(string nodeId)
+    public static object[] CheckpointLoaderSimple_model(string nodeId)
     {
-        return new JsonArray(JsonValue.Create(nodeId), JsonValue.Create(1));
+        return new object[] { nodeId, 0 };
+    }       
+    
+    public static object[] CheckpointLoaderSimple_clip(string nodeId)
+    {
+        return new object[] { nodeId, 1 };
     }    
     
-    public static JsonArray CheckpointLoaderSimple_vae(string nodeId)
+    public static object[] CheckpointLoaderSimple_vae(string nodeId)
     {
-        return new JsonArray(JsonValue.Create(nodeId), JsonValue.Create(2));
+        return new object[] { nodeId, 2 };
     }
     
-    public static JsonArray VAELoader_vae(string nodeId)
+    public static object[] VAELoader_vae(string nodeId)
     {
-        return new JsonArray(JsonValue.Create(nodeId), JsonValue.Create(0));
+        return new object[] { nodeId, 0 };
+    }
+
+    public static object[] LoraLoader_model(string nodeId)
+    {
+        return new object[] { nodeId, 0 };
+    }
+
+    public static object[] LoraLoader_clip(string nodeId)
+    {
+        return new object[] { nodeId, 1 };
     }
 }
