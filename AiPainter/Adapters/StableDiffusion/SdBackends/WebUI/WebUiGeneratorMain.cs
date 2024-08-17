@@ -69,7 +69,7 @@ class WebUiGeneratorMain : ISdGenerator
             return false;
         }
 
-        SdGeneratorHelper.SaveMain(WebUiApiClient.Log, sdGenerationParameters, response.infoParsed.seed, destDir, BitmapTools.FromBase64(response.images[0]));
+        SdGeneratorHelper.SaveMain(sdGenerationParameters, response.infoParsed.seed, destDir, BitmapTools.FromBase64(response.images[0]));
 
         control.NotifyProgress(sdGenerationParameters.steps);
 

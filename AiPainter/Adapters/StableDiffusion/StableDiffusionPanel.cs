@@ -224,6 +224,12 @@ namespace AiPainter.Adapters.StableDiffusion
             ddImageSize.Text = w + "x" + h;
         }
 
+        public void GetImageSize(out int w, out int h)
+        {
+            w = int.Parse(ddImageSize.Text.Split("x")[0]);
+            h = int.Parse(ddImageSize.Text.Split("x")[1]);
+        }
+
         public void LoadParametersToSdGenerationPanel(SdGenerationParameters sdGenerationParameters)
         {
             selectedCheckpointName = sdGenerationParameters.checkpointName;

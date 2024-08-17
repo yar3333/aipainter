@@ -34,6 +34,8 @@ namespace AiPainter.Adapters.StableDiffusion
             this.pictureBox = pictureBox;
             this.mainForm = mainForm;
 
+            sdPanel.GetImageSize(out var width, out var height);
+
             sdGenerationParameters = new SdGenerationParameters
             {
                 checkpointName = sdPanel.selectedCheckpointName,
@@ -47,8 +49,8 @@ namespace AiPainter.Adapters.StableDiffusion
                 seed = sdPanel.cbUseSeed.Checked && sdPanel.tbSeed.Text.Trim() != "" ? long.Parse(sdPanel.tbSeed.Text.Trim()) : -1,
                 seedVariationStrength = sdPanel.trackBarSeedVariationStrength.Value / 100m,
 
-                width = int.Parse(sdPanel.ddImageSize.SelectedItem.ToString()!.Split("x")[0]),
-                height = int.Parse(sdPanel.ddImageSize.SelectedItem.ToString()!.Split("x")[1]),
+                width = width,
+                height = height,
                 sampler = sdPanel.ddSampler.SelectedItem.ToString()!,
                 changesLevel = sdPanel.cbUseInitImage.Checked ? sdPanel.trackBarChangesLevel.Value / 100.0m : -1,
                 inpaintingFill = sdPanel.cbUseInitImage.Checked ? sdPanel.selectedInpaintingFill : null,

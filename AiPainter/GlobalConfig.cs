@@ -36,7 +36,7 @@ class GlobalConfig
 
     public string ImagesFolder { get; set; } = "images";
 
-    public string StableDiffusionBackend { get; set; } = "WebUI"; // or "ComfyUI"
+    public string StableDiffusionBackend { get; set; } = "ComfyUI"; // "WebUI" or "ComfyUI"
     public bool UseEmbeddedStableDiffusion { get; set; } = true;
     public string StableDiffusionUrl { get; set; } = "http://127.0.0.1:7860/";
     public string StableDiffusionCheckpoint { get; set; } = "";

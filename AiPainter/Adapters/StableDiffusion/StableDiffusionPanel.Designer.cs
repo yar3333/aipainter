@@ -548,7 +548,7 @@
         private ToolTip toolTip;
         public TextBox tbNegative;
         private ComboBox ddCheckpoint;
-        public ComboBox ddImageSize;
+        private ComboBox ddImageSize;
         private Label label4;
         private Button btCheckpoint;
         public ComboBox ddSampler;

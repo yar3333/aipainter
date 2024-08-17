@@ -86,7 +86,7 @@ class ComfyUiGeneratorMain : ISdGenerator
         // CheckpointLoaderSimple
         {
             var inputs = workflow["4"]!.AsObject()["inputs"]!.AsObject();
-            inputs["ckpt_name"] = JsonValue.Create(SdCheckpointsHelper.GetPathToMainCheckpoint(sdGenerationParameters.checkpointName)!);
+            inputs["ckpt_name"] = JsonValue.Create(Path.GetRelativePath(SdCheckpointsHelper.BaseDir, SdCheckpointsHelper.GetPathToMainCheckpoint(sdGenerationParameters.checkpointName)!));
         }
 
         // EmptyLatentImage
@@ -136,28 +136,21 @@ class ComfyUiGeneratorMain : ISdGenerator
 
         createLoraNodes(loras, 1000, workflow);
 
-        var images = await client.RunPromptAsync(workflow);
-
+        var images = await client.RunPromptAsync(workflow, "10", step => control.NotifyProgress(step));
+        
+        if (control.IsWantToCancelProcessingResultOfCurrentGeneration)
+        {
+            control.NotifyProgress(sdGenerationParameters.steps);
+            return false;
+        }
+        
         if (images == null || images.Length == 0)
         {
             control.NotifyProgress(sdGenerationParameters.steps);
             throw new SdGeneratorFatalErrorException("ERROR");
         }
 
-        if (control.IsWantToCancelProcessingResultOfCurrentGeneration)
-        {
-            control.NotifyProgress(sdGenerationParameters.steps);
-            return false;
-        }
-
-        SdGeneratorHelper.SaveMain
-        (
-            ComfyUiApiClient.Log, 
-            sdGenerationParameters, 
-            seed, 
-            destDir, 
-            images[0]
-        );
+        SdGeneratorHelper.SaveMain(sdGenerationParameters, seed, destDir, images[0]);
 
         control.NotifyProgress(sdGenerationParameters.steps);
 
