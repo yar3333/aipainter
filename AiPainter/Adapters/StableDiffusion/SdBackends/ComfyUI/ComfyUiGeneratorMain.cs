@@ -74,63 +74,87 @@ class ComfyUiGeneratorMain : ISdGenerator
 
         // KSampler
         {
-            var inputs = workflow["3"]!.AsObject()["inputs"]!.AsObject();
-            inputs["seed"] = JsonValue.Create(seed);
-            inputs["steps"] = JsonValue.Create(sdGenerationParameters.steps);
-            inputs["cfg"] = JsonValue.Create(sdGenerationParameters.cfgScale);
-            inputs["sampler_name"] = JsonValue.Create(ComfyUiNamesHelper.GetSamplerName(sdGenerationParameters.sampler));
-            //inputs["scheduler"] = JsonValue.Create("normal"); // karras
-            //inputs["denoise"] = JsonValue.Create(1.0);
+            var node = (KSamplerInputs)WorkflowHelper.DeserializeNode(workflow, "3");
+            
+            node.seed = seed;
+            node.steps = sdGenerationParameters.steps;
+            node.cfg = sdGenerationParameters.cfgScale;
+            node.sampler_name = ComfyUiNamesHelper.GetSamplerName(sdGenerationParameters.sampler);
+            //node.scheduler = "normal"; // karras
+            //node.denoise = 1.0;
+
+            WorkflowHelper.SerializeNode(node, workflow);
         }
                 
         // CheckpointLoaderSimple
         {
-            var inputs = workflow["4"]!.AsObject()["inputs"]!.AsObject();
-            inputs["ckpt_name"] = JsonValue.Create(Path.GetRelativePath(SdCheckpointsHelper.BaseDir, SdCheckpointsHelper.GetPathToMainCheckpoint(sdGenerationParameters.checkpointName)!));
+            var node = (CheckpointLoaderSimpleInputs)WorkflowHelper.DeserializeNode(workflow, "4");
+            
+            node.ckpt_name = Path.GetRelativePath(SdCheckpointsHelper.BaseDir, SdCheckpointsHelper.GetPathToMainCheckpoint(sdGenerationParameters.checkpointName)!);
+
+            WorkflowHelper.SerializeNode(node, workflow);
         }
 
         // EmptyLatentImage
         {
-            var inputs = workflow["5"]!.AsObject()["inputs"]!.AsObject();
-            inputs["width"]  = JsonValue.Create(sdGenerationParameters.width);
-            inputs["height"] = JsonValue.Create(sdGenerationParameters.height);
+            var node = (EmptyLatentImageInputs)WorkflowHelper.DeserializeNode(workflow, "5");
+
+            node.width  = sdGenerationParameters.width;
+            node.height = sdGenerationParameters.height;
+
+            WorkflowHelper.SerializeNode(node, workflow);
         }
 
         // CLIPTextEncode (positive)
         {
-            var inputs = workflow["6"]!.AsObject()["inputs"]!.AsObject();
-            inputs["text"] = JsonValue.Create(prompt);
+            var node = (CLIPTextEncodeInputs)WorkflowHelper.DeserializeNode(workflow, "6");
+
+            node.text = prompt;
+
+            WorkflowHelper.SerializeNode(node, workflow);
         }        
         
         // CLIPTextEncode (negative)
         {
-            var inputs = workflow["7"]!.AsObject()["inputs"]!.AsObject();
-            inputs["text"] = JsonValue.Create(sdGenerationParameters.negative);
+            var node = (CLIPTextEncodeInputs)WorkflowHelper.DeserializeNode(workflow, "7");
+
+            node.text = sdGenerationParameters.negative;
+
+            WorkflowHelper.SerializeNode(node, workflow);
         }
 
         if (sdGenerationParameters.clipSkip > 0)
         {
             // CLIPSetLastLayer
             {
-                var inputs = workflow["13"]!.AsObject()["inputs"]!.AsObject();
-                inputs["stop_at_clip_layer"] = JsonValue.Create(-sdGenerationParameters.clipSkip);
+                var node = (CLIPSetLastLayerInputs)WorkflowHelper.DeserializeNode(workflow, "13");
+
+                node.stop_at_clip_layer = -sdGenerationParameters.clipSkip;
+
+                WorkflowHelper.SerializeNode(node, workflow);
             }
         }
         
         // VAEDecode
         {
-            var inputs = workflow["8"]!.AsObject()["inputs"]!.AsObject();
-            inputs["vae"] = string.IsNullOrEmpty(sdGenerationParameters.vaeName)
-                ? JsonSerializer.SerializeToNode(ComfyUiNodeOutputHelper.CheckpointLoaderSimple_vae("4"))
-                : JsonSerializer.SerializeToNode(ComfyUiNodeOutputHelper.VAELoader_vae("11"));
+            var node = (VAEDecodeInputs)WorkflowHelper.DeserializeNode(workflow, "8");
+
+            node.vae = string.IsNullOrEmpty(sdGenerationParameters.vaeName)
+                                ? ComfyUiNodeOutputHelper.CheckpointLoaderSimple_vae("4")
+                                : ComfyUiNodeOutputHelper.VAELoader_vae("11");
+
+            WorkflowHelper.SerializeNode(node, workflow);
         }
 
         if (!string.IsNullOrEmpty(sdGenerationParameters.vaeName))
         {
             // VAELoader
             {
-                var inputs = workflow["11"]!.AsObject()["inputs"]!.AsObject();
-                inputs["vae_name"] = SdVaeHelper.GetPathToVae(sdGenerationParameters.vaeName);
+                var node = (VAELoaderInputs)WorkflowHelper.DeserializeNode(workflow, "11");
+
+                node.vae_name = sdGenerationParameters.vaeName;
+
+                WorkflowHelper.SerializeNode(node, workflow);
             }
         }
 
@@ -169,11 +193,19 @@ class ComfyUiGeneratorMain : ISdGenerator
 
         foreach (var lora in loras)
         {
-            var loraNode = createLoraNode(parentModel, parentClip, lora.Key, lora.Value);
-            workflow.Add(startNodeId.ToString(), loraNode);
+            var loraNode = new LoraLoaderInputs
+            {
+                Id = startNodeId.ToString(),
+                model = parentModel,
+                clip = parentClip,
+                lora_name = lora.Key,
+                strength_model = lora.Value,
+                strength_clip = lora.Value,
+            };
+            WorkflowHelper.SerializeNode(loraNode, workflow);
 
-            parentModel = ComfyUiNodeOutputHelper.LoraLoader_model(startNodeId.ToString());
-            parentClip = ComfyUiNodeOutputHelper.LoraLoader_clip(startNodeId.ToString());
+            parentModel = ComfyUiNodeOutputHelper.LoraLoader_model(loraNode.Id);
+            parentClip = ComfyUiNodeOutputHelper.LoraLoader_clip(loraNode.Id);
 
             startNodeId++;
         }
@@ -195,18 +227,6 @@ class ComfyUiGeneratorMain : ISdGenerator
             var inputs = workflow["3"]!.AsObject()["inputs"]!.AsObject();
             inputs["model"] = JsonSerializer.SerializeToNode(parentModel);
         }
-    }
-
-    private static JsonObject createLoraNode(object[] parentModel, object[] parentClip, string lora_name, decimal weight)
-    {
-        return (JsonObject)JsonSerializer.SerializeToNode(ComfyUiNode.Create(new LoraLoaderInputs
-        {
-            model = parentModel,
-            clip = parentClip,
-            lora_name = lora_name,
-            strength_model = weight,
-            strength_clip = weight,
-        }))!;
     }
 
     private static string[] getActiveEmbeddingNames()
