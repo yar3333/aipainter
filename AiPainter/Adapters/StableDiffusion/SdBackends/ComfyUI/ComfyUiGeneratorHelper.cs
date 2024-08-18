@@ -2,6 +2,7 @@
 using AiPainter.Adapters.StableDiffusion.SdBackends.ComfyUI.WorkflowNodes;
 using AiPainter.Adapters.StableDiffusion.SdCheckpointStuff;
 using AiPainter.Adapters.StableDiffusion.SdEmbeddingStuff;
+using AiPainter.Adapters.StableDiffusion.SdVaeStuff;
 
 namespace AiPainter.Adapters.StableDiffusion.SdBackends.ComfyUI;
 
@@ -11,6 +12,7 @@ static class ComfyUiGeneratorHelper
     {
         // subseed_strength = sdGenerationParameters.seedVariationStrength
 
+        var vaeName = getVaeNameForUse(sdGenerationParameters);
         var loras = SdPromptNormalizer.GetUsedLoras(sdGenerationParameters.prompt, out var prompt);
         prompt = fixEmbeddingsInPrompt(prompt);
 
@@ -42,13 +44,14 @@ static class ComfyUiGeneratorHelper
         nodeCLIPSetLastLayer.stop_at_clip_layer = sdGenerationParameters.clipSkip > 0 ? -sdGenerationParameters.clipSkip : -1;
         
         // VAELoader
-        var nodeVAELoader = string.IsNullOrEmpty(sdGenerationParameters.vaeName)
+        var nodeVAELoader = string.IsNullOrEmpty(vaeName)
                                 ? null
                                 : new VAELoaderNode
                                 {
                                     Id = "nodeVAELoader",
-                                    vae_name = sdGenerationParameters.vaeName,
+                                    vae_name = vaeName,
                                 };
+        if (nodeVAELoader != null) workflow.Add(nodeVAELoader);
 
         // VAEDecode
         var nodeVAEDecode = (VAEDecodeNode)workflow.Single(x => x.Id == "nodeVAEDecode");
@@ -95,7 +98,7 @@ static class ComfyUiGeneratorHelper
         return loraNode;
     }
 
-    static string fixEmbeddingsInPrompt(string prompt)
+    private static string fixEmbeddingsInPrompt(string prompt)
     {
         foreach (var embedding in getActiveEmbeddingNames())
         {
@@ -110,5 +113,16 @@ static class ComfyUiGeneratorHelper
                                 .Where(x => SdEmbeddingHelper.GetPathToModel(x) != null
                                          && SdEmbeddingHelper.IsEnabled(x))
                                 .ToArray();
+    }
+
+    private static string getVaeNameForUse(SdGenerationParameters sdGenerationParameters)
+    {
+        var r = SdVaeHelper.GetPathToVae(sdGenerationParameters.vaeName);
+        if (r != null) return Path.GetRelativePath(SdVaeHelper.BaseDir, r);
+
+        r = SdCheckpointsHelper.GetPathToVae(sdGenerationParameters.checkpointName);
+        if (r != null) return Path.GetRelativePath(SdCheckpointsHelper.BaseDir, r);
+
+        return "";
     }
 }

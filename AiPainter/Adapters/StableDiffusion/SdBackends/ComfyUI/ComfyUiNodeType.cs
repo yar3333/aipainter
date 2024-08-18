@@ -5,16 +5,17 @@ namespace AiPainter.Adapters.StableDiffusion.SdBackends.ComfyUI;
 [JsonConverter(typeof(JsonStringEnumConverter))]
 enum ComfyUiNodeType
 {
-    KSampler,
     CheckpointLoaderSimple,
-    EmptyLatentImage,
-    CLIPTextEncode,
     CLIPSetLastLayer,
-    VAEDecode,
+    CLIPTextEncode,
+    EmptyLatentImage,
+    ETN_LoadImageBase64,
+    ETN_LoadMaskBase64,
+    KSampler,
+    LoraLoader,
     SaveImage,
     SaveImageWebsocket,
-    LoraLoader,
-    ETN_LoadImageBase64,
+    VAEDecode,
     VAEEncodeForInpaint,
-    ETN_LoadMaskBase64,
+    VAELoader,
 }

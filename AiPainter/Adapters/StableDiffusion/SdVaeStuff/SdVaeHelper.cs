@@ -4,7 +4,7 @@ namespace AiPainter.Adapters.StableDiffusion.SdVaeStuff;
 
 static class SdVaeHelper
 {
-    static readonly string BaseDir = Path.Join(Application.StartupPath, "stable_diffusion_vae");
+    public static readonly string BaseDir = Path.Join(Application.StartupPath, "stable_diffusion_vae");
 
     static string[] GetNames()
     {

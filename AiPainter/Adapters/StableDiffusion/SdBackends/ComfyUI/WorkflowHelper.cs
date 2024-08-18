@@ -22,17 +22,18 @@ static class WorkflowHelper
         private static ComfyUiNodeType getTypeByInputs(BaseNode inputs)
         {
             if (inputs is CheckpointLoaderSimpleNode) return ComfyUiNodeType.CheckpointLoaderSimple;
-            if (inputs is CLIPTextEncodeNode) return ComfyUiNodeType.CLIPTextEncode;
             if (inputs is CLIPSetLastLayerNode) return ComfyUiNodeType.CLIPSetLastLayer;
+            if (inputs is CLIPTextEncodeNode) return ComfyUiNodeType.CLIPTextEncode;
             if (inputs is EmptyLatentImageNode) return ComfyUiNodeType.EmptyLatentImage;
+            if (inputs is ETN_LoadImageBase64Node) return ComfyUiNodeType.ETN_LoadImageBase64;
+            if (inputs is ETN_LoadMaskBase64Node) return ComfyUiNodeType.ETN_LoadMaskBase64;
             if (inputs is KSamplerNode) return ComfyUiNodeType.KSampler;
             if (inputs is LoraLoaderNode) return ComfyUiNodeType.LoraLoader;
             if (inputs is SaveImageNode) return ComfyUiNodeType.SaveImage;
             if (inputs is SaveImageWebsocketNode) return ComfyUiNodeType.SaveImageWebsocket;
             if (inputs is VAEDecodeNode) return ComfyUiNodeType.VAEDecode;
-            if (inputs is ETN_LoadImageBase64Node) return ComfyUiNodeType.ETN_LoadImageBase64;
             if (inputs is VAEEncodeForInpaintNode) return ComfyUiNodeType.VAEEncodeForInpaint;
-            if (inputs is ETN_LoadMaskBase64Node) return ComfyUiNodeType.ETN_LoadMaskBase64;
+            if (inputs is VAELoaderNode) return ComfyUiNodeType.VAELoader;
             throw new ArgumentException();
         }
     }
@@ -60,20 +61,28 @@ static class WorkflowHelper
         BaseNode r;
         switch (classType)
         {
-            case ComfyUiNodeType.CLIPTextEncode:
-                r = item["inputs"].Deserialize<CLIPTextEncodeNode>()!;
+            case ComfyUiNodeType.CheckpointLoaderSimple:
+                r = item["inputs"].Deserialize<CheckpointLoaderSimpleNode>()!;
                 break;
 
             case ComfyUiNodeType.CLIPSetLastLayer:
                 r = item["inputs"].Deserialize<CLIPSetLastLayerNode>()!;
                 break;
 
-            case ComfyUiNodeType.CheckpointLoaderSimple:
-                r = item["inputs"].Deserialize<CheckpointLoaderSimpleNode>()!;
+            case ComfyUiNodeType.CLIPTextEncode:
+                r = item["inputs"].Deserialize<CLIPTextEncodeNode>()!;
                 break;
 
             case ComfyUiNodeType.EmptyLatentImage:
                 r = item["inputs"].Deserialize<EmptyLatentImageNode>()!;
+                break;
+
+            case ComfyUiNodeType.ETN_LoadImageBase64:
+                r = item["inputs"].Deserialize<ETN_LoadImageBase64Node>()!;
+                break;
+
+            case ComfyUiNodeType.ETN_LoadMaskBase64:
+                r = item["inputs"].Deserialize<ETN_LoadMaskBase64Node>()!;
                 break;
 
             case ComfyUiNodeType.KSampler:
@@ -88,24 +97,20 @@ static class WorkflowHelper
                 r = item["inputs"].Deserialize<SaveImageNode>()!;
                 break;
 
-            case ComfyUiNodeType.VAEDecode:
-                r = item["inputs"].Deserialize<VAEDecodeNode>()!;
-                break;
-
             case ComfyUiNodeType.SaveImageWebsocket:
                 r = item["inputs"].Deserialize<SaveImageWebsocketNode>()!;
                 break;
 
-            case ComfyUiNodeType.ETN_LoadImageBase64:
-                r = item["inputs"].Deserialize<ETN_LoadImageBase64Node>()!;
+            case ComfyUiNodeType.VAEDecode:
+                r = item["inputs"].Deserialize<VAEDecodeNode>()!;
                 break;
 
             case ComfyUiNodeType.VAEEncodeForInpaint:
                 r = item["inputs"].Deserialize<VAEEncodeForInpaintNode>()!;
                 break;
 
-            case ComfyUiNodeType.ETN_LoadMaskBase64:
-                r = item["inputs"].Deserialize<ETN_LoadMaskBase64Node>()!;
+            case ComfyUiNodeType.VAELoader:
+                r = item["inputs"].Deserialize<VAELoaderNode>()!;
                 break;
 
             default:
