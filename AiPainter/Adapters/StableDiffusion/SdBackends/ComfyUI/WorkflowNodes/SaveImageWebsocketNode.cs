@@ -1,6 +1,6 @@
 ﻿namespace AiPainter.Adapters.StableDiffusion.SdBackends.ComfyUI.WorkflowNodes;
 
-class SaveImageWebsocketInputs : ComfyUiNodeInputs
+class SaveImageWebsocketNode : BaseNode
 {
     public object[] images { get; set; } // [ "8", 0 ],
 }

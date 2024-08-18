@@ -6,7 +6,7 @@ namespace AiPainter.Adapters.StableDiffusion.SdBackends.ComfyUI;
 
 static class WorkflowHelper
 {
-    private class NativeNode<T> where T : ComfyUiNodeInputs
+    /*private class NativeNode<T> where T : ComfyUiNodeInputs
     {
         public T inputs { get; set; }
         public ComfyUiNodeType class_type { get; set; }
@@ -32,11 +32,39 @@ static class WorkflowHelper
             if (inputs is VAEDecodeInputs) return ComfyUiNodeType.VAEDecode;
             throw new ArgumentException();
         }
+    }*/   
+    
+    private class NativeNode2
+    {
+        public object inputs { get; set; }
+        public ComfyUiNodeType class_type { get; set; }
+        public Dictionary<string, string>? _meta { get; set; } // { "title": "KSampler" }
+
+        public NativeNode2(BaseNode inputs)
+        {
+            this.class_type = getTypeByInputs(inputs);
+            this.inputs = inputs;
+            this._meta = new Dictionary<string, string> { { "title", class_type.ToString() } };
+        }
+
+        private static ComfyUiNodeType getTypeByInputs(BaseNode inputs)
+        {
+            if (inputs is CheckpointLoaderSimpleNode) return ComfyUiNodeType.CheckpointLoaderSimple;
+            if (inputs is CLIPTextEncodeNode) return ComfyUiNodeType.CLIPTextEncode;
+            if (inputs is CLIPSetLastLayerNode) return ComfyUiNodeType.CLIPSetLastLayer;
+            if (inputs is EmptyLatentImageNode) return ComfyUiNodeType.EmptyLatentImage;
+            if (inputs is KSamplerNode) return ComfyUiNodeType.KSampler;
+            if (inputs is LoraLoaderNode) return ComfyUiNodeType.LoraLoader;
+            if (inputs is SaveImageNode) return ComfyUiNodeType.SaveImage;
+            if (inputs is SaveImageWebsocketNode) return ComfyUiNodeType.SaveImageWebsocket;
+            if (inputs is VAEDecodeNode) return ComfyUiNodeType.VAEDecode;
+            throw new ArgumentException();
+        }
     }
 
-    /*public static List<ComfyUiNodeInputs> DeserializeWorkflow(string jsonStr)
+    public static List<BaseNode> DeserializeWorkflow(string jsonStr)
     {
-        var r = new List<ComfyUiNodeInputs>();
+        var r = new List<BaseNode>();
 
         var workflow = JsonSerializer.Deserialize<JsonObject>(jsonStr)!;
         foreach (var item in workflow)
@@ -45,60 +73,76 @@ static class WorkflowHelper
         }
 
         return r;
-    }*/
+    }
 
-    public static ComfyUiNodeInputs DeserializeNode(JsonObject workflow, string nodeId)
+    public static BaseNode DeserializeNode(JsonObject workflow, string nodeId)
     {
         var item = workflow[nodeId]!.AsObject();
 
-        ComfyUiNodeInputs r;
-        switch (Enum.Parse<ComfyUiNodeType>(item["class_type"]!.ToString()))
+        var classTypeStr = item["class_type"]!.ToString();
+        if (!Enum.TryParse<ComfyUiNodeType>(classTypeStr, out var classType)) throw new InvalidDataException(classTypeStr);
+        
+        BaseNode r;
+        switch (classType)
         {
             case ComfyUiNodeType.CLIPTextEncode:
-                r = item["inputs"].Deserialize<CLIPTextEncodeInputs>()!;
+                r = item["inputs"].Deserialize<CLIPTextEncodeNode>()!;
                 break;
 
             case ComfyUiNodeType.CLIPSetLastLayer:
-                r = item["inputs"].Deserialize<CLIPSetLastLayerInputs>()!;
+                r = item["inputs"].Deserialize<CLIPSetLastLayerNode>()!;
                 break;
 
             case ComfyUiNodeType.CheckpointLoaderSimple:
-                r = item["inputs"].Deserialize<CheckpointLoaderSimpleInputs>()!;
+                r = item["inputs"].Deserialize<CheckpointLoaderSimpleNode>()!;
                 break;
 
             case ComfyUiNodeType.EmptyLatentImage:
-                r = item["inputs"].Deserialize<EmptyLatentImageInputs>()!;
+                r = item["inputs"].Deserialize<EmptyLatentImageNode>()!;
                 break;
 
             case ComfyUiNodeType.KSampler:
-                r = item["inputs"].Deserialize<KSamplerInputs>()!;
+                r = item["inputs"].Deserialize<KSamplerNode>()!;
                 break;
 
             case ComfyUiNodeType.LoraLoader:
-                r = item["inputs"].Deserialize<LoraLoaderInputs>()!;
+                r = item["inputs"].Deserialize<LoraLoaderNode>()!;
                 break;
 
             case ComfyUiNodeType.SaveImage:
-                r = item["inputs"].Deserialize<SaveImageInputs>()!;
+                r = item["inputs"].Deserialize<SaveImageNode>()!;
                 break;
 
             case ComfyUiNodeType.VAEDecode:
-                r = item["inputs"].Deserialize<VAEDecodeInputs>()!;
+                r = item["inputs"].Deserialize<VAEDecodeNode>()!;
                 break;
 
             case ComfyUiNodeType.SaveImageWebsocket:
-                throw new NotImplementedException();
+                r = item["inputs"].Deserialize<SaveImageWebsocketNode>()!;
+                break;
 
             default:
-                throw new NotImplementedException();
+                throw new NotImplementedException(classTypeStr);
         }
+
         r.Id = nodeId;
+
         return r;
     }
 
-    public static void SerializeNode<T>(T node, JsonObject workflow) where T : ComfyUiNodeInputs
+    /*public static void SerializeNode<T>(T node, JsonObject workflow) where T : ComfyUiNodeInputs
     {
         var wrapper = new NativeNode<T>(node);
         workflow[node.Id] = JsonSerializer.SerializeToNode(wrapper);
+    }*/
+
+    public static string SerializeWorkflow(List<BaseNode> workflow)
+    {
+        var nativeWorkflow = new Dictionary<string, NativeNode2>();
+        foreach (var node in workflow)
+        {
+            nativeWorkflow[node.Id] = new NativeNode2(node);
+        }
+        return JsonSerializer.Serialize(nativeWorkflow, Program.DefaultJsonSerializerOptions);
     }
 }
