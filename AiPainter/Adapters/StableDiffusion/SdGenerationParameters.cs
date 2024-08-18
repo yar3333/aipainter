@@ -30,6 +30,10 @@ public class SdGenerationParameters
         {
             r.seed = random.NextInt64(1, uint.MaxValue);
         }
+        else
+        {
+            // TODO: change seed using `seedVariationStrength`
+        }
 
         return r;
     }
