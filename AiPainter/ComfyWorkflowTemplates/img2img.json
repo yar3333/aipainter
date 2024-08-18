@@ -1,0 +1,147 @@
+{
+  "nodeETN_LoadMaskBase64": {
+    "inputs": {
+      "mask": ""
+    },
+    "class_type": "ETN_LoadMaskBase64",
+    "_meta": {
+      "title": "Load Mask (Base64)"
+    }
+  },
+  "nodeETN_LoadImageBase64": {
+    "inputs": {
+      "image": ""
+    },
+    "class_type": "ETN_LoadImageBase64",
+    "_meta": {
+      "title": "Load Image (Base64)"
+    }
+  },
+  "nodeCheckpointLoaderSimple": {
+    "inputs": {
+      "ckpt_name": "StableDiffusion-v1.5\\v1-5-pruned-emaonly.safetensors"
+    },
+    "class_type": "CheckpointLoaderSimple",
+    "_meta": {
+      "title": "Load Checkpoint"
+    }
+  },
+  "nodeCLIPSetLastLayer": {
+    "inputs": {
+      "stop_at_clip_layer": -1,
+      "clip": [
+        "nodeCheckpointLoaderSimple",
+        1
+      ]
+    },
+    "class_type": "CLIPSetLastLayer",
+    "_meta": {
+      "title": "CLIP Set Last Layer"
+    }
+  },
+  "nodeVAEEncodeForInpaint": {
+    "inputs": {
+      "grow_mask_by": 6,
+      "pixels": [
+        "nodeETN_LoadImageBase64",
+        0
+      ],
+      "vae": [
+        "nodeCheckpointLoaderSimple",
+        2
+      ],
+      "mask": [
+        "nodeETN_LoadMaskBase64",
+        0
+      ]
+    },
+    "class_type": "VAEEncodeForInpaint",
+    "_meta": {
+      "title": "VAE Encode (for Inpainting)"
+    }
+  },
+  "nodeCLIPTextEncode_positive": {
+    "inputs": {
+      "text": "beautiful scenery nature glass bottle landscape, , purple galaxy bottle,",
+      "clip": [
+        "nodeCLIPSetLastLayer",
+        0
+      ]
+    },
+    "class_type": "CLIPTextEncode",
+    "_meta": {
+      "title": "CLIP Text Encode (Prompt)"
+    }
+  },
+  "nodeCLIPTextEncode_negative": {
+    "inputs": {
+      "text": "text, watermark",
+      "clip": [
+        "nodeCLIPSetLastLayer",
+        0
+      ]
+    },
+    "class_type": "CLIPTextEncode",
+    "_meta": {
+      "title": "CLIP Text Encode (Prompt)"
+    }
+  },
+  "nodeKSampler": {
+    "inputs": {
+      "seed": 278559787642457,
+      "steps": 20,
+      "cfg": 8,
+      "sampler_name": "euler_ancestral",
+      "scheduler": "normal",
+      "denoise": 1,
+      "model": [
+        "nodeCheckpointLoaderSimple",
+        0
+      ],
+      "positive": [
+        "nodeCLIPTextEncode_positive",
+        0
+      ],
+      "negative": [
+        "nodeCLIPTextEncode_negative",
+        0
+      ],
+      "latent_image": [
+        "nodeVAEEncodeForInpaint",
+        0
+      ]
+    },
+    "class_type": "KSampler",
+    "_meta": {
+      "title": "KSampler"
+    }
+  },
+  "nodeVAEDecode": {
+    "inputs": {
+      "samples": [
+        "nodeKSampler",
+        0
+      ],
+      "vae": [
+        "nodeCheckpointLoaderSimple",
+        2
+      ]
+    },
+    "class_type": "VAEDecode",
+    "_meta": {
+      "title": "VAE Decode"
+    }
+  },
+  "nodeSaveImageWebsocket": {
+    "inputs": {
+      "images": [
+        "nodeVAEDecode",
+        0
+      ]
+    },
+    "class_type": "SaveImageWebsocket",
+    "_meta": {
+      "title": "SaveImageWebsocket"
+    }
+  }
+}

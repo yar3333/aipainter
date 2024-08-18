@@ -7,14 +7,14 @@ namespace AiPainter.Adapters.StableDiffusion.SdBackends.ComfyUI;
 
 static class ComfyUiGeneratorHelper
 {
-    public static List<BaseNode> CreateWorkflow(SdGenerationParameters sdGenerationParameters)
+    public static List<BaseNode> CreateWorkflow(string templateJsonFileName, SdGenerationParameters sdGenerationParameters)
     {
         // subseed_strength = sdGenerationParameters.seedVariationStrength
 
         var loras = SdPromptNormalizer.GetUsedLoras(sdGenerationParameters.prompt, out var prompt);
         prompt = fixEmbeddingsInPrompt(prompt);
 
-        var workflow = WorkflowHelper.DeserializeWorkflow(File.ReadAllText(Path.Join(Application.StartupPath, "ComfyWorkflowTemplates\\txt2img.json")));
+        var workflow = WorkflowHelper.DeserializeWorkflow(File.ReadAllText(Path.Join(Application.StartupPath, "ComfyWorkflowTemplates\\" + templateJsonFileName)));
 
         // KSampler
         var nodeKSampler = (KSamplerNode)workflow.Single(x => x.Id == "nodeKSampler");
@@ -28,11 +28,6 @@ static class ComfyUiGeneratorHelper
         // CheckpointLoaderSimple
         var nodeCheckpointLoaderSimple = (CheckpointLoaderSimpleNode)workflow.Single(x => x.Id == "nodeCheckpointLoaderSimple");
         nodeCheckpointLoaderSimple.ckpt_name = Path.GetRelativePath(SdCheckpointsHelper.BaseDir, SdCheckpointsHelper.GetPathToMainCheckpoint(sdGenerationParameters.checkpointName)!);
-
-        // EmptyLatentImage
-        var nodeEmptyLatentImage = (EmptyLatentImageNode)workflow.Single(x => x.Id == "nodeEmptyLatentImage");
-        nodeEmptyLatentImage.width  = sdGenerationParameters.width;
-        nodeEmptyLatentImage.height = sdGenerationParameters.height;
 
         // CLIPTextEncode (positive)
         var nodeCLIPTextEncode_positive = (CLIPTextEncodeNode)workflow.Single(x => x.Id == "nodeCLIPTextEncode_positive");

@@ -70,7 +70,7 @@ class WebUiGeneratorMain : ISdGenerator
             return false;
         }
 
-        SdGeneratorHelper.SaveMain(sdGenerationParameters, destDir, BitmapTools.FromBase64(response.images[0]));
+        SdGeneratorHelper.SaveMain(sdGenerationParameters, destDir, BitmapTools.FromDataUri(response.images[0]));
 
         control.NotifyProgress(sdGenerationParameters.steps);
 

@@ -18,7 +18,7 @@ public class UpscaleForm
     public UpscaleForm(GenerationList generationList, Bitmap image, string upscaler, int resizeFactor, string resultFilePath)
     {
         this.generationList = generationList;
-        this.imageBase64 = BitmapTools.GetBase64String(image);
+        this.imageBase64 = BitmapTools.ToDataUri(image);
         this.upscaler = upscaler;
         this.resizeFactor = resizeFactor;
         this.ResultFilePath = resultFilePath;

@@ -6,41 +6,13 @@ namespace AiPainter.Adapters.StableDiffusion.SdBackends.ComfyUI;
 
 static class WorkflowHelper
 {
-    /*private class NativeNode<T> where T : ComfyUiNodeInputs
-    {
-        public T inputs { get; set; }
-        public ComfyUiNodeType class_type { get; set; }
-        public Dictionary<string, string>? _meta { get; set; } // { "title": "KSampler" }
-
-        public NativeNode(T inputs)
-        {
-            this.class_type = getTypeByInputs(inputs);
-            this.inputs = inputs;
-            this._meta = new Dictionary<string, string> { { "title", class_type.ToString() } };
-        }
-
-        private static ComfyUiNodeType getTypeByInputs(ComfyUiNodeInputs inputs)
-        {
-            if (inputs is CheckpointLoaderSimpleInputs) return ComfyUiNodeType.CheckpointLoaderSimple;
-            if (inputs is CLIPTextEncodeInputs) return ComfyUiNodeType.CLIPTextEncode;
-            if (inputs is CLIPSetLastLayerInputs) return ComfyUiNodeType.CLIPSetLastLayer;
-            if (inputs is EmptyLatentImageInputs) return ComfyUiNodeType.EmptyLatentImage;
-            if (inputs is KSamplerInputs) return ComfyUiNodeType.KSampler;
-            if (inputs is LoraLoaderInputs) return ComfyUiNodeType.LoraLoader;
-            if (inputs is SaveImageInputs) return ComfyUiNodeType.SaveImage;
-            if (inputs is SaveImageWebsocketInputs) return ComfyUiNodeType.SaveImageWebsocket;
-            if (inputs is VAEDecodeInputs) return ComfyUiNodeType.VAEDecode;
-            throw new ArgumentException();
-        }
-    }*/   
-    
-    private class NativeNode2
+    private class NativeNode
     {
         public object inputs { get; set; }
         public ComfyUiNodeType class_type { get; set; }
         public Dictionary<string, string>? _meta { get; set; } // { "title": "KSampler" }
 
-        public NativeNode2(BaseNode inputs)
+        public NativeNode(BaseNode inputs)
         {
             this.class_type = getTypeByInputs(inputs);
             this.inputs = inputs;
@@ -58,6 +30,9 @@ static class WorkflowHelper
             if (inputs is SaveImageNode) return ComfyUiNodeType.SaveImage;
             if (inputs is SaveImageWebsocketNode) return ComfyUiNodeType.SaveImageWebsocket;
             if (inputs is VAEDecodeNode) return ComfyUiNodeType.VAEDecode;
+            if (inputs is ETN_LoadImageBase64Node) return ComfyUiNodeType.ETN_LoadImageBase64;
+            if (inputs is VAEEncodeForInpaintNode) return ComfyUiNodeType.VAEEncodeForInpaint;
+            if (inputs is ETN_LoadMaskBase64Node) return ComfyUiNodeType.ETN_LoadMaskBase64;
             throw new ArgumentException();
         }
     }
@@ -121,6 +96,18 @@ static class WorkflowHelper
                 r = item["inputs"].Deserialize<SaveImageWebsocketNode>()!;
                 break;
 
+            case ComfyUiNodeType.ETN_LoadImageBase64:
+                r = item["inputs"].Deserialize<ETN_LoadImageBase64Node>()!;
+                break;
+
+            case ComfyUiNodeType.VAEEncodeForInpaint:
+                r = item["inputs"].Deserialize<VAEEncodeForInpaintNode>()!;
+                break;
+
+            case ComfyUiNodeType.ETN_LoadMaskBase64:
+                r = item["inputs"].Deserialize<ETN_LoadMaskBase64Node>()!;
+                break;
+
             default:
                 throw new NotImplementedException(classTypeStr);
         }
@@ -130,18 +117,12 @@ static class WorkflowHelper
         return r;
     }
 
-    /*public static void SerializeNode<T>(T node, JsonObject workflow) where T : ComfyUiNodeInputs
-    {
-        var wrapper = new NativeNode<T>(node);
-        workflow[node.Id] = JsonSerializer.SerializeToNode(wrapper);
-    }*/
-
     public static string SerializeWorkflow(List<BaseNode> workflow)
     {
-        var nativeWorkflow = new Dictionary<string, NativeNode2>();
+        var nativeWorkflow = new Dictionary<string, NativeNode>();
         foreach (var node in workflow)
         {
-            nativeWorkflow[node.Id] = new NativeNode2(node);
+            nativeWorkflow[node.Id] = new NativeNode(node);
         }
         return JsonSerializer.Serialize(nativeWorkflow, Program.DefaultJsonSerializerOptions);
     }

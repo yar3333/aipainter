@@ -51,8 +51,8 @@ class WebUiGeneratorInpaint : ISdGenerator
             seed = sdGenerationParameters.seed,
             subseed_strength = sdGenerationParameters.seedVariationStrength,
 
-            init_images = new[] { BitmapTools.GetBase64String(croppedImage) },
-            mask = croppedMask != null ? BitmapTools.GetBase64String(croppedMask) : null,
+            init_images = new[] { BitmapTools.ToDataUri(croppedImage) },
+            mask = croppedMask != null ? BitmapTools.ToDataUri(croppedMask) : null,
 
             width = croppedImage.Width,
             height = croppedImage.Height,
@@ -85,7 +85,7 @@ class WebUiGeneratorInpaint : ISdGenerator
             return false;
         }
 
-        processGenerationResult(sdGenerationParameters, BitmapTools.FromBase64(response.images[0]));
+        processGenerationResult(sdGenerationParameters, BitmapTools.FromDataUri(response.images[0]));
 
         control.NotifyProgress(sdGenerationParameters.steps);
 

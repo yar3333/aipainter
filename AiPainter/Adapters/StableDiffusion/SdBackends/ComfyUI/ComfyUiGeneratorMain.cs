@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics;
 using System.Text.Json;
 using System.Text.Json.Nodes;
+using AiPainter.Adapters.StableDiffusion.SdBackends.ComfyUI.WorkflowNodes;
 
 namespace AiPainter.Adapters.StableDiffusion.SdBackends.ComfyUI;
 
@@ -13,7 +14,6 @@ class ComfyUiGeneratorMain : ISdGenerator
     public ComfyUiGeneratorMain(SdGenerationListItem control, string destDir)
     {
         this.control = control;
-
         this.destDir = destDir;
     }
 
@@ -21,7 +21,12 @@ class ComfyUiGeneratorMain : ISdGenerator
     {
         Debug.Assert(sdGenerationParameters.seed > 0);
 
-        var workflow = ComfyUiGeneratorHelper.CreateWorkflow(sdGenerationParameters);
+        var workflow = ComfyUiGeneratorHelper.CreateWorkflow("txt2img.json", sdGenerationParameters);
+
+        // EmptyLatentImage
+        var nodeEmptyLatentImage = (EmptyLatentImageNode)workflow.Single(x => x.Id == "nodeEmptyLatentImage");
+        nodeEmptyLatentImage.width = sdGenerationParameters.width;
+        nodeEmptyLatentImage.height = sdGenerationParameters.height;
         
         var client = await ComfyUiApiClient.ConnectAsync();
         var images = await client.RunPromptAsync

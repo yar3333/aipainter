@@ -9,7 +9,7 @@ static class WebUiInterrogater
     {
         return await WebUiApiClient.interrogateAsync(new SdInterrogateRequest
         {
-            image = BitmapTools.GetBase64String(image),
+            image = BitmapTools.ToDataUri(image),
             //model = "model_base_caption_capfilt_large",
         });
     }

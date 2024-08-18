@@ -71,16 +71,28 @@ public static class BitmapTools
         return true;
     }
 
-    public static string GetBase64String(Image image)
+    public static string ToDataUri(Image image)
     {
         using var m = new MemoryStream();
         image.Save(m, ImageFormat.Png);
-        return "data:image/png;base64," + Convert.ToBase64String(m.ToArray());
+        return "data:image/png;base64," + ToBase64(image);
+    }    
+    
+    public static string ToBase64(Image image)
+    {
+        using var m = new MemoryStream();
+        image.Save(m, ImageFormat.Png);
+        return Convert.ToBase64String(m.ToArray());
     }
 
+    public static Bitmap FromDataUri(string prefixAndBase64)
+    {
+        return FromBase64(prefixAndBase64.Split(",").Last());
+    }    
+    
     public static Bitmap FromBase64(string base64)
     {
-        using var m = new MemoryStream(Convert.FromBase64String(base64.Split(",").Last()));
+        using var m = new MemoryStream(Convert.FromBase64String(base64));
         return (Bitmap)Image.FromStream(m);
     }
 

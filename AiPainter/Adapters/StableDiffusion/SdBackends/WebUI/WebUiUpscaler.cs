@@ -26,7 +26,7 @@ static class WebUiUpscaler
         });
 
         return !cancellationTokenSource.IsCancellationRequested && r?.image != null
-                ? BitmapTools.FromBase64(r.image)
+                ? BitmapTools.FromDataUri(r.image)
                 : null;
     }
 }

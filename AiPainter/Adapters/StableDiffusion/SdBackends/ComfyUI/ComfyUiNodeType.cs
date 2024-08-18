@@ -14,4 +14,7 @@ enum ComfyUiNodeType
     SaveImage,
     SaveImageWebsocket,
     LoraLoader,
+    ETN_LoadImageBase64,
+    VAEEncodeForInpaint,
+    ETN_LoadMaskBase64,
 }
