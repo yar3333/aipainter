@@ -1,25 +1,26 @@
 ﻿using AiPainter.Helpers;
 using AiPainter.Adapters.StableDiffusion.SdBackends.WebUI.SdApiClientStuff;
+using System.Diagnostics;
 
 namespace AiPainter.Adapters.StableDiffusion.SdBackends.WebUI;
 
 class WebUiGeneratorMain : ISdGenerator
 {
-    private readonly SdGenerationParameters sdGenerationParameters;
     private readonly SdGenerationListItem control;
 
     private readonly string destDir;
 
-    public WebUiGeneratorMain(SdGenerationParameters sdGenerationParameters, SdGenerationListItem control, string destDir)
+    public WebUiGeneratorMain(SdGenerationListItem control, string destDir)
     {
-        this.sdGenerationParameters = sdGenerationParameters;
         this.control = control;
 
         this.destDir = destDir;
     }
 
-    public async Task<bool> RunAsync()
+    public async Task<bool> RunAsync(SdGenerationParameters sdGenerationParameters)
     {
+        Debug.Assert(sdGenerationParameters.seed > 0);
+
         var wasProgressShown = false;
         var isCheckpointSuccess = await WebUiGeneratorHelper.PrepareCheckpointAsync
         (
@@ -69,7 +70,7 @@ class WebUiGeneratorMain : ISdGenerator
             return false;
         }
 
-        SdGeneratorHelper.SaveMain(sdGenerationParameters, response.infoParsed.seed, destDir, BitmapTools.FromBase64(response.images[0]));
+        SdGeneratorHelper.SaveMain(sdGenerationParameters, destDir, BitmapTools.FromBase64(response.images[0]));
 
         control.NotifyProgress(sdGenerationParameters.steps);
 

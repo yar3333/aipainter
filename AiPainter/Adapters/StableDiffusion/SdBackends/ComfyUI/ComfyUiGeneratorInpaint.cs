@@ -1,10 +1,10 @@
 ﻿using AiPainter.Helpers;
+using System.Diagnostics;
 
 namespace AiPainter.Adapters.StableDiffusion.SdBackends.ComfyUI;
 
 class ComfyUiGeneratorInpaint : ISdGenerator
 {
-    private readonly SdGenerationParameters sdGenerationParameters;
     private readonly SdGenerationListItem control;
 
     private readonly Bitmap originalImage;
@@ -12,9 +12,9 @@ class ComfyUiGeneratorInpaint : ISdGenerator
     private readonly Bitmap? croppedMask;
     private readonly string originalFilePath;
 
-    public ComfyUiGeneratorInpaint(SdGenerationParameters sdGenerationParameters, SdGenerationListItem control, Bitmap originalImage, Rectangle activeBox, Bitmap? croppedMask, string originalFilePath)
+    public ComfyUiGeneratorInpaint(SdGenerationListItem control, Bitmap originalImage, Rectangle activeBox, Bitmap? croppedMask, string originalFilePath)
     {
-        this.sdGenerationParameters = sdGenerationParameters;
+        
         this.control = control;
 
         this.activeBox = activeBox;
@@ -23,8 +23,10 @@ class ComfyUiGeneratorInpaint : ISdGenerator
         this.originalFilePath = originalFilePath;
     }
 
-    public async Task<bool> RunAsync()
+    public async Task<bool> RunAsync(SdGenerationParameters sdGenerationParameters)
     {
+        Debug.Assert(sdGenerationParameters.seed > 0);
+
         /*var wasProgressShown = false;
         var isCheckpointSuccess = await WebUiGeneratorHelper.PrepareCheckpointAsync
         (
@@ -97,14 +99,14 @@ class ComfyUiGeneratorInpaint : ISdGenerator
         Task.Run(async () => await ComfyUiApiClient.interrupt());
     }
     
-    private void processGenerationResult(Bitmap resultImage, long seed)
+    private void processGenerationResult(SdGenerationParameters sdGenerationParameters, Bitmap resultImage)
     {
         try
         {
             using var tempOriginalImage = BitmapTools.Clone(originalImage);
             BitmapTools.DrawBitmapAtPos(resultImage, tempOriginalImage, activeBox.X, activeBox.Y);
             resultImage.Dispose();
-            SdGeneratorHelper.SaveInpaint(sdGenerationParameters, seed, originalFilePath, tempOriginalImage);
+            SdGeneratorHelper.SaveInpaint(sdGenerationParameters, originalFilePath, tempOriginalImage);
         }
         catch (Exception e)
         {

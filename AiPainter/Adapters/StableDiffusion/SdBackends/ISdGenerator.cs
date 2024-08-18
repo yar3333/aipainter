@@ -2,6 +2,6 @@
 
 interface ISdGenerator
 {
-    public Task<bool> RunAsync();
+    public Task<bool> RunAsync(SdGenerationParameters sdGenerationParameters);
     public void Cancel();
 }

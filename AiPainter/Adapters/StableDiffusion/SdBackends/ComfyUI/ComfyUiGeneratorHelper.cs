@@ -7,8 +7,10 @@ namespace AiPainter.Adapters.StableDiffusion.SdBackends.ComfyUI;
 
 static class ComfyUiGeneratorHelper
 {
-    public static List<BaseNode> CreateWorkflow(SdGenerationParameters sdGenerationParameters, long seed)
+    public static List<BaseNode> CreateWorkflow(SdGenerationParameters sdGenerationParameters)
     {
+        // subseed_strength = sdGenerationParameters.seedVariationStrength
+
         var loras = SdPromptNormalizer.GetUsedLoras(sdGenerationParameters.prompt, out var prompt);
         prompt = fixEmbeddingsInPrompt(prompt);
 
@@ -16,7 +18,7 @@ static class ComfyUiGeneratorHelper
 
         // KSampler
         var nodeKSampler = (KSamplerNode)workflow.Single(x => x.Id == "nodeKSampler");
-        nodeKSampler.seed = seed;
+        nodeKSampler.seed = sdGenerationParameters.seed;
         nodeKSampler.steps = sdGenerationParameters.steps;
         nodeKSampler.cfg = sdGenerationParameters.cfgScale;
         nodeKSampler.sampler_name = ComfyUiNamesHelper.GetSamplerName(sdGenerationParameters.sampler);

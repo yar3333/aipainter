@@ -52,7 +52,6 @@ static class JsonIntoPngEmbedder
                             sampler = info.sampler,
                             changesLevel = info.changesLevel,
                         },
-                        info.seed,
                         filePath
                     );
                     File.Delete(jsonFilePath);

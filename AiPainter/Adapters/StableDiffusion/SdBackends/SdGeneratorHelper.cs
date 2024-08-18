@@ -4,15 +4,15 @@ namespace AiPainter.Adapters.StableDiffusion.SdBackends;
 
 static class SdGeneratorHelper
 {
-    public static void SaveMain(SdGenerationParameters sdGenerationParameters, long seed, string destDir, Bitmap resultImage)
+    public static void SaveMain(SdGenerationParameters sdGenerationParameters, string destDir, Bitmap resultImage)
     {
         if (!Directory.Exists(destDir)) Directory.CreateDirectory(destDir);
         var destImageFilePath = Path.Combine(destDir, DateTime.UtcNow.Ticks / 10000 + ".png");
-        SdPngHelper.Save(resultImage, sdGenerationParameters, seed, destImageFilePath);
+        SdPngHelper.Save(resultImage, sdGenerationParameters, destImageFilePath);
         resultImage.Dispose();
     }
 
-    public static void SaveInpaint(SdGenerationParameters sdGenerationParameters, long seed, string originalFilePath, Bitmap image)
+    public static void SaveInpaint(SdGenerationParameters sdGenerationParameters, string originalFilePath, Bitmap image)
     {
         var basePath = Path.Join(Path.GetDirectoryName(originalFilePath), Path.GetFileNameWithoutExtension(originalFilePath));
         var matches = Regex.Matches(basePath, @"-aip(\d+)$");
@@ -32,6 +32,6 @@ static class SdGeneratorHelper
             n++;
         }
 
-        SdPngHelper.Save(image, sdGenerationParameters, seed, resultFilePath);
+        SdPngHelper.Save(image, sdGenerationParameters, resultFilePath);
     }
 }

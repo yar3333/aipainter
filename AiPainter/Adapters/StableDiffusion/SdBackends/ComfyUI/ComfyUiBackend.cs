@@ -12,16 +12,15 @@ class ComfyUiBackend : ISdBackend
         ComfyUiProcess.Stop();
     }
 
-    public ISdGenerator CreateGeneratorMain(SdGenerationParameters sdGenerationParameters, SdGenerationListItem control, string destDir)
+    public ISdGenerator CreateGeneratorMain(SdGenerationListItem control, string destDir)
     {
-        return new ComfyUiGeneratorMain(sdGenerationParameters, control, destDir);
+        return new ComfyUiGeneratorMain(control, destDir);
     }
 
-    public ISdGenerator CreateGeneratorInpaint(SdGenerationParameters sdGenerationParameters, SdGenerationListItem control, Bitmap originalImage, Rectangle activeBox, Bitmap? croppedMask, string originalFilePath)
+    public ISdGenerator CreateGeneratorInpaint(SdGenerationListItem control, Bitmap originalImage, Rectangle activeBox, Bitmap? croppedMask, string originalFilePath)
     {
         return new ComfyUiGeneratorInpaint
         (
-            sdGenerationParameters,
             control,
             originalImage,
             activeBox,

@@ -1,34 +1,27 @@
-﻿using System.Text.Json;
+﻿using System.Diagnostics;
+using System.Text.Json;
 using System.Text.Json.Nodes;
 
 namespace AiPainter.Adapters.StableDiffusion.SdBackends.ComfyUI;
 
 class ComfyUiGeneratorMain : ISdGenerator
 {
-    private static readonly Random random = new();
-
-    private readonly SdGenerationParameters sdGenerationParameters;
     private readonly SdGenerationListItem control;
 
     private readonly string destDir;
 
-    public ComfyUiGeneratorMain(SdGenerationParameters sdGenerationParameters, SdGenerationListItem control, string destDir)
+    public ComfyUiGeneratorMain(SdGenerationListItem control, string destDir)
     {
-        this.sdGenerationParameters = sdGenerationParameters;
         this.control = control;
 
         this.destDir = destDir;
     }
 
-    public async Task<bool> RunAsync()
+    public async Task<bool> RunAsync(SdGenerationParameters sdGenerationParameters)
     {
-        // subseed_strength = sdGenerationParameters.seedVariationStrength
-        
-        var seed = sdGenerationParameters.seed > 0 
-                       ? sdGenerationParameters.seed 
-                       : random.NextInt64(1, uint.MaxValue);
+        Debug.Assert(sdGenerationParameters.seed > 0);
 
-        var workflow = ComfyUiGeneratorHelper.CreateWorkflow(sdGenerationParameters, seed);
+        var workflow = ComfyUiGeneratorHelper.CreateWorkflow(sdGenerationParameters);
         
         var client = await ComfyUiApiClient.ConnectAsync();
         var images = await client.RunPromptAsync
@@ -50,7 +43,7 @@ class ComfyUiGeneratorMain : ISdGenerator
             throw new SdGeneratorFatalErrorException("ERROR");
         }
 
-        SdGeneratorHelper.SaveMain(sdGenerationParameters, seed, destDir, images[0]);
+        SdGeneratorHelper.SaveMain(sdGenerationParameters, destDir, images[0]);
 
         control.NotifyProgress(sdGenerationParameters.steps);
 

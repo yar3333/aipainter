@@ -12,16 +12,15 @@ class WebUiBackend : ISdBackend
         WebUiProcess.Stop();
     }
 
-    public ISdGenerator CreateGeneratorMain(SdGenerationParameters sdGenerationParameters, SdGenerationListItem control, string destDir)
+    public ISdGenerator CreateGeneratorMain(SdGenerationListItem control, string destDir)
     {
-        return new WebUiGeneratorMain(sdGenerationParameters, control, destDir);
+        return new WebUiGeneratorMain(control, destDir);
     }
 
-    public ISdGenerator CreateGeneratorInpaint(SdGenerationParameters sdGenerationParameters, SdGenerationListItem control, Bitmap originalImage, Rectangle activeBox, Bitmap? croppedMask, string originalFilePath)
+    public ISdGenerator CreateGeneratorInpaint(SdGenerationListItem control, Bitmap originalImage, Rectangle activeBox, Bitmap? croppedMask, string originalFilePath)
     {
         return new WebUiGeneratorInpaint
         (
-            sdGenerationParameters,
             control,
             originalImage,
             activeBox,

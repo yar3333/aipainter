@@ -3,6 +3,8 @@
 [Serializable]
 public class SdGenerationParameters
 {
+    private static readonly Random random = new();
+
     public string checkpointName { get; set; } = null!;
     public string vaeName { get; set; } = null!;
     public string prompt { get; set; } = null!;
@@ -20,8 +22,15 @@ public class SdGenerationParameters
     public string sampler { get; set; } = "Euler a";
     public decimal changesLevel { get; set; }
 
-    public SdGenerationParameters ShallowCopy()
+    public SdGenerationParameters CloneWithFixedSeed()
     {
-        return (SdGenerationParameters)MemberwiseClone();
+        var r = (SdGenerationParameters)MemberwiseClone();
+
+        if (r.seed < 1)
+        {
+            r.seed = random.NextInt64(1, uint.MaxValue);
+        }
+
+        return r;
     }
 }

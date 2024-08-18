@@ -20,11 +20,11 @@ static class SdPngHelper
         return chunks.ContainsKey("parameters") ? loadParameters(chunks["parameters"]) : null;
     }
 
-    public static void Save(Bitmap image, SdGenerationParameters src, long seed, string filePath)
+    public static void Save(Bitmap image, SdGenerationParameters src, string filePath)
     {
         var pngData = PngHelper.EncodeImage(image, new Dictionary<string, string>
         {
-            { "parameters", saveParameters(src, seed) }
+            { "parameters", saveParameters(src) }
         });
         File.WriteAllBytes(filePath, pngData);
     }
@@ -101,7 +101,7 @@ static class SdPngHelper
         return generationParameters;
     }
 
-    private static string saveParameters(SdGenerationParameters generationParameters, long seed)
+    private static string saveParameters(SdGenerationParameters generationParameters)
     {
         return generationParameters.prompt.Replace('\n', ' ') + "\n"
                + (!string.IsNullOrEmpty(generationParameters.negative) ? "Negative prompt: " + generationParameters.negative + "\n" : "")
@@ -109,7 +109,7 @@ static class SdPngHelper
                     "Steps: " + generationParameters.steps,
                     "Sampler: " + generationParameters.sampler,
                     "CFG scale: " + generationParameters.cfgScale.ToString(CultureInfo.InvariantCulture),
-                    "Seed: " + seed,
+                    "Seed: " + generationParameters.seed,
                     "Size: " + generationParameters.width + "x" + generationParameters.height,
                     "aip_Model: " + generationParameters.checkpointName,
                     "aip_ClipSkip: " + generationParameters.clipSkip
