@@ -3,6 +3,7 @@ using System.Text.RegularExpressions;
 using AiPainter.Adapters.StableDiffusion.SdBackends.ComfyUI.WorkflowNodes;
 using AiPainter.Adapters.StableDiffusion.SdCheckpointStuff;
 using AiPainter.Adapters.StableDiffusion.SdEmbeddingStuff;
+using AiPainter.Adapters.StableDiffusion.SdLoraStuff;
 using AiPainter.Adapters.StableDiffusion.SdVaeStuff;
 
 namespace AiPainter.Adapters.StableDiffusion.SdBackends.ComfyUI;
@@ -71,7 +72,7 @@ static class ComfyUiGeneratorHelper
         {
             nodeCLIPTextEncode_positive.clip = nodeLoraLoader_last.Output_clip;
             nodeCLIPTextEncode_negative.clip = nodeLoraLoader_last.Output_clip;
-            nodeKSampler.model = nodeLoraLoader_last.model;
+            nodeKSampler.model = nodeLoraLoader_last.Output_model;
         }
 
         return workflow;
@@ -88,10 +89,11 @@ static class ComfyUiGeneratorHelper
                 Id = "nodeLoraLoader_" + n,
                 model = parentModel,
                 clip = parentClip,
-                lora_name = lora.Key,
+                lora_name = Path.GetFileName(SdLoraHelper.GetPathToModel(lora.Key))!,
                 strength_model = lora.Value,
                 strength_clip = lora.Value,
             };
+            workflow.Add(loraNode);
             
             parentModel = loraNode.Output_model;
             parentClip = loraNode.Output_clip;

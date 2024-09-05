@@ -28,70 +28,16 @@ class ComfyUiGeneratorInpaint : ISdGenerator
     {
         Debug.Assert(sdGenerationParameters.seed > 0);
 
-        /*var wasProgressShown = false;
-        var isCheckpointSuccess = await WebUiGeneratorHelper.PrepareCheckpointAsync
-        (
-            false,
-            sdGenerationParameters.checkpointName,
-            sdGenerationParameters.vaeName,
-            () => control.IsDisposed,
-            s => { wasProgressShown = true; control.NotifyStepsCustomText(s); }
-        );
-        if (!isCheckpointSuccess) return false;
-        if (!wasProgressShown) control.NotifyProgress(0);
-
-        using var croppedImage = BitmapTools.GetCropped(originalImage, activeBox, Color.Black);
-
-        var parameters = new SdImg2ImgRequest
+        List<BaseNode> workflow;
+        try
         {
-            prompt = sdGenerationParameters.prompt,
-            negative_prompt = sdGenerationParameters.negative,
-            cfg_scale = sdGenerationParameters.cfgScale,
-            steps = sdGenerationParameters.steps,
-
-            seed = sdGenerationParameters.seed,
-            subseed_strength = sdGenerationParameters.seedVariationStrength,
-
-            init_images = new[] { BitmapTools.GetBase64String(croppedImage) },
-            mask = croppedMask != null ? BitmapTools.GetBase64String(croppedMask) : null,
-
-            width = croppedImage.Width,
-            height = croppedImage.Height,
-
-            sampler_index = sdGenerationParameters.sampler,
-
-            // looks like webui use 'fill' as default if mask specified, so force to use 'original'
-            inpainting_fill = sdGenerationParameters.inpaintingFill ?? SdInpaintingFill.original,
-            denoising_strength = sdGenerationParameters.changesLevel,
-
-            override_settings = new SdSettings
-            {
-                CLIP_stop_at_last_layers = sdGenerationParameters.clipSkip
-            }
-        };
-        var response = await SdApiClient.img2imgAsync(parameters, onProgress: step => control.NotifyProgress(step));*/
-
-        using var croppedImage = BitmapTools.GetCropped(originalImage, activeBox, Color.Black);
-
-        var workflow = ComfyUiGeneratorHelper.CreateWorkflow("img2img.json", sdGenerationParameters);
-        
-        var nodeVAELoader = (VAELoaderNode?)workflow.SingleOrDefault(x => x.Id == "nodeVAELoader");
-        if (nodeVAELoader != null)
-        {
-            var nodeVAEEncodeForInpaint = (VAEEncodeForInpaintNode)workflow.Single(x => x.Id == "nodeVAEEncodeForInpaint");
-            var nodeInpaintModelConditioning = (InpaintModelConditioningNode)workflow.Single(x => x.Id == "nodeInpaintModelConditioning");
-            nodeVAEEncodeForInpaint.vae = nodeVAELoader.Output_vae;
-            nodeInpaintModelConditioning.vae = nodeVAELoader.Output_vae;;
+            workflow = prepareWorkFlow(sdGenerationParameters);
         }
-
-        var nodeETN_LoadImageBase64 = (ETN_LoadImageBase64Node)workflow.Single(x => x.Id == "nodeETN_LoadImageBase64");
-        nodeETN_LoadImageBase64.image = BitmapTools.ToBase64(croppedImage);
-
-        var nodeETN_LoadMaskBase64 = (ETN_LoadMaskBase64Node)workflow.Single(x => x.Id == "nodeETN_LoadMaskBase64");
-        nodeETN_LoadMaskBase64.mask = BitmapTools.ToBase64(croppedMask ?? BitmapTools.CreateBitmap(croppedImage.Width, croppedImage.Height, Color.White));
-
-        var nodeKSampler = (KSamplerNode)workflow.Single(x => x.Id == "nodeKSampler");
-        nodeKSampler.denoise = sdGenerationParameters.changesLevel;
+        catch (Exception e)
+        {
+            ComfyUiApiClient.Log.WriteLine(e.ToString());
+            throw;
+        }
 
         var client = await ComfyUiApiClient.ConnectAsync();
         var images = await client.RunPromptAsync
@@ -130,7 +76,34 @@ class ComfyUiGeneratorInpaint : ISdGenerator
     {
         Task.Run(async () => await ComfyUiApiClient.interrupt());
     }
-    
+
+    private List<BaseNode> prepareWorkFlow(SdGenerationParameters sdGenerationParameters)
+    {
+        using var croppedImage = BitmapTools.GetCropped(originalImage, activeBox, Color.Black);
+
+        var workflow = ComfyUiGeneratorHelper.CreateWorkflow("img2img.json", sdGenerationParameters);
+        
+        var nodeVAELoader = (VAELoaderNode?)workflow.SingleOrDefault(x => x.Id == "nodeVAELoader");
+        if (nodeVAELoader != null)
+        {
+            //var nodeVAEEncodeForInpaint = (VAEEncodeForInpaintNode)workflow.Single(x => x.Id == "nodeVAEEncodeForInpaint");
+            //nodeVAEEncodeForInpaint.vae = nodeVAELoader.Output_vae;
+            var nodeInpaintModelConditioning = (InpaintModelConditioningNode)workflow.Single(x => x.Id == "nodeInpaintModelConditioning");
+            nodeInpaintModelConditioning.vae = nodeVAELoader.Output_vae;;
+        }
+
+        var nodeETN_LoadImageBase64 = (ETN_LoadImageBase64Node)workflow.Single(x => x.Id == "nodeETN_LoadImageBase64");
+        nodeETN_LoadImageBase64.image = BitmapTools.ToBase64(croppedImage);
+
+        var nodeETN_LoadMaskBase64 = (ETN_LoadMaskBase64Node)workflow.Single(x => x.Id == "nodeETN_LoadMaskBase64");
+        nodeETN_LoadMaskBase64.mask = BitmapTools.ToBase64(croppedMask ?? BitmapTools.CreateBitmap(croppedImage.Width, croppedImage.Height, Color.White));
+
+        var nodeKSampler = (KSamplerNode)workflow.Single(x => x.Id == "nodeKSampler");
+        nodeKSampler.denoise = sdGenerationParameters.changesLevel;
+
+        return workflow;
+    }
+
     private void processGenerationResult(SdGenerationParameters sdGenerationParameters, Bitmap resultImage)
     {
         try
