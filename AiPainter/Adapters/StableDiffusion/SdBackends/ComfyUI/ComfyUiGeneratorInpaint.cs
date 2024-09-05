@@ -74,28 +74,24 @@ class ComfyUiGeneratorInpaint : ISdGenerator
         using var croppedImage = BitmapTools.GetCropped(originalImage, activeBox, Color.Black);
 
         var workflow = ComfyUiGeneratorHelper.CreateWorkflow("img2img.json", sdGenerationParameters);
-
-        // VAEEncodeForInpaint
-        var nodeVAEEncodeForInpaint = (VAEEncodeForInpaintNode)workflow.Single(x => x.Id == "nodeVAEEncodeForInpaint");
         
         var nodeVAELoader = (VAELoaderNode?)workflow.SingleOrDefault(x => x.Id == "nodeVAELoader");
         if (nodeVAELoader != null)
         {
+            var nodeVAEEncodeForInpaint = (VAEEncodeForInpaintNode)workflow.Single(x => x.Id == "nodeVAEEncodeForInpaint");
+            var nodeInpaintModelConditioning = (InpaintModelConditioningNode)workflow.Single(x => x.Id == "nodeInpaintModelConditioning");
             nodeVAEEncodeForInpaint.vae = nodeVAELoader.Output_vae;
+            nodeInpaintModelConditioning.vae = nodeVAELoader.Output_vae;;
         }
 
         var nodeETN_LoadImageBase64 = (ETN_LoadImageBase64Node)workflow.Single(x => x.Id == "nodeETN_LoadImageBase64");
         nodeETN_LoadImageBase64.image = BitmapTools.ToBase64(croppedImage);
 
-        if (croppedMask != null)
-        {
-            var nodeETN_LoadMaskBase64 = (ETN_LoadMaskBase64Node)workflow.Single(x => x.Id == "nodeETN_LoadMaskBase64");
-            nodeETN_LoadMaskBase64.mask = BitmapTools.ToBase64(croppedMask);
-        }
-        else
-        {
-            // clean mask input in nodeVAEEncodeForInpaint ???
-        }
+        var nodeETN_LoadMaskBase64 = (ETN_LoadMaskBase64Node)workflow.Single(x => x.Id == "nodeETN_LoadMaskBase64");
+        nodeETN_LoadMaskBase64.mask = BitmapTools.ToBase64(croppedMask ?? BitmapTools.CreateBitmap(croppedImage.Width, croppedImage.Height, Color.White));
+
+        var nodeKSampler = (KSamplerNode)workflow.Single(x => x.Id == "nodeKSampler");
+        nodeKSampler.denoise = sdGenerationParameters.changesLevel;
 
         var client = await ComfyUiApiClient.ConnectAsync();
         var images = await client.RunPromptAsync

@@ -1,11 +1,39 @@
 {
-  "nodeETN_LoadMaskBase64": {
+  "nodeInpaintModelConditioning": {
     "inputs": {
-      "mask": ""
+      "positive": [
+        "nodeCLIPTextEncode_positive",
+        0
+      ],
+      "negative": [
+        "nodeCLIPTextEncode_negative",
+        0
+      ],
+      "vae": [
+        "nodeCheckpointLoaderSimple",
+        2
+      ],
+      "pixels": [
+        "nodeETN_LoadImageBase64",
+        0
+      ],
+      "mask": [
+        "nodeETN_LoadMaskBase64",
+        0
+      ]
     },
-    "class_type": "ETN_LoadMaskBase64",
+    "class_type": "InpaintModelConditioning",
     "_meta": {
-      "title": "Load Mask (Base64)"
+      "title": "InpaintModelConditioning"
+    }
+  },
+  "nodeCheckpointLoaderSimple": {
+    "inputs": {
+      "ckpt_name": "StableDiffusion-v1.5\\v1-5-pruned-emaonly.safetensors"
+    },
+    "class_type": "CheckpointLoaderSimple",
+    "_meta": {
+      "title": "Load Checkpoint"
     }
   },
   "nodeETN_LoadImageBase64": {
@@ -17,13 +45,13 @@
       "title": "Load Image (Base64)"
     }
   },
-  "nodeCheckpointLoaderSimple": {
+  "nodeETN_LoadMaskBase64": {
     "inputs": {
-      "ckpt_name": "StableDiffusion-v1.5\\v1-5-pruned-emaonly.safetensors"
+      "mask": ""
     },
-    "class_type": "CheckpointLoaderSimple",
+    "class_type": "ETN_LoadMaskBase64",
     "_meta": {
-      "title": "Load Checkpoint"
+      "title": "Load Mask (Base64)"
     }
   },
   "nodeCLIPSetLastLayer": {
@@ -37,27 +65,6 @@
     "class_type": "CLIPSetLastLayer",
     "_meta": {
       "title": "CLIP Set Last Layer"
-    }
-  },
-  "nodeVAEEncodeForInpaint": {
-    "inputs": {
-      "grow_mask_by": 6,
-      "pixels": [
-        "nodeETN_LoadImageBase64",
-        0
-      ],
-      "vae": [
-        "nodeCheckpointLoaderSimple",
-        2
-      ],
-      "mask": [
-        "nodeETN_LoadMaskBase64",
-        0
-      ]
-    },
-    "class_type": "VAEEncodeForInpaint",
-    "_meta": {
-      "title": "VAE Encode (for Inpainting)"
     }
   },
   "nodeCLIPTextEncode_positive": {
@@ -99,16 +106,16 @@
         0
       ],
       "positive": [
-        "nodeCLIPTextEncode_positive",
+        "nodeInpaintModelConditioning",
         0
       ],
       "negative": [
-        "nodeCLIPTextEncode_negative",
-        0
+        "nodeInpaintModelConditioning",
+        1
       ],
       "latent_image": [
-        "nodeVAEEncodeForInpaint",
-        0
+        "nodeInpaintModelConditioning",
+        2
       ]
     },
     "class_type": "KSampler",

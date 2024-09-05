@@ -373,4 +373,11 @@ public static class BitmapTools
         dst.UnlockBits(dstData);
         src.UnlockBits(srcData);
     }
+
+    public static Bitmap CreateBitmap(int width, int height, Color color)
+    {
+        var r = new Bitmap(width, height);
+        FillBox(r, new Rectangle(0, 0, width, height), color);
+        return r;
+    }
 }

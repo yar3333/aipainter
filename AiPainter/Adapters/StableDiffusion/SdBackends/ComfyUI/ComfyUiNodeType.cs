@@ -11,6 +11,7 @@ enum ComfyUiNodeType
     EmptyLatentImage,
     ETN_LoadImageBase64,
     ETN_LoadMaskBase64,
+    InpaintModelConditioning,
     KSampler,
     LoraLoader,
     SaveImage,

@@ -1,4 +1,5 @@
 ﻿using AiPainter.Adapters.StableDiffusion.SdBackends;
+using AiPainter.Adapters.StableDiffusion.SdCheckpointStuff;
 using AiPainter.Controls;
 using AiPainter.Helpers;
 
@@ -44,8 +45,10 @@ namespace AiPainter.Adapters.StableDiffusion
                 negative = sdPanel.tbNegative.Text.Trim(),
                 steps = (int)sdPanel.numSteps.Value,
                 cfgScale = sdPanel.numCfgScale.Value,
-                clipSkip = sdPanel.selectedClipSkip,
-            
+                clipSkip = sdPanel.selectedClipSkip > 0 
+                               ? sdPanel.selectedClipSkip
+                               : (SdCheckpointsHelper.GetConfig(sdPanel.selectedCheckpointName).clipSkip ?? 1),
+                
                 seed = sdPanel.cbUseSeed.Checked && sdPanel.tbSeed.Text.Trim() != "" ? long.Parse(sdPanel.tbSeed.Text.Trim()) : -1,
                 seedVariationStrength = sdPanel.trackBarSeedVariationStrength.Value / 100m,
 

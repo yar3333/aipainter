@@ -1,4 +1,5 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.Diagnostics;
+using System.Text.RegularExpressions;
 using AiPainter.Adapters.StableDiffusion.SdBackends.ComfyUI.WorkflowNodes;
 using AiPainter.Adapters.StableDiffusion.SdCheckpointStuff;
 using AiPainter.Adapters.StableDiffusion.SdEmbeddingStuff;
@@ -10,6 +11,8 @@ static class ComfyUiGeneratorHelper
 {
     public static List<BaseNode> CreateWorkflow(string templateJsonFileName, SdGenerationParameters sdGenerationParameters)
     {
+        Debug.Assert(sdGenerationParameters.clipSkip > 0);
+
         // subseed_strength = sdGenerationParameters.seedVariationStrength
 
         var vaeName = getVaeNameForUse(sdGenerationParameters);
@@ -41,7 +44,7 @@ static class ComfyUiGeneratorHelper
 
         // CLIPSetLastLayer
         var nodeCLIPSetLastLayer = (CLIPSetLastLayerNode)workflow.Single(x => x.Id == "nodeCLIPSetLastLayer");
-        nodeCLIPSetLastLayer.stop_at_clip_layer = sdGenerationParameters.clipSkip > 0 ? -sdGenerationParameters.clipSkip : -1;
+        nodeCLIPSetLastLayer.stop_at_clip_layer = -sdGenerationParameters.clipSkip;
         
         // VAELoader
         var nodeVAELoader = string.IsNullOrEmpty(vaeName)

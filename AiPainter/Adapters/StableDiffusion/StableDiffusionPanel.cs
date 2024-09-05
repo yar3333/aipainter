@@ -50,7 +50,7 @@ namespace AiPainter.Adapters.StableDiffusion
             get => int.Parse(ddClipSkip.SelectedItem!.ToString()!);
             set
             {
-                if (value == 1 || value == 2)
+                if (value == 0 || value == 1 || value == 2)
                 {
                     ddClipSkip.SelectedItem = value.ToString();
                 }
@@ -90,7 +90,7 @@ namespace AiPainter.Adapters.StableDiffusion
             };
             ddSampler.SelectedItem = "DPM++ 2M";
 
-            ddClipSkip.SelectedItem = "1";
+            ddClipSkip.SelectedItem = "0";
 
             selectedInpaintingFill = SdInpaintingFill.original;
 

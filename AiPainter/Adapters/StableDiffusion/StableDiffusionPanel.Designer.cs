@@ -132,12 +132,12 @@
             ddClipSkip.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
             ddClipSkip.DropDownStyle = ComboBoxStyle.DropDownList;
             ddClipSkip.Font = new Font("Segoe UI", 10F, FontStyle.Regular, GraphicsUnit.Point);
-            ddClipSkip.Items.AddRange(new object[] { "1", "2" });
+            ddClipSkip.Items.AddRange(new object[] { "0", "1", "2" });
             ddClipSkip.Location = new Point(411, 422);
             ddClipSkip.Name = "ddClipSkip";
             ddClipSkip.Size = new Size(46, 25);
             ddClipSkip.TabIndex = 30;
-            toolTip.SetToolTip(ddClipSkip, "Default is 1 (use 2 for more variation results)");
+            toolTip.SetToolTip(ddClipSkip, "Use 0 for autoselect. Default is 1 (use 2 for more variation results)");
             // 
             // cbUseSeed
             // 
