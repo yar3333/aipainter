@@ -27,6 +27,7 @@ static class WorkflowHelper
             if (inputs is EmptyLatentImageNode) return ComfyUiNodeType.EmptyLatentImage;
             if (inputs is ETN_LoadImageBase64Node) return ComfyUiNodeType.ETN_LoadImageBase64;
             if (inputs is ETN_LoadMaskBase64Node) return ComfyUiNodeType.ETN_LoadMaskBase64;
+            if (inputs is FluxGuidanceNode) return ComfyUiNodeType.FluxGuidance;
             if (inputs is InpaintModelConditioningNode) return ComfyUiNodeType.InpaintModelConditioning;
             if (inputs is KSamplerNode) return ComfyUiNodeType.KSampler;
             if (inputs is LoraLoaderNode) return ComfyUiNodeType.LoraLoader;
@@ -84,6 +85,10 @@ static class WorkflowHelper
 
             case ComfyUiNodeType.ETN_LoadMaskBase64:
                 r = item["inputs"].Deserialize<ETN_LoadMaskBase64Node>()!;
+                break;
+
+            case ComfyUiNodeType.FluxGuidance:
+                r = item["inputs"].Deserialize<FluxGuidanceNode>()!;
                 break;
 
             case ComfyUiNodeType.InpaintModelConditioning:

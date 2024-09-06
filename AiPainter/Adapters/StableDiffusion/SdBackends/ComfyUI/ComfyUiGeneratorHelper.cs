@@ -75,6 +75,21 @@ static class ComfyUiGeneratorHelper
             nodeKSampler.model = nodeLoraLoader_last.Output_model;
         }
 
+        switch (SdCheckpointsHelper.GetConfig(sdGenerationParameters.checkpointName).workflow)
+        {
+            case "flux":
+                var nodeFluxGuidance = new FluxGuidanceNode
+                {
+                    Id = "nodeFluxGuidance",
+                    conditioning = nodeCLIPTextEncode_positive.Output_conditioning,
+                    guidance = sdGenerationParameters.cfgScale,
+                };
+                workflow.Add(nodeFluxGuidance);
+                nodeKSampler.positive = nodeFluxGuidance.Output_conditioning;
+                nodeKSampler.cfg = 1.0m;
+                break;
+        }
+
         return workflow;
     }
 

@@ -1,0 +1,10 @@
+{
+  "homeUrl": "https://civitai.com/models/618692?modelVersionId=691639",
+  "mainCheckpointUrl": "https://civitai.com/api/download/models/691639?type=Model&format=SafeTensor&size=pruned&fp=fp8",
+  "inpaintCheckpointUrl": "",
+  "vaeUrl": "",
+  "description": "base model",
+  "promptRequired": "",
+  "promptSuggested": "",
+  "workflow": "flux"
+}
