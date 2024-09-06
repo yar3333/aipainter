@@ -1,5 +1,6 @@
 ﻿namespace AiPainter.Adapters.StableDiffusion.SdBackends.ComfyUI.WorkflowNodes;
 
+[Serializable]
 class EmptyLatentImageNode : BaseNode
 {
     public int width { get; set; } // 512,

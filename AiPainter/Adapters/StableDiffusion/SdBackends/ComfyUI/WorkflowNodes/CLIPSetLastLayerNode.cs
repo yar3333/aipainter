@@ -2,9 +2,10 @@
 
 namespace AiPainter.Adapters.StableDiffusion.SdBackends.ComfyUI.WorkflowNodes;
 
+[Serializable]
 class CLIPSetLastLayerNode : BaseNode
 {
-    public object[] clip { get; set; }
+    public object[]? clip { get; set; }
     
     public int stop_at_clip_layer { get; set; }
 

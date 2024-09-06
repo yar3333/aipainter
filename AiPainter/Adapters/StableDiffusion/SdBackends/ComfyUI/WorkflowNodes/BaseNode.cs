@@ -2,7 +2,8 @@
 
 namespace AiPainter.Adapters.StableDiffusion.SdBackends.ComfyUI.WorkflowNodes;
 
+[Serializable]
 class BaseNode
 {
-    [JsonIgnore] public string Id { get; set; }
+    [JsonIgnore] public string Id { get; set; } = "";
 }
