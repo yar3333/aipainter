@@ -1,0 +1,10 @@
+{
+  "homeUrl": "https://civitai.com/models/618692?modelVersionId=699279",
+  "mainCheckpointUrl": "https://huggingface.co/Comfy-Org/flux1-schnell/resolve/main/flux1-schnell-fp8.safetensors?download=true",
+  "inpaintCheckpointUrl": "",
+  "vaeUrl": "",
+  "description": "base model, flux.1",
+  "promptRequired": "",
+  "promptSuggested": "",
+  "baseModel": "Flux.1 D"
+}

@@ -22,12 +22,16 @@ static class ComfyUiGeneratorHelper
 
         var workflow = WorkflowHelper.DeserializeWorkflow(File.ReadAllText(Path.Join(Application.StartupPath, "ComfyWorkflowTemplates\\" + templateJsonFileName)));
 
+        var isFlux = SdCheckpointsHelper.GetConfig(sdGenerationParameters.checkpointName).baseModel?.StartsWith("Flux.") ?? false;
+
         // KSampler
         var nodeKSampler = (KSamplerNode)workflow.Single(x => x.Id == "nodeKSampler");
         nodeKSampler.seed = sdGenerationParameters.seed;
         nodeKSampler.steps = sdGenerationParameters.steps;
         nodeKSampler.cfg = sdGenerationParameters.cfgScale;
-        nodeKSampler.sampler_name = ComfyUiNamesHelper.GetSamplerName(sdGenerationParameters.sampler);
+        nodeKSampler.sampler_name = !isFlux
+                                ? ComfyUiNamesHelper.GetSamplerName(sdGenerationParameters.sampler)
+                                : "euler";
         //nodeKSampler.scheduler = "normal"; // karras
         //nodeKSampler.denoise = 1.0;
                 
@@ -64,7 +68,7 @@ static class ComfyUiGeneratorHelper
         var nodeLoraLoader_last = createLoraNodes
         (
             nodeCheckpointLoaderSimple.Output_model, 
-            nodeCLIPSetLastLayer.Output_clip, 
+            !isFlux ? nodeCLIPSetLastLayer.Output_clip : nodeCheckpointLoaderSimple.Output_clip, 
             loras, 
             workflow
         );
@@ -74,8 +78,17 @@ static class ComfyUiGeneratorHelper
             nodeCLIPTextEncode_negative.clip = nodeLoraLoader_last.Output_clip;
             nodeKSampler.model = nodeLoraLoader_last.Output_model;
         }
+        else
+        {
+            if (isFlux)
+            {
+                // exclude `nodeCLIPSetLastLayer` from workflow
+                nodeCLIPTextEncode_positive.clip = nodeCheckpointLoaderSimple.Output_clip;
+                nodeCLIPTextEncode_negative.clip = nodeCheckpointLoaderSimple.Output_clip;
+            }
+        }
 
-        if (SdCheckpointsHelper.GetConfig(sdGenerationParameters.checkpointName).baseModel?.StartsWith("Flux.") ?? false)
+        if (isFlux)
         {
             var nodeFluxGuidance = new FluxGuidanceNode
             {
