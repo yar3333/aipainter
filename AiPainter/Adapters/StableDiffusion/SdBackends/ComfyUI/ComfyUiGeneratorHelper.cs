@@ -10,6 +10,11 @@ namespace AiPainter.Adapters.StableDiffusion.SdBackends.ComfyUI;
 
 static class ComfyUiGeneratorHelper
 {
+    public static List<BaseNode> LoadWorkflow(string templateJsonFileName)
+    {
+        return WorkflowHelper.DeserializeWorkflow(File.ReadAllText(Path.Join(Application.StartupPath, "ComfyWorkflowTemplates\\" + templateJsonFileName)));
+    }
+
     public static List<BaseNode> CreateWorkflow(string templateJsonFileName, SdGenerationParameters sdGenerationParameters)
     {
         Debug.Assert(sdGenerationParameters.clipSkip > 0);
@@ -20,7 +25,7 @@ static class ComfyUiGeneratorHelper
         var loras = SdPromptNormalizer.GetUsedLoras(sdGenerationParameters.prompt, out var prompt);
         prompt = fixEmbeddingsInPrompt(prompt);
 
-        var workflow = WorkflowHelper.DeserializeWorkflow(File.ReadAllText(Path.Join(Application.StartupPath, "ComfyWorkflowTemplates\\" + templateJsonFileName)));
+        var workflow = LoadWorkflow(templateJsonFileName);
 
         var isFlux = SdCheckpointsHelper.GetConfig(sdGenerationParameters.checkpointName).baseModel?.StartsWith("Flux.") ?? false;
 

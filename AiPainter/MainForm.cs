@@ -1,5 +1,6 @@
 using System.Drawing.Imaging;
 using AiPainter.Adapters.LamaCleaner;
+using AiPainter.Adapters.StableDiffusion;
 using AiPainter.Helpers;
 
 #pragma warning disable CS8602
@@ -348,25 +349,25 @@ namespace AiPainter
 
         private void btUpscaleCommon2x_Click(object sender, EventArgs e)
         {
-            upscale("R-ESRGAN 4x+", 2);
+            upscale(UpscalerType.R_ESRGAN_4x, 2);
         }
 
         private void btUpscaleAnime2x_Click(object sender, EventArgs e)
         {
-            upscale("R-ESRGAN 4x+ Anime6B", 2);
+            upscale(UpscalerType.R_ESRGAN_4x_Anime6B, 2);
         }
 
         private void btUpscaleCommon4x_Click(object sender, EventArgs e)
         {
-            upscale("R-ESRGAN 4x+", 4);
+            upscale(UpscalerType.R_ESRGAN_4x, 4);
         }
 
         private void btUpscaleAnime4x_Click(object sender, EventArgs e)
         {
-            upscale("R-ESRGAN 4x+ Anime6B", 4);
+            upscale(UpscalerType.R_ESRGAN_4x_Anime6B, 4);
         }
 
-        private void upscale(string upscaler, int resizeFactor)
+        private void upscale(UpscalerType upscaler, int resizeFactor)
         {
             var form = new UpscaleForm
             (

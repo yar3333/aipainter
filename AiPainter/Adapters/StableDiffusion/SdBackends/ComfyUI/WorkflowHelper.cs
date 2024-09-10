@@ -28,11 +28,13 @@ static class WorkflowHelper
             if (inputs is ETN_LoadImageBase64Node) return ComfyUiNodeType.ETN_LoadImageBase64;
             if (inputs is ETN_LoadMaskBase64Node) return ComfyUiNodeType.ETN_LoadMaskBase64;
             if (inputs is FluxGuidanceNode) return ComfyUiNodeType.FluxGuidance;
+            if (inputs is ImageUpscaleWithModelNode) return ComfyUiNodeType.ImageUpscaleWithModel;
             if (inputs is InpaintModelConditioningNode) return ComfyUiNodeType.InpaintModelConditioning;
             if (inputs is KSamplerNode) return ComfyUiNodeType.KSampler;
             if (inputs is LoraLoaderNode) return ComfyUiNodeType.LoraLoader;
             if (inputs is SaveImageNode) return ComfyUiNodeType.SaveImage;
             if (inputs is SaveImageWebsocketNode) return ComfyUiNodeType.SaveImageWebsocket;
+            if (inputs is UpscaleModelLoaderNode) return ComfyUiNodeType.UpscaleModelLoader;
             if (inputs is VAEDecodeNode) return ComfyUiNodeType.VAEDecode;
             if (inputs is VAEEncodeForInpaintNode) return ComfyUiNodeType.VAEEncodeForInpaint;
             if (inputs is VAELoaderNode) return ComfyUiNodeType.VAELoader;
@@ -91,6 +93,10 @@ static class WorkflowHelper
                 r = item["inputs"].Deserialize<FluxGuidanceNode>()!;
                 break;
 
+            case ComfyUiNodeType.ImageUpscaleWithModel:
+                r = item["inputs"].Deserialize<ImageUpscaleWithModelNode>()!;
+                break;
+
             case ComfyUiNodeType.InpaintModelConditioning:
                 r = item["inputs"].Deserialize<InpaintModelConditioningNode>()!;
                 break;
@@ -109,6 +115,10 @@ static class WorkflowHelper
 
             case ComfyUiNodeType.SaveImageWebsocket:
                 r = item["inputs"].Deserialize<SaveImageWebsocketNode>()!;
+                break;
+
+            case ComfyUiNodeType.UpscaleModelLoader:
+                r = item["inputs"].Deserialize<UpscaleModelLoaderNode>()!;
                 break;
 
             case ComfyUiNodeType.VAEDecode:

@@ -1,0 +1,48 @@
+{
+  "nodeETN_LoadImageBase64": {
+    "inputs": {
+      "image": ""
+    },
+    "class_type": "ETN_LoadImageBase64",
+    "_meta": {
+      "title": "Load Image (Base64)"
+    }
+  },
+  "nodeUpscaleModelLoader": {
+    "inputs": {
+      "model_name": "" 
+    },
+    "class_type": "UpscaleModelLoader",
+    "_meta": {
+      "title": "Load Upscale Model"
+    }
+  },
+  "nodeImageUpscaleWithModel": {
+    "inputs": {
+      "upscale_model": [
+        "nodeUpscaleModelLoader",
+        0
+      ],
+      "image": [
+        "nodeETN_LoadImageBase64",
+        0
+      ]
+    },
+    "class_type": "ImageUpscaleWithModel",
+    "_meta": {
+      "title": "Upscale Image (using Model)"
+    }
+  },
+  "nodeSaveImageWebsocket": {
+    "inputs": {
+      "images": [
+        "nodeImageUpscaleWithModel",
+        0
+      ]
+    },
+    "class_type": "SaveImageWebsocket",
+    "_meta": {
+      "title": "SaveImageWebsocket"
+    }
+  }
+}

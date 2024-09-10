@@ -29,7 +29,7 @@ class ComfyUiBackend : ISdBackend
         );
     }
 
-    public async Task<Bitmap?> UpscaleAsync(string upscaler, int resizeFactor, string imageBase64, Action<int> progressPercent, CancellationTokenSource cancellationTokenSource)
+    public async Task<Bitmap?> UpscaleAsync(UpscalerType upscaler, int resizeFactor, string imageBase64, Action<int> progressPercent, CancellationTokenSource cancellationTokenSource)
     {
         return await ComfyUiUpscaler.RunAsync(upscaler, resizeFactor, imageBase64, progressPercent, cancellationTokenSource);
     }
