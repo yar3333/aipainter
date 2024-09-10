@@ -4,6 +4,7 @@ namespace AiPainter;
 
 class GlobalConfig
 {
+    [Serializable]
     public class WindowPosition
     {
         public FormWindowState state { get; set; }
