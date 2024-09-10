@@ -5,6 +5,8 @@ namespace AiPainter.Adapters.StableDiffusion.SdBackends.ComfyUI.WorkflowNodes;
 [Serializable]
 class CLIPTextEncodeNode : BaseNode
 {
+    public override ComfyUiNodeType NodeType => ComfyUiNodeType.CLIPTextEncode;
+    
     public object[]? clip { get; set; } // [ "4", 1 ]
     public string text { get; set; } = ""; // "beautiful scenery nature glass bottle landscape, , purple galaxy bottle,",
     

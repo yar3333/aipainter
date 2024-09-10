@@ -14,31 +14,9 @@ static class WorkflowHelper
 
         public NativeNode(BaseNode inputs)
         {
-            this.class_type = getTypeByInputs(inputs);
+            this.class_type = inputs.NodeType;
             this.inputs = inputs;
             this._meta = new Dictionary<string, string> { { "title", class_type.ToString() } };
-        }
-
-        private static ComfyUiNodeType getTypeByInputs(BaseNode inputs)
-        {
-            if (inputs is CheckpointLoaderSimpleNode) return ComfyUiNodeType.CheckpointLoaderSimple;
-            if (inputs is CLIPSetLastLayerNode) return ComfyUiNodeType.CLIPSetLastLayer;
-            if (inputs is CLIPTextEncodeNode) return ComfyUiNodeType.CLIPTextEncode;
-            if (inputs is EmptyLatentImageNode) return ComfyUiNodeType.EmptyLatentImage;
-            if (inputs is ETN_LoadImageBase64Node) return ComfyUiNodeType.ETN_LoadImageBase64;
-            if (inputs is ETN_LoadMaskBase64Node) return ComfyUiNodeType.ETN_LoadMaskBase64;
-            if (inputs is FluxGuidanceNode) return ComfyUiNodeType.FluxGuidance;
-            if (inputs is ImageUpscaleWithModelNode) return ComfyUiNodeType.ImageUpscaleWithModel;
-            if (inputs is InpaintModelConditioningNode) return ComfyUiNodeType.InpaintModelConditioning;
-            if (inputs is KSamplerNode) return ComfyUiNodeType.KSampler;
-            if (inputs is LoraLoaderNode) return ComfyUiNodeType.LoraLoader;
-            if (inputs is SaveImageNode) return ComfyUiNodeType.SaveImage;
-            if (inputs is SaveImageWebsocketNode) return ComfyUiNodeType.SaveImageWebsocket;
-            if (inputs is UpscaleModelLoaderNode) return ComfyUiNodeType.UpscaleModelLoader;
-            if (inputs is VAEDecodeNode) return ComfyUiNodeType.VAEDecode;
-            if (inputs is VAEEncodeForInpaintNode) return ComfyUiNodeType.VAEEncodeForInpaint;
-            if (inputs is VAELoaderNode) return ComfyUiNodeType.VAELoader;
-            throw new ArgumentException();
         }
     }
 

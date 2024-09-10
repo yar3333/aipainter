@@ -5,6 +5,8 @@ namespace AiPainter.Adapters.StableDiffusion.SdBackends.ComfyUI.WorkflowNodes;
 [Serializable]
 class LoraLoaderNode : BaseNode
 {
+    public override ComfyUiNodeType NodeType => ComfyUiNodeType.LoraLoader;
+    
     public object[]? model { get; set; }
     public object[]? clip { get; set; }
 

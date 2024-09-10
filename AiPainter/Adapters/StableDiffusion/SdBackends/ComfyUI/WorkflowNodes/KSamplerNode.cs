@@ -5,6 +5,8 @@ namespace AiPainter.Adapters.StableDiffusion.SdBackends.ComfyUI.WorkflowNodes;
 [Serializable]
 class KSamplerNode : BaseNode
 {
+    public override ComfyUiNodeType NodeType => ComfyUiNodeType.KSampler;
+    
     public object[]? model { get; set; } // [ "4", 0 ],
     public object[]? positive { get; set; } // [ "6", 0 ],
     public object[]? negative { get; set; } // [ "7", 0 ],

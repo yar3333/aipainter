@@ -5,6 +5,8 @@ namespace AiPainter.Adapters.StableDiffusion.SdBackends.ComfyUI.WorkflowNodes;
 [Serializable]
 class InpaintModelConditioningNode : BaseNode
 {
+    public override ComfyUiNodeType NodeType => ComfyUiNodeType.InpaintModelConditioning;
+    
     public object[]? positive { get; set; }
     public object[]? negative { get; set; }
     public object[]? vae { get; set; }

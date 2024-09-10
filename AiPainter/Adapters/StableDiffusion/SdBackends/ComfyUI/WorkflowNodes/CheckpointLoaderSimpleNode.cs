@@ -5,6 +5,8 @@ namespace AiPainter.Adapters.StableDiffusion.SdBackends.ComfyUI.WorkflowNodes;
 [Serializable]
 class CheckpointLoaderSimpleNode : BaseNode
 {
+    public override ComfyUiNodeType NodeType => ComfyUiNodeType.CheckpointLoaderSimple;
+    
     public string ckpt_name { get; set; } = ""; // "StableDiffusion-v1.5\\v1-5-pruned-emaonly.safetensors"
 
     [JsonIgnore] public object[] Output_model => new object[] { Id, 0 };

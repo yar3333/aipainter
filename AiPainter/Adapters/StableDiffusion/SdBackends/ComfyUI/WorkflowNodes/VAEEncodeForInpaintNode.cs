@@ -5,6 +5,8 @@ namespace AiPainter.Adapters.StableDiffusion.SdBackends.ComfyUI.WorkflowNodes;
 [Serializable]
 class VAEEncodeForInpaintNode : BaseNode
 {
+    public override ComfyUiNodeType NodeType => ComfyUiNodeType.VAEEncodeForInpaint;
+    
     public object[]? pixels { get; set; }
     public object[]? vae { get; set; }
     public object[]? mask { get; set; }
