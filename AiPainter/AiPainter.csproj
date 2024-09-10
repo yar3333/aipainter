@@ -128,6 +128,9 @@
     <None Update="ComfyWorkflowTemplates\img2img.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="ComfyWorkflowTemplates\interrogate.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="ComfyWorkflowTemplates\txt2img.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

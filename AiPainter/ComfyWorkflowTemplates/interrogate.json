@@ -1,0 +1,40 @@
+{
+  "nodeShowText": {
+    "inputs": {
+      "text": [
+        "nodeCLIP_Interrogator",
+        0
+      ],
+      "ShowText_0": ""
+    },
+    "class_type": "ShowText",
+    "_meta": {
+      "title": "ShowText"
+    }
+  },
+  "nodeETN_LoadImageBase64": {
+    "inputs": {
+      "image": ""
+    },
+    "class_type": "ETN_LoadImageBase64",
+    "_meta": {
+      "title": "Load Image (Base64)"
+    }
+  },
+  "nodeCLIP_Interrogator": {
+    "inputs": {
+      "mode": "fast",
+      "keep_model_alive": false,
+      "prepend_blip_caption": true,
+      "save_prompt_to_txt_file": "",
+      "image": [
+        "nodeETN_LoadImageBase64",
+        0
+      ]
+    },
+    "class_type": "CLIP_Interrogator",
+    "_meta": {
+      "title": "CLIP_Interrogator"
+    }
+  }
+}

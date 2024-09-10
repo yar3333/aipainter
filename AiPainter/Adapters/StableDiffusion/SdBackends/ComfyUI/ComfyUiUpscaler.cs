@@ -19,7 +19,7 @@ static class ComfyUiUpscaler
 
         var cancelCalled = false;
         var client = await ComfyUiApiClient.ConnectAsync();
-        var images = await client.RunPromptAsync
+        var images = await client.RunPromptAndGetImageAsync
                      (
                          JsonSerializer.Deserialize<JsonObject>(WorkflowHelper.SerializeWorkflow(workflow))!,
                          "nodeSaveImageWebsocket", 

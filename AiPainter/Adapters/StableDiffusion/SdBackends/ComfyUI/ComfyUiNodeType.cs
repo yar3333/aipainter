@@ -6,6 +6,7 @@ namespace AiPainter.Adapters.StableDiffusion.SdBackends.ComfyUI;
 enum ComfyUiNodeType
 {
     CheckpointLoaderSimple,
+    CLIP_Interrogator,
     CLIPSetLastLayer,
     CLIPTextEncode,
     EmptyLatentImage,
@@ -18,6 +19,7 @@ enum ComfyUiNodeType
     LoraLoader,
     SaveImage,
     SaveImageWebsocket,
+    ShowText,
     UpscaleModelLoader,
     VAEDecode,
     VAEEncodeForInpaint,

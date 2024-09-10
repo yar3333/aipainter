@@ -40,7 +40,7 @@ class ComfyUiGeneratorInpaint : ISdGenerator
         }
 
         var client = await ComfyUiApiClient.ConnectAsync();
-        var images = await client.RunPromptAsync
+        var images = await client.RunPromptAndGetImageAsync
                      (
                          JsonSerializer.Deserialize<JsonObject>(WorkflowHelper.SerializeWorkflow(workflow))!,
                          "nodeSaveImageWebsocket", 

@@ -59,7 +59,7 @@ class ComfyUiApiClient
         return await getAsync<string>("history/" + prompt_id, true);
     }*/
 
-    public async Task<Bitmap[]> RunPromptAsync(object prompt, string imageNodeId, Action<int> progressStep)
+    public async Task<Bitmap[]> RunPromptAndGetImageAsync(object prompt, string imageNodeId, Action<int> progressStep)
     {
         var prompt_id = (await queue_prompt(prompt)).prompt_id;
         var output_images = new List<Bitmap>();
@@ -123,6 +123,56 @@ class ComfyUiApiClient
         }
 
         return output_images.ToArray();
+    }   
+    
+    public async Task<string?> RunPromptAndGetTextAsync(object prompt, string showTextNodeId)
+    {
+        var prompt_id = (await queue_prompt(prompt)).prompt_id;
+
+        string? r = null;
+
+        var done = false;
+        while (ws.State == WebSocketState.Open && !done)
+        {
+            await ws.ReceiveMessageAsync
+            (
+                str =>
+                {
+                    var message = JsonSerializer.Deserialize<JsonObject>(str)!;
+                    Log.WriteLine(JsonSerializer.Serialize(message, Program.DefaultJsonSerializerOptions));
+
+                    switch (message["type"]?.ToString())
+                    {
+                        case "executed":
+                        {
+                            var data = message["data"]?.AsObject();
+                            if (data?["prompt_id"]?.ToString() == prompt_id)
+                            {
+                                if (data["node"]?.ToString() == showTextNodeId)
+                                {
+                                    done = true;
+                                    r = data["output"]?.AsObject()?["string"]?.AsArray().FirstOrDefault()?.ToString();
+                                }
+                            }
+                        }
+                        break;
+
+                        case "execution_interrupted":
+                        {
+                            var data = message["data"]?.AsObject();
+                            if (data?["prompt_id"]?.ToString() == prompt_id)
+                            {
+                                done = true;
+                            }
+                        }
+                        break;
+                    }
+                },
+                _ => {}
+            );
+        }
+
+        return r;
     }
 
     private static async Task<T> postAsync<T>(string url, object request)

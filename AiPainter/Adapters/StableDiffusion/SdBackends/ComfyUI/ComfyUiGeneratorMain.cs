@@ -29,7 +29,7 @@ class ComfyUiGeneratorMain : ISdGenerator
         nodeEmptyLatentImage.height = sdGenerationParameters.height;
         
         var client = await ComfyUiApiClient.ConnectAsync();
-        var images = await client.RunPromptAsync
+        var images = await client.RunPromptAndGetImageAsync
         (
             JsonSerializer.Deserialize<JsonObject>(WorkflowHelper.SerializeWorkflow(workflow))!,
             "nodeSaveImageWebsocket", 
