@@ -143,7 +143,7 @@
             FormBorderStyle = FormBorderStyle.SizableToolWindow;
             Name = "SdModelsForm";
             ShowInTaskbar = false;
-            StartPosition = FormStartPosition.CenterParent;
+            StartPosition = FormStartPosition.CenterScreen;
             Text = "Stable Diffusion Checkpoints (image generation models)";
             FormClosed += SdModelsForm_FormClosed;
             Load += SdModelsForm_Load;

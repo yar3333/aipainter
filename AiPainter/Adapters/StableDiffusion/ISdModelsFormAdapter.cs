@@ -4,6 +4,8 @@ namespace AiPainter.Adapters.StableDiffusion;
 
 public interface ISdModelsFormAdapter
 {
+    public string Title { get; }
+
     public int[] SubItemIndexesForSearch { get; }
     public int? SubItemIndexWithLink { get; }
 

@@ -5,6 +5,8 @@ namespace AiPainter.Adapters.StableDiffusion.SdEmbeddingStuff;
 
 public class SdEmbeddingFormAdapter : ISdModelsFormAdapter
 {
+    public string Title => "Stable Diffusion Embeddings (models-helpers)";
+
     public int[] SubItemIndexesForSearch => new[] { 2, 3 };
     public int? SubItemIndexWithLink => 4;
 

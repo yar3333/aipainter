@@ -5,6 +5,8 @@ namespace AiPainter.Adapters.StableDiffusion.SdLoraStuff;
 
 public class SdLorasFormAdapter : ISdModelsFormAdapter
 {
+    public string Title => "Stable Diffusion LoRA (additional image generation models)";
+
     public int[] SubItemIndexesForSearch => new []{ 2, 3 };
     public int? SubItemIndexWithLink => 4;
 

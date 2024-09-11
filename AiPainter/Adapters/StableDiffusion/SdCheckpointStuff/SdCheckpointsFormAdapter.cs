@@ -6,6 +6,8 @@ namespace AiPainter.Adapters.StableDiffusion.SdCheckpointStuff;
 
 public class SdCheckpointsFormAdapter : ISdModelsFormAdapter
 {
+    public string Title => "Stable Diffusion Checkpoints (image generation models)";
+
     public int[] SubItemIndexesForSearch => new []{ 4, 5 };
     public int? SubItemIndexWithLink => 6;
 

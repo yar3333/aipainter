@@ -23,6 +23,8 @@ namespace AiPainter.Adapters.StableDiffusion
 
         private void SdModelsForm_Load(object sender, EventArgs e)
         {
+            Text = modelsAdapter.Title;
+            
             tbCivitaiApiKey.Text = Program.Config.CivitaiApiKey;
 
             updateList();

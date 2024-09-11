@@ -2,6 +2,7 @@ AiPainter\images
 AiPainter\logs
 AiPainter\Config.json
 
+AiPainter\stable_diffusion_checkpoints\misc_*
 AiPainter\stable_diffusion_checkpoints\*\*.ckpt
 AiPainter\stable_diffusion_checkpoints\*\*.pt
 AiPainter\stable_diffusion_checkpoints\*\*.safetensors
@@ -14,6 +15,7 @@ AiPainter\stable_diffusion_checkpoints\*\*\*\*.ckpt
 AiPainter\stable_diffusion_checkpoints\*\*\*\*.pt
 AiPainter\stable_diffusion_checkpoints\*\*\*\*.safetensors
 
+AiPainter\stable_diffusion_lora\misc_*
 AiPainter\stable_diffusion_lora\*.ckpt
 AiPainter\stable_diffusion_lora\*.pt
 AiPainter\stable_diffusion_lora\*.safetensors
@@ -21,6 +23,8 @@ AiPainter\stable_diffusion_lora\*.safetensors
 AiPainter\stable_diffusion_vae\*\*.ckpt
 AiPainter\stable_diffusion_vae\*\*.pt
 AiPainter\stable_diffusion_vae\*\*.safetensors
+
+AiPainter\_stable_diffusion_embeddings\misc_*
 
 AiPainter\external\ComfyUI\ComfyUI\output
 AiPainter\external\ComfyUI\ComfyUI\user\default\workflows%2FFluxDev.json
