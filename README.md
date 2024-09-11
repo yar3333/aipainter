@@ -5,6 +5,7 @@ Digital AI painter. Features:
  * generate pictures by text description (generate via [ComfyUI](https://github.com/comfyanonymous/ComfyUI));
  * regenerate specified areas of image (inpaint via [ComfyUI](https://github.com/comfyanonymous/ComfyUI));
  * remove specified objects from pictures (inpaint via [lama-cleaner](https://github.com/Sanster/lama-cleaner));
+ * upscale 4x (via models `RealESRGAN_x4+` and `RealESRGAN_x4+_anime_6B`);
  * models import from [CivitAi](https://civitai.com/);
  * modern [Flux](https://civitai.com/models/618692/flux) models support.
 
