@@ -9,7 +9,7 @@ namespace AiPainter.Adapters.StableDiffusion
     {
         public GenerationParallelGroup ParallelGroup => GenerationParallelGroup.GENERATION;
 
-        public bool HasWorkToRun => numIterations.Value > 0;
+        public bool HasWorkToRun => !isFatalError && numIterations.Value > 0;
         public bool InProcess { get; private set; }
         public bool WantToBeRemoved { get; private set; }
 
@@ -18,6 +18,7 @@ namespace AiPainter.Adapters.StableDiffusion
         private readonly MainForm mainForm;
 
         private int lastNumIterationsValue;
+        private bool isFatalError = false;
 
         private readonly SdGenerationParameters sdGenerationParameters;
         private readonly ISdGenerator generator;
@@ -120,6 +121,8 @@ namespace AiPainter.Adapters.StableDiffusion
 
         private async Task runInnerAsync()
         {
+            NotifyStepsCustomText("Preparing...");
+
             try
             {
                 if (await generator.RunAsync(sdGenerationParameters.CloneWithFixedSeed()))
@@ -145,6 +148,16 @@ namespace AiPainter.Adapters.StableDiffusion
                 {
                     Invoke(() => pbIterations.CustomText = e.Message);
                 }
+            }            
+            catch (System.Net.WebSockets.WebSocketException)
+            {
+                isFatalError = true;
+                Invoke(() =>
+                {
+                    numIterations.Enabled = false;
+                    pbIterations.CustomText = Program.Config.StableDiffusionBackend;
+                });
+                NotifyStepsCustomText("ERROR");
             }
             catch (Exception e)
             {
@@ -153,7 +166,7 @@ namespace AiPainter.Adapters.StableDiffusion
             }
         }
 
-        public bool IsWantToCancelProcessingResultOfCurrentGeneration => numIterations.Value == 0;
+        public bool IsWantToCancelProcessingResultOfCurrentGeneration => isFatalError || numIterations.Value == 0;
 
         public void NotifyProgress(int step)
         {
