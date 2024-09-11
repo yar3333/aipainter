@@ -51,6 +51,11 @@ sealed class SmartImageList : Panel
 
             new SmartImageListItemContextMenu(mainForm!, null).Show(Cursor.Position);
         };
+
+        Resize += (_, _) =>
+        {
+            updateImages(null);
+        };
         
         Task.Run(backgroundAutoUpdateThread);
     }
