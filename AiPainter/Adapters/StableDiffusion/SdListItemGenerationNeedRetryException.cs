@@ -2,6 +2,4 @@
 
 class SdListItemGenerationNeedRetryException : Exception
 {
-    public SdListItemGenerationNeedRetryException() {}
-    public SdListItemGenerationNeedRetryException(string message) : base(message) {}
 }

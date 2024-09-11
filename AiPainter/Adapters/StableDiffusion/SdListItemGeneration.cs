@@ -144,6 +144,7 @@ namespace AiPainter.Adapters.StableDiffusion
             }
             catch (SdGeneratorFatalErrorException e)
             {
+                isFatalError = true;
                 if (!WantToBeRemoved)
                 {
                     Invoke(() => pbIterations.CustomText = e.Message);
@@ -152,17 +153,24 @@ namespace AiPainter.Adapters.StableDiffusion
             catch (System.Net.WebSockets.WebSocketException)
             {
                 isFatalError = true;
-                Invoke(() =>
+                if (!WantToBeRemoved)
                 {
-                    numIterations.Enabled = false;
-                    pbIterations.CustomText = Program.Config.StableDiffusionBackend;
-                });
-                NotifyStepsCustomText("ERROR");
+                    Invoke(() =>
+                    {
+                        numIterations.Enabled = false;
+                        pbIterations.CustomText = Program.Config.StableDiffusionBackend;
+                    });
+                    NotifyStepsCustomText("ERROR");
+                }
             }
             catch (Exception e)
             {
+                isFatalError = true;
                 Program.Log.WriteLine(e.ToString());
-                await Task.Delay(1000);
+                if (!WantToBeRemoved)
+                {
+                    NotifyStepsCustomText("ERROR");
+                }
             }
         }
 
