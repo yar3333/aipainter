@@ -2,7 +2,7 @@
 
 namespace AiPainter.Adapters.StableDiffusion
 {
-    partial class SdGenerationListItem
+    partial class SdListItemGeneration
     {
         /// <summary> 
         /// Required designer variable.

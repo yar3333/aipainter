@@ -2,7 +2,7 @@
 
 namespace AiPainter.Adapters.StableDiffusion
 {
-    partial class SdDownloadingListItem
+    partial class SdListItemDownloading
     {
         /// <summary> 
         /// Required designer variable.

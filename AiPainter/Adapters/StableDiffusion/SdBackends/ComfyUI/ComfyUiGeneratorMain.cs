@@ -7,11 +7,11 @@ namespace AiPainter.Adapters.StableDiffusion.SdBackends.ComfyUI;
 
 class ComfyUiGeneratorMain : ISdGenerator
 {
-    private readonly SdGenerationListItem control;
+    private readonly SdListItemGeneration control;
 
     private readonly string destDir;
 
-    public ComfyUiGeneratorMain(SdGenerationListItem control, string destDir)
+    public ComfyUiGeneratorMain(SdListItemGeneration control, string destDir)
     {
         this.control = control;
         this.destDir = destDir;

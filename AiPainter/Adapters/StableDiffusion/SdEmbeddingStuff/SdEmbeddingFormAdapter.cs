@@ -88,9 +88,15 @@ public class SdEmbeddingFormAdapter : ISdModelsFormAdapter
                 },
                 new CancellationTokenSource()
             );
-            if (SdModelDownloadHelper.AnalyzeDownloadedModel(resultFilePath, null))
+
+            try
             {
+                SdModelDownloadHelper.AnalyzeDownloadedModel(resultFilePath);
                 GlobalEvents.EmbeddingFileDownloaded?.Invoke();
+            }
+            catch (Exception e)
+            {
+                Program.Log.WriteLine(e.ToString());
             }
         });
     }

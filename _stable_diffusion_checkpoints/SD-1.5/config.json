@@ -1,5 +1,6 @@
 {
-	"homeUrl": "https://huggingface.co/runwayml/stable-diffusion-v1-5",
-	"mainCheckpointUrl": "https://huggingface.co/runwayml/stable-diffusion-v1-5/resolve/main/v1-5-pruned-emaonly.safetensors?download=true",
-	"inpaintCheckpointUrl": "https://huggingface.co/runwayml/stable-diffusion-inpainting/resolve/main/sd-v1-5-inpainting.ckpt?download=true"
+  "homeUrl": "https://huggingface.co/ashllay/stable-diffusion-v1-5-archive",
+  "mainCheckpointUrl": "https://huggingface.co/ashllay/stable-diffusion-v1-5-archive/resolve/main/v1-5-pruned-emaonly.safetensors?download=true",
+  "inpaintCheckpointUrl": "https://huggingface.co/wyyadd/sd-1.5-inpainting/resolve/main/sd-v1-5-inpainting.ckpt?download=true",
+  "description": "base model, official, stability ai"
 }

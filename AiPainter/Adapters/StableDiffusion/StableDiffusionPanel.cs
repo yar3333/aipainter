@@ -124,7 +124,7 @@ namespace AiPainter.Adapters.StableDiffusion
                 return;
             }
 
-            mainForm.panGenerationList.AddGeneration(new SdGenerationListItem(this, mainForm.pictureBox, mainForm));
+            mainForm.panGenerationList.AddGeneration(new SdListItemGeneration(this, mainForm.pictureBox, mainForm));
         }
 
         private void saveSelectedValuesToMainConfig()

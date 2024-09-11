@@ -56,8 +56,11 @@ namespace AiPainter.Adapters.StableDiffusion
 
         private void updateItemDownloadProgress(string name)
         {
+            if (IsDisposed) return;
+
             Invoke(() =>
             {
+                if (IsDisposed) return;
                 var item = allItems.FirstOrDefault(x => x.Name == name);
                 if (item != null) modelsAdapter.UpdateItemStatus(generationList, item, false);
             });

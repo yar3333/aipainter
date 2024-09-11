@@ -107,8 +107,7 @@ public class SdCheckpointsFormAdapter : ISdModelsFormAdapter
         var genItemName = "download_checkpoint_main_" + name;
         if (generationList.FindItem(genItemName) != null) return;
 
-
-        var downItem = new SdDownloadingListItem(genItemName, "Download " + name + " / Main model", () => true);
+        var downItem = new SdListItemDownloading(genItemName, "Download " + name + " / Main model", () => true);
         downItem.WorkAsync = async cancellationTokenSource =>
         {
             var resultFilePath = await SdModelDownloadHelper.DownloadFileAsync
@@ -127,9 +126,16 @@ public class SdCheckpointsFormAdapter : ISdModelsFormAdapter
                 },
                 cancellationTokenSource
             );
-            if (SdModelDownloadHelper.AnalyzeDownloadedModel(resultFilePath, downItem.NotifyProgress))
+
+            try
             {
+                SdModelDownloadHelper.AnalyzeDownloadedModel(resultFilePath);
                 GlobalEvents.CheckpointFileDownloaded?.Invoke();
+            }
+            catch (Exception e)
+            {
+                downItem.NotifyProgress(e.Message);
+                throw;
             }
         };
         generationList.AddGeneration(downItem);
@@ -145,7 +151,7 @@ public class SdCheckpointsFormAdapter : ISdModelsFormAdapter
         var genItemName = "download_checkpoint_inpaint_" + name;
         if (generationList.FindItem(genItemName) != null) return;
 
-        var downItem = new SdDownloadingListItem(genItemName, "Download " + name + " / Inpaint model", () => true);
+        var downItem = new SdListItemDownloading(genItemName, "Download " + name + " / Inpaint model", () => true);
         downItem.WorkAsync = async cancellationTokenSource =>
         {
             var resultFilePath = await SdModelDownloadHelper.DownloadFileAsync
@@ -164,9 +170,16 @@ public class SdCheckpointsFormAdapter : ISdModelsFormAdapter
                                      },
                                      cancellationTokenSource
                                  );
-            if (SdModelDownloadHelper.AnalyzeDownloadedModel(resultFilePath, downItem.NotifyProgress))
+            
+            try
             {
+                SdModelDownloadHelper.AnalyzeDownloadedModel(resultFilePath);
                 GlobalEvents.CheckpointFileDownloaded?.Invoke();
+            }
+            catch (Exception e)
+            {
+                downItem.NotifyProgress(e.Message);
+                throw;
             }
         };
         generationList.AddGeneration(downItem);
@@ -182,7 +195,7 @@ public class SdCheckpointsFormAdapter : ISdModelsFormAdapter
         var genItemName = "download_checkpoint_vae_" + name;
         if (generationList.FindItem(genItemName) != null) return;
 
-        var downItem = new SdDownloadingListItem(genItemName, "Download " + name + " / VAE model", () => true);
+        var downItem = new SdListItemDownloading(genItemName, "Download " + name + " / VAE model", () => true);
         downItem.WorkAsync = async cancellationTokenSource =>
         {
             var resultFilePath = await SdModelDownloadHelper.DownloadFileAsync
@@ -202,9 +215,16 @@ public class SdCheckpointsFormAdapter : ISdModelsFormAdapter
                                      },
                                      cancellationTokenSource
                                  );
-            if (SdModelDownloadHelper.AnalyzeDownloadedModel(resultFilePath, downItem.NotifyProgress))
+
+            try
             {
+                SdModelDownloadHelper.AnalyzeDownloadedModel(resultFilePath);
                 GlobalEvents.CheckpointFileDownloaded?.Invoke();
+            }
+            catch (Exception e)
+            {
+                downItem.NotifyProgress(e.Message);
+                throw;
             }
         };
         generationList.AddGeneration(downItem);

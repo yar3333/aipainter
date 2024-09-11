@@ -8,14 +8,14 @@ namespace AiPainter.Adapters.StableDiffusion.SdBackends.ComfyUI;
 
 class ComfyUiGeneratorInpaint : ISdGenerator
 {
-    private readonly SdGenerationListItem control;
+    private readonly SdListItemGeneration control;
 
     private readonly Bitmap originalImage;
     private readonly Rectangle activeBox;
     private readonly Bitmap? croppedMask;
     private readonly string originalFilePath;
 
-    public ComfyUiGeneratorInpaint(SdGenerationListItem control, Bitmap originalImage, Rectangle activeBox, Bitmap? croppedMask, string originalFilePath)
+    public ComfyUiGeneratorInpaint(SdListItemGeneration control, Bitmap originalImage, Rectangle activeBox, Bitmap? croppedMask, string originalFilePath)
     {
         this.control = control;
         this.originalImage = originalImage;

@@ -18,49 +18,39 @@ static class SdModelDownloadHelper
 
     public static async Task<string?> DownloadFileAsync(string url, string destDir, Action<string> progress, DownloadFileOptions options, CancellationTokenSource cancellationTokenSource)
     {
-        string? resultFilePath = null;
-        try
+        var newOptions = options.Clone();
+        newOptions.Progress = (size, total) =>
         {
-            var newOptions = options.Clone();
-            newOptions.Progress = (size, total) =>
-            {
-                progress(total != null ? Math.Round(size / (double)total * 100) + "%" : size + " bytes");
-            };
-            resultFilePath = await DownloadTools.DownloadFileAsync(url, destDir, newOptions, cancellationTokenSource.Token);
-        }
-        catch (AggregateException e)
-        {
-            Program.Log.WriteLine("Downloading " + url + " ERROR: " + e.Message);
-        }
-
-        return resultFilePath;
+            progress(total != null ? Math.Round(size / (double)total * 100) + "%" : size + " bytes");
+        };
+        
+        return await DownloadTools.DownloadFileAsync(url, destDir, newOptions, cancellationTokenSource.Token);
     }
 
-    public static bool AnalyzeDownloadedModel(string? resultFilePath, Action<string>? progress)
+    /// <summary>
+    /// Throws exception with message on errors. Can throw `SdListItemDownloadingInvalidApiKeyException`.
+    /// </summary>
+    public static void AnalyzeDownloadedModel(string? resultFilePath)
     {
-        if (resultFilePath == null)
-        {
-            progress?.Invoke("Unknown error");
-            return false;
-        }
+        if (resultFilePath == null) throw new Exception("Unknown error");
 
         if (new FileInfo(resultFilePath).Length < 2048)
         {
             var text = File.ReadAllText(resultFilePath);
             File.Delete(resultFilePath);
 
-            progress?.Invoke(text.Contains("\"error\":\"Unauthorized\"") ? "Invalid API key" : "Unknown error");
+            if (text.Contains("\"error\":\"Unauthorized\""))
+            {
+                throw new SdListItemDownloadingInvalidApiKeyException();
+            }
 
-            return false;
+            throw new Exception("Site error");
         }
-            
-        progress?.Invoke("+");
-        return true;
     }
 
     public static void UpdateFileStatusInListView(GenerationList generationList, ListViewItem item, string genListItemNamePrefix, int subItemIndex, bool deep, Func<string, string?> getStatusFunc)
     {
-        var genListItem = generationList!.FindItem(genListItemNamePrefix + item.Name) as SdDownloadingListItem;
+        var genListItem = generationList.FindItem(genListItemNamePrefix + item.Name) as SdListItemDownloading;
         var text = genListItem != null && !genListItem.IsDone ? genListItem.DownloadStatus : null;
         if (deep) text ??= getStatusFunc(item.Name);
         if (text != null && item.SubItems[subItemIndex].Text != text) item.SubItems[subItemIndex].Text = text;

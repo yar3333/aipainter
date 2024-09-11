@@ -6,11 +6,11 @@ namespace AiPainter.Adapters.StableDiffusion.SdBackends.WebUI;
 
 class WebUiGeneratorMain : ISdGenerator
 {
-    private readonly SdGenerationListItem control;
+    private readonly SdListItemGeneration control;
 
     private readonly string destDir;
 
-    public WebUiGeneratorMain(SdGenerationListItem control, string destDir)
+    public WebUiGeneratorMain(SdListItemGeneration control, string destDir)
     {
         this.control = control;
 
@@ -62,7 +62,7 @@ class WebUiGeneratorMain : ISdGenerator
         }
 
         // SD not ready, need retry later
-        if (response.images == null) throw new SdGeneratorNeedRetryException();
+        if (response.images == null) throw new SdListItemGenerationNeedRetryException();
 
         if (control.IsWantToCancelProcessingResultOfCurrentGeneration)
         {

@@ -5,7 +5,7 @@ using AiPainter.Helpers;
 
 namespace AiPainter.Adapters.StableDiffusion
 {
-    public partial class SdGenerationListItem : UserControl, IGenerationListItem
+    public partial class SdListItemGeneration : UserControl, IGenerationListItem
     {
         public GenerationParallelGroup ParallelGroup => GenerationParallelGroup.GENERATION;
 
@@ -28,7 +28,7 @@ namespace AiPainter.Adapters.StableDiffusion
         private readonly Rectangle? savedActiveBox;
         private readonly Bitmap? savedOriginalImage;
 
-        public SdGenerationListItem(StableDiffusionPanel sdPanel, SmartPictureBox pictureBox, MainForm mainForm)
+        public SdListItemGeneration(StableDiffusionPanel sdPanel, SmartPictureBox pictureBox, MainForm mainForm)
         {
             InitializeComponent();
             
@@ -138,7 +138,7 @@ namespace AiPainter.Adapters.StableDiffusion
                     });
                 }
             }
-            catch (SdGeneratorNeedRetryException)
+            catch (SdListItemGenerationNeedRetryException)
             {
                 await Task.Delay(1000);
             }

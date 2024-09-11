@@ -72,7 +72,7 @@ public class SdLorasFormAdapter : ISdModelsFormAdapter
         var genItemName = "download_lora_" + name;
         if (generationList.FindItem(genItemName) != null) return;
 
-        var downItem = new SdDownloadingListItem(genItemName, "Download " + name + " / LoRA model", () => true);
+        var downItem = new SdListItemDownloading(genItemName, "Download " + name + " / LoRA model", () => true);
         downItem.WorkAsync = async cancellationTokenSource =>
         {
             var resultFilePath = await SdModelDownloadHelper.DownloadFileAsync
@@ -88,9 +88,16 @@ public class SdLorasFormAdapter : ISdModelsFormAdapter
                                      },
                                      cancellationTokenSource
                                  );
-            if (SdModelDownloadHelper.AnalyzeDownloadedModel(resultFilePath, downItem.NotifyProgress))
+
+            try
             {
+                SdModelDownloadHelper.AnalyzeDownloadedModel(resultFilePath);
                 GlobalEvents.LoraFileDownloaded?.Invoke();
+            }
+            catch (Exception e)
+            {
+                downItem.NotifyProgress(e.Message);
+                throw;
             }
         };
         generationList.AddGeneration(downItem);

@@ -3,11 +3,13 @@ using AiPainter.Controls;
 
 namespace AiPainter.Adapters.StableDiffusion;
 
-public partial class SdDownloadingListItem : UserControl, IGenerationListItem
+public partial class SdListItemDownloading : UserControl, IGenerationListItem
 {
     public GenerationParallelGroup ParallelGroup => GenerationParallelGroup.DOWNLOAD;
         
-    public bool HasWorkToRun => !IsDone && isReadyToStartWork();
+    public bool HasWorkToRun => !IsDone 
+                             && (lastBadCivitApiKey == null || lastBadCivitApiKey != Program.Config.CivitaiApiKey) 
+                             && isReadyToStartWork();
     public bool InProcess { get; private set; }
     public bool WantToBeRemoved { get; private set; }
     
@@ -15,13 +17,14 @@ public partial class SdDownloadingListItem : UserControl, IGenerationListItem
 
     private readonly Func<bool> isReadyToStartWork;
     
-    public Func<CancellationTokenSource, Task> WorkAsync;
+    public Func<CancellationTokenSource, Task>? WorkAsync;
         
     public bool IsDone { get; private set; }
+    private string? lastBadCivitApiKey;
 
     private readonly CancellationTokenSource cancellationTokenSource = new();
 
-    public SdDownloadingListItem(string name, string text, Func<bool> isReadyToStartWork)
+    public SdListItemDownloading(string name, string text, Func<bool> isReadyToStartWork)
     {
         InitializeComponent();
             
@@ -63,16 +66,21 @@ public partial class SdDownloadingListItem : UserControl, IGenerationListItem
     {
         try
         {
-            await WorkAsync(cancellationTokenSource);
+            await WorkAsync!(cancellationTokenSource);
             NotifyProgress("100%");
+            IsDone = true;
+        }
+        catch (SdListItemDownloadingInvalidApiKeyException)
+        {
+            lastBadCivitApiKey = Program.Config.CivitaiApiKey;
+            await Task.Delay(1000);
         }
         catch (Exception e)
         {
             Program.Log.WriteLine(e.ToString());
-            await Task.Delay(1000);
+            NotifyProgress(e.Message);
+            IsDone = true;
         }
-
-        IsDone = true;
     }
 
     public void Cancel()
