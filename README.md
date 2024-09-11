@@ -9,6 +9,7 @@ Digital AI painter. Features:
  * models import from [CivitAi](https://civitai.com/);
  * modern [Flux](https://civitai.com/models/618692/flux) models support.
 
+![screenshot-06](screenshots/screenshot-06.jpg)
 ![screenshot-01](screenshots/screenshot-01.jpg)
 ![screenshot-02](screenshots/screenshot-02.jpg)
 ![screenshot-03](screenshots/screenshot-03.jpg)
