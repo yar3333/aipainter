@@ -27,7 +27,7 @@ Digital AI painter. Features:
  * Windows 10+ (x64)
  * 16GB RAM
  * NVIDIA video card (4GB VRAM, CUDA 11.4)
- * for Flux: 12GB VRAM, 64GB RAM+swap
+ * for Flux: 12GB VRAM, 32GB RAM + 32GB swap
  * 20 GB disk space
 
 Tested on NVIDIA RTX 3060.
