@@ -26,7 +26,7 @@ class SdExtraImageRequest
     public decimal extras_upscaler_2_visibility { get; set; }
     public bool upscale_first { get; set; } = false;
 
-    public string image { get; set; }
+    public required string image { get; set; }
 }
 
 [Serializable]

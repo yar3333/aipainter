@@ -1,17 +1,22 @@
-﻿using AiPainter.Adapters.StableDiffusion;
+﻿using System.ComponentModel;
+using AiPainter.Adapters.StableDiffusion;
 using AiPainter.Helpers;
 
 namespace AiPainter.Controls;
 
 sealed class SmartImageList : Panel
 {
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public string ImagesFolder
     {
         // ReSharper disable once InconsistentlySynchronizedField
         get => storedImageList.Folder;
         set
         {
-            var v = Path.Combine(Application.StartupPath, !string.IsNullOrEmpty(value) ? value : Program.Config.ImagesFolder);
+            var v = Path.Combine(
+                Application.StartupPath,
+                !string.IsNullOrEmpty(value) ? value : Program.Config.ImagesFolder
+            );
 
             // ReSharper disable once InconsistentlySynchronizedField
             if (storedImageList.Folder != v)
@@ -23,8 +28,9 @@ sealed class SmartImageList : Panel
         }
     }
 
-    private static StoredImageList storedImageList = new(Path.Combine(Application.StartupPath, Program.Config.ImagesFolder));
-    
+    private static StoredImageList storedImageList =
+        new(Path.Combine(Application.StartupPath, Program.Config.ImagesFolder));
+
     private readonly HScrollBar hPicScroll;
 
     // ReSharper disable once InconsistentNaming
@@ -41,13 +47,20 @@ sealed class SmartImageList : Panel
 
         MouseWheel += (_, ee) =>
         {
-            hPicScroll.Value = Math.Max(hPicScroll.Minimum, Math.Min(hPicScroll.Maximum - hPicScroll.LargeChange + 1, hPicScroll.Value + (ee.Delta > 0 ? -1 : 1)));
+            hPicScroll.Value = Math.Max(
+                hPicScroll.Minimum,
+                Math.Min(
+                    hPicScroll.Maximum - hPicScroll.LargeChange + 1,
+                    hPicScroll.Value + (ee.Delta > 0 ? -1 : 1)
+                )
+            );
             updateImages(null);
         };
 
         MouseDown += (_, args) =>
         {
-            if (args.Button != MouseButtons.Right) return;
+            if (args.Button != MouseButtons.Right)
+                return;
 
             new SmartImageListItemContextMenu(mainForm!, null).Show(Cursor.Position);
         };
@@ -56,7 +69,7 @@ sealed class SmartImageList : Panel
         {
             updateImages(null);
         };
-        
+
         Task.Run(backgroundAutoUpdateThread);
     }
 
@@ -86,18 +99,23 @@ sealed class SmartImageList : Panel
                     {
                         lock (storedImageList)
                         {
-                            if (hPicScroll.Value == Math.Max(0, hPicScroll.Maximum - hPicScroll.LargeChange + 1) && !ClientRectangle.Contains(PointToClient(Cursor.Position)))
+                            if (
+                                hPicScroll.Value
+                                    == Math.Max(0, hPicScroll.Maximum - hPicScroll.LargeChange + 1)
+                                && !ClientRectangle.Contains(PointToClient(Cursor.Position))
+                            )
                             {
                                 hPicScroll.Maximum = Math.Max(0, storedImageList.Count - 1);
-                                hPicScroll.Value = Math.Max(0, hPicScroll.Maximum - hPicScroll.LargeChange + 1);
+                                hPicScroll.Value = Math.Max(
+                                    0,
+                                    hPicScroll.Maximum - hPicScroll.LargeChange + 1
+                                );
                             }
                             updateImages(null);
                         }
                     });
                 }
-                catch (InvalidOperationException)
-                {
-                }
+                catch (InvalidOperationException) { }
             }
 
             DelayTools.WaitForExit(1000);
@@ -114,13 +132,22 @@ sealed class SmartImageList : Panel
         {
             hPicScroll.LargeChange = (ClientSize.Width + 5) / (sz + 5);
             hPicScroll.Maximum = Math.Max(0, storedImageList.Count - 1);
-            hPicScroll.Value = Math.Max(0, Math.Min(hPicScroll.Value, hPicScroll.Maximum - hPicScroll.LargeChange + 1));
-            if (hPicScrollValue != null) hPicScrollValue = Math.Max(0, Math.Min(hPicScrollValue.Value, hPicScroll.Maximum - hPicScroll.LargeChange + 1));
+            hPicScroll.Value = Math.Max(
+                0,
+                Math.Min(hPicScroll.Value, hPicScroll.Maximum - hPicScroll.LargeChange + 1)
+            );
+            if (hPicScrollValue != null)
+                hPicScrollValue = Math.Max(
+                    0,
+                    Math.Min(hPicScrollValue.Value, hPicScroll.Maximum - hPicScroll.LargeChange + 1)
+                );
 
             var i = hPicScrollValue ?? hPicScroll.Value;
             while (x < ClientSize.Width && i < storedImageList.Count)
             {
-                var pb = (SmartImageListItem?)Controls.Find("pic" + n, false).SingleOrDefault() ?? createSmartImagePreview(n);
+                var pb =
+                    (SmartImageListItem?)Controls.Find("pic" + n, false).SingleOrDefault()
+                    ?? createSmartImagePreview(n);
 
                 pb.Image = storedImageList.GetAt(i).Bitmap!;
                 pb.Location = new Point(x, 0);
@@ -138,7 +165,8 @@ sealed class SmartImageList : Panel
         while (x < ClientSize.Width)
         {
             var pb = (SmartImageListItem?)Controls.Find("pic" + n, false).FirstOrDefault();
-            if (pb != null) pb.Visible = false;
+            if (pb != null)
+                pb.Visible = false;
             x += sz + 5;
             n++;
         }
@@ -159,7 +187,9 @@ sealed class SmartImageList : Panel
             var sdGenerationParameters = SdPngHelper.LoadGenerationParameters(pb.FilePath);
             if (sdGenerationParameters != null)
             {
-                mainForm.panStableDiffusion.LoadParametersToSdGenerationPanel(sdGenerationParameters);
+                mainForm.panStableDiffusion.LoadParametersToSdGenerationPanel(
+                    sdGenerationParameters
+                );
             }
         };
 

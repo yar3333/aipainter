@@ -1,7 +1,8 @@
-﻿using AiPainter.Helpers;
+﻿using System.ComponentModel;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.Numerics;
+using AiPainter.Helpers;
 
 namespace AiPainter.Controls
 {
@@ -23,27 +24,31 @@ namespace AiPainter.Controls
         }
 
         private const int ACTIVE_BOX_EXTEND_SIZE = 16;
-        
+
         private const int PEN_SIZE = 48;
 
         private List<Primitive> primitives = new();
 
         private Primitive? lastPrim => primitives.LastOrDefault();
 
-        private static readonly HatchBrush primBrush = new(HatchStyle.Percent50, Color.Red, Color.Transparent);
-        
-        private static readonly HatchBrush cursorBrush = new(HatchStyle.Percent75, Color.LightCoral, Color.Transparent);
+        private static readonly HatchBrush primBrush =
+            new(HatchStyle.Percent50, Color.Red, Color.Transparent);
+
+        private static readonly HatchBrush cursorBrush =
+            new(HatchStyle.Percent75, Color.LightCoral, Color.Transparent);
 
         private Point? cursorPt;
-        
+
         private decimal zoom = 1;
 
-        private readonly HatchBrush whiteGrayCheckesBrush = new(HatchStyle.LargeCheckerBoard, Color.DarkGray, Color.White);
+        private readonly HatchBrush whiteGrayCheckesBrush =
+            new(HatchStyle.LargeCheckerBoard, Color.DarkGray, Color.White);
         private readonly Pen activeBoxPen = new(Color.Red, 3);
 
         private Mode mode = Mode.NOTHING;
         private Point movingStartPoint;
 
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public Bitmap? Image { get; set; }
 
         private int globalX;
@@ -56,23 +61,24 @@ namespace AiPainter.Controls
 
         private bool isCursorVisible = true;
 
-        private Primitive[] oldPrimitives = {};
+        private Primitive[] oldPrimitives = { };
 
         private bool mouseInPictureBox;
         private bool ctrlPressed;
-        
+
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public new bool Enabled { get; set; } = true;
 
         private readonly List<HistoryItem> historyItems = new();
         private int historyPos;
-        
+
         public SmartPictureBox()
         {
             InitializeComponent();
 
             MouseWheel += SmartPictureBox_MouseWheel;
         }
-        
+
         private int getActivePenSize()
         {
             return (int)Math.Round(PEN_SIZE / zoom);
@@ -86,8 +92,7 @@ namespace AiPainter.Controls
 
                 m.Scale((float)zoom, (float)zoom, MatrixOrder.Append);
 
-                m.Translate
-                (
+                m.Translate(
                     // ReSharper disable once PossibleLossOfFraction
                     (ClientSize.Width - ActiveBox.Width) / 2,
                     // ReSharper disable once PossibleLossOfFraction
@@ -96,7 +101,7 @@ namespace AiPainter.Controls
                 );
 
                 m.Translate(globalX, globalY, MatrixOrder.Append);
-                
+
                 return m;
             }
         }
@@ -112,12 +117,14 @@ namespace AiPainter.Controls
 
         public void AddBoxToMask(int x, int y, int width, int height)
         {
-            primitives.Add(new Primitive
-            {
-                Kind = PrimitiveKind.Box,
-                Pt0 = new Point(x, y),
-                Pt1 = new Point(x + width, y + height)
-            });
+            primitives.Add(
+                new Primitive
+                {
+                    Kind = PrimitiveKind.Box,
+                    Pt0 = new Point(x, y),
+                    Pt1 = new Point(x + width, y + height),
+                }
+            );
         }
 
         public Bitmap GetMaskedImageCropped(Color back, byte alpha)
@@ -129,7 +136,8 @@ namespace AiPainter.Controls
 
         public Bitmap? GetMaskCropped(Color backColor, Color maskColor)
         {
-            if (!primitives.Any()) return null;
+            if (!primitives.Any())
+                return null;
 
             var bmp = new Bitmap(ActiveBox.Width, ActiveBox.Height, PixelFormat.Format32bppArgb);
             using var g = Graphics.FromImage(bmp);
@@ -150,7 +158,8 @@ namespace AiPainter.Controls
 
         public void ResetMask()
         {
-            if (primitives.Any()) oldPrimitives = primitives.ToArray();
+            if (primitives.Any())
+                oldPrimitives = primitives.ToArray();
             primitives.Clear();
             Invalidate();
         }
@@ -167,34 +176,67 @@ namespace AiPainter.Controls
         {
             if (!mouseInPictureBox || !Enabled || Image == null)
             {
-                if (!isCursorVisible) { Cursor.Show(); isCursorVisible = true; }
-                if (cursorPt != null) { cursorPt = null; Refresh(); }
+                if (!isCursorVisible)
+                {
+                    Cursor.Show();
+                    isCursorVisible = true;
+                }
+                if (cursorPt != null)
+                {
+                    cursorPt = null;
+                    Refresh();
+                }
                 return;
             }
 
             switch (mode)
             {
                 case Mode.NOTHING:
-                    if (isCursorVisible) { Cursor.Hide(); isCursorVisible = false; }
-                    if (cursorPt != loc) { cursorPt = loc; Refresh(); }
+                    if (isCursorVisible)
+                    {
+                        Cursor.Hide();
+                        isCursorVisible = false;
+                    }
+                    if (cursorPt != loc)
+                    {
+                        cursorPt = loc;
+                        Refresh();
+                    }
                     break;
 
                 case Mode.MASKING:
-                    if (isCursorVisible) { Cursor.Hide(); isCursorVisible = false; }
-                    if (cursorPt != null) { cursorPt = null; Refresh(); }
+                    if (isCursorVisible)
+                    {
+                        Cursor.Hide();
+                        isCursorVisible = false;
+                    }
+                    if (cursorPt != null)
+                    {
+                        cursorPt = null;
+                        Refresh();
+                    }
                     break;
 
                 case Mode.ACTIVE_BOX_MOVING:
                 case Mode.GLOBAL_MOVING:
-                    if (!isCursorVisible) { Cursor.Show(); isCursorVisible = true; }
-                    if (cursorPt != null) { cursorPt = null; Refresh(); }
+                    if (!isCursorVisible)
+                    {
+                        Cursor.Show();
+                        isCursorVisible = true;
+                    }
+                    if (cursorPt != null)
+                    {
+                        cursorPt = null;
+                        Refresh();
+                    }
                     break;
             }
         }
 
         private void SmartPictureBox_MouseWheel(object? sender, MouseEventArgs e)
         {
-            if (Image == null) return;
+            if (Image == null)
+                return;
 
             switch (ctrlPressed)
             {
@@ -216,13 +258,13 @@ namespace AiPainter.Controls
 
                     var inc = (int)Math.Round(ACTIVE_BOX_EXTEND_SIZE * Math.Sign(e.Delta) / zoom);
 
-                    var newActiveBoxW = Math.Max(ACTIVE_BOX_EXTEND_SIZE, ActiveBox.Width  + inc);
+                    var newActiveBoxW = Math.Max(ACTIVE_BOX_EXTEND_SIZE, ActiveBox.Width + inc);
                     var newActiveBoxH = Math.Max(ACTIVE_BOX_EXTEND_SIZE, ActiveBox.Height + inc);
 
                     var dx = newActiveBoxW - ActiveBox.Width;
                     var dy = newActiveBoxH - ActiveBox.Height;
 
-                    ActiveBox.Width  += dx;
+                    ActiveBox.Width += dx;
                     ActiveBox.Height += dy;
 
                     ActiveBox.X -= dx >> 1;
@@ -253,12 +295,11 @@ namespace AiPainter.Controls
             }
 
             activeBoxPen.Width = 3 / (float)zoom;
-            e.Graphics.DrawRectangle
-            (
+            e.Graphics.DrawRectangle(
                 activeBoxPen,
-                ActiveBox.X - 2 / (float)zoom, 
-                ActiveBox.Y - 2 / (float)zoom, 
-                ActiveBox.Width + 3 / (float)zoom, 
+                ActiveBox.X - 2 / (float)zoom,
+                ActiveBox.Y - 2 / (float)zoom,
+                ActiveBox.Width + 3 / (float)zoom,
                 ActiveBox.Height + 3 / (float)zoom
             );
 
@@ -269,32 +310,29 @@ namespace AiPainter.Controls
 
         private void drawCursor(Graphics g)
         {
-            if (cursorPt == null || Image == null) return;
+            if (cursorPt == null || Image == null)
+                return;
 
             var loc = getTransformedMousePos(cursorPt.Value);
 
             var penSize = getActivePenSize();
-            g.FillEllipse
-            (
-                cursorBrush,
-                loc.X - penSize / 2,
-                loc.Y - penSize / 2,
-                penSize,
-                penSize
-            );
+            g.FillEllipse(cursorBrush, loc.X - penSize / 2, loc.Y - penSize / 2, penSize, penSize);
         }
 
         private void SmartPictureBox_MouseDown(object sender, MouseEventArgs e)
         {
-            if (e.Button == MouseButtons.Left && !ctrlPressed) maskingMouseDown(e.Location);
-            if (e.Button == MouseButtons.Left &&  ctrlPressed) activeBoxMovingMouseDown(e.Location);
-            if (e.Button == MouseButtons.Right) globalMovingMouseDown(e.Location);
+            if (e.Button == MouseButtons.Left && !ctrlPressed)
+                maskingMouseDown(e.Location);
+            if (e.Button == MouseButtons.Left && ctrlPressed)
+                activeBoxMovingMouseDown(e.Location);
+            if (e.Button == MouseButtons.Right)
+                globalMovingMouseDown(e.Location);
         }
 
         private void SmartPictureBox_MouseMove(object sender, MouseEventArgs e)
         {
             manageCursor(e.Location);
-            
+
             switch (mode)
             {
                 case Mode.MASKING:
@@ -325,18 +363,18 @@ namespace AiPainter.Controls
                 {
                     moveActiveBoxOnFreezedImage(0, -ActiveBox.Y);
                 }
-                if (Math.Abs(Image.Width - (ActiveBox.X + ActiveBox.Width)) < 10)
+                if (Math.Abs(Image!.Width - (ActiveBox.X + ActiveBox.Width)) < 10)
                 {
                     moveActiveBoxOnFreezedImage(Image.Width - (ActiveBox.X + ActiveBox.Width), 0);
                 }
-                if (Math.Abs(Image.Height - (ActiveBox.Y + ActiveBox.Height)) < 10)
+                if (Math.Abs(Image!.Height - (ActiveBox.Y + ActiveBox.Height)) < 10)
                 {
                     moveActiveBoxOnFreezedImage(0, Image.Height - (ActiveBox.Y + ActiveBox.Height));
                 }
             }
 
             mode = Mode.NOTHING;
-            
+
             Refresh();
         }
 
@@ -351,18 +389,18 @@ namespace AiPainter.Controls
 
         private void maskingMouseDown(Point loc)
         {
-            if (!Enabled || Image == null) return;
+            if (!Enabled || Image == null)
+                return;
 
             Capture = true;
 
             var pt = getTransformedMousePos(loc);
-            
+
             mode = Mode.MASKING;
 
             HistoryAddCurrentState();
 
-            primitives.Add
-            (
+            primitives.Add(
                 new Primitive
                 {
                     Kind = PrimitiveKind.Line,
@@ -377,7 +415,8 @@ namespace AiPainter.Controls
 
         private void maskingMouseMove(Point loc)
         {
-            if (!Enabled || Image == null) return;
+            if (!Enabled || Image == null)
+                return;
 
             var pt = getTransformedMousePos(loc);
 
@@ -385,8 +424,7 @@ namespace AiPainter.Controls
             {
                 case PrimitiveKind.Line:
                     lastPrim.Pt1 = pt;
-                    primitives.Add
-                    (
+                    primitives.Add(
                         new Primitive
                         {
                             Kind = PrimitiveKind.Line,
@@ -403,10 +441,11 @@ namespace AiPainter.Controls
 
         private void activeBoxMovingMouseDown(Point loc)
         {
-            if (!Enabled || Image == null) return;
+            if (!Enabled || Image == null)
+                return;
 
             Capture = true;
-            
+
             mode = Mode.ACTIVE_BOX_MOVING;
             movingStartPoint = getTransformedMousePos(loc);
             manageCursor(loc);
@@ -414,24 +453,26 @@ namespace AiPainter.Controls
 
         private void activeBoxMovingMouseMove(Point loc)
         {
-            if (!Enabled || Image == null) return;
+            if (!Enabled || Image == null)
+                return;
 
             var tranLoc = getTransformedMousePos(loc);
 
             ActiveBox.X += tranLoc.X - movingStartPoint.X;
             ActiveBox.Y += tranLoc.Y - movingStartPoint.Y;
-            
+
             movingStartPoint = getTransformedMousePos(loc);
-            
+
             Refresh();
         }
 
         private void globalMovingMouseDown(Point loc)
         {
-            if (Image == null) return;
+            if (Image == null)
+                return;
 
             Capture = true;
-            
+
             mode = Mode.GLOBAL_MOVING;
             movingStartPoint = loc;
             manageCursor(loc);
@@ -439,7 +480,8 @@ namespace AiPainter.Controls
 
         private void globalMovingMouseMove(Point loc)
         {
-            if (Image == null) return;
+            if (Image == null)
+                return;
 
             globalX += loc.X - movingStartPoint.X;
             globalY += loc.Y - movingStartPoint.Y;
@@ -451,12 +493,12 @@ namespace AiPainter.Controls
         {
             var transform = Transform;
             transform.Invert();
-            
+
             var points = new[] { point };
             transform.TransformPoints(points);
             return points[0];
-        }        
-        
+        }
+
         private Point getTransformedPoint(Point point)
         {
             var points = new[] { point };
@@ -505,34 +547,29 @@ namespace AiPainter.Controls
 
         public void ResizeAndMoveActiveBoxToFitImage()
         {
-            if (Image == null) return;
+            if (Image == null)
+                return;
 
             var sz = Math.Max(Image.Width, Image.Height);
-            
-            ActiveBox = new Rectangle
-            (
-                (Image.Width - sz) >> 1,
-                (Image.Height - sz) >> 1,
-                sz,
-                sz
-            );
-            
+
+            ActiveBox = new Rectangle((Image.Width - sz) >> 1, (Image.Height - sz) >> 1, sz, sz);
+
             Invalidate();
         }
 
         public void ZoomAndMoveGlobalViewToFitImage()
         {
-            if (Image == null) return;
+            if (Image == null)
+                return;
 
-            zoom = Math.Min
-            (
-                (decimal)(ClientSize.Width  - 10) / Image.Width, 
+            zoom = Math.Min(
+                (decimal)(ClientSize.Width - 10) / Image.Width,
                 (decimal)(ClientSize.Height - 10) / Image.Height
             );
 
-            globalX = (ActiveBox.Width  - (int)Math.Round(Image.Width  * zoom)) >> 1;
+            globalX = (ActiveBox.Width - (int)Math.Round(Image.Width * zoom)) >> 1;
             globalY = (ActiveBox.Height - (int)Math.Round(Image.Height * zoom)) >> 1;
-            
+
             Invalidate();
         }
 
@@ -541,7 +578,12 @@ namespace AiPainter.Controls
             if (historyPos > 0)
             {
                 var item = historyItems[historyPos - 1];
-                if (BitmapTools.IsEqual(item.Image, Image) && item.ActiveBox == ActiveBox && DataTools.IsSequencesEqual(item.Mask, primitives)) return;
+                if (
+                    BitmapTools.IsEqual(item.Image, Image)
+                    && item.ActiveBox == ActiveBox
+                    && DataTools.IsSequencesEqual(item.Mask, primitives)
+                )
+                    return;
             }
 
             if (historyPos < historyItems.Count)
@@ -550,31 +592,38 @@ namespace AiPainter.Controls
                 historyPos = historyItems.Count;
             }
 
-            historyItems.Add(new HistoryItem
-            {
-                Image = Image,
-                ActiveBox = ActiveBox,
-                Mask = primitives.ToArray(),
-            });
+            historyItems.Add(
+                new HistoryItem
+                {
+                    Image = Image,
+                    ActiveBox = ActiveBox,
+                    Mask = primitives.ToArray(),
+                }
+            );
             historyPos++;
         }
 
         public void HistoryUndo()
         {
-            if (!Enabled) return;
+            if (!Enabled)
+                return;
 
-            if (historyPos == historyItems.Count) HistoryAddCurrentState();
-            
-            if (historyPos <= 1) return;
+            if (historyPos == historyItems.Count)
+                HistoryAddCurrentState();
+
+            if (historyPos <= 1)
+                return;
             historyPos--;
             loadHistoryItem(historyItems[historyPos - 1]);
         }
 
         public void HistoryRedo()
         {
-            if (!Enabled) return;
-            
-            if (historyPos >= historyItems.Count) return;
+            if (!Enabled)
+                return;
+
+            if (historyPos >= historyItems.Count)
+                return;
             historyPos++;
             loadHistoryItem(historyItems[historyPos - 1]);
         }
@@ -584,7 +633,7 @@ namespace AiPainter.Controls
             Image = item.Image;
             ActiveBox = item.ActiveBox;
             primitives = item.Mask.ToList() ?? new List<Primitive>();
-            
+
             Invalidate();
         }
 

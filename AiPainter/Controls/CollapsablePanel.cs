@@ -11,14 +11,17 @@ namespace AiPainter.Controls
         private int height;
 
         private bool isCollapsed;
+
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public bool IsCollapsed
         {
             get => isCollapsed;
             set
             {
-                if (value == isCollapsed) return;
+                if (value == isCollapsed)
+                    return;
                 isCollapsed = value;
-                
+
                 if (isCollapsed)
                 {
                     height = Height;
@@ -34,10 +37,11 @@ namespace AiPainter.Controls
         }
 
         private string caption = "Caption";
+
         [Category("Appearance")]
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
         public string Caption
-        { 
+        {
             get => caption;
             set
             {

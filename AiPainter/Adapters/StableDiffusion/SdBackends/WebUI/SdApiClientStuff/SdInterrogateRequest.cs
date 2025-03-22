@@ -3,8 +3,8 @@
 [Serializable]
 class SdInterrogateRequest
 {
-    public string image { get; set; }
-    public string model { get; set; } // clip
+    public required string image { get; set; }
+    public string? model { get; set; } // clip
 }
 
 [Serializable]

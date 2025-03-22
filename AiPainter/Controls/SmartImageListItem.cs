@@ -1,10 +1,14 @@
-﻿namespace AiPainter.Controls
+﻿using System.ComponentModel;
+
+namespace AiPainter.Controls
 {
     public partial class SmartImageListItem : UserControl
     {
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public string FilePath { get; set; } = null!;
 
-        public Image Image
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        public Image? Image
         {
             get => pictureBox.Image;
             set => pictureBox.Image = value;
@@ -24,7 +28,8 @@
 
         private void pictureBox_MouseUp(object sender, MouseEventArgs e)
         {
-            if (e.Button != MouseButtons.Left) return;
+            if (e.Button != MouseButtons.Left)
+                return;
 
             if (btRemove.Bounds.Contains(e.Location))
             {

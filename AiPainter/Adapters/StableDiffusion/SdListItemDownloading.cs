@@ -1,4 +1,5 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.ComponentModel;
+using System.Text.RegularExpressions;
 using AiPainter.Controls;
 
 namespace AiPainter.Adapters.StableDiffusion;
@@ -6,19 +7,25 @@ namespace AiPainter.Adapters.StableDiffusion;
 public partial class SdListItemDownloading : UserControl, IGenerationListItem
 {
     public GenerationParallelGroup ParallelGroup => GenerationParallelGroup.DOWNLOAD;
-        
-    public bool HasWorkToRun => !IsDone 
-                             && (lastBadCivitApiKey == null || lastBadCivitApiKey != Program.Config.CivitaiApiKey) 
-                             && isReadyToStartWork();
+
+    public bool HasWorkToRun =>
+        !IsDone
+        && (lastBadCivitApiKey == null || lastBadCivitApiKey != Program.Config.CivitaiApiKey)
+        && isReadyToStartWork();
+
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public bool InProcess { get; private set; }
+
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public bool WantToBeRemoved { get; private set; }
-    
+
     public string DownloadStatus => pbProgress.CustomText ?? "";
 
     private readonly Func<bool> isReadyToStartWork;
-    
+
     public Func<CancellationTokenSource, Task>? WorkAsync;
-        
+
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public bool IsDone { get; private set; }
     private string? lastBadCivitApiKey;
 
@@ -27,7 +34,7 @@ public partial class SdListItemDownloading : UserControl, IGenerationListItem
     public SdListItemDownloading(string name, string text, Func<bool> isReadyToStartWork)
     {
         InitializeComponent();
-            
+
         this.isReadyToStartWork = isReadyToStartWork;
 
         pbProgress.Maximum = 100;

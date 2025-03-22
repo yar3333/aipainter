@@ -1,9 +1,9 @@
-﻿using AiPainter.Helpers;
-using AiPainter.Adapters.StableDiffusion.SdCheckpointStuff;
-using AiPainter.Adapters.StableDiffusion.SdLoraStuff;
-using AiPainter.SiteClients.CivitaiClientStuff;
+﻿using AiPainter.Adapters.StableDiffusion.SdCheckpointStuff;
 using AiPainter.Adapters.StableDiffusion.SdEmbeddingStuff;
+using AiPainter.Adapters.StableDiffusion.SdLoraStuff;
 using AiPainter.Adapters.StableDiffusion.SdVaeStuff;
+using AiPainter.Helpers;
+using AiPainter.SiteClients.CivitaiClientStuff;
 
 namespace AiPainter.Adapters.StableDiffusion
 {
@@ -36,7 +36,6 @@ namespace AiPainter.Adapters.StableDiffusion
                 btImport.Enabled = false;
                 tabs.Enabled = false;
                 importModel();
-
             }
             else
             {
@@ -71,7 +70,8 @@ namespace AiPainter.Adapters.StableDiffusion
         private async Task importModelInner()
         {
             var modelAndVersion = await CivitaiHelper.LoadModelDataAsync(modelId!, versionId);
-            if (modelAndVersion == null) return;
+            if (modelAndVersion == null)
+                return;
 
             var model = modelAndVersion.Item1;
             var version = modelAndVersion.Item2;
@@ -80,10 +80,18 @@ namespace AiPainter.Adapters.StableDiffusion
             {
                 switch (model.type)
                 {
-                    case "Checkpoint":       importCheckpoint(model, version); break;
-                    case "LORA":             importLora(model, version); break;
-                    case "LoCon":            importLora(model, version); break;
-                    case "TextualInversion": importEmbedding(model, version); break;
+                    case "Checkpoint":
+                        importCheckpoint(model, version);
+                        break;
+                    case "LORA":
+                        importLora(model, version);
+                        break;
+                    case "LoCon":
+                        importLora(model, version);
+                        break;
+                    case "TextualInversion":
+                        importEmbedding(model, version);
+                        break;
                     default:
                         labUrlError.Text = "unsupported model type: " + model.type;
                         tbUrl.Focus();
@@ -99,7 +107,7 @@ namespace AiPainter.Adapters.StableDiffusion
             ddCheckpointPredefinedVae.SelectedValue = "";
 
             tbCheckpointName.Text = CivitaiParserHelper.GetCheckpointName(model.name, version.name);
-            
+
             var config = CivitaiHelper.DataToCheckpointConfig(model, version);
             tbCheckpointRequiredPrompt.Text = config.promptRequired;
             tbCheckpointSuggestedPrompt.Text = config.promptSuggested;
@@ -140,7 +148,6 @@ namespace AiPainter.Adapters.StableDiffusion
             cbEmbeddingIsNegative.Checked = config.isNegative;
         }
 
-
         private void btCheckpointOk_Click(object sender, EventArgs e)
         {
             if (tbCheckpointName.Text.Trim() == "")
@@ -165,8 +172,9 @@ namespace AiPainter.Adapters.StableDiffusion
                 promptSuggested = tbCheckpointSuggestedPrompt.Text.Trim(),
                 description = tbCheckpointDescription.Text.Trim(),
                 baseModel = tbCheckpointBaseModel.Text.Trim(),
-                usePredefinedVae = (string)ddCheckpointPredefinedVae.SelectedValue,
-                clipSkip = numCheckpointClipSkip.Value == 1 ? null : (int)numCheckpointClipSkip.Value,
+                usePredefinedVae = (string)ddCheckpointPredefinedVae.SelectedValue!,
+                clipSkip =
+                    numCheckpointClipSkip.Value == 1 ? null : (int)numCheckpointClipSkip.Value,
             };
 
             var saveBtOkName = btCheckpointOk.Text;
@@ -204,7 +212,11 @@ namespace AiPainter.Adapters.StableDiffusion
 
             try
             {
-                labCheckpointNameError.Text = Directory.Exists(SdCheckpointsHelper.GetDirPath(tbCheckpointName.Text.Trim())) ? "already exists" : "";
+                labCheckpointNameError.Text = Directory.Exists(
+                    SdCheckpointsHelper.GetDirPath(tbCheckpointName.Text.Trim())
+                )
+                    ? "already exists"
+                    : "";
             }
             catch
             {
@@ -276,7 +288,9 @@ namespace AiPainter.Adapters.StableDiffusion
 
             try
             {
-                labLoraNameError.Text = SdLoraHelper.IsConfigExist(tbLoraName.Text.Trim()) ? "already exists" : "";
+                labLoraNameError.Text = SdLoraHelper.IsConfigExist(tbLoraName.Text.Trim())
+                    ? "already exists"
+                    : "";
             }
             catch
             {
@@ -294,7 +308,11 @@ namespace AiPainter.Adapters.StableDiffusion
 
             try
             {
-                labEmbeddingNameError.Text = SdEmbeddingHelper.IsConfigExist(tbEmbeddingName.Text.Trim()) ? "already exists" : "";
+                labEmbeddingNameError.Text = SdEmbeddingHelper.IsConfigExist(
+                    tbEmbeddingName.Text.Trim()
+                )
+                    ? "already exists"
+                    : "";
             }
             catch
             {

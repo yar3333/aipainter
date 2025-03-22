@@ -1,9 +1,12 @@
-﻿namespace AiPainter.Controls;
+﻿using System.ComponentModel;
+
+namespace AiPainter.Controls;
 
 class CustomProgressBar : ProgressBar
 {
     private string? customText;
 
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public string? CustomText
     {
         get => customText;
@@ -13,15 +16,16 @@ class CustomProgressBar : ProgressBar
             Invalidate();
         }
     }
+
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public Color TextColor { get; set; } = Color.Black;
 
     public CustomProgressBar()
     {
-        SetStyle
-        (
-            ControlStyles.UserPaint 
-          | ControlStyles.AllPaintingInWmPaint 
-          | ControlStyles.OptimizedDoubleBuffer,
+        SetStyle(
+            ControlStyles.UserPaint
+                | ControlStyles.AllPaintingInWmPaint
+                | ControlStyles.OptimizedDoubleBuffer,
             true
         );
     }
@@ -57,7 +61,10 @@ class CustomProgressBar : ProgressBar
 
         using var f = new Font(FontFamily.GenericSerif, 10);
         var len = g.MeasureString(text, f);
-        var location = new Point(Convert.ToInt32(Width / 2 - len.Width / 2), Convert.ToInt32(Height / 2 - len.Height / 2));
+        var location = new Point(
+            Convert.ToInt32(Width / 2 - len.Width / 2),
+            Convert.ToInt32(Height / 2 - len.Height / 2)
+        );
         g.DrawString(text, f, brush, location);
     }
 }

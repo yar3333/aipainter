@@ -10,14 +10,14 @@ public interface IGenerationListItem
 
     public void Run();
     public void Cancel();
-    
+
     ///////////////////////////////////////////
-    
+
     public string Name { get; }
     public int Width { get; set; }
     public int Top { get; set; }
     public Size ClientSize { get; }
     public AnchorStyles Anchor { get; set; }
-    public Control Parent  { get; set; }
+    public Control? Parent { get; set; }
     public void Dispose();
 }

@@ -158,7 +158,6 @@
         private TextBox tbCivitaiApiKey;
         private Label label1;
         private Button btImportFromCivitai;
-        private System.Windows.Forms.Timer updateTimer;
         private Label label2;
         private TextBox tbSearch;
     }

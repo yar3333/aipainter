@@ -1,4 +1,6 @@
+using System.ComponentModel;
 using System.Drawing.Imaging;
+using System.Windows.Forms;
 using AiPainter.Adapters.LamaCleaner;
 using AiPainter.Adapters.StableDiffusion;
 using AiPainter.Helpers;
@@ -13,6 +15,7 @@ namespace AiPainter
 
         public string? FilePath;
 
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public string ImagesFolder
         {
             get => panImages.ImagesFolder;
@@ -45,12 +48,22 @@ namespace AiPainter
             }
 
             sbResize.DropDownItems.Clear();
-            foreach (var size in Program.Config.ImageSizes.Select(x => x.Split("x").First()).Distinct().Select(x => int.Parse(x)).OrderBy(x => x))
+            foreach (
+                var size in Program
+                    .Config.ImageSizes.Select(x => x.Split("x").First())
+                    .Distinct()
+                    .Select(x => int.Parse(x))
+                    .OrderBy(x => x)
+            )
             {
-                sbResize.DropDownItems.Add("Resize image to " + size, null, (_, _) =>
-                {
-                    resizeImage(size);
-                });
+                sbResize.DropDownItems.Add(
+                    "Resize image to " + size,
+                    null,
+                    (_, _) =>
+                    {
+                        resizeImage(size);
+                    }
+                );
             }
         }
 
@@ -70,7 +83,10 @@ namespace AiPainter
                 return true;
             }
 
-            if (!focusInText && keyData == (Keys.Control | Keys.Y) || keyData == (Keys.Control | Keys.Shift | Keys.Z))
+            if (
+                !focusInText && keyData == (Keys.Control | Keys.Y)
+                || keyData == (Keys.Control | Keys.Shift | Keys.Z)
+            )
             {
                 pictureBox.HistoryRedo();
                 return true;
@@ -87,33 +103,45 @@ namespace AiPainter
 
         private void save()
         {
-            if (pictureBox.Image == null) return;
+            if (pictureBox.Image == null)
+                return;
 
-            if (Path.GetExtension(FilePath).ToLowerInvariant() != ".png" && BitmapTools.HasAlpha(pictureBox.Image))
+            if (
+                Path.GetExtension(FilePath).ToLowerInvariant() != ".png"
+                && BitmapTools.HasAlpha(pictureBox.Image)
+            )
             {
-                var r = MessageBox.Show
-                (
+                var r = MessageBox.Show(
                     this,
                     "Image has transparent areas. Do you want to save it as *.png?",
                     "Warning",
                     MessageBoxButtons.YesNoCancel
                 );
-                if (r == DialogResult.Cancel) return;
+                if (r == DialogResult.Cancel)
+                    return;
                 if (r == DialogResult.Yes)
                 {
-                    FilePath = Path.Join(Path.GetDirectoryName(FilePath), Path.GetFileNameWithoutExtension(FilePath)) + ".png";
+                    FilePath =
+                        Path.Join(
+                            Path.GetDirectoryName(FilePath),
+                            Path.GetFileNameWithoutExtension(FilePath)
+                        ) + ".png";
                     save();
                     return;
                 }
             }
 
-            var format = Path.GetExtension(FilePath).ToLowerInvariant() == ".png" ? ImageFormat.Png : ImageFormat.Jpeg;
+            var format =
+                Path.GetExtension(FilePath).ToLowerInvariant() == ".png"
+                    ? ImageFormat.Png
+                    : ImageFormat.Jpeg;
             pictureBox.Image.Save(FilePath!, format);
         }
 
         private void btDeAlpha_Click(object sender, EventArgs e)
         {
-            if (pictureBox.Image == null) return;
+            if (pictureBox.Image == null)
+                return;
             BitmapTools.DeAlpha(pictureBox.Image);
             pictureBox.Refresh();
         }
@@ -121,7 +149,8 @@ namespace AiPainter
         private void btLoad_Click(object sender, EventArgs e)
         {
             var openFileDialog = new OpenFileDialog();
-            openFileDialog.Filter = "Image files (*.jpg;*.jpeg;*.png)|*.jpg;*.jpeg;*.png|All files (*.*)|*.*";
+            openFileDialog.Filter =
+                "Image files (*.jpg;*.jpeg;*.png)|*.jpg;*.jpeg;*.png|All files (*.*)|*.*";
             openFileDialog.InitialDirectory = ImagesFolder;
             if (openFileDialog.ShowDialog() == DialogResult.OK)
             {
@@ -135,7 +164,8 @@ namespace AiPainter
             FilePath = filePath;
             pictureBox.Image = BitmapTools.Load(FilePath);
             pictureBox.ResetMask();
-            if (autoZoom) pictureBox.ZoomAndMoveGlobalViewToFitImage();
+            if (autoZoom)
+                pictureBox.ZoomAndMoveGlobalViewToFitImage();
             pictureBox.HistoryClear();
             pictureBox.Refresh();
         }
@@ -163,7 +193,11 @@ namespace AiPainter
         {
             pictureBox.HistoryAddCurrentState();
 
-            var bmp = new Bitmap(pictureBox.Image.Width + IMAGE_EXTEND_SIZE, pictureBox.Image.Height, PixelFormat.Format32bppArgb);
+            var bmp = new Bitmap(
+                pictureBox.Image.Width + IMAGE_EXTEND_SIZE,
+                pictureBox.Image.Height,
+                PixelFormat.Format32bppArgb
+            );
             using (var g = Graphics.FromImage(bmp))
             {
                 g.FillRectangle(Brushes.Transparent, 0, 0, IMAGE_EXTEND_SIZE, bmp.Height);
@@ -181,16 +215,33 @@ namespace AiPainter
         {
             pictureBox.HistoryAddCurrentState();
 
-            var bmp = new Bitmap(pictureBox.Image.Width + IMAGE_EXTEND_SIZE, pictureBox.Image.Height, PixelFormat.Format32bppArgb);
+            var bmp = new Bitmap(
+                pictureBox.Image.Width + IMAGE_EXTEND_SIZE,
+                pictureBox.Image.Height,
+                PixelFormat.Format32bppArgb
+            );
             using (var g = Graphics.FromImage(bmp))
             {
-                g.FillRectangle(Brushes.Transparent, bmp.Width - IMAGE_EXTEND_SIZE, 0, IMAGE_EXTEND_SIZE, bmp.Height);
+                g.FillRectangle(
+                    Brushes.Transparent,
+                    bmp.Width - IMAGE_EXTEND_SIZE,
+                    0,
+                    IMAGE_EXTEND_SIZE,
+                    bmp.Height
+                );
                 g.DrawImageUnscaled(pictureBox.Image, 0, 0);
             }
 
             pictureBox.Image = bmp;
-            pictureBox.AddBoxToMask(bmp.Width - IMAGE_EXTEND_SIZE, 0, IMAGE_EXTEND_SIZE, pictureBox.Image.Height);
-            pictureBox.ActiveBox.X += IMAGE_EXTEND_SIZE;
+            pictureBox.AddBoxToMask(
+                bmp.Width - IMAGE_EXTEND_SIZE,
+                0,
+                IMAGE_EXTEND_SIZE,
+                pictureBox.Image.Height
+            );
+            var activeBox = pictureBox.ActiveBox;
+            activeBox.X += IMAGE_EXTEND_SIZE;
+            pictureBox.ActiveBox = activeBox;
 
             pictureBox.Refresh();
         }
@@ -199,7 +250,11 @@ namespace AiPainter
         {
             pictureBox.HistoryAddCurrentState();
 
-            var bmp = new Bitmap(pictureBox.Image.Width, pictureBox.Image.Height + IMAGE_EXTEND_SIZE, PixelFormat.Format32bppArgb);
+            var bmp = new Bitmap(
+                pictureBox.Image.Width,
+                pictureBox.Image.Height + IMAGE_EXTEND_SIZE,
+                PixelFormat.Format32bppArgb
+            );
             using (var g = Graphics.FromImage(bmp))
             {
                 g.FillRectangle(Brushes.Transparent, 0, 0, bmp.Width, IMAGE_EXTEND_SIZE);
@@ -217,16 +272,33 @@ namespace AiPainter
         {
             pictureBox.HistoryAddCurrentState();
 
-            var bmp = new Bitmap(pictureBox.Image.Width, pictureBox.Image.Height + IMAGE_EXTEND_SIZE, PixelFormat.Format32bppArgb);
+            var bmp = new Bitmap(
+                pictureBox.Image.Width,
+                pictureBox.Image.Height + IMAGE_EXTEND_SIZE,
+                PixelFormat.Format32bppArgb
+            );
             using (var g = Graphics.FromImage(bmp))
             {
-                g.FillRectangle(Brushes.Transparent, 0, bmp.Height - IMAGE_EXTEND_SIZE, bmp.Width, IMAGE_EXTEND_SIZE);
+                g.FillRectangle(
+                    Brushes.Transparent,
+                    0,
+                    bmp.Height - IMAGE_EXTEND_SIZE,
+                    bmp.Width,
+                    IMAGE_EXTEND_SIZE
+                );
                 g.DrawImageUnscaled(pictureBox.Image, 0, 0);
             }
 
             pictureBox.Image = bmp;
-            pictureBox.AddBoxToMask(0, bmp.Height - IMAGE_EXTEND_SIZE, pictureBox.Image.Width, IMAGE_EXTEND_SIZE);
-            pictureBox.ActiveBox.Y += IMAGE_EXTEND_SIZE;
+            pictureBox.AddBoxToMask(
+                0,
+                bmp.Height - IMAGE_EXTEND_SIZE,
+                pictureBox.Image.Width,
+                IMAGE_EXTEND_SIZE
+            );
+            var activeBox = pictureBox.ActiveBox;
+            activeBox.Y += IMAGE_EXTEND_SIZE;
+            pictureBox.ActiveBox = activeBox;
 
             pictureBox.Refresh();
         }
@@ -247,19 +319,30 @@ namespace AiPainter
 
             var activeBox = pictureBox.ActiveBox;
 
-            Text = (string.IsNullOrEmpty(FilePath) ? "AiPainter" : Path.GetFileName(FilePath))
-                 + (pictureBox.Image == null ? "" : " (" + pictureBox.Image.Width + " x " + pictureBox.Image.Height + ")")
-                 + $" [Active box: X,Y = {activeBox.X},{activeBox.Y}; WxH = {activeBox.Width}x{activeBox.Height}]"
-                 + " | " + Path.GetFullPath(ImagesFolder);
+            Text =
+                (string.IsNullOrEmpty(FilePath) ? "AiPainter" : Path.GetFileName(FilePath))
+                + (
+                    pictureBox.Image == null
+                        ? ""
+                        : " (" + pictureBox.Image.Width + " x " + pictureBox.Image.Height + ")"
+                )
+                + $" [Active box: X,Y = {activeBox.X},{activeBox.Y}; WxH = {activeBox.Width}x{activeBox.Height}]"
+                + " | "
+                + Path.GetFullPath(ImagesFolder);
 
             btClearActiveImage.Enabled = pictureBox.Image != null && pictureBox.Enabled;
             btCopyToClipboard.Enabled = pictureBox.Image != null && pictureBox.Enabled;
             btResetMask.Enabled = pictureBox.HasMask && pictureBox.Enabled;
-            btDeAlpha.Enabled = pictureBox.Image != null && BitmapTools.HasAlpha(pictureBox.Image) && pictureBox.Enabled;
+            btDeAlpha.Enabled =
+                pictureBox.Image != null
+                && BitmapTools.HasAlpha(pictureBox.Image)
+                && pictureBox.Enabled;
             btRestorePrevMask.Enabled = pictureBox.HasPrevMask && pictureBox.Enabled;
-            btResizeAndMoveActiveBoxToFitImage.Enabled = pictureBox.Image != null && pictureBox.Enabled;
+            btResizeAndMoveActiveBoxToFitImage.Enabled =
+                pictureBox.Image != null && pictureBox.Enabled;
 
-            btSave.Enabled = !string.IsNullOrEmpty(FilePath) && pictureBox.Image != null && pictureBox.Enabled;
+            btSave.Enabled =
+                !string.IsNullOrEmpty(FilePath) && pictureBox.Image != null && pictureBox.Enabled;
             btSaveAs.Enabled = pictureBox.Image != null && pictureBox.Enabled;
 
             btLeft.Enabled = pictureBox.Image != null && pictureBox.Enabled;
@@ -307,7 +390,7 @@ namespace AiPainter
             var saveFileDialog = new SaveFileDialog();
 
             saveFileDialog.Filter =
-                  "PNG file (*.png)|*.png"
+                "PNG file (*.png)|*.png"
                 + "|JPG file (*.jpg)|*.jpg;*.jpeg"
                 + "|All files (*.*)|*.*";
 
@@ -331,20 +414,27 @@ namespace AiPainter
 
             var image = pictureBox.Image!;
             var k = Math.Min((double)size / image.Width, (double)size / image.Height);
-            pictureBox.Image = BitmapTools.GetResized(image, (int)Math.Round(image.Width * k), (int)Math.Round(image.Height * k));
+            pictureBox.Image = BitmapTools.GetResized(
+                image,
+                (int)Math.Round(image.Width * k),
+                (int)Math.Round(image.Height * k)
+            );
         }
 
         private void btRemoveObjectFromImage_Click(object sender, EventArgs e)
         {
-            lamaCleaner.Run(pictureBox, image =>
-            {
-                Invoke(() =>
+            lamaCleaner.Run(
+                pictureBox,
+                image =>
                 {
-                    pictureBox.Image = image;
-                    pictureBox.ResetMask();
-                    pictureBox.Refresh();
-                });
-            });
+                    Invoke(() =>
+                    {
+                        pictureBox.Image = image;
+                        pictureBox.ResetMask();
+                        pictureBox.Refresh();
+                    });
+                }
+            );
         }
 
         private void btUpscaleCommon2x_Click(object sender, EventArgs e)
@@ -369,13 +459,15 @@ namespace AiPainter
 
         private void upscale(UpscalerType upscaler, int resizeFactor)
         {
-            var form = new UpscaleForm
-            (
+            var form = new UpscaleForm(
                 panGenerationList,
                 pictureBox.Image!,
                 upscaler,
                 resizeFactor,
-                Path.Combine(Path.GetDirectoryName(FilePath)!, Path.GetFileNameWithoutExtension(FilePath) + "-upscaled") + ".png"
+                Path.Combine(
+                    Path.GetDirectoryName(FilePath)!,
+                    Path.GetFileNameWithoutExtension(FilePath) + "-upscaled"
+                ) + ".png"
             );
 
             if (form.ShowDialog(this) == DialogResult.OK)

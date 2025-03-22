@@ -1,4 +1,5 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.ComponentModel;
+using System.Text.RegularExpressions;
 using AiPainter.Adapters.StableDiffusion.SdBackends;
 using AiPainter.Adapters.StableDiffusion.SdCheckpointStuff;
 using AiPainter.Adapters.StableDiffusion.SdEmbeddingStuff;
@@ -10,7 +11,7 @@ namespace AiPainter.Adapters.StableDiffusion
 {
     public partial class StableDiffusionPanel : UserControl
     {
-        private readonly string baseVaeTooltip;
+        private readonly string? baseVaeTooltip;
 
         // ReSharper disable once InconsistentNaming
         public MainForm mainForm = null!;
@@ -19,12 +20,16 @@ namespace AiPainter.Adapters.StableDiffusion
 
         public bool InProcess = false;
 
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public string selectedCheckpointName
         {
             get => ddCheckpoint.SelectedValue?.ToString() ?? "";
             set
             {
-                if (ddCheckpoint.DataSource == null || ddCheckpoint.Items.Cast<ListItem>().All(x => x.Value != value))
+                if (
+                    ddCheckpoint.DataSource == null
+                    || ddCheckpoint.Items.Cast<ListItem>().All(x => x.Value != value)
+                )
                 {
                     ddCheckpoint.DataSource = SdCheckpointsHelper.GetListItems(value ?? "");
                 }
@@ -32,19 +37,26 @@ namespace AiPainter.Adapters.StableDiffusion
             }
         }
 
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public string selectedVaeName
         {
             get => ddVae.SelectedValue?.ToString() ?? "";
             set
             {
-                if (ddVae.DataSource == null || ddVae.Items.Cast<ListItem>().All(x => x.Value != value))
+                if (
+                    ddVae.DataSource == null
+                    || ddVae.Items.Cast<ListItem>().All(x => x.Value != value)
+                )
                 {
                     ddVae.DataSource = SdVaeHelper.GetListItems();
                 }
-                ddVae.SelectedValue = ddVae.Items.Cast<ListItem>().Any(x => x.Value == value) ? (value ?? "") : "";
+                ddVae.SelectedValue = ddVae.Items.Cast<ListItem>().Any(x => x.Value == value)
+                    ? (value ?? "")
+                    : "";
             }
         }
 
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public int selectedClipSkip
         {
             get => int.Parse(ddClipSkip.SelectedItem!.ToString()!);
@@ -57,9 +69,17 @@ namespace AiPainter.Adapters.StableDiffusion
             }
         }
 
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public SdInpaintingFill selectedInpaintingFill
         {
-            get => Enum.TryParse<SdInpaintingFill>(ddInpaintingFill.SelectedItem?.ToString() ?? "", true, out var r) ? r : SdInpaintingFill.original;
+            get =>
+                Enum.TryParse<SdInpaintingFill>(
+                    ddInpaintingFill.SelectedItem?.ToString() ?? "",
+                    true,
+                    out var r
+                )
+                    ? r
+                    : SdInpaintingFill.original;
             set => ddInpaintingFill.SelectedItem = value.ToString();
         }
 
@@ -82,12 +102,7 @@ namespace AiPainter.Adapters.StableDiffusion
             selectedCheckpointName = Program.Config.StableDiffusionCheckpoint ?? "";
             selectedVaeName = Program.Config.StableDiffusionVae;
 
-            ddSampler.DataSource = new[]
-            {
-                "Euler a",
-                "DPM++ 2M",
-                "Heun",
-            };
+            ddSampler.DataSource = new[] { "Euler a", "DPM++ 2M", "Heun" };
             ddSampler.SelectedItem = "DPM++ 2M";
 
             ddClipSkip.SelectedItem = "0";
@@ -116,7 +131,11 @@ namespace AiPainter.Adapters.StableDiffusion
 
             saveSelectedValuesToMainConfig();
 
-            if (tbPrompt.Text.Trim() == "") { tbPrompt.Focus(); return; }
+            if (tbPrompt.Text.Trim() == "")
+            {
+                tbPrompt.Focus();
+                return;
+            }
 
             if (selectedCheckpointName == "")
             {
@@ -124,7 +143,9 @@ namespace AiPainter.Adapters.StableDiffusion
                 return;
             }
 
-            mainForm.panGenerationList.AddGeneration(new SdListItemGeneration(this, mainForm.pictureBox, mainForm));
+            mainForm.panGenerationList.AddGeneration(
+                new SdListItemGeneration(this, mainForm.pictureBox, mainForm)
+            );
         }
 
         private void saveSelectedValuesToMainConfig()
@@ -133,7 +154,10 @@ namespace AiPainter.Adapters.StableDiffusion
             Program.Config.StableDiffusionVae = selectedVaeName;
 
             var negativeText = tbNegative.Text.Trim(' ', ',', ';', '\r', '\n');
-            if (negativeText != "" && Program.Config.NegativePrompts.FirstOrDefault() != negativeText)
+            if (
+                negativeText != ""
+                && Program.Config.NegativePrompts.FirstOrDefault() != negativeText
+            )
             {
                 Program.Config.NegativePrompts.Remove(negativeText);
                 Program.Config.NegativePrompts.Insert(0, negativeText);
@@ -149,23 +173,26 @@ namespace AiPainter.Adapters.StableDiffusion
 
         private string getNormalizedImageSize()
         {
-            var s = ddImageSize.Text
-                               .Replace(" ", "")
-                               .Replace("-", "")
-                               .Replace("+", "")
-                               .Replace("\t", "")
-                               .Replace("X", "x")
-                               .Replace("х", "x") // cyrillic
-                               .Replace(",", "x")
-                               .Replace(";", "x")
-                               .Replace("*", "x")
-                               .Trim('x');
+            var s = ddImageSize
+                .Text.Replace(" ", "")
+                .Replace("-", "")
+                .Replace("+", "")
+                .Replace("\t", "")
+                .Replace("X", "x")
+                .Replace("х", "x") // cyrillic
+                .Replace(",", "x")
+                .Replace(";", "x")
+                .Replace("*", "x")
+                .Trim('x');
 
             var parts = s.Split('x');
-            if (parts.Length != 2) return "512x512";
+            if (parts.Length != 2)
+                return "512x512";
 
-            if (!int.TryParse(parts[0], out var w) || w <= 0) return "512x512";
-            if (!int.TryParse(parts[1], out var h) || h <= 0) return "512x512";
+            if (!int.TryParse(parts[0], out var w) || w <= 0)
+                return "512x512";
+            if (!int.TryParse(parts[1], out var h) || h <= 0)
+                return "512x512";
 
             return w + "x" + h;
         }
@@ -211,7 +238,7 @@ namespace AiPainter.Adapters.StableDiffusion
 
             trackBarChangesLevel.Enabled = cbUseInitImage.Checked;
             ddInpaintingFill.Enabled = cbUseInitImage.Checked;
-            
+
             btInterrogate.Enabled = !InProcess && pb.Image != null;
             btGenerate.Enabled = !InProcess;
             btReset.Enabled = !InProcess;
@@ -242,17 +269,22 @@ namespace AiPainter.Adapters.StableDiffusion
 
             if (sdGenerationParameters.cfgScale != 0)
             {
-                numCfgScale.Value = Math.Max(numCfgScale.Minimum, Math.Min(numCfgScale.Maximum, sdGenerationParameters.cfgScale));
+                numCfgScale.Value = Math.Max(
+                    numCfgScale.Minimum,
+                    Math.Min(numCfgScale.Maximum, sdGenerationParameters.cfgScale)
+                );
             }
 
-            if (sdGenerationParameters.clipSkip != 0) selectedClipSkip = sdGenerationParameters.clipSkip;
+            if (sdGenerationParameters.clipSkip != 0)
+                selectedClipSkip = sdGenerationParameters.clipSkip;
 
             tbSeed.Text = sdGenerationParameters.seed.ToString();
 
             SetImageSize(sdGenerationParameters.width, sdGenerationParameters.height);
             ddSampler.SelectedItem = sdGenerationParameters.sampler;
 
-            if (sdGenerationParameters.inpaintingFill != null) selectedInpaintingFill = sdGenerationParameters.inpaintingFill.Value;
+            if (sdGenerationParameters.inpaintingFill != null)
+                selectedInpaintingFill = sdGenerationParameters.inpaintingFill.Value;
         }
 
         private void collapsablePanel_Resize(object sender, EventArgs e)
@@ -276,10 +308,14 @@ namespace AiPainter.Adapters.StableDiffusion
 
             foreach (var negativePrompt in Program.Config.NegativePrompts)
             {
-                cmNegativePromptHistoryMenu.Items.Add(negativePrompt, null, (_, _) =>
-                {
-                    tbNegative.Text = negativePrompt;
-                });
+                cmNegativePromptHistoryMenu.Items.Add(
+                    negativePrompt,
+                    null,
+                    (_, _) =>
+                    {
+                        tbNegative.Text = negativePrompt;
+                    }
+                );
             }
 
             if (Program.Config.NegativePrompts.Count == 0)
@@ -292,12 +328,16 @@ namespace AiPainter.Adapters.StableDiffusion
 
         private void btEmbeddings_Click(object sender, EventArgs e)
         {
-            new SdEmbeddingsContextMenu(this, mainForm.panGenerationList, false).Show(Cursor.Position);
+            new SdEmbeddingsContextMenu(this, mainForm.panGenerationList, false).Show(
+                Cursor.Position
+            );
         }
 
         private void btNegativeEmbeddings_Click(object sender, EventArgs e)
         {
-            new SdEmbeddingsContextMenu(this, mainForm.panGenerationList, true).Show(Cursor.Position);
+            new SdEmbeddingsContextMenu(this, mainForm.panGenerationList, true).Show(
+                Cursor.Position
+            );
         }
 
         private void btStyles_Click(object sender, EventArgs e)
@@ -326,18 +366,25 @@ namespace AiPainter.Adapters.StableDiffusion
         {
             if (!Regex.IsMatch(tbNegative.Text, @"\b" + Regex.Escape(s) + @"\b"))
             {
-                tbNegative.Text = (tbNegative.Text.TrimEnd(',', ' ') + ", " + s).TrimStart(',', ' ');
+                tbNegative.Text = (tbNegative.Text.TrimEnd(',', ' ') + ", " + s).TrimStart(
+                    ',',
+                    ' '
+                );
             }
         }
 
         public string[] GetUsedLoras()
         {
-            return SdPromptNormalizer.GetUsedLoras(tbPrompt.Text, out _).Keys.ToArray(); 
+            return SdPromptNormalizer.GetUsedLoras(tbPrompt.Text, out _).Keys.ToArray();
         }
 
         private void ddCheckpoint_DropDown(object sender, EventArgs e)
         {
-            if (ddCheckpoint.Items.Count == 0 || ddCheckpoint.Items.Count == 1 && string.IsNullOrEmpty(((ListItem)ddCheckpoint.Items[0]).Value))
+            if (
+                ddCheckpoint.Items.Count == 0
+                || ddCheckpoint.Items.Count == 1
+                    && string.IsNullOrEmpty(((ListItem)ddCheckpoint.Items[0]!).Value)
+            )
             {
                 ShowManageCheckpointDialog();
             }
@@ -346,8 +393,10 @@ namespace AiPainter.Adapters.StableDiffusion
         private void ddCheckpoint_SelectedIndexChanged(object sender, EventArgs e)
         {
             var config = SdCheckpointsHelper.GetConfig(selectedCheckpointName);
-            if (config.clipSkip != null) selectedClipSkip = config.clipSkip.Value;
-            if (!string.IsNullOrEmpty(config.promptRequired)) AddTextToPrompt(config.promptRequired);
+            if (config.clipSkip != null)
+                selectedClipSkip = config.clipSkip.Value;
+            if (!string.IsNullOrEmpty(config.promptRequired))
+                AddTextToPrompt(config.promptRequired);
         }
 
         private void ddVae_SelectedIndexChanged(object sender, EventArgs e)
@@ -362,29 +411,44 @@ namespace AiPainter.Adapters.StableDiffusion
                 }
             }
 
-            toolTip.SetToolTip(ddVae, baseVaeTooltip + (vaeName != "" ? "\n\n*** " + vaeName + "\n" + SdVaeHelper.GetConfig(vaeName).description : ""));
+            toolTip.SetToolTip(
+                ddVae,
+                baseVaeTooltip
+                    + (
+                        vaeName != ""
+                            ? "\n\n*** "
+                                + vaeName
+                                + "\n"
+                                + SdVaeHelper.GetConfig(vaeName).description
+                            : ""
+                    )
+            );
         }
 
         private void btInterrogate_Click(object sender, EventArgs e)
         {
             InProcess = true;
             tbPrompt.ReadOnly = true;
-            
-            var croppedImage = BitmapTools.GetCropped(mainForm.pictureBox.Image!, mainForm.pictureBox.ActiveBox, Color.Black);
-            
+
+            var croppedImage = BitmapTools.GetCropped(
+                mainForm.pictureBox.Image!,
+                mainForm.pictureBox.ActiveBox,
+                Color.Black
+            );
+
             Task.Run(async () =>
             {
                 var result = await SdBackend.Instance.InterrogateAsync(croppedImage);
 
                 Invoke(() =>
                 {
-                    if (result != null) tbPrompt.Text = result;
+                    if (result != null)
+                        tbPrompt.Text = result;
 
                     InProcess = false;
                     tbPrompt.ReadOnly = false;
                 });
             });
-
         }
     }
 }

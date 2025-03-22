@@ -1,4 +1,6 @@
-﻿namespace AiPainter.Controls
+﻿using System.ComponentModel;
+
+namespace AiPainter.Controls
 {
     public partial class WaitingDialog : Form
     {
@@ -17,26 +19,44 @@
             cancellationTokenSource = new CancellationTokenSource();
         }
 
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public string LabelText
         {
             get => label.Text;
-            set { if (Visible) Invoke(() => label.Text = value); }
+            set
+            {
+                if (Visible)
+                    Invoke(() => label.Text = value);
+            }
         }
 
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public int ProgressValue
         {
             get => progressBar.Value;
-            set { if (Visible) Invoke(() => progressBar.Value = value); }
+            set
+            {
+                if (Visible)
+                    Invoke(() => progressBar.Value = value);
+            }
         }
 
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public ProgressBarStyle ProgressStyle
         {
             get => progressBar.Style;
-            set { if (Visible) Invoke(() => progressBar.Style = value); }
+            set
+            {
+                if (Visible)
+                    Invoke(() => progressBar.Style = value);
+            }
         }
 
         // ReSharper disable once ParameterHidesMember
-        public DialogResult ShowDialog(IWin32Window parent, Func<CancellationTokenSource, Task> workAsync)
+        public DialogResult ShowDialog(
+            IWin32Window parent,
+            Func<CancellationTokenSource, Task> workAsync
+        )
         {
             this.workAsync = workAsync;
             return base.ShowDialog(parent);
